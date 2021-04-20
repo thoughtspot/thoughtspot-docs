@@ -1,0 +1,38 @@
+[#group_aggregate]
+group_aggregate::
+  Takes a measure and optional attributes and filters. Used
+to aggregate measures with different granularities and filters than the columns used in the search. Commonly used in comparison analysis.
++
+This formula takes the following form:
++
+----
+group_aggregate (
+  <aggregation(measure)>,
+  <groupings>,
+  <filters>)
+----
++
+NOTE: Define lists using curly brackets, `{ }`. Optional list functions `query_groups` or `query_filters` specify the lists or filters used in the original search. Use `+` (plus) and `-` (minus) to add or exclude specific columns for query groups. See xref:aggregation-flexible.adoc[Flexible aggregation functions].
+
+Examples;;
++
+----
+group_aggregate (
+  sum (revenue),
+  {ship mode, date}, {} )
+
+group_aggregate (
+  sum (revenue),
+  {ship mode , date},
+  {day_of_week (date) = 'friday'} )
+
+group_aggregate (
+  sum (revenue),
+  query_groups(),
+  query_filters() )
+
+group_aggregate (
+  sum (revenue),
+  query_groups() + \{date},
+  query_filters() )
+----
