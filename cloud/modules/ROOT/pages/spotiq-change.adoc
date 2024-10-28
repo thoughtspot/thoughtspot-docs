@@ -45,7 +45,7 @@ By default, SpotIQ picks the most relevant columns, based on what it learned fro
 [#change-analysis-contextual]
 == Contextual change analysis
 
-ThoughtSpot supports contextual change analysis for area, line, column, bar, line-column, donut, and KPI charts. You do not need SpotIQ privileges to run contextual change analysis.
+ThoughtSpot supports contextual change analysis for area, line, column, bar, line-column, donut, and KPI charts. Contextual change analysis works by looking at the difference between the value of a measure across two points, then slicing both the points along another attribute. Then the changes are analyzed to see if the attribute can be used to explain the differences in the two points. You do not need SpotIQ privileges to run contextual change analysis.
 
 To perform this analysis, follow these steps:
 
@@ -62,7 +62,7 @@ image:contextual-change.png[Contextual change analysis window]
 +
 To select other columns to analyze, click *Customize attributes* in the lower left corner of the window and select the desired column from the window that appears.
 +
-NOTE: Each colored section of a SpotIQ insight represents a statistically significant outlier among the values of your chosen columns. For more information on how statistically significant outliers are calculated, see <<z-score,Z-scores>>.
+NOTE: Each colored section of a SpotIQ insight represents a statistically significant outlier among the values of your chosen columns. For more information on how statistically significant outliers are calculated, see <<z-score,How contextual change analysis is calculated>>.
 
 
 . You can now examine each visualization of the analysis for details of comparison.
@@ -146,43 +146,70 @@ In this example, the algorithm parameters are *Maximum Difference Elements*, *Ma
 image::comparative-analysis-advanced-new.png[Comparative analysis advanced values]
 ////
 
-=== How SpotIQ calculates outliers
-
 [#z-score]
-==== Z-Score
+=== How contextual change analysis is calculated
+
+In order to process different aggregations in the data, contextual change analysis is broken into three categories.
+
+Type 1 - Simply decomposable:: A simply decomposable measure can be expressed as a disjoint union of finite measures. For example, measures having aggregation `SUM` or `COUNT`. `SUM(x + y) = SUM(x) + SUM(y)`.
 
 
-A Z-score represents the number of standard deviations from the mean a data point is. Z-scores are a way to compare results from a test to a "normal" population. The basic Z-score formula for a sample is:  z = (x – μ) / σ where
+Type 2 - Ratio of simply decomposable:: Measures in this type are ratios of measures from type 1. For example, measures of the form `AVERAGE` or `SUM/SUM`.
 
-* σ is the standard deviation
-* μ is the mean
-* x is the data value.
+Type 3 - Unknowns:: Measures that are neither in type 1 nor in type 2 fall under this type. For example, `UNIQUE COUNT`, `SUM * SUM`.
 
-Currently, any value outside μ +/- N * σ (i.e. Z-score less than or greater than N) is an anomaly. N is determined based on the number of rows. It is chosen such that the max or min has < 0.1 probability of crossing the threshold. SpotIQ uses the following table to approximately choose the value of N, that is, how many standard deviations we want to be able to use as threshold:
+==== Type 1 algorithm
 
+We compare measurements at two different times for each attribute. Then, we calculate the upper and lower thresholds based on the most significant absolute changes between these two timestamps. Any change values lying outside the range of threshold values are marked as outliers.
+
+We determine the upper and lower thresholds by looking at the top ten absolute changes. If the combined contribution of a measure at the first or second timestamp exceeds 50%, we stop iterating. The largest negative change becomes the lower threshold, while the smallest positive change becomes the upper threshold.
+
+.Example 1
+[.bordered]
+image:jacket-example.png[Change analysis example]
+
+In the example above, based on the absolute change values, the upper threshold is calculated as 708.09K, and the lower threshold value is calculated as -606.58K. Attribute values lying on or outside the threshold values are marked as outliers.
+
+==== Type 2 algorithm
+
+While working with rations, ThoughtSpot can’t perform the difference analysis as with the Type 1 algorithm. This limitation arises because ratio values become exceedingly large whenever the denominator approaches zero. To address this concern, we adopt an alternative approach: for each attribute value, we compute a hypothetical percentage change. This calculation determines the overall percentage change in the measured value assuming that specific value remained constant between the two reference points. A smaller hypothetical percentage change for an attribute value indicates that this value significantly contributes to explaining the overall change. This is because if that attribute had not changed, the overall change in the measure would have been smaller.
+
+.Example 2
+[.bordered]
+image:burnished-example.png[Change analysis example 2]
+
+For example, if we do change analysis on the average discount monthly for July 1998 and August 1998, the insight says that "burnished(Color)" is a significant change contributor. If the average discount for burnished(Color) had not changed, the increase would have been 0.56% instead of 7.23%. This means that the overall average profit increased by 7.23% from July 1998 to August 1998, but if we disregard the change in the average discount of burnished(Color), the overall average profit would have increased by just 0.56%.
+
+==== Type 3 algorithm
+
+We start by comparing measurements at two different times for each attribute. Next, we treat the changes as a normal distribution and calculate the values of upper and lower thresholds using the Z-score calculation. Any change values lying outside the range of threshold values are marked as outliers.
+
+A Z-score represents the number of standard deviations from the mean a data point is. Z-scores are a way to compare results from a test to a "normal" population. The basic Z-score formula for a sample is: z = (x – μ) / σ where σ is the standard deviation, μ is the mean, x is the data value. Upper threshold is assigned as  μ + N * σ and lower threshold is assigned as  μ - N * σ. So any value with a Z-score less than or greater than N is an anomaly.
+
+The minimum value of N is 2.0, which covers 95.45% of points in a normal distribution. The maximum is 5.0, which covers 99.99994% of points in a normal distribution. The value of N is decided according to the table provided below:
 
 [options="header"]
 |===
-| Cardinality | N (number of standard deviations from mean)
+| Attribute Cardinality | Value of N
 
+| \<= 100 | 2.0
 
-| < 20 | 2
-| < 500 | 3
-| < 10000 | 4
-| >= 10000 | 5
+| 500 | 2.69
+
+| 2000 | 3.301
+
+| 10000 | 4.0
+
+| 50000 | 4.69
+
+| >= 100000 | 5.0
 |===
 
-=== Identifying change drivers
+.Example 3
+[.bordered]
+image:ghost-example.png[Change analysis example type 3]
 
-ThoughtSpot uses different methods to explain the difference between points selected for SpotIQ analysis, depending on the underlying aggregation of the measures.
-
-For SUM or COUNT or UNIQUE COUNT or SUM x SUM measures, ThoughtSpot uses the following change formula: `fx= "measure value for point 1" - "measure value for point 2"`. Next, we slice by attributes, and rank the attribute by what fraction of the total change is concentrated in the first few values for a given attribute. For example, in an analysis of a chart for revenue by month, the formula could be defined as `fx = "Total revenue in April" - "Total revenue in June"`. Then, we slice both April revenue and June revenue by region. If we find that all regions have similar revenue except China, then we can say that region is a useful attribute for explaining the difference in revenue across April and June.
-
-We identify the outlier change values using a Z-score distribution with a multiplier chosen based on the number of rows in the data. All values lesser than `mean - multiplier x std dev` or values greater than `mean + multiplier x std dev` are highlighted as outlier changes.
-
-For AVERAGE or SUM/SUM measures, change analysis generates insights with What-if percent change insights which present hypothetical scenarios for each explanation attribute. A What-if percent change insight for an attribute shows what the overall percent change in measure would have been had a particular attribute value not changed across the two points. A smaller What-if percent change for an attribute value implies that the value is a significant contributor towards explaining the overall change, since without that attribute changing, the overall change in the measure would have been smaller than it was.
-
-For example, if we do comparative analysis on average profit monthly for October 2016 and April 2017, one of the insights generated says that "If average profit for copiers (sub-category) had not changed, the decrease would have been only 29.81% instead of 94.45%". This means that the overall average profit decreased by 94.45% from October 2016 to April 2017, but if we disregard the change in the average profit of copiers, the overall average profit would have decreased by just 29.81%.
+In the example above, based on the absolute change values, the upper threshold is calculated as 1.29 and the lower threshold is calculated as -3.26. Attribute values lying on or outside the threshold values are marked as outliers.
 
 
 
