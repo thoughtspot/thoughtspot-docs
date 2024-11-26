@@ -1,11 +1,11 @@
 = About row-level security (RLS)
-:last_updated: 11/05/2021
+:last_updated: 11/26/2024
 :linkattrs:
 :experimental:
 :page-layout: default-cloud
 :page-aliases: /admin/data-security/about-row-security.adoc
 :description: Using row-level security (RLS), you can restrict data that appears in search results and Liveboards by group or user.
-
+:jira: SCAL-230550
 
 
 Row-level security (RLS) allows you to restrict access to table row data at group-level or user-level.
@@ -18,16 +18,36 @@ Users see only the data they are permitted to see.
 The security rules apply to objects shared with users individually or through groups they are a member of.
 The rules restrict the visible data when users:
 
-* view a table
-* view a Worksheet derived from the table
-* search for data in the Worksheet or table
-* view Answers from restricted data - either that they've created or that were shared with them
-* interact with Liveboards from restricted data - either that they've created or that were shared with them
+* view a table.
+* view a Worksheet derived from the table.
+* search for data in the Worksheet or table.
+* view Answers from restricted data - either that they've created or that were shared with them.
+* interact with Liveboards from restricted data - either that they've created or that were shared with them.
 
+////
 Search suggestions also fall under row-level security.
 If a user would not have access to the row data, then values from the row do not appear in *Search* suggestions.
 
 If RLS is applied to the cluster, and the creator of a Liveboard sets up default values in a Liveboard filter, the default values will be visible to everyone who has access to the Liveboard in the filter chip preview and in the tooltip. The data is filtered based on RLS, but the filter chip preview and tooltip do not follow RLS.
+////
+
+== Strict RLS
+
+This is the default setting applied to clusters. This ensures that if an RLS rule is defined then this is always included in any query to the database. A query to the database refers to both a search to return results or a query initiated from a filter widget.
+
+This setting can be disabled so that RLS rules are only included when the table that has the rule defined is included in the search results. This behavior may be desirable for very large datasets to improve performance. That is, the rule is applied to the fact table so that these results are secured. However, the RLS rule does not need to be included for dimensional tables.
+
+See xref:advanced-commands.adoc[Cluster-level settings].
+
+== Search Index and RLS
+
+A search suggestion does not execute a query to the database. Rather, this is a value returned from the index stored by ThoughtSpot. These suggestions are displayed as Search typeahead suggestions, Liveboard Explore suggested tokens, and the Search Data column information card.
+
+These suggestions respect RLS rules when the rule is defined explicitly on the table that the column is derived from. For example, assume the RLS rule is defined on the customer table. Then all search suggestions for the customer columns will have RLS applied. However, columns from the products table will not have the suggestions secured by this RLS rule.
+
+As an analyst, you need to determine which tables require RLS to be applied to the suggestions. You then need to model the data in a way to ensure that the RLS rule can be defined on the table. If a data model includes multiple RLS rules, you may wish to consider disabling strict RLS.
+
+video::dK5hOnPdwLA[youtube,title="ThoughtSpot Success Series: Row Level Security Design Patterns",width="375",height="210",frameborder="0",allow="accelerometer"]
 
 If you are using pass-through security for a xref:connections-snowflake-add.adoc[Snowflake] or xref:connections-gbq-add.adoc[Google BigQuery] connection, search suggestions may not fall under row-level security.
 When using pass-through security, ThoughtSpot builds the search index on the user who created the connection.
@@ -56,3 +76,4 @@ Enable creation of a single Liveboard or visualization, which can display differ
 > * To continue learning about RLS, see xref:security-rls-concept.adoc[How rule-based RLS works].
 > * *Search* suggestions relies on compile indices to present suggestions to users from your data.
 See xref:data-modeling-index.adoc#[Manage suggestion indexing] to learn how to configure suggestions.
+> * xref:security-data-object.adoc[]
