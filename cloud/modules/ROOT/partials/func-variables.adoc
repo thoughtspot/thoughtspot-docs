@@ -1,10 +1,37 @@
 [options="header",cols="20%,50%,30%"]
 |===
 | Function | Description | Examples
-| `ts_groups` | Returns a list of all the groups the current logged-in user belongs to. For any row, if the expression evaluates to true for any of the groups, the user can see that row. | `ts_groups = 'east'`
+| `ts_groups` | Returns a list of all the groups the current logged-in user belongs to. For any row, if the expression evaluates to true for any of the groups, the user can see that row. `ts_groups` is available in RLS formulas and worksheet, model or answer formulas.| `ts_groups = 'east'`
 
 | `ts_username` | Returns the user with the matching name. | `ts_username != 'mark'`
 |===
 
 NOTE: You cannot use these variables (`ts_groups` and `ts_username`) within an expression.
 For example, `ts_groups = substr(rls_group_name, 0, 3)` is valid, but `substr(ts_groups,0,3) = rls_group_name` is NOT valid.
+
+[#ts-groups-list]
+== Examples of ts_groups as a list type
+
+Legacy syntax assumes `ts_groups` is a string and can still be used. For example, `ts_groups ='administration'` is a valid formula definition. The new syntax is recommended in RLS formulas.
+
+In Worksheet or Answer formulas only the new syntax where ts_groups is a list is supported.
+
+Example 1: determine if a hardcoded string value is present in the ts_groups list
+
+`fx := 'single_group_name' in ts_groups`
+
+Example 2: determine if a multiple hardcoded string value is present in the ts_groups list. Note that AND is not available in RLS formulas.
+
+`fx := 'group1' in ts_groups and|or 'group2' in ts_groups`
+
+Example 3: determine if a column value is present in ts_groups
+
+`fx := column in ts_groups`
+
+Example 4: determine if all the ts_groups values are defined in the column
+
+`min( if(column in ts_groups) then 'true' else 'false') → this would evaluate to false if NOT all of ts_groups is contained in column and true otherwise.`
+
+Example 5: determine if at least one of the ts_groups values is defined in the column
+
+`max( if(column in ts_groups) then 'true' else 'false') → would evaluate to true if at least ONE of ts_groups values is contained in column, and false otherwise.`
