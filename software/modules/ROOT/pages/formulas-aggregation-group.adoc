@@ -24,6 +24,12 @@ Only the measure value is required.
 If you supply both a measure and an attribute, the function returns the aggregate of the measure grouped by the attribute(s).
 You should experiment with only a measure and then with an attribute to see which output best meets your use case.
 
+`group_*` functions are like their own sub-queries which can be used to aggregate a column at groupings specified in the formula which can be different from the groupings in the search query.
+
+For example:
+
+. `group_max(balance date)` : this formula has no groupings specified, so its like doing a sub-query `max balance date`. Hence you get last `balance date` across all the balance dates.
+. `group_max(balance date, balance date)` : this formula has `balance date` as a grouping specified, so its like doing a sub-query `[max balance date] [by balance date]`. The bucketing to be used for grouping balance data in the sub-query is inherited from the search. Hence you get the last balance date within every segment.
 
 == List of group functions
 
