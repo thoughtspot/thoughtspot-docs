@@ -1,11 +1,11 @@
 = Moving functions
-:last_updated: 6/1/2021
+:last_updated: 2nd Dec 2024
 :linkattrs:
 :experimental:
 :page-layout: default-cloud
 :page-aliases: /complex-search/about-moving-formulas.adoc
 :description: Moving formulas are aggregate formulas that allow you to calculate the average, max, min, or sum of your data over an interval with an adjustable range.
-:jira: SCAL-177253
+:jira: SCAL-177253, SCAL-199945
 
 Moving formulas can be used to smooth out any irregularities in your data to easily recognize trends.
 The larger the interval you set, the more the peaks and valleys are smoothed out.
@@ -62,31 +62,70 @@ This example  demonstrates using the `moving_average` formula.
 To use the moving function in a search:
 
 . Start a new search, or edit an existing Answer.
-. Open the Data panel from the upper-right corner if it is not open, navigate to the *Category* image:icon-by-category.png[Category view] or *A to Z* image:icon-a-to-z.png[Alphabetical view] view, click *+ Add*, and select *Formula*.
+. In the Data panel click *+ Add*, and select *Formula*.
+//from the upper-right corner if it is not open, navigate to the *Category* image:icon-by-category.png[Category view] or *A to Z* image:icon-a-to-z.png[Alphabetical view] view,
++
 If the xref:answer-experience-new.adoc[new Answer experience] is off in your environment, select the *More options* icon image:icon-more-10px.png[More options menu icon] in the upper-right side of the table, and select Add formula.
 +
+[.bordered]
 image::formula-editor-add.png[Click + to add a formula]
 
-. Enter the moving_average formula, providing a measure, a window, and one or more attributes.
+. Enter the `moving_average` formula, providing a measure, a window, and one or more attributes.
 +
-The example returns the average of revenue, within the commit date window size of 3.
 The window includes the previous, current, and next rows.
 The attributes are the ordering columns used to compute the moving average.
 The window is (current - Num1...Current + Num2) with both end points being included in the window.
 For example, "1,1" will have a window size of 3.
 To see periods in the past, use a negative number for the second endpoint, as in the example "moving_average(revenue, 1, -1, date)".
 +
-image::moving_average_formula-new.png[Moving average formula example]
+The example returns the comparison of the current sales to the prior 3 months average sales.
 
 . Name the formula by entering a title in the top field, and then select *Save*.
 +
-The formula appears in the search bar and in the table as its own column.
-+
-image::moving_average_table-new.png[Moving average formula column in the table]
-+
-A box displaying the moving average within the entire table will appear at the bottom.
+[.bordered]
+image::moving_average_formula-new.png[Moving average formula example]
 
-. To use a different aggregation type, click the current aggregation type in the bottom of the box and select another type.
+. The formula appears in the search bar and in the table as its own column. A chart displaying the moving average will appear at the bottom.
++
+[.bordered]
+image::moving_average_table-new.png[Moving average formula column in the table]
+
+
+. You could also then break down the moving average by region.
++
+[.bordered]
+image::average_sales_region.png[Moving average sales by region]
+// . To use a different aggregation type, click the current aggregation type in the bottom of the box and select another type.
+
+== Calculate 3 months daily moving average
+. Start a new search for average monthly sales for the year.
++
+[.bordered]
+image::avg-monthly-sales.png[Average monthly sales for the year]
+
+. Name the formula by entering a title in the top field, and then select *Save*.
++
+[.bordered]
+image::formula-3m-avg.png[Average monthly sales for the year]
+. A table displaying the 3 months daily moving average will appear at the bottom.
++
+[.bordered]
+image::avg-3m-sales.png[Average monthly sales for the year]
+
+== Filters and Moving Functions
+Filters are applied pre-aggregation.
+
+. Create a moving function to calculate the total sales for the last 3 months.
++
+[.bordered]
+image::total-3m-sales.png[Total sales for the last 3 months]
+. You can use this to create a ratio for what percentage of sales does the current month contribute to in the total sales for the last 3 months. In this case, just adding a `date` filter will lead to incorrect values.
+This is because the year filter is applied prior to the `moving_sum` calculation.
++
+In order to ensure that the filters are ignored and that answer is correct, the moving function must be wrapped in a group aggregate function.
++
+[.bordered]
+image::filters-movingfns.png[Filters and moving functions]
 
 == Calculate a moving sum of a unique count
 
@@ -101,6 +140,7 @@ moving_sum (group_aggregate (unique count (Customer Name ),query_groups (),query
 
 The result looks something like this:
 
+[.bordered]
 image::moving-unique-example.png[Moving sum of a unique count of customers]
 
 You can use this syntax on any moving formula: average, maximum, minimum, and sum.
@@ -121,3 +161,4 @@ NOTE: This syntax produces a unique count for each individual result, such as *O
 > * xref:formulas-logical-operations.adoc[Formula operators]
 > * xref:formulas-nested.adoc[Nested formulas]
 > * xref:formulas-chasm-trap.adoc[Formulas for chasm traps]
+
