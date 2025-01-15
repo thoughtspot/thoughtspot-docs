@@ -84,7 +84,7 @@ You can now run change analysis on a query that contains a group_aggregate expre
 // Naomi. jira: SCAL-227611. docs jira: SCAL-?
 // PM: Damian
 
-
+You can now create column name aliases, linked to the locale the user defines in their profile. This allows you to search for column names in the target language, instead of typing the columns in English and the keywords in the locale language.
 
 [#10-6-0-cl-ellipsis]
 [discrete]
@@ -102,7 +102,7 @@ You can now run change analysis on a query that contains a group_aggregate expre
 [discrete]
 === Handle the case of unused formula when strict CLS is enabled
 // Naomi. jira: SCAL-216712. docs jira: SCAL-?
-// PM: ?
+// PM: ?. waiting on info.
 
 [#10-6-0-cl-object]
 [discrete]
@@ -121,8 +121,22 @@ You can now run change analysis on a query that contains a group_aggregate expre
 [#10-6-0-cl-gradient]
 [discrete]
 === Gradient-based conditional formatting
-// Naomi. jira: SCAL-22545. docs jira: SCAL-236119
+// Naomi. jira: SCAL-222545. docs jira: SCAL-236119
 // PM: Vaibhav
+
+You can now choose multiple colors to define a gradient in charts that support gradients -- geo heatmap, geo area, heatmap, and treemap charts. You can control the low, mid, and high values, and numerical value points to customize the gradient.
+////
+For more information, see
+ifndef::pendo-links[]
+xref:chart-color-change.adoc#charts-with-gradients[Change chart colors].
+endif::[]
+ifdef::pendo-links[]
+xref:chart-color-change.adoc#charts-with-gradients[Change chart colors,window=_blank].
+endif::[]
+////
+
+[.bordered]
+image:color-gradient.png[Edit the color gradient]
 
 ifndef::free-trial-feature[]
 ifndef::pendo-links[]
@@ -144,7 +158,10 @@ endif::free-trial-feature[]
 [discrete]
 === Sets: Passthrough filters
 // Naomi. jira: SCAL-158897. docs jira: SCAL-?
-// PM: Damian
+// PM: Damian. waiting on info.
+
+You can now pass filters from a query into a set definition without needing to remake the set to include the filter. For example, if you create a query set defined as a list of SKUs that are ranked based on sales, where 1 through 10 are defined as Gold, 11 through 50 are defined as Silver, and the remainder are defined as Bronze, you can now add additional filters such as time keywords and countries or regions.
+
 
 [#10-6-0-cl-condition]
 [discrete]
@@ -216,6 +233,8 @@ endif::[]
 // Naomi. jira: SCAL-137308. docs jira: SCAL-?
 // PM: Samridh
 
+You can now export the column properties table in CSV format from the Model editor, and select exactly which columns to download. This allows you to make changes to the downloaded CSV and reupload it to the Model editor to update the Model.
+
 endif::free-trial-feature[]
 
 [#10-6-0-cl-ui]
@@ -257,15 +276,17 @@ ifndef::free-trial-feature[]
 ifndef::pendo-links[]
 [#10-6-0-cl-tml]
 [discrete]
-=== User defined ID in TML [.badge.badge-beta]#Beta#
+=== User-defined ID in TML [.badge.badge-beta]#Beta#
 endif::[]
 ifdef::pendo-links[]
 [#10-6-0-cl-tml]
 [discrete]
-=== User defined ID in TML [.badge.badge-beta-whats-new]#Beta#
+=== User-defined ID in TML [.badge.badge-beta-whats-new]#Beta#
 endif::[]
 // Naomi. jira: SCAL-147895. docs jira: SCAL-?
-// PM: Samridh
+// PM: Samridh. previously users had to export TML file from an Org, remove the guid, import into the next Org, store the newly imported object GUID generated in org2 in a mapping outside TS.
+
+Rather than using a system-generated GUID to identify individual objects in TML files, you can now manually set an object property (`object_id`) with a uniqueness constraint. This allows you to manage content across multiple Orgs without having to manually change the GUID of an object each time you move it between Orgs.
 
 endif::free-trial-feature[]
 
@@ -273,16 +294,48 @@ ifndef::free-trial-feature[]
 ifndef::pendo-links[]
 [#10-6-0-cl-clickhouse]
 [discrete]
-=== Clickhouse connector [.badge.badge-early-access]#Early Access#
+=== ClickHouse connection [.badge.badge-early-access]#Early Access#
 endif::[]
 ifdef::pendo-links[]
 [#10-6-0-cl-clickhouse]
 [discrete]
-=== Clickhouse connector [.badge.badge-early-access-whats-new]#Early Access#
+=== ClickHouse connection [.badge.badge-early-access-whats-new]#Early Access#
 endif::[]
 // Naomi. jira: SCAL-230405. docs jira: SCAL-?
 // PM: Prayansh
 
+You can now create connections from ThoughtSpot to ClickHouse.
+
+endif::free-trial-feature[]
+
+ifndef::free-trial-feature[]
+ifndef::pendo-links[]
+[#10-6-0-cl-status]
+[discrete]
+=== ThoughtSpot Status [.badge.badge-early-access]#Early Access#
+endif::[]
+ifdef::pendo-links[]
+[#10-6-0-cl-status]
+[discrete]
+=== ThoughtSpot Status [.badge.badge-early-access-whats-new]#Early Access#
+endif::[]
+// Naomi. jira: SCAL-238001. docs jira: SCAL-237802
+// PM: Aashica
+
+Admin users can now navigate to the ThoughtSpot Status page to monitor the health of services on their cluster. The Status page displays the status of different ThoughtSpot services, like Authentication, Data Connections, Infrastructure Services, KPI Monitor, Search Data, Search Service, SpotIQ, Sync, and Spotter. The page also shares scheduled maintenance timelines, outage notifications, and incident reporting and updates.
+
+To access the status page, add `/status` to the end of your cluster url (for example, `https://<clustername>.thoughtspot.cloud/#/status`). To enable this feature, contact {support-url}.
+////
+For more information, see
+ifndef::pendo-links[]
+xref:status.adoc[Status page].
+endif::[]
+ifdef::pendo-links[]
+xref:status.adoc[Status page,window=_blank].
+endif::[]
+////
+[.bordered]
+image::status-page.png[ThoughtSpot status page]
 endif::free-trial-feature[]
 
 // Developer
@@ -313,9 +366,11 @@ endif::free-trial-feature[]
 
 [#10-6-0-cl-conversation]
 [discrete]
-=== Conversation analytics Liveboard
+=== Spotter Adoption Liveboard
 // Naomi. jira: SCAL-226052. docs jira: SCAL-?
-// PM: Alok?
+// PM: Anant
+
+You can now use the Spotter Adoption Liveboard to track how users are interacting with Spotter. For example, this Liveboard allows you to identify what types of queries users are asking, whether the dataset is able to answer, what types of follow-ups users are performing, and how many users are repeating similar queries after receiving an answer.
 
 ifndef::free-trial-feature[]
 ifndef::pendo-links[]
@@ -349,6 +404,8 @@ endif::[]
 // Naomi. jira: SCAL-212219. docs jira: SCAL-?
 // PM: Damian, Samridh
 
+You can now define a list of associated columns that must be included in a search if a certain term is added, from a TML file. This allows you to make sure users do not remove necessary context from a search by removing a token.
+
 endif::free-trial-feature[]
 
 [#10-6-0-cl-mfa]
@@ -363,6 +420,8 @@ endif::free-trial-feature[]
 // Naomi. jira: SCAL-228001. docs jira: SCAL-?
 // PM: Akshay
 
+You now see a suggested starter question based on the underlying context when you open Ask Sage. These questions are generated using metadata and feedback from other users to help you start your search.
+
 ifndef::free-trial-feature[]
 ifndef::pendo-links[]
 [#10-6-0-cl-etag]
@@ -375,7 +434,7 @@ ifdef::pendo-links[]
 === ETag for TML import [.badge.badge-early-access-whats-new]#Early Access#
 endif::[]
 // Naomi. jira: SCAL-212421. docs jira: SCAL-?
-// PM: Samridh
+// PM: Samridh. possible developer feature. waiting on info.
 
 endif::free-trial-feature[]
 
@@ -383,13 +442,13 @@ endif::free-trial-feature[]
 [discrete]
 === Learnability in conversation: feedback generation in follow-up questions
 // Naomi. jira: SCAL-218237. docs jira: SCAL-?
-// PM: Alok
+// PM: Alok. waiting on info.
 
 [#10-6-0-cl-ask]
 [discrete]
 === Ask Sage/Spotter quality 10.6
 // Naomi. jira: SCAL-217678. docs jira: SCAL-?
-// PM: ?
+// PM: ?. no docs needed?
 
 ifndef::free-trial-feature[]
 ifndef::pendo-links[]
