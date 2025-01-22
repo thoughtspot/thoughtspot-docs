@@ -7,9 +7,11 @@
 :page-aliases:
 :description: Use TML to modify Models in a flat-file format. Then, migrate the Model to a different cluster, or restore it to the same cluster.
 :object: Models
-:jira: SCAL-158490, SCAL-186188, SCAL-206010, SCAL-210659
+:jira: SCAL-158490, SCAL-186188, SCAL-206010, SCAL-210659, SCAL-220585
 
 include::partial$tml-intro-models.adoc[]
+
+include::partial$tml-syntax-mandatory.adoc[]
 
 [#column-groups]
 === Data panel column groups
@@ -70,6 +72,8 @@ a| <<aggregation,aggregation>>
 
 <<alias,alias>>
 
+<<bucket,bucket>>
+
 <<calendar,calendar>>
 
 <<column,column>>
@@ -84,6 +88,12 @@ a| <<aggregation,aggregation>>
 
 <<columns,columns>>
 
+<<condition,condition>>
+
+<<constraint,constraint>>
+
+<<constraints,constraints>>
+
 <<currency_type,currency_type>>
 
 <<custom_file_guid,custom_file_guid>>
@@ -91,6 +101,8 @@ a| <<aggregation,aggregation>>
 <<data_panel_column_groups,data_panel_column_groups>>
 
 <<data_type,data_type>>
+
+<<date_range_condition,date_range_condition>>
 
 <<default_value,default_value>>
 
@@ -101,6 +113,8 @@ a| <<aggregation,aggregation>>
 <<destination,destination>>
 
 <<display_name,display_name>>
+
+<<duration,duration>>
 
 <<expr,expr>>
 
@@ -218,6 +232,9 @@ Default: `SUM`.
 alias::
 Aliases can be set for tables that are being used in the model. Aliases are especially useful for role playing dimension scenarios where an alias can be assigned to the same table that is being used in different roles.
 
+[#bucket]
+bucket:: Accepts values of week, month, quarter, year. Used in conjunction with <<duration,duration>> to define the length of time.
+
 [#calendar]
 calendar::
 Specifies the calendar used by a date column.
@@ -254,6 +271,15 @@ The list of columns available from the data sources in the Model.
 +
 Each Model is identified by `name`, `description`, `column_id`, and `properties`.
 
+[#condition]
+condition:: Section header for the rules of the constraint.
+
+[#constraint]
+constraint:: Section header for the constraint rule. This may be a repeating element to define each rule.
+
+[#constraints]
+constraints:: Section header to define TML constraints. There can only be a single constraints section.
+
 [#currency_type]
 currency_type::
 The source of the currency type.
@@ -277,6 +303,9 @@ data_panel_column_groups:: Define this property in each column to mark which col
 data_type::
 The data type of the Parameter.
 
+[#date_range_condition]
+date_range_condition:: Defines that the condition is based upon a date range. Note that this is curently the only condition that is supported.
+
 [#default_value]
 default_value::
 The default value for a Parameter in a Model. Specified when xref:parameters-create.adoc[creating a Parameter].
@@ -295,6 +324,9 @@ The name of the destination table or view for a join.
 [#display_name]
 display_name::
 The name or value that displays in the Parameter dialog for an accepted value, if a display name was set when xref:parameters-create.adoc[creating a Parameter]. For example, if the Parameter accepts `true` and `false`, the display names might be `yes` and `no`.
+
+[#duration]
+duration:: An integer value to define the length of the period. This is used in conjuction with <<bucket,bucket>> to define the length of time.
 
 [#expr]
 expr::
