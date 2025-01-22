@@ -7,11 +7,13 @@
 :page-aliases: /admin/worksheets/yaml-worksheet.adoc, /admin/worksheets/tml-worksheet.adoc, /admin/worksheets/tsl-worksheet.adoc, /admin/ts-cloud/yaml-worksheet.adoc, /admin/ts-cloud/tml-worksheet.adoc, /admin/ts-cloud/tsl-worksheet.adoc
 :description: Use TML to modify Worksheets in a flat-file format. Then, migrate the Worksheet to a different cluster, or restore it to the same cluster.
 :object: Worksheets
-:jira: SCAL-158490, SCAL-186188, SCAL-210659, SCAL-234878
+:jira: SCAL-158490, SCAL-186188, SCAL-210659, SCAL-234878, SCAL-220585
 
 IMPORTANT: Worksheet creation is deprecated starting in the 10.4.0.cl release, and is disabled by default. If you need to create a Worksheet and the option is not available to you in ThoughtSpot, contact your ThoughtSpot administrator to enable Worksheet creation.
 
 include::partial$tml-intro.adoc[]
+
+include::partial$tml-syntax-mandatory.adoc[]
 
 [#syntax-worksheets]
 include::partial$tml-syntax-worksheet.adoc[]
@@ -25,6 +27,8 @@ These parameters and their definitions are specific to {object}; this list doesn
 | a - g | i - l | n - w
 a| <<aggregation,aggregation>>
 
+<<bucket,bucket>>
+
 <<calendar,calendar>>
 
 <<column,column>>
@@ -33,11 +37,19 @@ a| <<aggregation,aggregation>>
 
 <<column_type,column_type>>
 
+<<condition,condition>>
+
+<<constraint,constraint>>
+
+<<constraints,constraints>>
+
 <<currency_type,currency_type>>
 
 <<custom_file_guid,custom_file_guid>>
 
 <<data_type,data_type>>
+
+<<date_range_condition,date_range_condition>>
 
 <<default_value,default_value>>
 
@@ -46,6 +58,8 @@ a| <<aggregation,aggregation>>
 <<destination,destination>>
 
 <<display_name,display_name>>
+
+<<duration,duration>>
 
 <<expr,expr>>
 
@@ -155,6 +169,9 @@ Possible values are `SUM`, `COUNT`, `AVERAGE`, `MAX`, `MIN`, `COUNT_DISTINCT`, `
 +
 Default: `SUM`.
 
+[#bucket]
+bucket:: Accepts values of week, month, quarter, year. Used in conjunction with <<duration,duration>> to define the length of time.
+
 [#calendar]
 calendar::
 Specifies the calendar used by a date column.
@@ -179,6 +196,15 @@ The type of data the column represents.
 +
 Possible values: `MEASURE` or `ATTRIBUTE`. The default is: `MEASURE`.
 
+[#condition]
+condition:: Section header for the rules of the constraint.
+
+[#constraint]
+constraint:: Section header for the constraint rule. This may be a repeating element to define each rule.
+
+[#constraints]
+constraints:: Section header to define TML constraints. There can only be a single constraints section.
+
 [#currency_type]
 currency_type::
 The source of the currency type.
@@ -199,6 +225,9 @@ The GUID for a custom map uploaded by an administrator.
 data_type::
 The data type of the Parameter.
 
+[#date_range_condition]
+date_range_condition:: Defines that the condition is based upon a date range. Note that this is curently the only condition that is supported.
+
 [#default_value]
 default_value::
 The default value for a Parameter in a Worksheet. Specified when xref:parameters-create.adoc[creating a Parameter].
@@ -214,6 +243,9 @@ The name of the destination table or view for a join.
 [#display_name]
 display_name::
 The name or value that displays in the Parameter dialog for an accepted value, if a display name was set when xref:parameters-create.adoc[creating a Parameter]. For example, if the Parameter accepts `true` and `false`, the display names might be `yes` and `no`.
+
+[#duration]
+duration:: An integer value to define the length of the period. This is used in conjuction with <<bucket,bucket>> to define the length of time.
 
 [#expr]
 expr::
