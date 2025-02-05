@@ -6,7 +6,7 @@
 :page-aliases: /admin/query-sets.adoc
 :experimental:
 :description: You can now create query sets, which can be used to classify values in a list you can then reuse across multiple analyses.
-:jira: SCAL-229666
+:jira: SCAL-229666, SCAL-238614
 
 You can create sets, which can be used to classify values in a list that you can then reuse across multiple analyses. Answer, formulas and parameters are generally available only when in use in an Answer, and must be remade if you navigate away from the Answer without saving. Sets are reusable across many answers with a single point of definition. A set is built from a Worksheet however it does not belong to the Worksheet. When a set is initially created it is only available to the creator. When a set is used in an Answer or Liveboard, and this Answer or Liveboard is shared with specific users or groups of users, the set is then available for use as a community object.
 
@@ -71,6 +71,33 @@ image::query-sets-example.png[Query sets esample]
 
 . Under *Define groups for excluded query values*, select either *Hide excluded values* or *Group excluded values*. If you group excluded values, you can give the group a custom name.
 . Click *Save*.
+
+[#passthrough]
+== Passthrough filters for sets
+
+You can now pass filters from a query into a set definition without needing to remake the set to include the filter.
+
+For example, if you create a query set defined as a list of SKUs that are ranked based on sales, where 1 through 10 are defined as Gold, 11 through 50 are defined as Silver, and the remainder are defined as Bronze, you can now add a filter such as Region.
+
+You can configure the set's filter behavior from the TML, instructing ThoughtSpot to exclude or include specific columns, or to accept all filters by default.
+
++++
+<video autoplay loop muted controls width="100%" controlsList="nodownload">
+<source src="https://docs.thoughtspot.com/cloud/10.5.0.cl/_images/sets-passthrough.mp4" type="video/mp4">
+</video>
++++
+
+To edit a set's behavior regarding filters, follow these steps:
+
+. Open the Answer containing the set and scroll through the list of sets in the side menu until you find the name of the set.
+
+. Click the more options icon next to the set name and select *Edit TML*.
+
+. Scroll to the bottom of the TML file until you reach the `pass_thru_filter` property. Set `accept_all` to true to allow filters to pass through to the set. Set the property to false to keep the default behavior.
+
+. Click *Publish* in the top right corner. Confirm your selection by clicking *Publish* in the pop-up window.
+
+. Click *Close* and close the TML window.
 
 === Limitations
 
