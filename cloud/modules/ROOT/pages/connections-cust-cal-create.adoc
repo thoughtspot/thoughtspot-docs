@@ -5,7 +5,7 @@
 :page-layout: default-cloud
 :page-aliases: /admin/ts-cloud/ts-cloud-embrace-cust-cal-create.adoc
 :description: Create a custom calendar for your connection.
-:jira: SCAL-172330, SCAL-197336, SCAL-182515 (doc enhancment jira), SCAL-208434 (remove default calendar)
+:jira: SCAL-172330, SCAL-197336, SCAL-182515 (doc enhancment jira), SCAL-208434 (remove default calendar), SCAL-176032 (rls calendar support)
 
 == Before you begin
 
@@ -260,6 +260,98 @@ Your custom calendar opens in a window displaying all columns and rows.
 You can scroll through these to verify your calendar is set up the way you want.
 
 . When you're done viewing your calendar, close the window by selecting *Done*.
+
+== Set up row-level security in a custom calendar
+
+
+The following example shows how to set up a custom calendar with row-level security, based on a Snowflake cloud data warehouse.
+
+
+. Create a custom calendar. For the purposes of this example, we will create a calendar with Saturday set as the start of the week, and name it `saturdaycalendar`.
+
+
+. Open the *Choose Connection* menu, and select the connection where you want to use your custom calendar.
+. For Database, open the *Choose a database* menu, and select the database you want to use with your custom calendar.
+. For Schema, select the *Choose a schema* menu, and choose the schema you want to use with your custom calendar.
+. Make sure *Create* is selected.
+. For Table, enter the same name as the calendar, `saturdaycalendar`.
+. For Start Date, enter the date you want your custom calendar to start. For End Date, enter the date you want your custom calendar to end. For this calendar, set the start date as Saturday, January 1st, 2000, and the end date as Tuesday, December 31st, 2030.
+
+
+
+
+. For Calendar Type, select the *Choose a calendar type* menu, and choose MONTH_OFFSET.
+. For Start day of week, open the menu and select Saturday.
+
+
+. Select *Create*.
+
+
+. If you open the Snowflake connection and run the SQL command, `select * from <database>.“saturdaycalendar”;`, you can see that the table shows Saturdays as the first day of the week.
+
+
+. Repeat the steps above to create a second calendar with Monday as the start day of the week, titled `mondaycalendar`.
+
+
+. Use the same connection, database, and schema as used above.
+. Name the table `mondaycalendar` and enter the same start and end dates as used above.
+. Set the type as MONTH_OFFSET. Set *Start day of week* as Monday.
+. Select *Create*.
+
+
+. If you reopen the Snowflake connection and run the SQL command, `select * from <database>.“mondaycalendar”;`, you will see that the table shows Mondays as the first day of the week.
+
+
+. Create a view that is a union of the two calendars just created, which can be searched in ThoughtSpot. Use the following SQL command:
++
+[source]
+----
+Create or replace view <database>.”rlscalendar” as ( select *, ‘tsCalendar1’ as ts_calendar_group from <database>.”saturdaycalendar” union all select *, ‘tsCalendar2’ as ts_calendar_group from <database>.”mondaycalendar” );
+----
++
+This command adds an additional column called ts_calendar_group that we will use for row-level security.
+
+
+. Return to ThoughtSpot and create a custom calendar called rlsCalendar.
+. Use the same connection, database, and schema as used above.
+. Under *Choose a method to create a custom calendar*, select *Existing Table*.
+. Under *Table*, choose rlscalendar.
+. Click *Create*.
+
+
+. Select the more options icon next to the row of the new custom calendar “rlsCalendar” and click *Setup multi-tenant calendar*. This option appears only if row-level security is enabled for custom calendars on your cluster.
++
+[.bordered]
+image::rls-multitenant.png[]
+
+
+
+. Toggle to enable multi-tenant custom calendar.
++
+[.bordered]
+image:setup-multitenant.png[]
+
+. For *Select RLS variable*, choose the system variable you will use for row-level security of the following options:
+
+* TS_GROUPS
+* TS_USERNAME
+* TS_ORG
+* TS_EMAILDOMAIN
+* TS_GROUPS_INT
+
+. For this calendar, select TS_GROUPS.
+
+
+. For *Select column name*, choose TS_CALENDAR_GROUP. Click *Save*.
+
+
+. Navigate to the Search data page and select your dataset. Search `Quantity daily last week rlsCalendar day of week`. If you sort by order date daily, you can see that the current user’s start date of the week depends on the rls group they’re assigned. Users in tsCalendar1 see a Saturday start date, while users in tsCalendar2 see a Monday start date.
+
+
+IMPORTANT: A user can only be a member of one row-level security group. If you are a member of multiple, then the results will be incorrect. If a user is not a member of any groups, then no data will be returned.
+
+
+
 
 '''
 > **Related information**
