@@ -56,13 +56,30 @@ Unless required for performance, we suggest to avoid having such columns and rel
 
 == Guidelines for column descriptions
 
-Prefer adding appropriate column descriptions to columns to help LLMs understand more about that column and its values while generating an Answer:: Add appropriate column descriptions to columns to provide more clarity and help Spotter’s judgement on which column to use to answer a query.
-Example::: A column labeled "ACV" can have a description like "Annual Contract Value, representing total revenue from contracts over a year." This added context ensures Spotter interprets queries related to revenue and ACV correctly.
+Adding clear and concise column descriptions improves Spotter’s accuracy by helping it interpret the column’s meaning, values, and intended use in queries.
 
-Leverage column descriptions to instruct the LLM on how to use or not use that column in answering a question:: Column descriptions tell Spotter how to use the data contained to answer questions.
-Example::: A column containing date month values as 'Jan', 'Feb', etc. can have a description like "Represents date months in mmm format. For example, Jan". This added context ensures Spotter is able to map the data values clearly.
+Provide meaningful descriptions to improve query interpretation::
+Include a brief but informative description to clarify what the column represents. This helps Spotter generate more accurate responses.
+Example::: A column labeled "ACV" can have the description:
+"Annual Contract Value, representing total revenue from contracts over a year."
+This ensures Spotter correctly interprets queries related to revenue and ACV.
 
-Restrict column descriptions to 200 characters in length:: Description will not be truncated in passing to the LLM.
+Pass contextual information to refine filtering logic::
+Help Spotter apply the correct logic when filtering based on column values.
+Example::: A column containing date-month values such as 'Jan', 'Feb', etc., can have the description:
+"Represents date months in 'mmm' format (e.g., Jan). Use when filtering by month."
+This ensures Spotter correctly maps ‘January’ to ‘Jan’ in queries.
+
+Use descriptions to guide Spotter on how to use or avoid a column::
+If a column should be used in a specific way (or avoided in certain contexts), mention this explicitly in the description.
+
+Example::: A column with Boolean values can have the description:
+"Indicates whether an account is active (TRUE = active, FALSE = inactive). Use for filtering active accounts."
+This prevents misinterpretation of TRUE/FALSE values in queries.
+
+Keep descriptions concise (maximum 200 characters)::
+Spotter will only consider the first 200 characters of the description.
+Ensure critical details are included within this limit for accurate interpretation.
 
 == Guidelines for synonyms
 
