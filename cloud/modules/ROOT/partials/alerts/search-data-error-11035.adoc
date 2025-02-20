@@ -22,8 +22,12 @@ Cause::
 In the example defined, the last value aggregate column is ‘balance’ and the unique count column is ‘location id’. Error 11035 is returned when the unique count column, ‘location id’, is derived from either the same fact table as balance or as a dimensional table that is joined to the fact table.
 
 Resolution::
-Unique count can be combined with last_value across a chasm trap query. Therefore pending resolution for this limitation an analyst can leverage group_aggregate to force a chasm trap query.
+Unique count can be combined with last_value across a chasm trap query. Therefor pending resolution for this limitation an analyst can leverage group_aggregate to force a chasm trap query.
 +
 For example: The group_aggregate definition ensures a chasm trap is generated and the inclusion of query_groups()+{} ensures that this query plan is not optimized.
 +
 `group_aggregate(unique count(location id), query_groups()+{}, query_filters())`
++
+The complete formula would be:
++
+`last_value(sum(balance),query_groups(),{transaction date}) / group_aggregate(unique count(location id), query_groups()+{}, query_filters())`.
