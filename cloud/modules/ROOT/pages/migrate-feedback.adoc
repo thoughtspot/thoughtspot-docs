@@ -7,7 +7,7 @@
 :description: You can now migrate feedback between Models or Worksheets using the feedback TML file.
 :jira: SCAL-226681
 
-You can now migrate feedback between Models or Worksheets using the feedback TML file. This allows you to easily transfer coaching between Models or Worksheets without needing to train Spotter for each Model or Worksheet individually.  You must have edit access to a Model or Worksheet to export or import feedback. To enable this feature, contact {support-url}.
+You can now migrate feedback from one Model to another across different Orgs and instances or clusters using the feedback TML file. This feature allows you to transfer coaching insights efficiently, eliminating the need to duplicate efforts in training Spotter for each Model or Worksheet separately. To export or import feedback, you must have edit access to the respective Model or Worksheet. To enable this feature, contact {support-url}.
 
 == Export feedback from ThoughtSpot
 
@@ -72,6 +72,8 @@ image::hover-tml.png[Hover over the TML section]
 +
 [.bordered]
 image::feedback-import-ux.png[Select .tml file to upload]
++
+NOTE: Ensure that the GUID in the feedback TML matches the target Worksheet or Model GUID.
 
 
 . The *Import* screen appears, showing the object name, file name, status, and possible actions. You can select *Edit* to edit the TML file. When ready, select the checkbox next to the file or files and click *Import _n_ selected*.
@@ -97,6 +99,8 @@ image::data-workspace-utilities.png[Data workspace utilities]
 +
 [.bordered]
 image::feedback-import-ux.png[Select .tml file to upload]
++
+NOTE: Ensure that the GUID in the feedback TML matches the target Worksheet or Model GUID.
 
 
 . The *Import* screen appears, showing the object name, file name, status, and possible actions. You can select *Edit* to edit the TML file. When ready, select the checkbox next to the file or files and click *Import _n_ selected*.
@@ -114,7 +118,7 @@ To avoid errors with feedback TML files, check the following before uploading:
 
 * Check that the GUID present at the top of the file is a valid Worksheet or Model already present in the system. Note that we do not currently support importing a new Worksheet and its feedback in the same zip file.
 * Check the sanity of the TML file, making sure you don’t have missing fields, invalid entries for fields like `type`, `access`, `chart_type`, or `display_mode`, invalid `search_tokens` for the Worksheet or Model, or invalid formula expressions for the Worksheet or Model that feedback entries are being targeted for.
-* Check for conflicts within the file– no two feedback objects can have the same combination of `feedback_phrase` and `parent_question`. If the target Worksheet or Model has existing feedback entries matching the feedback TML for the above combination, remove the common feedback entries to proceed with migration.
+* Check for conflicts within the file– no two feedback entries can have the same 'feedback_phrase'. If the target Worksheet or Model has existing feedback entries matching the feedback TML phrase, it will throw a warning and will override the existing feedback entry if import is still done. You always have the option to edit the feedback TML or modify the existing entries to avoid the conflict.
 * Do not modify the values for the following fields: `display_mode`, `chart_type`, and `axis_config`. Changes to these fields are not validated by the system during upload and may lead to unintended behavior.
 
 '''
