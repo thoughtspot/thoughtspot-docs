@@ -7,6 +7,7 @@
 
 ThoughtSpot supports OAuth for a Microsoft Azure {connection} connection. This page describes the setup and configuration required for using OAuth2.0 with Azure AD as the IdP for Azure {connection} connections.
 
+[#part-1]
 == Part 1: Create AD application in Azure
 
 The first step in setting up OAuth with Azure AD as an IdP is to create an active directory application in Azure.
@@ -83,20 +84,21 @@ Active directory is now linked  with the SQL database.
 +
 This is referred to as a “contained user” created in the database mapped to Azure AD identity. For details, see Microsoft's documentation:
 https://docs.microsoft.com/en-us/azure/azure-sql/database/authentication-aad-configure?tabs=azure-powershell#create-contained-users-mapped-to-azure-ad-identities[Create contained users mapped to Azure AD identities^].
++
+You cannot manage database roles for AD users from Azure. You must manage them from the database side.
+
 
 == Troubleshooting
 
-- If valid API Permissions for the AD application are not present, the following error appears:
-+
-image::synapse-oauth-error1.png[]
+If the following `Invalid Resource` error appears on initial login, you must update the API permissions.
 
-- With the API permission granted as below, the user is required to consent to the application accessing the resource.
-+
-image::synapse-oauth-error2.png[]
-- You cannot manage database roles for AD users from Azure. You must manage them from the database side. For details, see Microsoft's documentation: https://docs.microsoft.com/en-us/azure/azure-sql/database/authentication-aad-configure?tabs=azure-powershell#create-contained-users-mapped-to-azure-ad-identities[Create contained users mapped to Azure AD identities^].
+image::synapse-oauth-error1.png[An Invalid Resource error message]
 
+Under **API / Permissions name**, for Azure SQL Database, add the **user_impersonation** permission, as shown below.
 
+The *Delegated* type indicates that the application will authenticate on behalf of the user.
 
+image::azure-config-permissions.png[Add the user impersonation permission with the delegated type]
 
 == Related links
 

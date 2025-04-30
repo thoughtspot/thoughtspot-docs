@@ -10,9 +10,11 @@
 :page-partial:
 :connection: Snowflake
 
-You can edit a {connection} connection to add tables and columns.
+You can edit a {connection} connection to add tables and columns, as well as manually invalidate refresh tokens from Snowflake for users who have refresh tokens that expired.
 
-To edit a connection:
+=== Editing a Snowflake connection
+
+To edit a Snowflake connection:
 
 . Click *Data* in the top navigation bar.
 . Click the *Connections* tab in the left navigation bar.
@@ -36,4 +38,31 @@ For more information, see: xref:connections-snowflake-delete.adoc[Delete a {conn
 See the xref:connections-snowflake-reference.adoc[Connection reference] for details of connection parameters.
 
 We also recommend that you review xref:connections-snowflake-best.adoc[Best Practices for {connection} connections].
+
+[#invalidate-tokens]
+=== Invalidating refresh tokens of a Snowflake connection configured with Snowflake OAuth
+
+If a Snowflake user's refresh token has been invalidated, the user will not be able to access insights from a Snowflake connection, or the connection itself. This can happen for the following reasons:
+
+- Their default role in Snowflake was changed.
+- Their token was obtained for a specific role in the connection and was later revoked.
+
+In this case, it is necessary for the administrator or the author of the connection to use the Invalidate Tokens command, which will then allow the user to re-authenticate to regain access to the connection.
+
+This can be done in two ways:
+
+- If the connection is edited, a message appears at the top of the connection screen indicating that the connection has been modified, and that users may have to re-authenticate. An *Invalidate Tokens* link appears next to the message. Clicking that link will allow the user to invalidate tokens.
+- The adminstrator or author of the connection, can use the Invalidate Tokens command in the Snowflake connection.
+
+To invalidate refresh tokens of a Snowflake connection:
+
+. Click *Data* in the top navigation bar.
+. Click the *Connections* tab in the left navigation bar.
+. Click the name of the Snowflake connection you want to edit.
+. Click the more menu image:icon-more-10px.png[more menu icon], and select *Invalidate Tokens*
+
+After running the Invalidate Tokens command, logged-in users of the connection will have to re-authenticate to regain access to the connection.
+
+IMPORTANT: Invalidating tokens for a connection, invalidates the refresh tokens for all users of a connection, except the author.
+
 ////
