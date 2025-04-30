@@ -1,0 +1,47 @@
+= Keywords “of”, “percentage of”
+:last_updated: 4/26/23
+:linkattrs:
+:page-layout: default-cloud
+:experimental:
+:description: Use the keywords “of” and “percentage of” to answer business questions related to contribution and total ratios.
+
+To enable business users to answer questions related to mix, contribution, share of, percentage, and total ratios, we have added the keywords “of” and “percentage of”. These keywords help answer questions such as “What is the share of a certain store’s sales as a percentage of the regional whole?” Previously, searches such as these required the use of a group aggregate formula, which presented a barrier to users.
+
+To use these keywords, it is helpful to understand what the syntax returns. `Revenue of region` returns the revenue at the regional level of detail, while `Revenue percentage of region` returns the revenue as a percentage of the total region.
+
+You can also use these keywords to suit other business use cases, by making the following adjustments:
+
+- Specify aggregation type, for example, `average revenue of region`
+- Specify multiple columns, for example, `revenue of region and state`
+- Specify the total ratio, for example, `revenue percentage of all`
+
+== “Of” keyword example
+
+You may want an answer to the question: “What is the revenue of each customer nation?” In this case, you would search for: `Revenue by Customer Nation`, which displays the total revenue at nation level. In order to see the revenue of each customer nation, you add the following filter to your search: `Revenue of Customer Nation`.
+
+The “of” keyword creates a group_aggregate formula in order to answer this question. In this case, the formula used would be: `group_aggregate (sum (Revenue), (Customer Region), query_filters())`. As a result, your Answer will display the sum of revenue at the customer region level of detail, and it will include any additional filters you add in the search bar.
+
+== “Percentage of” keyword example
+
+You may want an answer to the question: “What is each country’s percentage contribution to the revenue of the customer region?” In this case, you would enter the following filters into your search: `Revenue by Customer Nation` `Revenue percentage of Customer Region`. The percentage of keyword creates the following formula: `sum (Revenue)/ group_aggregate (sum (Revenue), (Customer Region), query_filters())`.
+
+To see the results as a percentage, follow these steps:
+
+. Click the *more options menu* icon image:icon-more-10px.png[menu icon] in the right of the column header for “Total Revenue % of Customer Region” and select *Number format*.
+. In the menu that appears on the right side of the table, select *Number* under *Category* and click *Percentage*. The results appear as a percentage of the total revenue at the customer region level.
+
+If you search for `Revenue percentage of all`, your search displays the percentage contribution of each customer region to the total revenue. In this case, the keyword creates the following formula: `sum (Revenue) / group_aggregate (sum (Revenue), {}, query_filters())`.
+
+
+== “Average __ of” example
+
+Say you want to understand the average revenue of each customer nation and region. In this case, you would search for: `average Revenue` `Customer Nation` `average Revenue of Customer Region`. This query generates the following formula: `group_aggregate (average (Revenue), (Customer Region), query_filters())`.
+
+== Multiple columns example
+
+In the same way that you can define multiple grouping columns with a group function, you can use the `and` keyword to group multiple columns in the search bar. If you want to learn the revenue at customer city level, and the revenue of both customer region and customer nation, you can search for: `Revenue` `Customer City` `Revenue of Customer Region and Customer Nation`. This search returns a table with total revenue at both customer region and customer nation level. The query generates the following formula: `group_aggregate (sum (Revenue), (Customer Region, Customer Nation), query_filters()).
+
+
+
+For further details, see our demonstration video:
++++<script src="https://fast.wistia.com/embed/medias/r2wdc5ngjc.jsonp" async></script><script src="https://fast.wistia.com/assets/external/E-v1.js" async></script><div class="wistia_responsive_padding" style="padding:50% 0 0 0;position:relative;"><div class="wistia_responsive_wrapper" style="height:100%;left:0;position:absolute;top:0;width:100%;"><span class="wistia_embed wistia_async_r2wdc5ngjc popover=true popoverAnimateThumbnail=true popoverBorderColor=4E55FD popoverBorderWidth=2 videoFoam=true" style="display:inline-block;height:100%;position:relative;width:100%">&nbsp;</span></div></div>+++
