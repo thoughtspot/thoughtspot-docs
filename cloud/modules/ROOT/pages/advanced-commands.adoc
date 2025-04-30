@@ -1,0 +1,81 @@
+= Search data commands reference
+:last_updated: 9/3/2024
+:linkattrs:
+:experimental:
+:page-aliases:
+:page-layout: default-cloud
+:description: This reference identifies the commands you can use to modify search data query generation at cluster-level.
+:jira: SCAL-222443
+
+This reference identifies the commands you can use to modify search data query generation at cluster-level. These commands must be enabled by {support-url}.
+
+== Commands
+
+[options="header"]
+|===
+| Category | Name | Description
+
+| Formulas | Enable / disable case-sensitive formulas a| The default setting is `TRUE`. When `TRUE`, the string case for formula definitions is saved as lower case. When `FALSE`, the case entered in the formula definition is respected.
+The ability to respect the case is important when leveraging passthrough functions. This is because functions defined in the underlying data platforms are often case-sensitive.
+
+*Example when true*
+Entered formula = if(city_name = “New York”) then ‘YES’ else ‘NO’
+Saved formula = if(city_name = “new york”) then ‘yes’ else ‘no’
+
+*Example when false*
+Entered formula = if(city_name = “New York”) then ‘YES’ else ‘NO’
+Saved formula = if(city_name = “New York”) then ‘YES’ else ‘NO’
+
+| Query generation | Measures in case statements considered zero if null a| The default setting is `TRUE`. When `TRUE`, all measures are wrapped in a case statement to consider NULL as ZERO. When `FALSE`, the underlying query is simplified.
+
+*Example when true*
+----
+SELECT CASE
+WHEN sum("ta_1"."Sales_Dollar_Amount") IS NOT NULL THEN sum("ta_1"."Sales_Dollar_Amount")
+ELSE 0
+END "ca_1"
+FROM "HO_RETAIL"."PUBLIC"."HO_RETAIL_SALES_FACT" "ta_1"
+ORDER BY "ca_1" ASC NULLS LAST
+----
+
+*Example when false*
+----
+SELECT sum("ta_1"."Sales_Dollar_Amount") "ca_1"
+FROM "HO_RETAIL"."PUBLIC"."HO_RETAIL_SALES_FACT" "ta_1"
+----
+
+| Query generation | Non-shared filters in chasm trap a| The default setting is `FALSE`. This setting affects how non-shared filters are applied in a chasm trap model. That is, the filter is only applied to one side of the chasm trap. Assume a filter is applied to the LEFT HAND side of the chasm trap.
+
+When `TRUE`, the query is a FULL OUTER JOIN.
+When `FALSE`, the resulting query is a LEFT OUTER JOIN. This is normally a much more performance query.
+
+NOTE: Where multiple filters are applied from both sides of the chasm trap, then ThoughtSpot will intelligently determine the join type.
+
+link:https://community.thoughtspot.com/customers/s/article/What-is-Attribution-and-Chasm-Traps[This article] provides further details when this setting is `FALSE`.
+
+
+| Row-level security | Apply RLS rules on joined tables a| The default setting is `TRUE`. Assume a model where fact1 joins to dimension1 and an RLS rule is applied to fact.
+
+When `TRUE`, if a column is selected from dimension1 then a join to fact1 is included. That is, the RLS rule is applied. In this case, only the values from dimension1 which meet the rule on fact1 are returned.
+When `FALSE`, if a column is selected from dimension1, then no RLS rule is applied. That is, all the values are returned as the results for the query.
+
+Refer to link:https://youtu.be/dK5hOnPdwLA?si=GERTXA50_GE6lKFD[this video] for further information regarding row level security.
+
+
+| Row-level security | Accept parent groups as ts_groups() values in RLS a| When `FALSE`, only immediate groups are values of ts_groups(). When `TRUE`, parent groups are also included.
+
+| Pivot table | Calculate pivot table summaries as separate SQL queries a| The default setting is `TRUE`.
+When `FALSE`, the pivot table calculations are calculated in the front end. These results are limited to a SUM of the numbers displayed in the pivot table. This is also limited to 100k rows of data.
+
+When `TRUE`, the summaries are calculated as separate SQL queries. This supports the ability to define different aggregation rules. For example, Average, Min, Max.
+
+
+| Column-level security | Implement column-level security a| The default setting is `FALSE`.
+To implement column-level security, this setting should be set to `TRUE`. This results in a stricter object security model. In short, all data objects must be shared with consumers rather than just Worksheets.
+Refer to link:https://docs.thoughtspot.com/cloud/latest/security-data-object#_object_security[this article] and link:https://youtu.be/exNqEoKsQ6A?si=MiORIJgNiTeCCNHP[this video].
+
+| Column-level security -- UI controls | In column-level security, hide underlying tables a| The default setting is `FALSE`.
+This setting is used in conjunction with the setting for column-level security. That is, with column-level security, the underlying tables must be shared with consumers.
+When `TRUE`, this ensures that the underlying tables are not available as data sources from the search data source selection. That is, consumers are limited to selecting Worksheets or Views.
+
+|===
