@@ -6,6 +6,11 @@
 :page-aliases: /admin/ts-cloud/private-link-snowflake.adoc
 :description: Learn how to deploy an AWS PrivateLink between your Snowflake data warehouse and the ThoughtSpot Cloud tenant.
 :connection: Snowflake
+:jira: SCAL-187049
+
+Learn how to deploy an AWS PrivateLink between your Snowflake data warehouse and the ThoughtSpot Cloud tenant.
+
+NOTE: AWS PrivateLink is only available to Enterprise Edition users.
 
 include::partial$private-link-intro.adoc[]
 
@@ -56,7 +61,7 @@ You obtained ThoughtSpot's AWS Account ID from {support-url} in the <<prerequisi
 +
 NOTE: Snowflake support must configure the AWS PrivateLink. Snowflake's self-service PrivateLink feature does not support third-party PrivateLink integrations, including the integration with ThoughtSpot.
 
-. After {connection} completes the PrivateLink configuration on the {connection} side, run the following command in your Snowflake environment. This command retrieves the *VPC Endpoint Service Name* and *Private DNS records required for {connection} clients* that you must send to ThoughtSpot Support.
+. After {connection} completes the PrivateLink configuration on the {connection} side, run the following command in your Snowflake environment. This command retrieves the *VPC Endpoint Service Name* and *Private DNS records required for {connection} clients* that you must send to {support-url}.
 +
 [source,bash]
 ----
@@ -65,17 +70,20 @@ select system$get_privatelink_config();
 +
 Refer to the Snowflake documentation for additional information on the specific URLs you need: https://docs.snowflake.com/en/user-guide/admin-security-privatelink.html#creating-additional-cname-records[AWS PrivateLink & Snowflake^].
 
+[#account-name]
+NOTE: For Snowflake PrivateLink connections using JDBC drivers 3.13.25 or later, Snowflake no longer supports account names containing underscores. If your account name contains an underscore, you can either make changes in your DNS or in your application to set the default value of `allowUnderscoresInHost` to `true`. For more information on how to allow this property, refer to link:https://community.snowflake.com/s/article/Behaviour-Change-Release-information-associated-with-Snowflake-JDBC-driver-version-3-13-25#:~:text=This%20change%20was%20made%20to,my_account.snowflakecomputing.com[Behaviour Change Release information associated with Snowflake JDBC driver version 3.13.25].
+
 [#exchange-information]
 === Exchange AWS and ThoughtSpot information with ThoughtSpot Support
 
-. Send the *account name* from the DNS records and the *Service name* to ThoughtSpot Support.
+. Send the *account name* from the DNS records and the *Service name* to {support-url}.
 You gathered this information from {connection} in step 2 of <<request-configuration,Request {connection} PrivateLink configuration>>.
 . After ThoughtSpot Support configures the AWS PrivateLink in ThoughtSpot, ask them to send you the PrivateLink {connection} account name.
 
 [#embrace]
 === Configure Connections
 
-xref:connections-snowflake.adoc[Configure Connections for {connection}], using the PrivateLink {connection} account name from ThoughtSpot Support for the *Account name* field. For example, `xyz99999.us-west-2.privatelink`.
+xref:connections-snowflake.adoc[Configure Connections for {connection}], using the PrivateLink {connection} account name from {support-url} for the *Account name* field. For example, `xyz99999.us-west-2.privatelink`.
 
 '''
 > **Related information**
@@ -91,3 +99,5 @@ xref:connections-snowflake.adoc[Configure Connections for {connection}], using t
 > * xref:connections-snowflake-azure-ad-oauth.adoc[Configure Azure AD OAuth]
 > * xref:connections-snowflake-best.adoc[Best practices for {connection} connections]
 > * xref:connections-snowflake-reference.adoc[Connection reference for {connection}]
+> * xref:connections-query-tags.adoc#tag-snowflake[ThoughtSpot query tags in Snowflake]
+> * xref:connections-snowflake-passthrough.adoc[]

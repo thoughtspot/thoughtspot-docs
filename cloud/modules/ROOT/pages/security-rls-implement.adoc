@@ -73,6 +73,30 @@ To test your rule, sign in as users in different groups.
 Search within the table for data that your test user can and can't access.
 Make sure your test users can see the appropriate rows.
 
+== Limitations
+
+When creating an RLS rule for a table, you must use a specific format to allow ThoughtSpot to index columns from that table.
+
+Expressions in RLS rules can be expressed using `in`, `=`, or `!=`. You can create RLS rules using columns, constants, or sub-expressions, for example, `col1 = 'x'`, or `col1 + col2 = col3`.
+
+
+The following example will not work:
+
+[source]
+----
+if (ts_groups = 'a' or ts_groups = 'b' or tsgroups = 'c') then col1 = 'x' else false
+----
+
+The following example works:
+
+[source]
+----
+ts_groups = if (col1 = 'x') then 'a' else 'none' or ts_groups = if (col1 = 'x') then 'b' else 'none' or ts_groups = if (col1 = 'x') then 'c' else 'none'
+----
+
+Note that if an RLS rule is preventing indexing on a table, you can check the xref:index-statistics-liveboard.adoc[Index Statistics Liveboard] to find the problem.
+
+
 '''
 > **Related information**
 >

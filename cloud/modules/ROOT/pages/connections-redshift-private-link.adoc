@@ -1,6 +1,6 @@
 = Enabling an AWS PrivateLink between ThoughtSpot Cloud and your {connection} data warehouse
 :experimental:
-:last_updated: 3/16/2021
+:last_updated: 5/3/2023
 :linkattrs:
 :page-layout: default-cloud
 :page-aliases: /admin/ts-cloud/private-link-redshift.adoc
@@ -8,6 +8,9 @@
 :connection: Redshift
 
 Learn how to deploy an AWS PrivateLink between your {connection} data warehouse and the ThoughtSpot Cloud tenant.
+
+NOTE: AWS PrivateLink is only available to Enterprise Edition users.
+
 
 include::partial$private-link-intro.adoc[]
 
@@ -51,24 +54,24 @@ To deploy an AWS PrivateLink between your {connection} data warehouse and the Th
 After completing the <<prerequisites,prerequisites>>, you must configure the Endpoint Service.
 
 . Sign in to the AWS Console.
-. Create a Network Load Balancer (NLB) routing TCP traffic on port 5439 to your {connection} database.
+. Create a Network Load Balancer (NLB) routing TCP traffic on port 5439 to your {connection} database. Ensure that "Cross Zone Load Balancing" is enabled in the load balancer.
 . Navigate to menu:AWS VPC Console[Endpoint Services > Create Endpoint Service].
 . Select the {connection} NLB you created in step 2.
 . Select *Require Acceptance for Endpoint*.
 . Select menu:Endpoint Service[Whitelist principles > Add principles to whitelist].
-Add the ThoughtSpot AWS Account Amazon Resource Name (ARN) that you obtained from ThoughtSpot Support in the <<prerequisites,prerequisites>>.
+Add the ThoughtSpot AWS Account Amazon Resource Name (ARN) that you obtained from {support-url} in the <<prerequisites,prerequisites>>.
 . Select *Endpoint Service*.
 . Write down the values for:
 
 * *Service name*: for example, _com.amazonaws.vpce.us-west-2.vpce-svc-0123456789abcdef_
 * *Availability zones*: for example, _us-west-2a (usw2-az1)_
 +
-You must provide the service name and availability zones to ThoughtSpot Support.
+You must provide the service name and availability zones to {support-url}.
 
 [#exchange-information]
 === Exchange AWS and ThoughtSpot information with ThoughtSpot Support
 
-. Send the *Service name* and *Availability zones* you gathered in step 8 of <<configure-aws,Configure the Endpoint Service in your AWS Console>> to ThoughtSpot Support.
+. Send the *Service name* and *Availability zones* you gathered in step 8 of <<configure-aws,Configure the Endpoint Service in your AWS Console>> to {support-url}.
 . After ThoughtSpot Support configures the AWS PrivateLink in ThoughtSpot, ask them to send you the PrivateLink Endpoint DNS name.
 
 [#accept-request]
@@ -84,7 +87,7 @@ Its status should be _Pending Acceptance_.
 [#embrace]
 === Configure Connections
 
-xref:connections-redshift.adoc[Configure Connections for {connection}], using the PrivateLink Endpoint DNS name from ThoughtSpot Support for the *Host* field. For example, `vpce-12345a9c7e43959d-xxo2u2xx.vpce-svc-037b1f73d3de3a5b4.us-west-2.vpce.amazonaws.com`.
+xref:connections-redshift.adoc[Configure Connections for {connection}], using the PrivateLink Endpoint DNS name from {support-url} for the *Host* field. For example, `vpce-12345a9c7e43959d-xxo2u2xx.vpce-svc-037b1f73d3de3a5b4.us-west-2.vpce.amazonaws.com`.
 
 
 '''
@@ -99,4 +102,7 @@ xref:connections-redshift.adoc[Configure Connections for {connection}], using th
 > * xref:connections-redshift-delete.adoc[Delete a {connection} connection]
 > * xref:connections-redshift-best.adoc[Best Practices for {connection} connections]
 > * xref:connections-redshift-reference.adoc[Connection reference for {connection}]
+> * xref:connections-redshift-azure-ad-oauth.adoc[]
 > * xref:connections-redshift-partner.adoc[Redshift Partner Connect overview]
+> * xref:connections-query-tags.adoc#tag-redshift[ThoughtSpot query tags in Redshift]
+> * xref:connections-redshift-passthrough.adoc[]

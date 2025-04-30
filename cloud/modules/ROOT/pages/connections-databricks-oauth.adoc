@@ -1,95 +1,107 @@
 = Configure OAuth for a {connection} connection
-:last_updated: 6/7/2022
+:last_updated: 4/18/2024
+:author: Naomi
 :linkattrs:
 :page-aliases:
 :experimental:
 :page-layout: default-cloud
 :connection: Databricks
 :description: ThoughtSpot supports OAuth for a Databricks connection.
+:jira: SCAL-203358, SCAL-203358
 
 ThoughtSpot supports OAuth for a {connection} connection. This page describes the setup and configuration required.
 
-Databricks SQL warehouses are configured with OAuth 2.0 authentication on the Microsoft Azure platform, using Azure Active Directory (AAD) as the identity provider (IdP).
+Databricks SQL warehouses are configured with OAuth 2.0 authentication. ThoughtSpot supports all IDPs supported by Databricks in OAuth 2.0, including Microsoft Azure’s Azure Active Directory (AAD), AWS, and Okta.
 
-== Part 1: Create an application in AAD
+ThoughtSpot initiates the authorization request to Databricks for OAuth. Databricks acts as the auth token-issuing authority. The IDP (for example, Okta) is only involved in the authentication between Databricks and the IDP. That is, the IDP is responsible for signing in to Databricks. Once you are logged in to Databricks, ThoughtSpot requests Databricks send the access and refresh tokens, and these tokens are then used for the JDBC connection.
 
-To create an application in AAD, do the following:
+The configuration details on the ThoughtSpot connection form should be derived from the custom application parameters set up in the Databricks account. There is no integration between ThoughtSpot and the specific IDP for the Databricks authentication process.
 
-. Sign in to the Azure portal and navigate to the AAD resource, click *Add*, and select *App registration*.
+NOTE: For OAuth, we recommend checking the {connection} link:https://docs.databricks.com/en/administration-guide/users-groups/single-sign-on/index.html[documentation] to confirm any IDP support and their details.
+
+
+[#step-1]
+== Step 1: Registering an OAuth application from Databricks Account Console
+
+You can register an OAuth application for U2M in your account from the Databricks Account Console by following these steps:
+
+. Log in to the link:https://accounts.cloud.databricks.com[Databricks Account Console].
+
+. Navigate to *Settings > App connections*.
+
+. Click link:https://accounts.cloud.databricks.com/settings/app-integrations/add[*Add connection*].
+
+. Enter the application name Redirect URLs and leave all other fields as default.
+
+.. Enter the *Redirect URL(s)* in `<thoughtspot-cluster-url>/callosum/v1/connection/generateTokens` format.
+.. For *Access scopes*, select *SQL*.
+.. For *Client Secret*, select *Generate a client secret*.
 +
-image::databricks-oauth-config-1.png[Click Add and select App registration]
-. Provide a name for your application and add a redirect URI in the following format:
+image:databricks-oauth-redirect.png[Redirect url, access scopes, client secret]
+
+. Click *Add* to create your OAuth application.
+
+. In the *Connection created* dialog box, copy the *Client ID* and *Client Secret* and store them in a safe location. The *Client Secret* will not be shown to you again.
+
+[#step-2]
+== Step 2: Configure the ThoughtSpot Connection form
+
+To create a connection to Databricks, follow these steps:
+
+. Navigate to the Connection creation page and enter the connection name and description. Select *Databricks* as the connection type and click *Continue*.
+
+. Select the Authentication type as *OAuth* or *OAuth with PKCE*.
+
+. Enter the following fields:
+
+.. link:https://docs.databricks.com/en/integrations/compute-details.html[Server Hostname].
+
+.. link:https://docs.databricks.com/en/integrations/compute-details.html[HTTP Path].
+
+.. Client ID (generated in <<step-1,Step 1>>).
+
+.. Client Secret (generated in <<step-1,Step 1>>).
+
+.. Auth URL (in the format `<databricks-instance-url>/oidc/v1/authorize`).
+
+.. Token URL (in the format `<databricks-instance-url>/oidc/v1/token`).
+
+.. Scope ("sql offline_access").
 +
-`\https://<your-thoughtspot-instance>/callosum/v1/connection/generateTokens`
+image:databricks-oauth-connection-details.png[Connection details]
+
+.. (Optional) Provide additional key-value pairs that you need to set up your connection to {connection} or customize additional JDBC parameters supported by {connection}, by doing the following:
+** Select the *Advanced Config* menu to reveal the *Key* and *Value* fields. Refer to the installation and configuration guide that comes with the Databricks JDBC driver for information on Databricks’s supported keys and values.
+** Enter your key and value information.
+** To add more keys and values, select the plus sign (+), and enter them.
 +
-This is where the call is redirected upon successful login to AAD when creating a connection in ThoughtSpot.
+NOTE: Any key-value pairs that you enter must be defined in your {connection} data source.
+Key-value pairs are case-sensitive.
+. Select *Continue*.
+. Select tables (on the left) and the columns from each table (on the right), and then choose *Create connection*.
 +
-image::databricks-oauth-config-2.png[Register an application]
-
-. After you register your application, make a note of the *Application (client) ID* in the Essentials section of the app’s overview page. Also, make a note of the OAuth 2.0 authorization and token endpoints. These are required later when configuring the {connection} connection in ThoughtSpot.
+image::adw-selecttables.png[Select tables and columns for your connection]
 +
-image::databricks-oauth-config-3.png[View the Application ID, OAuth 2.0 authorization endpoint, and OAuth 2.0 token endpoint in the Essentials section]
+A message appears indicating the number of tables and columns that will be added to your connection.
 
-== Part 2: Configure the AAD application
+. Select *Confirm*.
 
-To configure the AAD application, do the following:
+After you add the connection, you can search your {connection} database.
 
-. In the Azure portal, navigate to your application by selecting *App Registrations* and then selecting your newly registered application to open it.
-+
-image::databricks-oauth-config-4.png[Click on your new application]
+image::databricks-connectioncreated.png[The "Connection created" screen]
 
-. In your application, click *API Permissions* and under the *AzureDatabricks* API/Permissions name, select the *user_impersonation* permission.
-+
-image::databricks-oauth-config-5.png[Click user_impersonation]
-. Select *Certificates & secrets* and create a new secret for the app, providing an appropriate expiry time. Make a note of the secret value because it is displayed _only_ while creating it. The secret value is required later when you create the {connection} connection in ThoughtSpot.
-+
-.Setting the scope of the authorization flow
-****
 
-In the authorization code flow for OAuth, the scope must be set with this resource id:
-[source]
-----
-2ff814a6-3304-4ab8-85cb-cd0e6f879c1d/.default offline_access openid
-----
+=== Configure OAuth with Okta example
 
-For more information, see https://docs.microsoft.com/en-us/azure/databricks/dev-tools/api/latest/aad/app-aad-token[Get Azure AD tokens by using the Microsoft Authentication Library^] in Microsoft's Azure {connection} documentation.
-****
+As a prerequisite, follow the link:https://docs.databricks.com/en/administration-guide/users-groups/single-sign-on/index.html[Databricks documentation] to enable Single Sign-on (SSO) on your account.
 
-== Part 3: Create AAD users in the {connection} workspace
+Once SSO has been enabled on your account, you will need to authenticate the Databricks connection using the SSO details. The ThoughtSpot Connection details will be the same as those detailed in <<step-2,step 2>>.
 
-To create AAD users in the {connection} workspace, do the following:
+This is a three-legged OAuth process where Databricks authentication is governed by the IDP.
 
-. Sign in to the {connection} workspace as a user with admin privileges. Select *Setting* and navigate to *Admin Console*.
-. Select *Add User* to create AAD users in {connection}.
-+
-image::databricks-oauth-config-6.png[Click add user]
+== Limitation
 
-////
-== Part 4: Connect the client using the OAuth token
-
-The JDBC connection URL which uses the access token from AAD must use the following format:
-[source]
-----
-`"jdbc:spark://adb-111222444555.13.azuredatabricks.net:443/samples;transportMode=http;" +
-"ssl=1;httpPath=/sql/1.0/endpoints/c53335555f2222e999;" +
-"AuthMech=11;Auth_Flow=0;" +"Auth_AccessToken=<access_token>"`
-----
-////
-
-== Logging in to a connection created by another user using OAuth
-
-As an admin user, you may run into an issue logging in to connections created using OAuth. To resolve this issue, complete the following steps:
-
-. Search on a table belonging to the connection you are trying to edit. The following error appears:
-+
-image:oauth-error.png[Error reading “Error in loading data. Connection to Snowflake could not be established. OAuth login required. Login”]
-
-. Click *Login*. You will be directed to the IDP login page.
-
-. Enter your login credentials.
-
-. You will now have access to edit the connection.
-
+ThoughtSpot does not support link:https://docs.databricks.com/en/integrations/jdbc/authentication.html#oauth-machine-to-machine-m2m-authentication[OAuth machine-to-machine authentication], also known as Service Principal and OAuth authentication.
 
 '''
 > **Related information**
@@ -100,5 +112,8 @@ image:oauth-error.png[Error reading “Error in loading data. Connection to Snow
 > * xref:connections-databricks-delete-table.adoc[Delete a table from a {connection} connection]
 > * xref:connections-databricks-delete-table-dependencies.adoc[Delete a table with dependent objects]
 > * xref:connections-databricks-delete.adoc[Delete a {connection} connection]
+> * xref:connections-databricks-oauth-aad.adoc[]
 > * xref:connections-databricks-private-link.adoc[]
 > * xref:connections-databricks-reference.adoc[Connection reference for {connection}]
+> * xref:connections-databricks-passthrough.adoc[]
+> * xref:connections-column-indexing-oauth.adoc[]

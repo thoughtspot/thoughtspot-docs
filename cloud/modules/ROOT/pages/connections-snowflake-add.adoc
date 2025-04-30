@@ -10,13 +10,15 @@
 :experimental:
 :connection: Snowflake
 :description: Learn how to add a Snowflake connection.
+:jira: SCAL-91104
 
 == Prerequisites
 
-Before you add a {connection} connection, ensure the default role of the account being used has been granted usage on the database and the schema, and select on the tables that will be added to the connection.
+Before you add a {connection} connection, ensure the default role of the account being used, or the role you provide in the connection, has been granted usage on the database and the schema, and select on the tables that will be added to the connection.
 
 Example:
 
+* Grant usage on warehouse `<warehousename>` to role `<rolename>`
 * Grant usage on database `<databasename>` to role `<rolename>`
 * Grant usage on schema `<databasename>`.`<schemaname>` to role `<rolename>`
 * Grant select on all tables in schema `<databasename>`.`<schemaname>` to role `<rolename>`
@@ -31,7 +33,7 @@ To connect to {connection}:
 +
 image::embrace-snowflake-connection-type-ts-cloud.png[Add a {connection} connection]
 
-. Enter the connection details for your {connection} data source using either OAuth, Microsoft Azure AD OAuth, or Service Account authentication:
+. Enter the connection details for your {connection} data source using either OAuth, Microsoft Azure AD OAuth, Service Account, or Key Pair authentication:
 +
 The Use OAuth option uses https://docs.snowflake.com/en/user-guide/oauth-partner.html[{connection} OAuth authentication].
 +
@@ -43,7 +45,7 @@ For details, see xref:connections-snowflake-azure-ad-oauth.adoc[Configure Azure 
 +
 - For OAuth authentication, do the following:
 
- .. Select *Use OAuth*.
+ .. Select *OAuth*.
  .. Enter Account name or your {connection} URL, OAuth Client ID, OAuth Client Secret, Database (optional), Role (optional), and Warehouse (optional).
 image:snowflake-connectiondetails-oauth2.png[Enter connection details]
 // [Enter connection details]({{ site.baseurl }}/images/gbq-connectiondetails.png "Enter connection details")
@@ -58,7 +60,7 @@ See xref:security-rls.adoc[About row-level security (RLS)] for more information.
 +
 - For Microsoft Azure AD or Okta OAuth authentication, do the following:
 
- .. Select *Use External OAuth*.
+ .. Select *External OAuth*.
  .. Enter Account name or {connection} URL, OAuth Client ID, OAuth Client Secret, Scope, Auth URL, Access token URL, and (optional) Database.
 image:snowflake-connectiondetails-azure-ad-oauth.png[Enter connection details]
 // [Enter connection details]({{ site.baseurl }}/images/gbq-connectiondetails.png "Enter connection details")
@@ -68,11 +70,18 @@ If not, select *Continue*.
  .. On the Stay-signed-in screen, select *Yes*.
 
 +
-- For *Use Service Account* authentication, do the following:
+- For *Service Account* authentication, do the following:
 
- .. Select *Use Service Account*.
+ .. Select *Service Account*.
  .. Enter Account name, User, Password, Role, Warehouse, and (optional) Database.
 image:snowflake-connectiondetails-serv-acct2.png[Enter connection details]
+
++
+- For *Key Pair* authentication, do the following:
+
+.. Select *Key Pair*.
+.. Enter Account name or Snowflake URL, User, Private Key, (optional) Passphrase, Role, Warehouse and (optional) Database.
+image:snowflake-key-pair.png[Enter connection details]
 
 +
 Refer to the xref:connections-snowflake-reference.adoc[{connection} connection reference] for more information on each of the specific attributes you must enter for your connection.
@@ -169,5 +178,8 @@ Note that to remove share access from a connection, you must navigate to the *Sh
 > * xref:connections-snowflake-azure-ad-oauth.adoc[Configure Azure AD OAuth]
 > * xref:connections-snowflake-best.adoc[Best practices for {connection} connections]
 > * xref:connections-snowflake-private-link.adoc[]
+> * xref:connections-snowflake-psc.adoc[]
 > * xref:connections-snowflake-reference.adoc[Connection reference for {connection}]
+> * xref:connections-query-tags.adoc#tag-snowflake[ThoughtSpot query tags in Snowflake]
+> * xref:connections-snowflake-passthrough.adoc[]
 ////

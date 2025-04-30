@@ -1,131 +1,167 @@
 The latest release of ThoughtSpot Cloud contains several new and enhanced features.
 
-* <<9-1-0-cl-first,For the First User>>
-* <<9-1-0-cl-analyst,For the Analyst>>
-* <<9-1-0-cl-business-user,For the Business User>>
-* <<9-1-0-cl-data-engineer,For the Data Engineer>>
-* <<9-1-0-cl-it-ops-engineer,For the IT Ops Engineer>>
-* <<9-1-0-cl-developer,For the Developer>>
+* <<9-10-0-cl-first,For the First User>>
+* <<9-10-0-cl-analyst,For the Analyst>>
+* <<9-10-0-cl-business-user,For the Business User>>
+* <<9-10-0-cl-data-engineer,For the Data Engineer>>
+* <<9-10-0-cl-developer,For the Developer>>
 
-[#9-1-0-cl-first]
+[#9-10-0-cl-first]
 === For the First User
 
 Getting started with ThoughtSpot Cloud::
 The first user on the account has to complete a series of steps before other people can start using ThoughtSpot with your organization's data.
 For these instructions, see xref:ts-cloud-getting-started.adoc[Getting Started with ThoughtSpot Cloud].
 
-[#9-1-0-cl-analyst]
+[#9-10-0-cl-analyst]
 === For the Analyst
 
-Upload custom geo maps::
-Upload your own custom maps and visualize data on xref:chart-geo.adoc[geo charts] with regions that are specific to you and your organization.
-+
-For more information, see xref:geomaps-custom.adoc[].
+// Naomi -- scal-182100, documentation JIRA scal-201040
+Renaming columns::
+You can now rename columns in an Answer and see the new name reflected on the table header, tooltips, legend, and chart configuration menu. Changes made to an Answer are not reflected in the underlying Worksheet. For more information, see xref:chart-column-axis-rename.adoc#column-rename[Rename a table column].
 
-Change filter order for Liveboard filters::
+// Mark -- SCAL-192432
+Models [.badge.badge-early-access-relnotes]#Early Access#::
+With Models, we've completely redesigned how you model your data in ThoughtSpot. With the Model editor, you can drag and drop tables and columns, create joins, and much more in an intuitive, tabbed interface which streamlines your workflow. Models will replace Worksheets in the future, but in this release you can create and use Models or Worksheets. To enable this feature, contact your administrator.
+For more information, see xref:models.adoc[Models].
 
-Arrange Liveboard filters in the filter bar so that they are in a logical, coherent order, by dragging and dropping them to different spots in the list. This makes it easier for viewers of the Liveboard to understand and use the filters on the Liveboard. For more information, see xref:liveboard-filters.adoc#order[Change the filter order].
+// Naomi -- scal-174127, documentation JIRA scal-201041 (approved)
+ThoughtSpot Sync for Google BigQuery [.badge.badge-beta-relnotes]#Beta#::
+Using ThoughtSpot Sync, you can now sync data directly from an Answer or a custom SQL view, to your Google BigQuery cloud data warehouse. To enable this feature, contact {support-url}.
+For more information, see xref:sync-gbq.adoc[Sync to Google BigQuery].
 
-TML for Monitor alerts::
-TML for Monitor alerts is now GA and on by default. Export, edit, and import xref:monitor.adoc[KPI Monitor alerts] programmatically, using ThoughtSpot Modeling Language. For more information, see xref:tml.adoc#syntax-alerts[Syntax of the Monitor alert TML file].
+// Naomi -- scal-176730, documentation JIRA 201311 (approved)
+ThoughtSpot Sync from unsaved Answers:: You can now create syncs from Answers without saving first.
 
-Remove attached files from scheduled emails:: For data security, you may choose to remove attached files from scheduled Liveboard emails. When this feature is enabled, scheduled Liveboard email recipients will receive an email with a link to the Liveboard, which they will need to sign in to see.To ensure that only signed-in users can access your data, contact ThoughtSpot Support to enable this option. For more information, see xref:schedule-liveboards.adoc#disable-csv-pdf[Scheduled Liveboards].
+//Mary -- scal-143396, scal-163885, Doc JIRA scal-201631
+Tooltip customization::
+Customize tooltips to make charts easier to read and reduce the time to insights for business users. Use customized tooltips to add measures, attributes, and formulas that are not visualized in the chart. You can also customize tooltips to remove certain fields from the tooltips in a complex chart so that users are not overwhelmed with irrelevant information.
+Configure tooltips by selecting the *Edit chart configuration* icon image:icon-gear-10px.png[chart customization icon] and selecting *Settings*. Under *Tooltip* click *Edit tooltip*. By default, fields visualized in charts are included in the tooltip. You can remove, add, or rearrange fields. For more information, see xref:chart-tooltip-customize.adoc[Customize tooltips].
 
-Disable heatmap data labels::
 
-Optionally disable heatmap charts' data labels, and understand the chart quickly by scanning the heatmap colors. This makes complex heatmap charts with many data values easier to read. See xref:chart-heatmap.adoc#labels[Heatmap charts].
+////
+// Naomi -- scal-177005
+Advanced conditional formatting [.badge.badge-early-access-relnotes]#Early Access#::
+Rather than simply using conditional formatting comparing a column's measures to a single value (for example, `sales > 10000`), you can now use conditional formatting to compare a column's measures to another column or to a parameter. For example, if you search for `sales this year` versus `sales last year`, you can highlight where sales this year were less than last year. You can set multiple conditional formatting rules to a single table. For more information, see xref:search-conditional-formatting.adoc#advanced-conditional-formatting[Advanced conditional formatting].
+////
 
-Show timezone in scheduled Liveboards modal:: When scheduling Liveboards, you can now specify your timezone.
+////
+// Mary -- SCAL-158469, Doc JIRA SCAL-201653
+Functional enhancements for verified Liveboards::
+You can now easily search for verified Liveboards with trusted content, and filter to view only verified content. Verified Liveboards are identified with a tag visible in all screens.
+You can also cancel verification requests when needed.
+////
 
- Scheduled or downloaded Liveboard PDF width::
+// Mark -- SCAL-189664
+Deprecation of SpotApps::
+In this release, you will still be able to use SpotApps, but ThoughtSpot will remove the SpotApps UI in a later release. Though we will be removing the UI, you will still be able to upload pre-built SpotApp templates. For details, see xref:deprecation.adoc[Deprecated and removed features].
 
-By default, scheduled and downloaded Liveboard PDFs now render at a width of 1920 px. This ensures that most Liveboard PDFs you download or schedule look the same as the Liveboards you see in ThoughtSpot. You can also change this default width to a different width for your company, by contacting {support-url}. See xref:liveboard-download-pdf.adoc#pdf-width[Download a Liveboard as a PDF] and xref:liveboard-schedule.adoc#pdf-width[Schedule a Liveboard job].
 
-Group aggregate enhancements: filters:: Group aggregate filter enhancements are GA and on by default. Previously, when using group_aggregate formulas, users could use query_filters to include filters entered in the search bar in the formula's value, but it was difficult to write a formula that accepted filters from only a single column. +
-Starting with this release, you can specify column names within the ‘filters’ section of a group_aggregate formula, and any filter in your search bar referencing that column will be added to the formula. Filters entered in the search bar that are not on columns specified in the third argument of the group_aggregate formula will be ignored. For details, see xref:formulas-aggregation-flexible.adoc#groupagg-filters-enhancement[Group aggregation filters].
 
-Data labels on a dark background::
-Data labels on a dark background are now GA and on by default. Labels that appear on a dark background now display in a lighter text color, making them easier to read.
-
-Text keywords enhancements::
-
-We improved the syntax of our text keywords, such as `begins with` and `contains`, to provide users with more flexibility. For example, the `contains` keyword now accepts expressions such as `product name contains 'shoes' or 'snickers'`. See the xref:keywords.adoc#text[Keyword reference].
-+
-Additionally, if your query includes two or more `contains` phrases that modify the same column, ThoughtSpot now combines the phrases using `or` logic, instead of `and`. If you have existing Answers or visualizations using this `and` logic, ThoughtSpot will automatically update your queries after you upgrade to 9.1.0.cl, to ensure they return the same information. See xref:keywords.adoc#contains[the contains keyword].
-
-[#9-1-0-cl-business-user]
+[#9-10-0-cl-business-user]
 === For the Business User
 
-Mandatory Liveboard filters::
-
-Mandatory Liveboard filters are now GA. Mark certain filters in your Liveboard as mandatory. If you add mandatory filters to a Liveboard, the visualizations will only load after Liveboard viewers select values for the mandatory filters. Use mandatory filters for Liveboards that contain data that may not be relevant for everyone who must view and consume the Liveboard. Mandatory filters also lower query and performance costs.
-+
-For more information, see xref:liveboard-filters-mandatory.adoc[].
-
-Custom comparison points for KPI charts:: You can now set your KPI chart to display a percent change comparison between the most recent data point and a custom comparison point. For example, when searching for `sales monthly`, you can choose to see percent change between this month and the previous month, previous quarter, or previous year. For more information, see
-xref:chart-kpi.adoc#kpi-custom-comparison[Custom comparison points].
-
-Change for analysis KPI charts::
-KPI change analysis is now GA and on by default. You can now use change analysis to directly identify the key drivers for change in your KPIs. +
-To access this feature, go to your KPI chart and select the caret icon to the right of the percent change label. The *Run change analysis* pop-up allows you to customize the attribute columns ThoughtSpot analyzes. ThoughtSpot runs change analysis for the most recent data point and the past comparison data point as per the KPI chart's configuration. Note that you need SpotIQ privileges to use the KPI change analysis feature.
-
-Parameters::
-The parameters feature is now GA and on by default. Create Worksheet parameters to optimize your data inquiries. Use parameters to run different scenarios with adjustable values, without creating or modifying the constants in formulas for each new value. For more information, refer to xref:parameters-create.adoc[] and xref:parameters-use.adoc[].
-
-ThoughtSpot Sync::
-You can now use ThoughtSpot Sync to sync data directly from an Answer or custom SQL view to the following apps: +
-+
---
-* xref:sync-gainsight.adoc[Gainsight]
-* xref:sync-zoho.adoc[Zoho]
---
-+
-Using ThoughtSpot Sync, you can push insights directly to your selected app, notify your teams, and view data in context. ThoughtSpot Sync automatically establishes a secure pipeline to the destination app and thus eliminates the need for building custom connectors.
-
-Schedule ThoughtSpot Sync:: When scheduling a sync with an external app, you can now choose to schedule every 5, 10, 15, 20, 30, and 45 minutes, in addition to the other existing schedule options.
 
 
-Apply multiple changes to charts at once:: In previous releases, every time a user reordered the fields in the chart configuration panel, the chart reloaded. When creating a visualization with multiple fields, users often need to make multiple rearrangements to reach a desired chart. Now users can make multiple configurations and apply them at the same time rather than waiting in between each configuration. For more information, see
-xref:chart-x-axis.adoc[Reorder labels on the axis or legend].
 
-Specify format when downloading charts and tables::
+// Naomi -- scal-169683, documentation JIRA scal-201035 (approved)
+Null and missing values in charts::
+You can now choose how null and missing values appear in line, column, and bar charts in ThoughtSpot. Null and missing values appear as bars of 1 pixel width on bar and column charts. You can choose whether to display null date values as zero values, line breaks, or an average of proximate values on a line chart. Rather than showing a sharp decline to zero every time there is null or missing data on your line chart, you can see the missing values represented as line breaks or averages of the closest values instead. For more information, see
+xref:chart-null-missing.adoc[Null and missing values in charts].
 
-We streamlined the file format options when downloading tables and charts from ThoughtSpot. You can download tables in XLSX, CSV, or PDF format, and download charts in XLSX, CSV, or PNG format. To try it out, open a chart or table, and select *Download* from the *more options* menu image:icon-more-10px.png[ellipsis icon]. For more information, see
-xref:search-download.adoc#download-chart-table[Download a chart or table].
+////
+// Naomi -- scal-175485, scal-177391. actually EA.
+Ask Sage:: You can now conversationally search ThoughtSpot using natural language, asking follow-up questions for further clarification or to take your analysis in a new direction. To access Ask Sage, ask a question using the Natural Language Search interface on the Home page, and click *Ask a follow up*. For more information, see xref:ask-sage.adoc[Ask Sage].
+////
 
-Mobile app Load More button:: When using ThoughtSpot Mobile, you can now press the *Load More* button at the bottom of a table to see the next 100 rows of data.
+// Naomi -- scal-141936, scal-176265, documentation JIRA scal-178860 (approved)
+Iterative change analysis [.badge.badge-beta-relnotes]#Beta#::
+You can now drill down on specific columns in change analysis, in order to identify change drivers within your data. For example, if you run an analysis on sales monthly and find out that the 'jacket' item type changed the most, you can easily drill down on jacket sales and identify which region contributed the most to the change in sales. For more information, see xref:spotiq-change.adoc#iterative[Iterative change analysis].
 
-Improvements to French keywords::
-This release improves the translated French keywords. See xref:keywords-fr-FR.adoc[].
+// Naomi -- SCAL-127727, SCAL-164086, documentation JIRA scal-201033 (approved)
+Contextual alert creation on KPI charts:: ThoughtSpot now preserves the filters you use on a KPI when you create a Monitor alert. Users with view access to the underlying Liveboard can now receive alert emails for filtered KPIs without saving the filters on the Liveboard. For more information, see xref:monitor.adoc[Monitor alerts].
 
-[#9-1-0-cl-data-engineer]
+// Naomi -- SCAL-159819, documentation JIRA scal-201314 (approved)
+ThoughtSpot for Slack [.badge.badge-early-access-relnotes]#Early Access#::
+You can now ask ThoughtSpot questions using Slack. Install the ThoughtSpot Slack app, add it to a Slack channel, and you can ask questions of your data sources in natural language. ThoughtSpot answers in chart format. For more information, see xref:spotdev.adoc[].
+
+// Naomi -- scal-159515, documentation JIRA scal-201031 (approved)
+Commenting on Liveboards:: You can now add or reply to comments, tag other users, or subscribe to comment threads directly on a Liveboard. Users can point out insights or reach out for clarification without leaving ThoughtSpot. To try it out, click the comment icon to the right of the edit icon, and select the data point you would like to comment on. For more information, see xref:liveboard-comment.adoc[].
+
+// Naomi -- scal-173345, scal-89341, documentation JIRA scal-201032 (approved)
+
+Anomaly insights with Monitor alerts for time-series KPI::
+When you receive an email alert about a threshold or scheduled alert, ThoughtSpot now surfaces any anomalies found in your KPI. You can see the expected range of values, and click a link to view your KPI in the original Liveboard. To enable this feature, contact your administrator. For more information, see
+xref:monitor.adoc#early-access[Monitor].
+
+
+
+// Naomi -- scal-166121, documentation JIRA scal-201034. actually EA. (approved)
+Chart customizations [.badge.badge-early-access-relnotes]#Early Access#:: You can now access advanced chart customization settings for Answers by selecting the *Edit chart configuration* icon image:icon-gear-10px.png[chart customization icon] and selecting *Advanced settings*. Use these settings to adjust the size and appearance of tooltips, regression lines, gridlines, and chart backgrounds. For more information, see xref:chart-settings-advanced.adoc[Advanced chart settings].
+
+
+// Naomi -- scal-147558, documentation JIRA scal-201036 (approved)
+Change analysis: remember personalized columns [.badge.badge-early-access-relnotes]#Early Access#::
+Users with edit permissions on a Liveboard can set their preferred attribute columns through the change analysis window and select *Apply to all users* to keep those selections for any subsequent change analysis calculations on that Liveboard. Individual users can still override these preferences for their own calculations. For more information, see xref:spotiq-change.adoc#remember-personalized[Remember personalized columns].
+
+
+
+// Naomi -- scal-156247, documentation JIRA scal-201037 (approved)
+Natural language search chart type:: You can now specify the answering chart type when you use Natural Language Search. For example, search for "sales by region pie chart", and the results appear in pie chart format. For more information, see xref:ai-answers.adoc[].
+
+
+// Naomi -- scal-177253, documentation JIRA scal-201038 (approved)
+Add formula or parameter to Answer::
+You can now add a formula or parameter to an Answer by navigating to the *Category* image:icon-by-category.png[Category view] or *A to Z* image:icon-a-to-z.png[Alphabetical view] view of the Data panel, clicking *+ Add*, and selecting *Formula* or *Parameter*.
+
+//Mary -- scal-134503, SCAL-190081 Doc JIRA SCAL-201653. SCAL-158469, Doc JIRA SCAL-201653
+Functional enhancements for verified Liveboards:: Easily find verified Liveboards marked with banners, and icons. Sort search results to view content tagged as verified. Request verification of Liveboards and cancel requests when needed. For more information, see xref:liveboard-verify.adoc[Verify Liveboards].
+
+// Mark -- SCAL-178264
+AI Highlights [.badge.badge-beta-relnotes]#Beta#:: With AI Highlights, you get quick insights on how top metrics have changed in your Liveboard, dramatically reducing the time to derive insights from your KPIs.
+For more information, see xref:liveboard-ai-highlights.adoc[].
+
+//Mary scal-174139, scal-158579, scal-174139, Doc JIRA SCAL-201628
+Roles and more granular access privileges:: ThoughtSpot introduces role-based access control (RBAC) to allow for more granular access privileges. Use roles to apply privileges customized for your organizational needs.
+ThoughtSpot includes some standard roles to help existing customers transition to RBAC. RBAC is supported in Primary Orgs. To enable RBAC, contact {support-url}. For more information, see xref:rbac.adoc[Understand RBAC and privileges].
+
+//scal-159581, scal-102588, scal-95381, scal-165060, scal-161325, scal-154973, scal-142097, scal-102588, scal-158204
+Mobile enhancements:: We made the following improvements to ThoughtSpot mobile:
+
+* We simplified the log in process for the ThoughtSpot mobile app. You can now enter your company email to receive an email with a magic link login, rather than entering the server URL.
+* ThoughtSpot now supports IAMv2 login.
+* You can now change your ThoughtSpot locale through the Mobile app. When your locale is updated, ThoughtSpot translates labels, date formats and number formats to match the default for your country and language.
+* You can now use SpotIQ analysis to directly identify the key drivers for recent change in your KPIs in ThoughtSpot Mobile. KPI change analysis allows you to drill down into the causes of change in your KPIs and customize the insights generated by SpotIQ.
+To access this feature, go to your KPI chart and select the caret icon to the right of the percent change label. The *Run change analysis* pop-up allows you to customize the columns ThoughtSpot analyzes. Note that ThoughtSpot runs change analysis between the two most recent data points defined by the KPI’s time bucket (for example, `daily` or `weekly`).
+* We introduced improved deep linking to ThoughtSpot mobile. When you click a link you no longer need to choose whether you want to view the link in your default mobile browser or the ThoughtSpot app. The default behavior is to open the link in ThoughtSpot if it is supported.
+* You can now receive ThoughtSpot mobile push notifications. Receive push notifications when a Liveboard or Answer is shared with you. Monitor scheduled and threshold alerts with push notifications.
+
+[#9-10-0-cl-data-engineer]
+
 === For the Data Engineer
 
+// Naomi -- scal-166158, documentation JIRA scal-201042 (approved)
+Google Cloud SQL for MySQL connection:: We added support for xref:connections-google-cloud-sql-mysql.adoc[Google Cloud SQL for MySQL].
 
-SQL Server connection:: You can now create connections from ThoughtSpot to SQL Server. For details, see xref:connections-sql-server.adoc[SQL Server].
+// Naomi -- scal-118895, documentation JIRA SCAL-201045
+Validate metadata for connections::
+You can now validate connections to discover any changes in metadata after the connection was created. When you validate a connection, ThoughtSpot provides a JSON file containing details on the metadata changes. Once alerted to a metadata change, you can use TML to update the connection.
 
-Delete table columns using TML::
+////
+// Naomi -- scal-158415
+Row-level security in custom calendars:: We now support row-level security in custom calendars.
+////
 
-Remove columns from tables in ThoughtSpot by deleting them in the tables' TML files. For more information, see xref:tml.adoc#syntax-tables[Syntax of the table TML file].
+// Mark -- SCAL-161198
+//Looker Modeler connection:: You can now create a connection to Looker Modeler. For more information, see xref:connections-looker.adoc[Looker Modeler].
 
-Edit join conditions using TML::
+// Naomi -- scal-169065, documentation JIRA scal-201046 (approved)
+dbt public API:: dbt core users can now use the dbt public API to upload dbt project files to ThoughtSpot. Use the dbt sync API to upload your dbt project's zip files.
 
-Use TML to directly edit a join condition by editing the TML file's `on` parameter. This replaces the existing process of deleting and recreating the join in TML or the ThoughtSpot application. For more information, see xref:tml.adoc#syntax-joins[TML join syntax].
+// Naomi -- scal-169614, documentation JIRA scal-201047 (approved)
+dbt version 1.7:: ThoughtSpot now supports dbt version 1.7.
 
-Join creation for views [.badge.badge-beta-relnotes]#Beta#::
-We standardized the method of creating joins for all data objects in ThoughtSpot. When creating a join from a view, users are now directed to a *Create join* page where they can choose a connection, name the join, and map the source and destination columns.
-
-
-[#9-1-0-cl-it-ops-engineer]
-=== For the IT/Ops Engineer
-
-Cross-Region Disaster Recovery::
-
-Cross-Region Disaster Recovery allows ThoughtSpot to recover your ThoughtSpot instance in a secondary cloud region in the case of a failure of the primary cloud region where ThoughtSpot is running. This ensures that if one cloud region fails, ThoughtSpot can start in another region, guaranteeing minimal downtime. See xref:business-continuity.adoc#disaster-recovery[Data Protection and Disaster Recovery].
-
-Object Usage Liveboard:: Use the Object Usage Liveboard to easily track how specific objects (Liveboards, Answers, Worksheets, or tables) are trending over time. Our new visualizations allow you to understand adoption on the object-level, and filter on a specific user or users to see usage on the user-level. For more information, see xref:object-usage-liveboard.adoc[Object Usage Liveboard].
-
-[#9-1-0-cl-developer]
+[#9-10-0-cl-developer]
 === For the Developer
 
-ThoughtSpot Everywhere:: For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation^].
+For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation^].

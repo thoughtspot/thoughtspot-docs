@@ -5,8 +5,12 @@
 :page-layout: default-cloud
 :connection: Synapse
 :description: ThoughtSpot supports OAuth for a Microsoft Azure Synapse connection.
+:jira: SCAL-160062, SCAL-180837
 
 ThoughtSpot supports OAuth for a Microsoft Azure {connection} connection. This page describes the setup and configuration required for using OAuth2.0 with Azure AD as the IdP for Azure {connection} connections.
+
+IMPORTANT: Each ThoughtSpot instance requires a unique {connection} security integration.
+Each user in {connection} must have a default warehouse and default role.
 
 [#part-1]
 == Part 1: Create AD application in Azure
@@ -33,6 +37,8 @@ The OAuth client application creation is complete.
 The following image displays example details of an application.
 +
 image::azure-application-complete.png[Example OAuth client application details]
++
+NOTE: If your IdP supports rotation of refresh tokens with every usage, please ensure that this option is NOT chosen. ThoughtSpot does not support one-time use refresh tokens.
 
 . Make a note of the **Application (client) ID**, which you will use later in the OAuth2.0 authorization workflow.
 +
@@ -114,6 +120,14 @@ image:oauth-error.png[Error reading “Error in loading data. Connection to Snow
 
 . You will now have access to edit the connection.
 
+== OAuth connection improvements
+
+If you do not have a valid OAuth access token, you can now directly navigate to the OAuth authorization screen when performing one of the following actions on a connection shared with you:
+
+** View sample data
+** Create a custom SQL view
+** Edit the connection
+
 
 '''
 > **Related information**
@@ -125,3 +139,6 @@ image:oauth-error.png[Error reading “Error in loading data. Connection to Snow
 > * xref:connections-synapse-delete-table-dependencies.adoc[Delete a table with dependent objects]
 > * xref:connections-synapse-delete.adoc[Delete a {connection} connection]
 > * xref:connections-synapse-reference.adoc[Connection reference for {connection}]
+> * xref:connections-query-tags.adoc#tag-synapse[ThoughtSpot query tags in Synapse]
+> * xref:connections-synapse-passthrough.adoc[]
+> * xref:connections-column-indexing-oauth.adoc[]

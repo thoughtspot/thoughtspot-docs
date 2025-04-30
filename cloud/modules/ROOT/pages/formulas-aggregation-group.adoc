@@ -5,6 +5,7 @@
 :page-layout: default-cloud
 :page-aliases: /complex-search/about-pinned-measures.adoc
 :description: Learn about group aggregation functions, or pinned measures.
+:jira: SCAL-188030, SCAL-212568
 
 What if you want to aggregate a value by a specific attribute (for example, show revenue by product)?
 This is known as a grouped aggregation, but some people call it a pinned measure or level-based measure.
@@ -70,13 +71,13 @@ Group aggregation functions have the following limitations:
 
 * You can't run SpotIQ analysis on a visualization that contains a group aggregation function.
 
-* You can't create a KPI chart with a group aggregation function.
-
-* ThoughtSpot doesn't support table aggregate headlines for formulas that have group aggregates and are conditional.
+* ThoughtSpot doesn't support aggregate table summaries for formulas that have group aggregates and are conditional.
 
 * You can't run a `vs` query that also contains a group aggregation function.
 
-* You can't run a group aggregation function on a group aggregation function.
+* You can't run a group function on a group function. If you would like to create a nested group aggregation function, you can do so by first saving the answer with the first level of the group function as a View, then using the View as the data source for a second answer with the second level of the group function.
+
+* Any group aggregation function that returns a measure at the row level is implicitly reaggregated with a `sum` to match the level of detail defined in the Search bar. To circumvent this behavior, define the aggregation type within the formula, for example, `sum(revenue) + group_sum(tax)`. This behavior extends to `if...then..else` statements: `if(revenue = 0) then group_sum(revenue) else 0` would be reaggregated with a `sum`, while `if (sum(revenue) = 0) then group_sum(revenue) else 0` would not.
 
 '''
 > **Related information**
