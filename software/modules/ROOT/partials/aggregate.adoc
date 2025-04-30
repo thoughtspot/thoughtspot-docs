@@ -59,7 +59,7 @@ Define lists using curly brackets, `{ }`. Optional list functions `query_groups`
 +
 .[.badge.badge-beta]#Beta#
 ****
-Starting in the 9.0.0.sw release, you can specify columns in the third argument of a group_aggregate function to include only the filters defined in the search bar that are on that column. Other filters not on columns defined in the third argument of the function will be ignored. This feature is in Beta and off by default. To enable it, contact {support-url}. For more about Beta features, see xref:release-lifecycle.adoc#beta[ThoughtSpot Software release life cycle].
+Specify columns in the third argument of a group_aggregate function to include only the filters defined in the search bar that are on that column. Other filters not on columns defined in the third argument of the function will be ignored. This feature is in Beta and off by default. To enable it, contact {support-url}. For more about Beta features, see xref:release-lifecycle.adoc#beta[ThoughtSpot Software release life cycle].
 ****
 +
 See xref:formulas-aggregation-flexible.adoc[Flexible aggregation functions].
@@ -137,6 +137,19 @@ median::
 Returns the value of the measure from the row that has the 50th percentile value.
 +
 `median (sales)`
++
+[IMPORTANT]
+====
+Median is *not* supported when the resulting query:
+
+- is a complex query (chasm/fan trap) with non-shared attribute. This is referred to as an attribution query.
+- has group-by-group_aggregate
+- has a reusable set
+- has a query with an  IN-filter query
+- is displayed as a pivot table
+- table aggregate summary over median column
+====
+
 
 [#min]
 min::

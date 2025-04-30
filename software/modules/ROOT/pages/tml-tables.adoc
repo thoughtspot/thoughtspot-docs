@@ -1,21 +1,426 @@
-= Model, migrate, or restore tables
-:last_updated: 01/10/2021
+= TML for tables
+:last_updated: 5/19/2023
+:author: Teresa Killmond
 :linkattrs:
 :experimental:
-:page-partial:
-:description: Use ThoughtSpot Modeling Language (TML) to model or update tables in a flat-file format.
+:page-aliases: /admin/scriptability/tsl-table.adoc, /admin/scriptability/tml-table.adoc, /admin/ts-cloud/tsl-table.adoc
+:description: Use TML to modify tables in a flat-file format. Then, migrate the table to a different cluster, or restore it to the same cluster.
+:object: tables
 
+include::partial$tml-intro.adoc[]
 
-Use ThoughtSpot Modeling Language to model or update tables in a flat-file format. You can migrate the object to a different cluster, or restore it to the same cluster.
-
-To work with scriptable tables in ThoughtSpot, download these objects to a flat file in `TML` format, modify it, and subsequently upload this file either to the same cluster, or to a different cluster.
-To learn how to export, change, and update tables, see xref:scriptability.adoc[Import and export TML files].
-
-[#syntax-table]
+[#syntax-tables]
 include::partial$tml-syntax-table.adoc[]
 
-[#tml-parameters]
-include::partial$tml-parameters.adoc[]
+[#table-parameters]
+== TML parameters for {object}
+These parameters and their definitions are specific to {object}; this list doesn't contain every parameter in every TML file. Similarly, the parameter definitions may vary from object to object, since the parameters may have different roles in different objects.
+
+[width=“100%”,grid=“none”,options="header"]
+|===
+| a - e | f - j | n - t
+a| <<aggregation,aggregation>>
+
+<<calendar,calendar>>
+
+<<column,column>>
+
+<<column_type,column_type>>
+
+<<columns,columns>>
+
+<<connection,connection>>
+
+<<currency_type,currency_type>>
+
+<<custom_file_guid,custom_file_guid>>
+
+<<data_type,data_type>>
+
+<<db,db>>
+
+<<db_column_name,db_column_name>>
+
+<<db_column_properties,db_column_properties>>
+
+<<db_table,db_table>>
+
+<<description,description>>
+
+<<destination,destination>>
+
+<<expr,expr>>
+
+a| <<format_pattern,format_pattern>>
+
+<<fqn,fqn>>
+
+<<geo_config,geo_config>>
+
+<<geometryType,geometryType>>
+
+<<guid,guid>>
+
+<<id,id>>
+
+<<index_priority,index_priority>>
+
+<<index_type,index_type>>
+
+<<is_additive,is_additive>>
+
+<<is_attribution_dimension,is_attribution_dimension>>
+
+<<is_hidden,is_hidden>>
+
+<<is_one_to_one,is_one_to_one>>
+
+<<join,join>>
+
+<<join_path,join_path>>
+
+<<joins,joins>>
+
+<<joins_with,joins_with>>
+
+a| <<name,name>>
+
+<<on,on>>
+
+<<properties,properties>>
+
+<<rls_rules,rls_rules>>
+
+<<rule,rule>>
+
+<<rules,rules>>
+
+<<schema,schema>>
+
+<<source,source>>
+
+<<spotiq_preference,spotiq_preference>>
+
+<<synonyms,synonyms>>
+
+<<table,table>>
+
+<<table_paths,table_paths>>
+
+<<tables,tables>>
+
+<<type,type>>
+
+|===
+
+[#aggregation]
+aggregation::
+The default aggregation of the view column.
++
+Aggregation options depend on the data type.
++
+Possible values are `SUM`, `COUNT`, `AVERAGE`, `MAX`, `MIN`, `COUNT_DISTINCT`, `NONE`, `STD_DEVIATION`, and `VARIANCE`
++
+Default: `SUM`.
+
+[#calendar]
+calendar::
+Specifies the calendar used by a date column.
++
+Can be the Gregorian calendar (`default`), a fiscal calendar, or any custom calendar.
++
+See xref:connections-cust-cal.adoc[Set up a custom calendar].
+
+[#column]
+column::
+The id of the column(s) being filtered on.
+
+[#column_type]
+column_type::
+The type of data the column represents.
++
+Possible values: `MEASURE` or `ATTRIBUTE`
+
+[#columns]
+columns::
+The columns in the table.
+
+[#connection]
+connection::
+A way to identify the external data warehouse connection that the table or column resides in. To add tables or columns to an external connection, you must specify this parameter.
+
+[#currency_type]
+currency_type::
+The source of the currency type.
++
+One of:
++
+`is_browser : true`;; infer the currency data from the locale of your browser
+`column : <column_name>`;; extracts the currency information from a specified column
+`iso_code : <valid_ISO_code>`;; applies currency based on the ISO code;
++
+See https://www.iso.org/iso-4217-currency-codes.html[ISO 4217 Currency Codes^] and xref:data-modeling-patterns.adoc#set-currency-type[Set currency type] for more information.
+
+[#custom_file_guid]
+custom_file_guid::
+The GUID for a custom map uploaded by an administrator.
+
+[#data_type]
+data_type::
+The data type of the column.
+
+[#db]
+db::
+The database that a table resides in.
+Note that this is not the same as the data warehouse (Falcon, Amazon Redshift, or Snowflake, for example).
+
+[#db_column_name]
+db_column_name::
+The name of the column in the database.
+Note that this database is not the same as the data warehouse (Amazon Redshift, or Snowflake, for example).
+
+[#db_column_properties]
+db_column_properties::
+The properties of the column in the database. Note that this database is not the same as the data warehouse (Amazon Redshift or Snowflake, for example).
+
+[#db_table]
+db_table::
+The name of the table in the database.
+Note that this database is not the same as the data warehouse (Falcon, Amazon Redshift, or Snowflake, for example).
+
+[#description]
+description::
+The text that describes an object: a `table`, a `join`, and so on.
+
+[#destination]
+destination::
+The name of the destination table or view for a join.
+
+[#expr]
+expr::
+The definition of the row-level security (RLS) rule. The syntax for variables in TML should be the same as the syntax of the variables in the rule on the table.
+
+[#format_pattern]
+format_pattern::
+The format pattern string that controls the display of a number, date, or currency column.
++
+See xref:data-modeling-patterns.adoc[Set number, date, and currency formats].
+
+[#fqn]
+fqn::
+The table or connection's GUID.
+You can find this string of letters and numbers at the end of the URL for that table or connection.
++
+For example, in `\https://<company>.thoughtspot.com/#/data/tables/34226aaa-4bcf-4d6b-9045-24cb1e9437cb`, the GUID is `34226aaa-4bcf-4d6b-9045-24cb1e9437cb`.
++
+Use this optional parameter to reduce ambiguity and identify a specific table, if you have multiple tables with the same name. When exporting a TML file, you have the option to *Export FQNs of referenced objects*, which ensures that the TML files you export contain FQNs for the underlying tables and connections. If you do not add the `fqn` parameter, and the connection or table you reference does not have a unique name, the file import fails.
+
+[#geo_config]
+geo_config::
+Specifies the geographic information of a column. See xref:data-modeling-geo-data.adoc[Add a geographical data setting].
++
+One of:
++
+`latitude : true`;; for columns that specify the latitude
+`longitude : true`;; for columns that specify the longitude
+`country : true`;; for columns that specify the country
+`region_name`;; for specifying a region in a country
++
+Uses two paired parameters:
+
+- `country: __<country_name>__`
+- `region_name: __<region_name_in_UI>__`; can be State, Postal Code, District, and so on.
+`custom_file_guid: <custom map GUID>`;; for columns that use a custom map. Must be followed by `geometryType`.
+`geometryType: <custom_map_geometry_type>`;; for columns that use a custom map. Must be preceded by `custom_file_guid`. Accepts the following values: `POINT`, `LINE_STRING`, `LINEAR_RING`, `POLYGON`, `MULTI_POINT`, `MULTI_LINE_STRING`, `MULTI_POLYGON`, `GEOMETRY_COLLECTION`, `CIRCLE`
+[#geometryType]
+geometryType::
+Specifies the geometry type of the *TopoJSON* file. Required for geographical configuration of Worksheet or table columns that use a custom map. Accepts the following values: `POINT`, `LINE_STRING`, `LINEAR_RING`, `POLYGON`, `MULTI_POINT`, `MULTI_LINE_STRING`, `MULTI_POLYGON`, `GEOMETRY_COLLECTION`, `CIRCLE`
+
+[#guid]
+guid::
+The GUID for the table. You can find this string of letters and numbers at the end of the URL for an object.
+
+[#id]
+id::
+Specifies the id of an object, such as `table_paths`, `name`.
+
+[#index_priority]
+index_priority::
+A value (1-10) that determines where to rank a column's name and values in the search suggestions
++
+ThoughtSpot prioritizes columns with higher values.
++
+See xref:data-modeling-index.adoc#column-suggestion-priority[Change a column's suggestion priority].
+
+[#index_type]
+index_type::
+The indexing option of the table column.
++
+Possible values: `DONT_INDEX`, `DEFAULT` (see xref:data-modeling-index.adoc#default-indexing[Understand the default indexing behavior]), `PREFIX_ONLY`, `PREFIX_AND_SUBSTRING`, and `PREFIX_AND_WORD_SUBSTRING`
++
+Default: `DEFAULT`
++
+See xref:data-modeling-index.adoc#override-system-default-column[Index Type Values].
+
+[#is_additive]
+is_additive::
+Controls extended aggregate options for attribute columns.
++
+For attribute columns that have a numeric data type (`FLOAT`, `DOUBLE`, or `INTEGER`) or a date data type (`DATE`, `DATETIME`, `TIMESTAMP`, or `TIME`)
++
+Possible values: `true` or `false`.
++
+Default: `true`.
++
+See xref:data-modeling-aggreg-additive.adoc#make-attribute-additive[Making an ATTRIBUTE column ADDITIVE].
+
+[#is_attribution_dimension]
+is_attribution_dimension::
+Controls if the column is an attribution dimension.
++
+Used in managing chasm traps.
++
+Possible values: `true` by default, `false` to designate a column as not producing meaningful attributions across a chasm trap
++
+Default: `true`
++
+See xref:data-modeling-attributable-dimension.adoc[Change the attribution dimension].
+
+[#is_hidden]
+is_hidden::
+The visibility of the column.
++
+Possible values: `true` to hide the column, `false` not to hide the column +
+Default: `false`
++
+See xref:data-modeling-visibility.adoc[].
+
+[#is_one_to_one]
+is_one_to_one::
+Specifies the cardinality of the join. This is an optional parameter.
++
+Possible values: `true`, `false`
++
+Default: `false`
+
+[#join]
+join::
+Specific join, used in defining higher-level objects, such as table paths.
++
+Defined as `name` within `joins` definition
+
+[#join_path]
+join_path::
+Specification of a composite join as a list of distinct `join` attributes.
++
+These `join` attributes list relevant joins, previously defined in the `joins`, by name.
++
+Default: `{}`
+
+[#joins]
+joins::
+Contains a list of joins between the tables and views.
++
+If you edit the joins in the Worksheet or View TML file, you are only editing the joins for that specific Worksheet or view. You are not editing the joins at the table level. To modify table-level joins, you must edit the source table's TML file.
++
+Each join is identified by `name`, and the additional attributes of `source`, `destination`, `type`, and `is_one_to_one.`
+
+[#joins_with]
+joins_with::
+Contains a list of external joins for which this table is the source. Each join is identified by `name` and optional `description`, and the additional attributes of `destination`, `type`, `on`, and `is_one_to_one`.
+
+[#name]
+name::
+The name of an object.
+Applies to `table`, `joins`, `connection`, and so on.
+
+[#on]
+on::
+The join expression: the relationship definition, or the keys that your tables are joined on. For example, `[sale::Sale_Last Name] = [employee::Employee_Last Name] AND [sale::Sale_First Name] = [employee::Employee_First Name]`.
++
+To alter a relationship definition, edit this parameter.
+
+[#properties]
+properties::
+The list of properties of a table column.
++
+Each column can have the following properties, depending on its definition: `column_type`, `aggregation`, `index_type`, `is_hidden`, `index_priority`, `synonyms`, `is_attribution_dimension`, `is_additive`, `calendar`, `format_pattern`, `currency_type`, `geo_config`, and `spotiq_preference`.
+
+[#rls_rules]
+rls_rules::
+A container for the full definition of xref:security-rls-concept.adoc[row-level security] rules for the table.
+
+[#rule]
+rule::
+A conditional formatting rule.
+
+[#rules]
+rules::
+A container for the names and expressions of xref:security-rls-concept.adoc[row-level security] rules for the table.
+
+[#schema]
+schema::
+The schema that the table is a part of.
+
+[#source]
+source::
+Name of the source table or view for a join.
+
+[#spotiq_preference]
+spotiq_preference::
+Specifies whether to include a column in SpotIQ analysis.
+Specify `EXCLUDE`, or this property defaults to include the column in SpotIQ Analysis.
++
+Refer to xref:spotiq-data-model-preferences.adoc[Set columns to exclude from SpotIQ analyses].
+
+[#synonyms]
+synonyms::
+Alternate names for the column, used in search.
++
+See xref:data-modeling-visibility.adoc[].
+
+[#table]
+table::
+Top-level container for all object definitions within the table.
+
+[#table_paths]
+table_paths::
+The list of table paths.
++
+Each table path is identified by the `id`, and additional attributes of `table` and `join_path`.
+
+[#tables]
+tables::
+List of tables used by the RLS rule.
++
+Each table is identified by `name`.
+
+[#type]
+type::
+The connection type.
++
+Possible values: `Snowflake`, `Google BigQuery`, `Microsoft Azure`, or `Amazon Redshift`.
 
 [#limitations]
-include::partial$scriptability-limitations.adoc[]
+== Limitations of working with TML files
+
+There are certain limitations to the changes you can apply by editing {object} through TML.
+
+* Columns can either have a new name, or a new expression.
+You can't change both, unless migrating or updating the Worksheet two times.
+* It isn't possible to reverse the join direction in the TML script.
+* You can't create new tables using TML files.
+You can only update existing tables.
+* You can only change logical tables using TML files.
+You can't change the physical version of the table that exists in a database.
+When you change the `column_name`, for example, the name changes in the application, but not in the physical table in the database.
+* You can't import manually compressed .zip files.
+You can only import .zip files that you exported from ThoughtSpot: a custom set of TML files, an object and its associated data sources, or multiple objects of the same type that you exported from the object list page.
+* Joins only appear in the table TML file of the source table in a join, or the table on the Many side of a Many-to-One join.
+You can only add and edit table joins from the TML file of the table on the Many side of the join.
+You can't view or modify table-level joins from the destination table's TML file.
+* You can't remove tables from a connection.
+You can only add them.
+* You can only delete table columns that have no dependents. If the table column has any dependents, ThoughtSpot returns an error when you try to import or validate the TML file. To delete a table column, you must first delete the dependents.
+* When deleting columns, you only delete ThoughtSpot's record of the column. You don't delete the column in your external database.
+* If there is an error in any row-level security (RLS) rule when importing a table, all RLS rules for the table are removed. ThoughtSpot warns you about this on import, and highlights the rule that is in an error state, so you can fix it or remove it.

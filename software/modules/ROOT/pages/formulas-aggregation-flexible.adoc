@@ -5,6 +5,7 @@
 :page-partial:
 :page-aliases: /complex-search/aggregation-flexible.adoc
 :description: Use the group_aggregate function in ThoughtSpot to aggregate measures at different granularities than the dimensions used in the search columns.
+:jira: SCAL-225559
 
 Use the group_aggregate function in ThoughtSpot to aggregate measures at different granularities than the dimensions used in the search columns.
 
@@ -152,6 +153,24 @@ For more extensive examples of using the `group-aggregate` function, we encourag
 Flexible group aggregate formulas allow for flexibility in both xref:formulas-aggregation-group.adoc[groupings] and xref:formulas-aggregation-filtered.adoc[filters].
 The formulas give you the ability to specify only groupings or only filters.
 
+[#query-groups]
+== Query groups
+
+With `query_groups()+ {attribute_column}` or `+query_groups()-{attribute_column}+`, you can aggregate results while including/excluding a column from the original search.
+
+The `query_groups()` function returns all attribute columns defined in the base search.
+
+If, for example, you use the condition `query_groups() - {region, sku, name}`, this changes the level of detail for the group aggregate formula. In this scenario, region, sku, and name have been removed. If these columns are not included in the base search, then this definition is ignored.
+
+Under the new logic, the `{region, sku, name}` condition fixes the level of detail for the `group by` columns to the columns defined.
+
+You can combine options to both add and remove columns like in the following example:
+
+`query_groups()+ {region} - {sku, name}`.
+
+Regarding dates, when query_groups() is defined, the date period defined in the search will be passed into the group function. Assuming the search is *monthly*, then the group function will also be at the monthly grain. You can use date functions to change the grain, such as `{start_of_year(transaction date)}`.
+
+
 [#query-filters]
 === Query filters
 
@@ -196,7 +215,7 @@ In this case, the results will be aggregated based on the dimensions in the sear
 [#groupagg-filters-enhancement]
 === Group aggregation filters enhancement [.badge.badge-beta]#Beta#
 
-Beginning in the 9.0.0.sw release, you can specify a column in the third argument of a group_aggregate function in order to include all filters defined in the search that pertain to that column, and ignore unrelated filters. This enhancement allows the analyst to specify which fields to accept filters from, improving readability of formulas, and reducing operational change and related errors.
+Specify a column in the third argument of a group_aggregate function in order to include all filters defined in the search that pertain to that column, and ignore unrelated filters. This enhancement allows the analyst to specify which fields to accept filters from, improving readability of formulas, and reducing operational change and related errors.
 
 .[.badge.badge-beta]#Beta#
 ****
@@ -205,7 +224,7 @@ The group aggregation filters enhancement feature is in Beta and off by default.
 
 For example, say that you would like to determine how many stores a certain product was sold in during a given time period, expressed as a ratio of total available stores. In order to calculate the total available stores, you require a group_aggregate function that will accept the filters associated with transaction date (for example, this year, last six months, august), and ignore filters from other fields.
 
-Before 9.0.0.sw, this formula would look like: `group_aggregate(count(storid),query_groups(),query_filters-{field1,field2,fieldN})`, where users would have to use `query_filters - {}` to manually remove every field in the search bar that did not relate to transaction date. When adding a new unrelated filter to the search bar, users would then have to edit all existing formulas to ignore the filter.
+Before 9.0.1.sw, this formula would look like: `group_aggregate(count(storid),query_groups(),query_filters-{field1,field2,fieldN})`, where users would have to use `query_filters - {}` to manually remove every field in the search bar that did not relate to transaction date. When adding a new unrelated filter to the search bar, users would then have to edit all existing formulas to ignore the filter.
 
 With this feature enabled, users can simply specify the formula as `group_aggregate(count(storied),query_groups, {date})`, and the formula will automatically ignore all unrelated filters in the search bar.
 
