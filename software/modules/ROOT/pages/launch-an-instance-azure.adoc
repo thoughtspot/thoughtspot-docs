@@ -44,7 +44,7 @@ Create your virtual machines based on the https://azuremarketplace.microsoft.com
 
 . Log in to the Azure portal.
 +
-In a browser, go to https://portal.azure.com/#home, and log in to your Azure account.
+In a browser, go to https://portal.azure.com/#home[https://portal.azure.com/#home,window=_blank], and log in to your Azure account.
 
 . On the Azure portal homepage, hover over *Virtual machines*, and click *Create*.
 +
@@ -74,7 +74,7 @@ If not, _create new_.
 Choose the https://azuremarketplace.microsoft.com/en-us/marketplace/apps/thoughtspot-inc.thoughtspotvirtualmachine?tab=Overview[ThoughtSpot Search & AI-driven Analytics (BYOL),window=_blank] image.
 
 | *6*
-| Refer to xref:configuration-options.adoc[Azure configuration options] to choose a size for your VM that works for your cluster needs.
+| Refer to xref:configuration-options-azure.adoc[Azure configuration options] to choose a size for your VM that works for your cluster needs.
 
 | *7*
 | Select *SSH public key* and specify a username.
@@ -99,7 +99,7 @@ See the <<port-requirements,minimum port requirements>>.
 +
 image::azure-disks.png[Specify disk information]
 +
-[cols=2*]
+[cols="5%,95%"]
 |===
 | *1*
 | Choose a disk type from the dropdown menu.
@@ -108,7 +108,7 @@ ThoughtSpot recommends the Premium SSD disks.
 | *2*
 | Click *Create and attach a new disk*.
 Add two data disks.
-Refer to xref:configuration-options-azure.adoc#thoughtspot-azure-instance-types[Azure configuration options] to see what size they should be.
+Refer to xref:configuration-options-azure.adoc#ts-azure-instance-types[Azure configuration options] to see what size they should be.
 
 | *3*
 | Under *Advanced*, click *yes* to *use managed disks*.
@@ -195,18 +195,32 @@ Select *Networking* from the list on the left side of the screen.
 . In a terminal application, connect to the VM through SSH.
 +
 Log in as the admin user, using the private key that your ThoughtSpot contact sent you.
-
- $ ssh -i <path_to_private_key> admin@<public_VM_IP>
 +
-// {% include tip.adoc content="If the SSH key is not accepted or lost, you can reset it by going to <strong>Reset password</strong> under <strong>Support + troubleshooting</strong> on the Azure Virtual Machine page. You can only do this before deploying the cluster." %}
-
+[source,console]
+----
+$ ssh -i <path_to_private_key> admin@<public_VM_IP>
+----
 . Update the password for both the `admin` and the `thoughtspot` users.
-+   The command prompts you to type in a new password, and then to confirm the password.
-
- $ sudo passwd admin
- Changing password for user admin
- $ sudo passwd thoughtspot
- Changing password for user thoughtspot
++
+The command prompts you to type in a new password, and then to confirm the password.
++
+[source,console]
+----
+$ sudo passwd admin
+----
++
+----
+Changing password for user admin
+----
++
+[source,console]
+----
+$ sudo passwd thoughtspot
+----
++
+----
+Changing password for user thoughtspot
+----
 +
 WARNING: If you do not change the password, you cannot log back into your Azure VMs.
 Your private key does not work after initial installation.
@@ -216,31 +230,33 @@ Your private key does not work after initial installation.
 === Verify storage disks
 
 Verify the existence of your data disks, created in Step 4 of <<create-instance,create an instance>>, by issuing `lsblk` in your terminal application:
-
+[source,console]
 ----
-   $ lsblk
+$ lsblk
 ----
 
 Your result may look something like the following:
-
 ----
-   NAME    MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
-   fd0       2:0    1    4K  0 disk
-   sda       8:0    0  200G  0 disk
-   ├─sda1    8:1    0    1G  0 part /mntboot
-   ├─sda2    8:2    0   20G  0 part /
-   ├─sda3    8:3    0   20G  0 part /update
-   └─sda4    8:4    0  159G  0 part /export
-   sdb       8:16   0    1T  0 disk
-   └─sb1     8:17   0    1T  0 part /mnt/resource
-   sdc       8:32   0    1T  0 disk
-   sdd       8:48   0    1T  0 disk
-   sr0      11:0    1  628K  0 rom
+NAME    MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+fd0       2:0    1    4K  0 disk
+sda       8:0    0  200G  0 disk
+├─sda1    8:1    0    1G  0 part /mntboot
+├─sda2    8:2    0   20G  0 part /
+├─sda3    8:3    0   20G  0 part /update
+└─sda4    8:4    0  159G  0 part /export
+sdb       8:16   0    1T  0 disk
+└─sb1     8:17   0    1T  0 part /mnt/resource
+sdc       8:32   0    1T  0 disk
+sdd       8:48   0    1T  0 disk
+sr0      11:0    1  628K  0 rom
 ----
 
 . Unmount the temporary disk by issuing the following command:
-
- $ sudo umount /mnt/resource
++
+[source]
+----
+$ sudo umount /mnt/resource
+----
 +
 WARNING: The `/mnt/resource` disk, which is mounted on the `/dev/sdb` disk, is temporary.
 Any data on it will be wiped if the VM is shut down.
@@ -251,13 +267,17 @@ You must unmount the `/mnt/resource` disk.
 WARNING: Do not use the disk `/dev/sdb`.
 Any data on it will be wiped if the VM is shut down.
 +
+[source,console]
 ----
- $ sudo /usr/local/scaligent/bin/prepare_disks.sh /dev/sdc /dev/sdd
+$ sudo /usr/local/scaligent/bin/prepare_disks.sh /dev/sdc /dev/sdd
 ----
 
 . Check the disks' status by issuing the following command:
-
- $ df -h
++
+[source,console]
+----
+$ df -h
+----
 
 . Repeat the steps in this section for each node in your cluster.
 
@@ -265,7 +285,7 @@ Any data on it will be wiped if the VM is shut down.
 
 As you develop your expertise in Azure VM creation, we recommend the following ThoughtSpot U course:
 
-* https://training.thoughtspot.com/node-network-configuration/510569[Node Configuration: Azure, window=_blank]
+* https://training.thoughtspot.com/node-network-configuration/510569[Node Configuration: Azure,window=_blank]
 
 See other training resources at:
 
@@ -306,3 +326,9 @@ $ sudo sh -c 'echo "DEVICE=eth0" > /etc/sysconfig/network-scripts/ifcfg-eth0'
     ```
 4. Repeat this process (steps 1 through 4) for each node.
 ////
+
+'''
+> **Related information**
+>
+> * xref:installing-azure.adoc[Configure ThoughtSpot nodes in Azure]
+> * xref:azure-cluster-install.adoc[Install ThoughtSpot clusters in Azure]

@@ -1,5 +1,7 @@
 = Import CSV files with tsload
 :last_updated: 03/07/2020
+:permalink: /:collection/:path.html
+:sidebar: mydoc_sidebar
 
 Use the `tsload` command to import data from a CSV file.
 
@@ -38,37 +40,27 @@ To manually load data into ThoughtSpot, follow these steps.
 You can also save the `tsload` commands to a script, for reuse.
 
 . Log in to the Linux shell using SSH.
-+
-[source,console]
-----
-$ ssh admin@<cluster-IP>
-----
+
+ $ ssh admin@<cluster-IP>
+
 . Change to the directory that contains the staged CSV files.
-+
-[source,console]
-----
-$ cd <directory>
-----
+
+ $ cd <directory>
 
 . Use the following syntax to invoke `tsload`, specifying the appropriate flags, and your data source file:
-+
-[source,console]
-----
-$ tsload --target_database=<my_database>
+
+ $ tsload --target_database=<my_database>
         --target_table=<my_table> --alsologtostderr
         --empty_target --source_file=<my_file.csv> --v 1
         --field_separator="separator_char"
-----
 +
 This example imports the CSV file `ssbm_customer.csv` into the table CUSTOMER:
-+
-[source,console]
-----
-$ tsload --target_database=SAMPLE_DB
-      --target_table=CUSTOMER --alsologtostderr
-      --empty_target --source_file=ssbm_customer.csv
-      --v 1 --field_separator "|"
-----
+
+ $ tsload --target_database=SAMPLE_DB
+        --target_table=CUSTOMER --alsologtostderr
+        --empty_target --source_file=ssbm_customer.csv
+        --v 1 --field_separator "|"
+
 . Once `tsload` starts processing the data, you can see messages that indicate the progress.
 When the load is complete, you can see two summary messages: `source summary` and `load summary`.
 +
@@ -136,23 +128,18 @@ To load data from an AWS S3 bucket, do the following:
 . Log in to the Linux shell of your AWS instance using SSH.
 . Use the following syntax to invoke `tsload`, specifying the appropriate flags and your data source file.
 If you do not supply the `--s3a_bucket_name`, `tsload` prompts you to enter it.
-+
-[source,console]
-----
-$ tsload --source_file "/s3a/default/<my_file_in_aws>"
+
+ $ tsload --source_file "/s3a/default/<my_file_in_aws>"
         --target_database "<my_database_in_ThoughtSpot>" --target_table "<my_table_in_the_database_in_ThoughtSpot>" --s3a_bucket_name <bucket_name>
-----
 +
 IMPORTANT: --source_file should contain the file path inside the bucket and *_must_* be prefixed by `/s3a/default`.
 For example, to load from a file named "`directory/file.csv`", the --source_file should be "`/s3a/default/directory/file.csv`".
 +
 This example imports the CSV file `teams.csv` into the table `teams` in the database `temp`:
-+
-[source,console]
-----
-$ tsload --source_file "/aws/default/teams.csv"
+
+ $ tsload --source_file "/aws/default/teams.csv"
         --target_database "temp" --target_table "teams"
-----
+
 . After running the `tsload` command, you are prompted to enter additional AWS S3 information:
  ** AWS S3a bucket name
 
@@ -188,35 +175,29 @@ If you are using GCS for persistent storage, you already assigned the *Set acces
 . Log in to the Linux shell of your GCP instance using SSH.
 . Invoke TQL:
 +
-[source,console]
 ----
-$ tql
-----
-+
-----
-TQL>
+ $ tql
+
+ TQL>
 ----
 
 . Create the database:
 +
-[source,console]
 ----
-TQL> CREATE DATABASE temp;
+ TQL> CREATE DATABASE temp;
 ----
 
 . Connect to the database:
 +
-[source,console]
 ----
-TQL> USE temp;
+ TQL> USE temp;
 ----
 
 . Create the table
 +
-[source,console]
 ----
-TQL> create table teams (id int, name VARCHAR(255));
-TQL> exit;
+ TQL> create table teams (id int, name VARCHAR(255));
+ TQL> exit;
 ----
 
 === Load data
@@ -230,7 +211,8 @@ $ tsload --source_file /gs/default/team.csv
        --target_table teams
        --bucket_name "my_gcs_bucket"
        --has_header_row 2>/dev/null
-
+----
+----
 $ Header row read successfully
 Source has 2 data rows, has header row, ignored row count 0
 Waiting for rows to commit...(please wait)
@@ -264,7 +246,7 @@ Data size = 19 bytes = 0.02 KB = 0.00 MB
 
 . Invoke TQL:
 +
-[source,console]
+[source]
 ----
 $ tql
 ----
@@ -274,14 +256,13 @@ TQL>
 
 . Connect to the database:
 +
-[source,console]
+[source]
 ----
 TQL> USE temp;
 ----
 
 . Show the table data:
 +
-[source,console]
 ----
 TQL> select * from teams;
 ----

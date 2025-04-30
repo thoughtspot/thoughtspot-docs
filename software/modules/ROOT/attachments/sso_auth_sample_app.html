@@ -1,0 +1,272 @@
+<!--
+* Description : Client needs to concern itself with only three things.
+*
+* 1. What to do on initialization ? Can be wrapped inside a function say
+*    onInitialized(isInitialized)
+*
+* 2. What to do on authentication expiration ? Can be wrapped inside a function
+*    say onAuthExpiration()
+*
+* 3. Call window.thoughtspot.initialize() before anything providing it with
+*    callback functions on what to do on initialization and what to do on auth
+*    expiration.
+-->
+<html>
+<head>
+
+    <script type="text/javascript" src="api.min.js"></script>
+
+
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+
+
+    <script type="text/javascript">
+
+        // Host protocol Ex: http/https
+        var protocol = "http";
+        // Hostport info for ThoughtSpot app. Ex: <host>:<port> or <host>
+        var hostPort = "";
+        // ID of the pinboard to embed.
+        var pinboardId = "";
+        // ID of the visualization to embed.
+        var vizualizationId = "";
+        // ID of the pinboard visualization is part of.
+        var vizPinboardId = "";
+
+
+        /**
+         * Following are the three important steps to follow in order to embed
+         * ThoughtSpot within your website.
+         */
+
+        /**
+         * Step 1: Define steps you want to carry out on initialization success
+         *         or failure.
+         *
+         * @param isInitialized Boolean value to represent if the initialization
+         *        was successful or not.
+         */
+        function onInitialized(isInitialized) {
+            document.getElementById('clientApp').style.display = "initial";
+            if (isInitialized) {
+                console.log("Initialization successful.");
+                embedPinboardIframe();
+                embedVisualizationIframe();
+                embedSearchIframe();
+            } else {
+                console.log("Initialization un-successful.");
+            }
+        }
+
+        /**
+         * Step 2: Define steps you want to carry out upon authentication
+         *         expiration.
+         */
+        function onAuthExpiration() {
+            console.log("Auth expiration handler being called.");
+            if (confirm("Do you want to re-authenticate using IDP?")) {
+                window.location.reload(true);
+            } else {
+                // Do nothing!
+            }
+        }
+
+        /**
+         * Step 3: Call initialize by providing the two handlers and the API
+         *         will assume the responsibility of calling these functions.
+         *         As this call can cause the whole page to reload, consider
+         *         doing it before loading any resources.
+         */
+        window.thoughtspot.initialize(
+            onInitialized,
+            onAuthExpiration,
+            hostPort);
+
+
+        /**
+         * Alternative: Pass username and password to session/login API.  This
+         *              will create a cookie session that can be used in the browser
+         *              for all future API calls
+         *
+         *              @param username to authenticate
+         *              @param password of user
+         *              @param rememberme retains cookie
+         *
+         *              uncomment function call to enable
+         */
+        // loginToThoughtspot();
+        function loginToThoughtspot() {
+           $.ajax(protocol + '://' + hostPort + '/callosum/v1/session/login', {
+              data: {
+                 username: "tsadmin", // input username here
+                 password: "admin", // input password here
+                 rememberme: true
+              },
+              type: 'POST',
+              xhrFields: {
+                 withCredentials: true
+              },
+              timeout: 3000, // connection attempt timesout in 3 seconds
+              success: function (data) {
+                  console.log("Initialization successful.");
+                  embedPinboardIframe();
+                  embedVisualizationIframe();
+                  embedSearchIframe();
+                  debugger;
+              },
+              error: function (data) {
+                  debugger;
+              }
+           });
+        }
+
+
+        ///////////////////////////////////////////////////////////////////////
+        //// Example app and functions used in it are defined after this //////
+        ///////////////////////////////////////////////////////////////////////
+
+        /**
+         * Creates iframe URL from pinboard ID.
+         *
+         * @param pId to embed.
+         * @return iframe node
+         */
+        function getIframeToEmbedPinboard(pId) {
+            var tsApp = document.createElement('iframe');
+            tsApp.width = "70%";
+            tsApp.height = "70%";
+            tsApp.src = protocol + "://" + hostPort + "/#/embed/viz/" + pId;
+            console.log(tsApp.src);
+            return tsApp;
+        }
+
+        /**
+         * Creates iframe URL from visualization ID
+         *
+         * @param pId of pinboard which contains visualization.
+         * @param vId to embed.
+         * @return iframe node
+         */
+        function getIframeToEmbedVisualization(pId, vId) {
+            var tsApp = document.createElement('iframe');
+            tsApp.width = "70%";
+            tsApp.height = "70%";
+            tsApp.src = protocol + "://" + hostPort + "/#/embed/viz/" + pId + "/" + vId;
+            console.log(tsApp.src);
+            return tsApp;
+        }
+
+        /**
+         * Creates iframe URL from visualization ID
+         *
+         * @return iframe node
+         */
+        function getIframeToEmbedSearch() {
+            var tsApp = document.createElement('iframe');
+            tsApp.width = "80%";
+            tsApp.height = "80%";
+            tsApp.src = protocol + "://" + hostPort + "/?embedApp=true#/answer/";
+            console.log(tsApp.src);
+            return tsApp;
+        }
+
+
+        /**
+         * Creates button for REST Call
+         *
+         * @return iframe node
+         */
+        function getButton() {
+            var tsApp = document.createElement('button');
+            tsApp.innerHTML('make call')
+            tsApp.width = "80%";
+            tsApp.height = "80%";
+            return tsApp;
+        }
+
+        /**
+         * Embeds a pinboard in an iframe as a child node.
+         */
+        function embedPinboardIframe() {
+            var divElement = document.getElementById("p-embeded-content");
+            divElement.innerHTML = "";
+            document.getElementById("p-embeded-content").appendChild(
+                getIframeToEmbedPinboard(pinboardId));
+        }
+
+        /**
+         * Embeds a visualization in an iframe as a child node.
+         */
+        function embedVisualizationIframe() {
+            var divElement = document.getElementById("v-embeded-content");
+            divElement.innerHTML = "";
+            document.getElementById("v-embeded-content").appendChild(
+                getIframeToEmbedVisualization(vizPinboardId, vizualizationId));
+        }
+
+        /**
+         * Embeds the search bar in an iframe as a child node.
+         */
+        function embedSearchIframe() {
+            var divElement = document.getElementById("s-embeded-content");
+            divElement.innerHTML = "";
+            document.getElementById("s-embeded-content").appendChild(
+                getIframeToEmbedSearch());
+        }
+
+        /**
+         * Embeds the search bar in an iframe as a child node.
+         */
+        function embedSearchIframe() {
+            var divElement = document.getElementById("s-embeded-content");
+            divElement.innerHTML = "";
+            document.getElementById("s-embeded-content").appendChild(
+                getIframeToEmbedSearch());
+        }
+
+        /**
+         * Make REST API call.
+         */
+        function restApiCall() {
+            myUrl = protocol + "://" + hostPort + "/callosum/v1/tspublic/v1/pinboarddata?id=" + vizPinboardId
+            $.ajax({
+                url: myUrl,
+                type: 'POST',
+                dataType: 'JSON',
+                xhrFields: {
+                    withCredentials: true
+                }
+            }).done(function (data) {
+                console.log("Data successfully retrieved")
+                debugger;
+            }).fail(function (error) {
+                console.log("Error in getting data");
+                debugger;
+            })
+        }
+
+    </script>
+</head>
+
+
+<body style="display:None;text-align:center" id="clientApp">
+    <h1>Sample App</h1>
+    <hr width="70%"/>
+    <h2>Embedded pinboard</h2>
+    <div id="p-embeded-content"></div>
+    <br /><br />
+    <hr width="70%"/>
+    <h2>Embedded vizualization</h2>
+    <div id="v-embeded-content"></div>
+    <br /><br />
+    <hr width="70%"/>
+    <h2>Embedded Search</h2>
+    <div id="s-embeded-content"></div>
+    <br /><br />
+    <hr width="80%"/>
+    <h2>REST API</h2>
+    <div><button type="button" width="120" height="200" onclick="restApiCall()" id="r-call-data">Get Data</button></div>
+    <br /><br /><br /><br />
+</body>
+</html>

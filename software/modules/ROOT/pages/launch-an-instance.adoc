@@ -11,25 +11,32 @@ Follow these steps to set up your ThoughtSpot VMs in AWS.
 [cols="5%,95%"]
 |===
 | &#10063;
-| <<ami,1. Get access to ThoughtSpot's AMI>>.
+| <<ami,1.
+Get access to ThoughtSpot's AMI>>.
 
 | &#10063;
-| <<ec2-setup,2. Choose a VM instance configuration recommended by ThoughtSpot.>>
+| <<ec2-setup,2.
+Choose a VM instance configuration recommended by ThoughtSpot.>>
 
 | &#10063;
-| <<s3-bucket-setup,3. Set up your Amazon S3 bucket (optional).>>
+| <<s3-bucket-setup,3.
+Set up your Amazon S3 bucket (optional).>>
 
 | &#10063;
-| <<aws-ts-setup-cluster,4. Set up your ThoughtSpot cluster in AWS.>>
+| <<aws-ts-setup-cluster,4.
+Set up your ThoughtSpot cluster in AWS.>>
 
 | &#10063;
-| <<security-groups,5. Configure security groups.>>
+| <<security-groups,5.
+Configure security groups.>>
 
 | &#10063;
-| <<security-groups,6. Open the required network ports for communication for the nodes in your cluster and end users.>>
+| <<security-groups,6.
+Open the required network ports for communication for the nodes in your cluster and end users.>>
 
 | &#10063;
-| <<prepare-vms,7. Prepare the VMs.>>
+| <<prepare-vms,7.
+Prepare the VMs.>>
 |===
 
 [#about-ami]
@@ -69,7 +76,7 @@ To install ThoughtSpot using Amazon Linux 2, choose your own Amazon Linux 2-base
 
 To install and launch ThoughtSpot, you must have the following:
 
-[cols=2*]
+[cols="5%,95%"]
 |===
 | &#10063;
 | Familiarity with Linux administration, and a general understanding of cloud deployment models.
@@ -82,12 +89,12 @@ To install and launch ThoughtSpot, you must have the following:
 Ask your network administrator if you need help filling out the site survey.
 |===
 
-For more information about IAM, see: https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction.html[What Is IAM?] in Amazon's AWS documentation.
+For more information about IAM, see: https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction.html[What Is IAM?, window=_blank] in Amazon's AWS documentation.
 
 [#aws-required]
 === Required AWS components
 
-[cols=2*]
+[cols="5%,95%"]
 |===
 | &#10063;
 | An AWS Virtual Private Cloud (VPC).
@@ -117,7 +124,7 @@ For instance type recommendations, see xref:configuration-options.adoc#ts-aws-in
 [#ami]
 == Get access to ThoughtSpot AMI
 
-. Sign in to your https://console.aws.amazon.com/console/home[AWS account].
+. Sign in to your https://console.aws.amazon.com/console/home[AWS account, window=_blank].
 . Copy the correct ThoughtSpot public AMI to your AWS region.
 Refer to the chart below to find the AMI you should use, depending on your release number.
 +
@@ -131,11 +138,9 @@ Refer to the chart below to find the AMI you should use, depending on your relea
 California
 |===
 +
-{% include note.html content="The AMI is based in the N.
-California region.
-You may have to temporarily switch to the N.
+NOTE: The AMI is based in the N. California region. You may have to temporarily switch to the N.
 California region on the AWS website to initiate copying the AMI to the region of your choice.
-Once the copy is complete, you can return to your own region." %}
+Once the copy is complete, you can return to your own region.
 
 [#ec2-setup]
 == Choose VM instances
@@ -180,8 +185,8 @@ If you are using the S3 persistent storage model, you can encrypt the S3 buckets
 
 For more information on encryption supported with AWS:
 
-* For EBS, see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html[Amazon EBS Encryption] in Amazon's AWS documentation.
-* For S3, see https://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-encryption.html[Amazon S3 Default Encryption for S3 Buckets] in Amazon's AWS documentation.
+* For EBS, see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html[Amazon EBS Encryption, window=_blank] in Amazon's AWS documentation.
+* For S3, see https://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-encryption.html[Amazon S3 Default Encryption for S3 Buckets, window=_blank] in Amazon's AWS documentation.
 
 [#aws-ts-setup-cluster]
 == Setting up your ThoughtSpot cluster
@@ -217,8 +222,8 @@ ThoughtSpot sets up the instances to be in the same ThoughtSpot cluster.
 Create a new IAM role that provides read/write access to the specific bucket, and select it.
 For details on that, click *Create new IAM role*.
 +
-*AWS Systems Manager Agent*: If you plan to use the https://docs.aws.amazon.com/systems-manager/latest/userguide/ssm-agent.html[AWS SSM agent] as an alternative to SSH, create a new IAM role with an SSM policy to grant AWS SSM permission to perform actions on your instances.
-Refer to https://docs.aws.amazon.com/systems-manager/latest/userguide/setup-instance-profile.html[Create an IAM instance profile for Systems Manager].
+*AWS Systems Manager Agent*: If you plan to use the https://docs.aws.amazon.com/systems-manager/latest/userguide/ssm-agent.html[AWS SSM agent, window=_blank] as an alternative to SSH, create a new IAM role with an SSM policy to grant AWS SSM permission to perform actions on your instances.
+Refer to https://docs.aws.amazon.com/systems-manager/latest/userguide/setup-instance-profile.html[Create an IAM instance profile for Systems Manager, window=_blank].
 
 . Click *Next: Add Storage*.
 Add the required storage based on your instance type (either EBS volumes or S3), and the amount of data you are deploying.
@@ -226,7 +231,7 @@ For specific storage requirements, refer to xref:configuration-options.adoc#ts-a
 +
 image::aws-add-storage.png[Add storage volumes]
 +
-[cols=2*]
+[cols="5%,95%"]
 |===
 | *1*
 | Click *Add new volume*.
@@ -251,12 +256,12 @@ This tag allows you to identify your instance more easily.
 . Click *Next: Configure Security Group*.
 . Select an existing security group to attach new security groups to so that it meets the security requirements for ThoughtSpot.
 +
-{{site.data.alerts.tip}} *Security setting for ThoughtSpot*
-* The VMs need intragroup security, i.e.
+*Security setting for ThoughtSpot*
++
+The VMs need intragroup security, i.e.
 every VM in a cluster must be accessible from one another.
-For easier configuration, ThoughtSpot recommends that you enable full access between VMs in a cluster.
-* Additionally, more ports must be opened on the VM to provide data staging capabilities to your network.
-Check ThoughtSpot's Network ports documentation to determine the minimum required ports you must open for your ThoughtSpot appliance. {{site.data.alerts.end}}
+For easier configuration, ThoughtSpot recommends that you enable full access between VMs in a cluster.</li> <li>Additionally, more ports must be opened on the VM to provide data staging capabilities to your network.
+Check ThoughtSpot's Network ports documentation to determine the minimum required ports you must open for your ThoughtSpot appliance.
 +
 Refer to xref:ports.adoc[Network ports].
 

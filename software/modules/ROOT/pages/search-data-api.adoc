@@ -4,7 +4,7 @@ To use the data retrieved from a search query programmatically, you can first qu
 
 It is often difficult to programmatically use the result set of a query that runs in the ThoughtSpot UI search  bar.  To use the data that we retrieve from a query programmatically, you can use ThoughtSpot Search Data API.
 
-When issuing a query through the ThoughtSpot UI, users make selections to disambiguate a query. Because selection is not possible with an API approach, we modified the API query language to include query disambiguation. See <<Components of a search query>>.
+When issuing a query through the ThoughtSpot UI, users make selections to disambiguate a query. Because selection is not possible with an API approach, we modified the API query language to include query disambiguation. See <<components,Components of a search query>>.
 
 == Resource URL
 
@@ -17,7 +17,7 @@ When issuing a query through the ThoughtSpot UI, users make selections to disamb
 | Query Parameter | Data Type | Description
 | `query_string` | string | The data search query.
 
-See <<Components of a search query>>.
+See <<components,Components of a search query>>.
 |`data_source_guid`  | string | The GUID of the data source, either a worksheet, a view, or a table.
 
 Example: ["4fdf9d2c-6f34-4e3b-9fa6-bd0ca69676e1"]
@@ -37,7 +37,7 @@ The system default is -1.
 Valid values are `COMPACT` (default) or `FULL` JSON.
 |====================
 
-[id="components"]
+[#components]
 == Components of a search query
 
 In ThoughtSpot Query Language, we classify components of a query into various types of tokens: xref:Column[Column], xref:Operator[Operator], xref:Value[Value], xref:Date-Bucket[Date Bucket], xref:Keyword[Keyword], and xref:Calendar[Calendar]:
@@ -46,7 +46,6 @@ In ThoughtSpot Query Language, we classify components of a query into various ty
 Column:: Columns must be enclosed in square brackets, [ ].
 
 *Example* In the query revenue by ship mode, both revenue and ship mode are columns. A valid query for the API is:
-
 [source]
 ----
 [revenue] by [ship mode]
@@ -96,6 +95,7 @@ Single word date buckets can be expressed as is. Multi-word date buckets must be
 ----
 [revenue] [commit date].'day of week' = 5
 ----
+[#Keyword]
 Keyword:: Use keywords in the API query in the same manner as in the UI.
 +
 *Example* When a ThoughtSpot UI query uses keywords growth of and sort by, the equivalent API query is:
@@ -104,6 +104,7 @@ Keyword:: Use keywords in the API query in the same manner as in the UI.
 ----
 growth of [revenue] by [commit date]
 ----
+[#Calendar]
 Calendar:: You can specify a custom calendar in the query. Use the calendar.calendar_name format explicitly.
 +
 When the calendar name contains multiple words, these words must be enclosed in single quotes.
@@ -152,7 +153,6 @@ https://<instance>/callosum/v1/tspublic/v1/searchdata?query_string=%5Bsales%5D%2
 
 == Response example
 
-[source]
 ----
 {
   "columnNames": [
@@ -193,20 +193,21 @@ https://<instance>/callosum/v1/tspublic/v1/searchdata?query_string=%5Bsales%5D%2
 
 To test the search query API, follow these steps:
 
-[#"get-guid"]
+[#get-guid]
 === Determine the GUID of the data source
 
 . In a Web Browser tab, navigate to the following address, and log in as admin user:
 +
+[source]
 ----
 https://<instance>/
 ----
 
 . In the top navigation, click **Data**.
-
-   Alternatively, navigate to the following address:
-[source]
 +
+Alternatively, navigate to the following address:
++
+[source]
 ----
 https://<instance>/#/data/tables/
 ----
@@ -214,8 +215,8 @@ https://<instance>/#/data/tables/
 . Select a data source that you plan to query: a worksheet, a table, or a view.
 
 . In the address bar of the Web Browse, note the GUID of the selected data source; it is the last string of the address.  For example, in the following address string, the GUID is `9d93a6b8-ca3a-4146-a1a1-e908b71b963f`:
+
 [source]
-+
 ----
 https://<instance>/#/data/tables/9d93a6b8-ca3a-4146-a1a1-e908b71b963f
 ----
@@ -225,26 +226,26 @@ https://<instance>/#/data/tables/9d93a6b8-ca3a-4146-a1a1-e908b71b963f
 === Run the Search Data API
 
 . In another browser, navigate to the following address:
-+
+
 [source]
 ----
 https://<instance>/external/swagger/#!/tspublic%2Fv1/searchData
 ----
 
 . Click on `POST /tspublic/v1/searchdataTS`.
-
-   The parameter interface appears.
++
+The parameter interface appears.
 
 . In the **Parameters** interface, enter the values for the following:
 
     - `query_string` is the actual search query. See [Components of a search query](#components).
     - `data_source_guid` is the identifier you  obtained earlier, in [Determine the GUID of the data sources](#get-guid).
-
-    You can leave other parameters at their default value.
++
+You can leave other parameters at their default value.
 
 . Click **Try it out!**, and note the results.
-
-   You may wish to check that the same query, when you run it in the ThoughtSpot UI search bar (with slightly different syntax), returns the same data.
++
+You may wish to check that the same query, when you run it in the ThoughtSpot UI search bar (with slightly different syntax), returns the same data.
 
 == Limitations of Search Query API
 

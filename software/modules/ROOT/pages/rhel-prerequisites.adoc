@@ -1,37 +1,31 @@
 = RHEL installation prerequisites
-:last_updated: 6/30/2020
+:last_updated: 8/16/2021
 
 Prepare the system and ThoughtSpot clusters for installation.
 
 [width="100%",options="header",cols="5%,95%"]
 |===
 | &#10063;
-| <<set-up-hosts,1.
-Set up hosts for the ThoughtSpot cluster>>
+| <<set-up-hosts,1. Set up hosts for the ThoughtSpot cluster>>
 
 | &#10063;
-| <<partition-hosts,2.
-Partition the hosts>>
+| <<partition-hosts,2. Partition the hosts>>
 
 | &#10063;
-| <<install-rhel,3.
-Install RHEL version 7.7 or 7.8 on all hosts>>
+| <<install-rhel,3. Install RHEL version 7.7 or 7.8 on all hosts>>
 
 | &#10063;
-| <<linux-kernel-version,4.
-Ensure that your Linux kernel is on version 3.10.0-1127.19.1>>
+| <<linux-kernel-version,4. Ensure that your Linux kernel is on version 3.10.0-1127.19.1>>
 
 | &#10063;
-| <<enable-hosts,5.
-Enable the hosts to download RHEL packages>>
+| <<enable-hosts,5. Enable the hosts to download RHEL packages>>
 
 | &#10063;
-| <<enable-ansible,6.
-Enable an Ansible Control Server>>
+| <<enable-ansible,6. Enable an Ansible Control Server>>
 
 | &#10063;
-| <<disable-selinux,7.
-Disable SELinux>>
+
+| <<disable-selinux,7. Disable SELinux>>
 
 | &#10063;
 | <<tmp-permission,8.
@@ -66,14 +60,14 @@ Note that the size of the root drive on appliances is limited to 200GB;
 the partition requirements are therefore somewhat different when compared to the other environments.
 
 [width="100%",options="header",cols=5*]
-|===
-| Platform | Partition | Drive type | Description | Minimum size
-.2+| Hosts in AWS, GCP, Azure, and VMWare | OS partition | SSD (root drive) | Root partition for OS, /tmp | 100GB Allocate at least 50GB to /tmp
-| Export partition | SSD (root drive) | Stores ThoughtSpot objects, hdfs logs, service logs, and so on | 200GB
-.2+| Hosts on ThoughtSpot-certified hardware appliances | OS partition | SSD (root drive) | Root partition for OS, /tmp | 80GB
+|====================
+| Platform |Partition|Drive type|Description|Minimum size
+.2+| Hosts in AWS, GCP, Azure, and VMWare | OS partition | SSD (root drive) | Root partition for OS, /tmp| 100GB Allocate at least 50GB to /tmp
+| Export partition | SSD (root drive) | Stores ThoughtSpot objects, hdfs logs, service logs, and so on |200GB
+.2+| Hosts on ThoughtSpot-certified hardware appliances | OS partition | SSD (root drive) | Root partition for OS, /tmp |80GB
 Allocate at least 50GB to /tmp
-| Export partition | SSD (root drive) | Stores ThoughtSpot objects, hdfs logs, service logs, and so on | service logs, and so on	| 100GB
-|===
+| Export partition | SSD (root drive) | Stores ThoughtSpot objects, hdfs logs, service logs, and so on | service logs, and so on	100GB
+|====================
 
 [#install-rhel]
 == Install RHEL on hosts
@@ -93,7 +87,7 @@ You must upgrade to 3.10.0-1127.19.1.
 If you have trouble upgrading your Linux kernel to version 3.10.0-1127.19.1, xref:contact.adoc[contact ThoughtSpot Support].
 This is a requirement for *_all_* platforms: appliance, cloud, and VMware.
 
-WARNING: If the Linux kernel version is not 3.10.0-1127.19.1, you may run into unexpected node reboots and possible loss of data.
+WARNING: If Linux kernel version is not 3.10.0-1127.19.1, you may run into unexpected node reboots and possible loss of data.
 
 [#enable-hosts]
 == Enable the hosts to download RHEL packages
@@ -150,3 +144,13 @@ You cannot mount the /proc mount point with the `hidepid` flag. You must mount i
 == Remove Defaults requiretty from /etc/sudoers
 
 The `/etc/sudoers` file must not have the `Defaults requiretty` line. This line can cause cluster creation to fail.
+
+'''
+> **Related information**
+>
+> * xref:rhel-ts-artifacts.adoc[ThoughtSpot deployment artifacts for RHEL]
+> * xref:rhel-install-online.adoc[Online RHEL install]
+> * xref:rhel-install-offline.adoc[Offline RHEL install]
+> * xref:rhel-upgrade.adoc[RHEL upgrade]
+> * xref:rhel-add-node.adoc[Add new nodes to clusters on RHEL]
+> * xref:rhel-packages.adoc[Packages installed with RHEL]

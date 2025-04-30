@@ -5,12 +5,17 @@ Log in to your cluster with admin credentials from Terminal on a Mac or a termin
 Ask your network administrator if you do not know the admin credentials.
 
 . Run `ssh admin@<nodeIP>`.
-+ Replace `nodeIP` with your specific network information.
-
- $ ssh admin@<nodeIP>
++
+Replace `nodeIP` with your specific network information.
++
+[source,console]
+----
+$ ssh admin@<nodeIP>
+----
 
 . Enter your admin password at the prompt.
-+ Ask your network administrator if you don't know the password.
++
+Ask your network administrator if you don't know the password.
 
 NOTE: The password does not appear on the screen as you type it.
 
@@ -19,9 +24,12 @@ NOTE: The password does not appear on the screen as you type it.
 
 Run the `tscli cluster get-config` command to get a template for network configuration for the new cluster.
 Redirect it to the file `nodes.config`.
-+ You can find more information on this process in the xref:nodesconfig-example.adoc[`nodes.config` file reference].
+You can find more information on this process in the xref:nodesconfig-example.adoc[`nodes.config` file reference].
 
- $ tscli cluster get-config |& tee nodes.config
+[source,console]
+----
+$ tscli cluster get-config |& tee nodes.config
+----
 
 [#node-step-3]
 === Step 3: Prepare node configuration
@@ -69,21 +77,27 @@ Your output should specify that `firewalld` is inactive.
 It may look something like the following:
 +
 ----
-$ sudo systemctl status firewalld
- ● firewalld.service - firewalld - dynamic firewall daemon
-   Loaded: loaded (/usr/lib/systemd/system/firewalld.service; disabled; vendor preset: enabled)
-   Active: inactive (dead)
+ $ sudo systemctl status firewalld
+   ● firewalld.service - firewalld - dynamic firewall daemon
+     Loaded: loaded (/usr/lib/systemd/system/firewalld.service; disabled; vendor preset: enabled)
+     Active: inactive (dead)
 ----
-
-. Run the configuration command: `$ cat nodes.config | tscli cluster set-config`.
+. Run the configuration command:
 +
-If the command returns an error, refer to <<set-config-error-recovery,set-config error recovery>>.
-+
-After you run the node configuration command, your output appears similar to the following:
-+
+[source,console]
 ----
 $ cat nodes.config | tscli cluster set-config
-
+----
++
+If the command returns an error, refer to <<set-config-error-recovery,set-config error recovery>>. +
+After you run the node configuration command, your output appears similar to the following:
++
+[source,tscli]
+----
+$ cat nodes.config | tscli cluster set-config
+----
++
+----
 Connecting to local node-scout
 Setting up hostnames for all nodes
 Setting up networking interfaces on all nodes
@@ -96,13 +110,14 @@ Done setting up ThoughtSpot
 [#node-step-5]
 === Step 5: Confirm node configuration
 
-Use the `get-config` command to confirm node configuration.
+Use the `get-config` command to confirm node configuration. +
 Your output may look similar to the following:
 
 [source,console]
 ----
 $ tscli cluster get-config
-
+----
+----
 {
   "ClusterId": "",
   "ClusterName": "",

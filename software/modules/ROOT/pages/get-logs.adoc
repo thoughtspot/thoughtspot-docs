@@ -10,25 +10,22 @@ For troubleshooting on specific incidents or cluster problems, two things are im
 . Log in to the ThoughtSpot cluster as the `admin` user.
 . Use the `tscli feature` subcommand to display your current configuration.
 +
-[source,console]
 ----
-$ tscli feature get-all-config
-----
-----
-+---------------------------------+----------+---------------+
-|              NAME               |  STATUS  | CONFIGURATION |
-+---------------------------------+----------+---------------+
-| Firewall                        | Disabled |               |
-| Saml                            | Disabled |               |
-| Ldap                            | Disabled |               |
-| CustomBranding                  | Disabled |               |
-| CustomBrandingFontCustomization | Disabled |               |
-| DataConnect                     | Disabled |               |
-| RLS                             | Enabled  |               |
-| Callhome                        | Enabled  |               |
-| SSHTunnel                       | Enabled  |               |
-| Fileserver                      | Disabled |               |
-+---------------------------------+----------+---------------+
+ $ tscli feature get-all-config
+ +---------------------------------+----------+---------------+
+ |              NAME               |  STATUS  | CONFIGURATION |
+ +---------------------------------+----------+---------------+
+ | Firewall                        | Disabled |               |
+ | Saml                            | Disabled |               |
+ | Ldap                            | Disabled |               |
+ | CustomBranding                  | Disabled |               |
+ | CustomBrandingFontCustomization | Disabled |               |
+ | DataConnect                     | Disabled |               |
+ | RLS                             | Enabled  |               |
+ | Callhome                        | Enabled  |               |
+ | SSHTunnel                       | Enabled  |               |
+ | Fileserver                      | Disabled |               |
+ +---------------------------------+----------+---------------+
 ----
 
 == How to get logs
@@ -68,7 +65,7 @@ syslog, upstart, mail logs, etc.
  ** `ts` collects all logs from the ThoughtSpot application.
 This includes falcon, sage, orion core (cluster management), etc.
  ** `orion` collects all orion logs including cluster management, hdfs, zookeeper, etc.
-Detailed syntax and options are listed in the xref:tscli-command-ref.adoc[tscli command reference].
+Detailed syntax and options are listed in the xref:tscli-command-ref.adoc#[tscli command reference].
 
 == Examples
 
@@ -76,42 +73,43 @@ Here are some examples of usage for the command `tscli logs collect`:
 
 To collect all logs from the past day to the default location (`/tmp/logs.tar.gz`):
 
-[source,console]
-----
-$ tscli logs collect --include all --since 1d
-----
+ $ tscli logs collect --include all --since 1d
 
 In this example, `all` is a selector for all the available logs.
 
 In most cases, you can probably use the selector `ts` to only capture logs for the ThoughtSpot application:
 
-[source,console]
-----
-$ tscli logs collect --include ts --since 2d
-----
+ $ tscli logs collect --include ts --since 2d
 
 For debugging cluster management issues, use a command like this one, which collects logs for system and orion from the past 2 hours.
 The output is written to /tmp/debug.tar.gz as specified using `--out`:
 
-[source,console]
-----
-$ tscli logs collect --include system,orion --since 2h --out /tmp/debug.tar.gz
-----
+ $ tscli logs collect --include system,orion --since 2h --out /tmp/debug.tar.gz
 
 This command collects logs from a specific time window:
 
-[source,console]
-----
-$ tscli logs collect --include system,orion --from 20150520-12:00 --to 20150522-12:30
-----
+ $ tscli logs collect --include system,orion --from 20150520-12:00 --to 20150522-12:30
+
 Advanced usage alert!
 You can also use `--include` and `--exclude` to specify filesystem paths as a glob pattern.
 This works like the Linux find(1) command.
 Pass all the entries in `--include` starting with `/` to find(1), and all entries in `--exclude` which are not selectors to find(1) using the `-not -path` flag.
-[source,console]
-----
-$ tscli logs collect --include system,orion --exclude *hadoop*,*zookeeper* --since 2h
-----
+
+ $ tscli logs collect --include system,orion --exclude *hadoop*,*zookeeper* --since 2h
+
 The above command collects all system and all orion logs, but excludes hadoop (hdfs) and zookeeper logs.
 See xref:upload-logs-egnyte.adoc[Upload logs to ThoughtSpot Support] about using a secure file sever to collect log files or other files needed for troubleshooting.
 You can easily send log files to this file serve directly from the ThoughtSpot instance.
+
+'''
+> **Related information**
+>
+> * xref:upload-logs-egnyte.adoc[Upload logs to ThoughtSpot Support]
+> * xref:check-connectivity.adoc[Network connectivity issues]
+> * xref:set-timezone.adoc[Check the timezone]
+> * xref:certificate-warning.adoc[Browser untrusted connection error]
+> * xref:char-encoding.adoc[Characters not displaying correctly]
+> * xref:clear-browser-cache.adoc[Clear the browser cache]
+> * xref:formula-date-problem.adoc[Cannot open a saved answer that contains a formula]
+> * xref:data-loading-too-slowly.adoc[Data loading too slowly]
+> * xref:search-too-many-blanks.adoc[Search results contain too many blanks]

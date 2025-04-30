@@ -1,5 +1,5 @@
 = Install ThoughtSpot clusters in GCP
-:last_updated: 2/27/2020
+:last_updated: ["2/27/2020"]
 :linkattrs:
 
 Learn how to install ThoughtSpot clusters in GCP.
@@ -8,8 +8,8 @@ Learn how to install ThoughtSpot clusters in GCP.
 
 Before you can install your ThoughtSpot clusters in GCP, complete these prerequisites.
 
-. *Review configuration options* Refer to xref:configuration-options.adoc[GCP configuration options] for detailed instance specs.
-. *Create the instance* Refer to xref:launch-an-instance.adoc[Set up ThoughtSpot in GCP] to create and launch your instance.
+. *Review configuration options* Refer to xref:configuration-options-gcp.adoc[GCP configuration options] for detailed instance specs.
+. *Create the instance* Refer to xref:launch-an-instance-gcp.adoc[Set up ThoughtSpot in GCP] to create and launch your instance.
 . *Review required ports* Refer to xref:ports.adoc[Network ports] to view the required ports for successful operation of ThoughtSpot.
 . *Configure nodes* Refer to xref:installing-gcp.adoc[Configure ThoughtSpot nodes in GCP] to configure your nodes.
 
@@ -40,8 +40,9 @@ If you do not have a link, open a support ticket with xref:contact.adoc[ThoughtS
 
 . Copy the downloaded release bundle to `/export/sdc1/TS_TASKS/install` using the following command:
 +
+[source,console]
 ----
- $ scp <release-number>.tar.gz admin@<hostname>:/export/sdc1/TS_TASKS/install/<file-name>
+$ scp <release-number>.tar.gz admin@<hostname>:/export/sdc1/TS_TASKS/install/<file-name>
 ----
 +
 Note the following parameters:
@@ -57,8 +58,9 @@ NOTE: You can use another secure copy method, if you prefer a method other than 
 + You must xref:tscli-command-ref.adoc#tscli-fileserver[configure the fileserver] by running `tscli fileserver configure` before you can download the release.
 +
 +
+[source,console]
 ----
- $ tscli fileserver download-release <release-number> --user <username> --out <release-location>
+$ tscli fileserver download-release <release-number> --user <username> --out <release-location>
 ----
 +
 Note the following parameters:
@@ -71,6 +73,7 @@ For example, `/export/sdc1/TS_TASKS/install/6.0.tar.gz`.
 . Verify the checksum to ensure you have the correct release.
 + Run `md5sum -c <release-number>.tar.gz.MD5checksum`.
 +
+[source,console]
 ----
  $ md5sum -c <release-number>.tar.gz.MD5checksum
 ----
@@ -80,16 +83,18 @@ Your output says `ok` if you have the correct release.
 . Launch a https://linux.die.net/man/1/screen[screen,window=_blank] session.
 Use screen to ensure that your installation does not stop if you lose network connectivity.
 +
+[source,console]
 ----
- $ screen -S DEPLOYMENT
+$ screen -S DEPLOYMENT
 ----
 
 . Create the cluster.
 + Run `tscli cluster create` to create the cluster.
 + If you are using a gcs bucket for object storage, include the flag `--enable_cloud_storage gcs`.
 +
+[source,console]
 ----
- $ tscli cluster create <release-number>.tar.gz --enable_cloud_storage gcs
+$ tscli cluster create <release-number>.tar.gz --enable_cloud_storage gcs
 ----
 
 include::partial$cluster-steps1through3.adoc[]
@@ -118,4 +123,7 @@ image::ts-u.png[link="https://training.thoughtspot.com/", window=_blank]
 > * xref:parameters-nodesconfig.adoc[Parameters of the nodes.config file]
 > * xref:cluster-create.adoc[Using the tscli cluster create command]
 > * xref:parameters-cluster-create.adoc[Parameters of the cluster create command]
+> * xref:launch-an-instance-gcp.adoc[Set up ThoughtSpot in GCP]
+> * xref:installing-gcp.adoc[Configure ThoughtSpot nodes in GCP]
+> * xref:gcp-backup-restore.adoc[Back up and Restore a GCP cluster using GCS]
 > * xref:contact.adoc[Contact Support]

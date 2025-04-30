@@ -1,5 +1,5 @@
 = tscli command reference
-:last_updated: 12/25/2020
+:last_updated: 08/16/2021
 :linkattrs:
 
 The ThoughtSpot command line interface, or tscli, is an administration interface for the cluster. Use `tscli` to take snapshots (backups) of data, to apply updates, to stop and to start services, and to view information about the system. This reference defines each subcommand.
@@ -41,6 +41,7 @@ For example, the command `tscli access list --type TYPE`, where you want a list 
 
 To view help for a subcommand, type `-h` after the subcommand option:
 
+[source,tscli]
 ----
 tscli [subcommand] -h
 ----
@@ -53,6 +54,7 @@ There are several optional flags that are common to each `tscli` subcommand.
 [#tscli--help]
 === help
 
+[source,tscli]
 ----
 -h, --help
 ----
@@ -63,6 +65,7 @@ This flag lists the specified command's subcommands and their definitions.
 [#tscli--helpfull]
 === helpfull
 
+[source,tscli]
 ----
 --helpfull HELPFUll
 ----
@@ -408,7 +411,7 @@ tscli cluster load backupdir::
 tscli cluster restore --release RELEASE backupdir::
   Restores a cluster on the specified release number using the backup in the specified directory, `backupdir`. If you are restoring from a data-less backup, you must supply the release tarball for the corresponding software release. This command has the following parameters:
   --disable_rotate_keys;; Disables cluster rotate key configurations. The default is `False`.
-  --enable_cloud_storage {s3a,gcs};; Determines whether to enable Cloud Storage setup. For example, run `tscli cluster restore --enable_cloud_storage s3a` to enable AWS S3 object storage.
+  --enable_cloud_storage {s3a,gcs};; Determines whether to enable Cloud Storage setup. For example, run `tscli cluster restore --enable_cloud_storage s3aa` to enable AWS S3 object storage.
   --heterogeneous;; Must be set for heterogeneous clusters. The default is `False`.
 
 tscli cluster resume-update::
@@ -477,6 +480,21 @@ tscli command run COMMAND::
   --dest_dir DEST_DIR;; Directory to save the files that contain the output from each node. This is a mandatory parameter.
   --copyfirst COPYFIRST;; Command to copy the executable to required nodes first. The default setting is `False`.
   --timeout TIMEOUT;; Timeout waiting for the command to finish. The default setting is `60`.
+
+[#tscli-dataflow]
+=== dataflow
+
+----
+tscli dataflow [-h] {disable,enable}
+----
+
+This subcommand has the following options:
+
+tscli dataflow disable::
+Disables the xref:dataflow.adoc[DataFlow] service on the cluster.
+
+tscli dataflow enable::
+Enables the xref:dataflow.adoc[DataFlow]service on the cluster, with token authentication.
 
 [#tscli-dr-mirror]
 === dr-mirror
@@ -738,9 +756,11 @@ This subcommand has the following options:
 tscli map-tiles enable [-h] [--online] [--offline] [--tar TAR] [--md5 MD5]::
   Enables ThoughtSpot's map tiles. Used when constructing geo map charts. If you don't have internet access, you must download the map tiles tar and md5 files, and append the following to the `tscli` command:
   --online;; Downloads `maptiles` tar from internet. The default setting is `True`.
-  --offline;; Specifies that you are using `maptiles` tar from a local disk. The default setting is `False`.
-  --tar TAR;; Specified tar file for map-tiles.
-  --md5 MD5;;  Specified md5 file for map-tiles.
+  --offline;; Specifies that you are using `maptiles` tarball from a local disk, rather than downloading from the internet. Use during offline enablement of map-tiles. You must specify the location of the `--tar` and `--md5` on your machine. +
+  You must download the https://tsengg-geodata.s3.amazonaws.com/raster-osm-jpg.tar.gz[tarball] and https://tsengg-geodata.s3.amazonaws.com/md5[md5] before you run this command. +
+  The default setting is `False`.
+  --tar TAR;; Specified tar file for map-tiles. Download the tarball https://tsengg-geodata.s3.amazonaws.com/raster-osm-jpg.tar.gz[here].
+  --md5 MD5;;  Specified md5 file for map-tiles. Download the md5 https://tsengg-geodata.s3.amazonaws.com/md5[here].
 
 tscli map-tiles disable::
   Disables map-tiles functionality.

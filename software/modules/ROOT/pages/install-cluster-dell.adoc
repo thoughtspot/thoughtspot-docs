@@ -29,23 +29,26 @@ Follow the steps in this checklist to install your cluster.
 [#install-step-1]
 == Step 1: Run the installer
 
-. Copy the downloaded release bundle to `/export/sdb1/TS_TASKS/install`: +   Run `scp <release-number> admin@<hostname>:/export/sdb1/TS_TASKS/install/<file-name>`.
+. Copy the downloaded release bundle to `/export/sdb1/TS_TASKS/install`: +
+Run `scp <release-number> admin@<hostname>:/export/sdb1/TS_TASKS/install/<file-name>`.
 Note the following parameters:
  ** `release-number` is the release number of your ThoughtSpot installation, such as `6.0`, `5.3`, `5.3.1`, and so on.
  ** `hostname` is your network hostname.
 Ask your network administrator if you do not know your hostname.
  ** `file-name` is the name of the tarball file on your local computer.
-
- $ scp <release-number>.tar.gz admin@<hostname>:/export/sdb1/TS_TASKS/install/<file-name>
-
++
+[source,console]
+----
+$ scp <release-number>.tar.gz admin@<hostname>:/export/sdb1/TS_TASKS/install/<file-name>
+----
 +
 NOTE: You can use another secure copy method, if you prefer a method other than the `scp` command.
-. Alternatively, use `tscli fileserver download-release` to download the release bundle.
-+ You must xref:tscli-command-ref.adoc#tscli-fileserver[configure the fileserver] by running `tscli fileserver configure` before you can download the release.
+. Alternatively, use `tscli fileserver download-release` to download the release bundle. +
+You must xref:tscli-command-ref.adoc#tscli-fileserver[configure the fileserver] by running `tscli fileserver configure` before you can download the release.
 +
-+
+[source,console]
 ----
- $ tscli fileserver download-release <release-number> --user <username> --out <release-location>
+$ tscli fileserver download-release <release-number> --user <username> --out <release-location>
 ----
 +
 Note the following parameters:
@@ -55,11 +58,12 @@ Note the following parameters:
  ** `release-location` is the location path of the release bundle on your local machine.
 For example, `/export/sdb1/TS_TASKS/install/6.0.tar.gz`.
 
-. Verify the checksum to ensure you have the correct release.
-+ Run `md5sum -c <release-number>.tar.gz.MD5checksum`.
+. Verify the checksum to ensure you have the correct release. +
+Run `md5sum -c <release-number>.tar.gz.MD5checksum`.
 +
+[source,console]
 ----
- $ md5sum -c <release-number>.tar.gz.MD5checksum
+$ md5sum -c <release-number>.tar.gz.MD5checksum
 ----
 +
 Your output says `ok` if you have the correct release.
@@ -67,14 +71,16 @@ Your output says `ok` if you have the correct release.
 . Launch a https://linux.die.net/man/1/screen[screen,window=_blank] session.
 Use screen to ensure that your installation does not stop if you lose network connectivity.
 +
+[source,console]
 ----
- $ screen -S DEPLOYMENT
+$ screen -S DEPLOYMENT
 ----
 
 . Create the cluster using `tscli cluster create <release-number>`.
 +
+[source,console]
 ----
- $ tscli cluster create <release.number>.tar.gz
+$ tscli cluster create <release.number>.tar.gz
 ----
 
 . Edit the output using your specific cluster information.
@@ -95,6 +101,8 @@ Your output may look something like the following:
 [source,console]
 ----
 $ tscli cluster status
+----
+----
 Cluster: RUNNING
 Cluster name    : thoughtspot
 Cluster id      : 1234X11111
@@ -122,63 +130,66 @@ Number of tables in WILL_NOT_INDEX state: 0
 ----
 
 Ensure that the cluster is `RUNNING` and that the Database and Search Engine are `READY`.
-
- $ tscli cluster check
- Connecting to hosts...
- [Wed Jan  8 23:15:47 2020] START Diagnosing ssh
- [Wed Jan  8 23:15:47 2020] SUCCESS
- ################################################################################
- [Wed Jan  8 23:15:47 2020] START Diagnosing connection
- [Wed Jan  8 23:15:47 2020] SUCCESS
- ################################################################################
- [Wed Jan  8 23:15:47 2020] START Diagnosing zookeeper
- [Wed Jan  8 23:15:47 2020] SUCCESS
- ################################################################################
- [Wed Jan  8 23:15:47 2020] START Diagnosing sage
- [Wed Jan  8 23:15:48 2020] SUCCESS
- ################################################################################
- [Wed Jan  8 23:15:48 2020] START Diagnosing timezone
- [Wed Jan  8 23:15:48 2020] SUCCESS
- ################################################################################
- [Wed Jan  8 23:15:48 2020] START Diagnosing disk
- [Wed Jan  8 23:15:48 2020] SUCCESS
- ################################################################################
- [Wed Jan  8 23:15:48 2020] START Diagnosing cassandra
- [Wed Jan  8 23:15:48 2020] SUCCESS
- ################################################################################
- [Wed Jan  8 23:15:48 2020] START Diagnosing hdfs
- [Wed Jan  8 23:16:02 2020] SUCCESS
- ################################################################################
- [Wed Jan  8 23:16:02 2020] START Diagnosing orion-oreo
- [Wed Jan  8 23:16:02 2020] SUCCESS
- ################################################################################
- [Wed Jan  8 23:16:02 2020] START Diagnosing memcheck
- [Wed Jan  8 23:16:02 2020] SUCCESS
- ################################################################################
- [Wed Jan  8 23:16:02 2020] START Diagnosing ntp
- [Wed Jan  8 23:16:08 2020] SUCCESS
- ################################################################################
- [Wed Jan  8 23:16:08 2020] START Diagnosing trace_vault
- [Wed Jan  8 23:16:09 2020] SUCCESS
- ################################################################################
- [Wed Jan  8 23:16:09 2020] START Diagnosing postgres
- [Wed Jan  8 23:16:11 2020] SUCCESS
- ################################################################################
- [Wed Jan  8 23:16:11 2020] START Diagnosing disk-health
- [Wed Jan  8 23:16:11 2020] SUCCESS
- ################################################################################
- [Wed Jan  8 23:16:11 2020] START Diagnosing falcon
- [Wed Jan  8 23:16:12 2020] SUCCESS
- ################################################################################
- [Wed Jan  8 23:16:12 2020] START Diagnosing orion-cgroups
- [Wed Jan  8 23:16:12 2020] SUCCESS
- ################################################################################
- [Wed Jan  8 23:16:12 2020] START Diagnosing callosum
- /usr/lib/python2.7/site-packages/urllib3/connectionpool.py:852: InsecureRequestWarning: Unverified HTTPS request is being made. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
-   InsecureRequestWarning)
- [Wed Jan  8 23:16:12 2020] SUCCESS
- ################################################################################
-
+[source,console]
+----
+$ tscli cluster check
+----
+----
+Connecting to hosts...
+[Wed Jan  8 23:15:47 2020] START Diagnosing ssh
+[Wed Jan  8 23:15:47 2020] SUCCESS
+################################################################################
+[Wed Jan  8 23:15:47 2020] START Diagnosing connection
+[Wed Jan  8 23:15:47 2020] SUCCESS
+################################################################################
+[Wed Jan  8 23:15:47 2020] START Diagnosing zookeeper
+[Wed Jan  8 23:15:47 2020] SUCCESS
+################################################################################
+[Wed Jan  8 23:15:47 2020] START Diagnosing sage
+[Wed Jan  8 23:15:48 2020] SUCCESS
+################################################################################
+[Wed Jan  8 23:15:48 2020] START Diagnosing timezone
+[Wed Jan  8 23:15:48 2020] SUCCESS
+################################################################################
+[Wed Jan  8 23:15:48 2020] START Diagnosing disk
+[Wed Jan  8 23:15:48 2020] SUCCESS
+################################################################################
+[Wed Jan  8 23:15:48 2020] START Diagnosing cassandra
+[Wed Jan  8 23:15:48 2020] SUCCESS
+################################################################################
+[Wed Jan  8 23:15:48 2020] START Diagnosing hdfs
+[Wed Jan  8 23:16:02 2020] SUCCESS
+################################################################################
+[Wed Jan  8 23:16:02 2020] START Diagnosing orion-oreo
+[Wed Jan  8 23:16:02 2020] SUCCESS
+################################################################################
+[Wed Jan  8 23:16:02 2020] START Diagnosing memcheck
+[Wed Jan  8 23:16:02 2020] SUCCESS
+################################################################################
+[Wed Jan  8 23:16:02 2020] START Diagnosing ntp
+[Wed Jan  8 23:16:08 2020] SUCCESS
+################################################################################
+[Wed Jan  8 23:16:08 2020] START Diagnosing trace_vault
+[Wed Jan  8 23:16:09 2020] SUCCESS
+################################################################################
+[Wed Jan  8 23:16:09 2020] START Diagnosing postgres
+[Wed Jan  8 23:16:11 2020] SUCCESS
+################################################################################
+[Wed Jan  8 23:16:11 2020] START Diagnosing disk-health
+[Wed Jan  8 23:16:11 2020] SUCCESS
+################################################################################
+[Wed Jan  8 23:16:11 2020] START Diagnosing falcon
+[Wed Jan  8 23:16:12 2020] SUCCESS
+################################################################################
+[Wed Jan  8 23:16:12 2020] START Diagnosing orion-cgroups
+[Wed Jan  8 23:16:12 2020] SUCCESS
+################################################################################
+[Wed Jan  8 23:16:12 2020] START Diagnosing callosum
+/usr/lib/python2.7/site-packages/urllib3/connectionpool.py:852: InsecureRequestWarning: Unverified HTTPS request is being made. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+ InsecureRequestWarning)
+[Wed Jan  8 23:16:12 2020] SUCCESS
+################################################################################
+----
 Your output may look something like the above.
 Ensure that all diagnostics show `SUCCESS`.
 
@@ -194,8 +205,9 @@ After the cluster status changes to `READY`, sign in to the ThoughtSpot applicat
 . Start a browser from your computer.
 . Enter your secure IP information on the address line.
 +
+[source]
 ----
- https://<IP-address>
+https://<IP-address>
 ----
 
 . If you don't have a security certificate for ThoughtSpot, you must bypass the security warning to proceed:
@@ -204,7 +216,7 @@ After the cluster status changes to `READY`, sign in to the ThoughtSpot applicat
 . The ThoughtSpot login page appears.
 . In the xref:install-cluster-dell.adoc#ts-login[ThoughtSpot sign-in window], enter admin credentials, and click *Sign in*.
 ThoughtSpot recommends changing the default admin password.
-
++
 [#ts-login]
 image:ts-login-page.png[ThoughtSpot's sign-in window]
 // {% include image.html file="ts-login-page.png" title="ThoughtSpot's sign-in window" alt="Log in to ThoughtSpot. Enter Username, Password, and click Sign in. You may select Remember me option." caption="ThoughtSpot's sign-in window" %}
@@ -225,3 +237,12 @@ As you develop your expertise in Dell cluster installation, we recommend the fol
 See other training resources at:
 
 image::ts-u.png[link="https://training.thoughtspot.com/", window=_blank]
+
+'''
+> **Related information**
+>
+> * xref:prerequisites-dell.adoc[Prerequisites]
+> * xref:hardware-requirements-dell.adoc[Hardware requirements]
+> * xref:connect-appliance-dell.adoc[Connect the appliance]
+> * xref:configure-management-dell.adoc[Configure management settings]
+> * xref:configure-nodes-dell.adoc[Configure nodes]

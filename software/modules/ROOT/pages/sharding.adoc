@@ -1,5 +1,7 @@
 = Sharding
 :last_updated: 10/8/2020
+:permalink: /:collection/:path.html
+:sidebar: mydoc_sidebar
 
 Sharding partitions very large tables into smaller, faster, more easily managed parts called data shards.
 
@@ -114,7 +116,6 @@ It is sometimes called _Horizontal partitioning_.
 The term _sharding_ is particular to situations where data is distributed not only among tables, but also across nodes in the system.
 To create a sharded table, add the `PARTITION BY HASH ( )` clause to your `CREATE TABLE` statement.
 
-[source]
 ----
 TQL> CREATE TABLE
 ...
@@ -122,13 +123,11 @@ PARTITION BY HASH (96) KEY ("customer_id");
 ----
 
 Note the following parameters, specified above as `96` and `"customer_id"`:
-
-HASH::
++++<dlentry>+++HASH::::
 Determines the number of shards.
-In this case, `96`.
-KEY::
+In this case, `96`.+++</dlentry>++++++<dlentry>+++KEY::::
 Specifies how to assign data into the shards (shard key).
-In this case, `customer_id`.
+In this case, `customer_id`.+++</dlentry>+++
 
 The recommended number of shards depends on various factors.
 See <<sharding-guidelines,Table sizes and sharding recommendations>>.
@@ -139,7 +138,6 @@ This increases memory usage, since you are storing multiple copies of the same t
 
 If you want to use a table's primary key as the shard key, specify that the table is to be partitioned by `HASH` on the primary key, as in this example:
 
-[source]
 ----
 TQL> CREATE TABLE "supplier" (
   "s_suppkey" BIGINT,
@@ -200,7 +198,6 @@ Choosing a shard key plays an important role in the number of shards and the siz
 
 Here is a full `CREATE TABLE` statement.
 
-[source]
 ----
 CREATE TABLE "sales_fact"
   ("saleid" int,
@@ -317,7 +314,6 @@ A row count skew ratio higher than 1 may require changes to your data modeling.
 
 This example shows the `CREATE TABLE` statements that meet the criteria for sharding both a fact table and its dimension table:
 
-[source]
 ----
 TQL> CREATE TABLE products_dim (
   "id" int,
@@ -367,16 +363,14 @@ It checks for over- or under-sharded tables on your cluster.
 
  .. Log in to your cluster on the command line.
 +
-[source,console]
 ----
-$ ssh admin@<cluster-IP>
+ $ ssh admin@<cluster-IP>
 ----
 
  .. Run the following script to check for over- or under-sharded tables.
 +
-[source,console]
 ----
-$ /usr/local/scaligent/release/bin/sharding_diagnostics.sh 
+ $ /usr/local/scaligent/release/bin/sharding_diagnostics.sh 
 ----
 
  .. Adjust your sharding strategy appropriately.

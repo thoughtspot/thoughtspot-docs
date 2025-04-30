@@ -1,5 +1,6 @@
 = Using the tscli cluster create command
-:last_updated: 1/8/2020
+:last_updated: ["1/8/2020"]
+:linkattrs:
 
 Learn how to use the cluster create command to install your appliance.
 
@@ -10,42 +11,47 @@ To install your appliance, you must install the cluster using the release tarbal
 
 . *Download the release tarball* Download the release tarball from the download link sent by ThoughtSpot Support.
 +
-Refer to your welcome letter to find a link to download the release tarball.
-If you do not have a download link, open a support ticket with xref:contact.adoc[ThoughtSpot Support] to access the release tarball.
-. *Copy the release tarball* In your Terminal (Apple) or using https://winscp.net/eng/index.php[Winscp] (Windows application), copy the downloaded release tarball to `/home/admin/` and run the cluster installer as shown below.
-+ Run the secure copy command: `scp <release-number> admin@<hostname>:/home/admin/<file-name>`.
-Note the following parameters: +
- ** `release-number` is the version of ThoughtSpot you have on your cluster, such as `6.0` or `5.3`.
+Refer to your welcome letter to find a link to download the release tarball. If you do not have a download link, open a support ticket with xref:contact.adoc[ThoughtSpot Support] to access the release tarball.
+. *Copy the release tarball* In your Terminal (Apple) or using https://winscp.net/eng/index.php[Winscp,window=_blank] (Windows application), copy the downloaded release tarball to `/home/admin/` and run the cluster installer as shown below.
++
+Run the secure copy command: `scp <release-number> admin@<hostname>:/home/admin/<file-name>`.
+Note the following parameters:
++
+** `release-number` is the version of ThoughtSpot you have on your cluster, such as `6.0` or `5.3`.
 `release-number` is of the form `0.0.tar.gz`.
- ** `hostname` is your network hostname.
+** `hostname` is your network hostname.
 Ask your network administrator if you do not know your hostname.
- ** `file-name` is the name of the tarball file on your local machine.
+** `file-name` is the name of the tarball file on your local machine.
 For example:
++
+
 [source]
 ----
- $ scp 6.0.tar.gz admin@ThoughtSpot:/home/admin/TS-tarball
+scp 6.0.tar.gz admin@ThoughtSpot:/home/admin/TS-tarball
 ----
 +
-ThoughtSpot recommends that you start the session using https://linux.die.net/man/1/screen[screen], so you do not lose your progress if you lose your connection at any point.
+ThoughtSpot recommends that you start the session using https://linux.die.net/man/1/screen[screen,window=_blank], so you do not lose your progress if you lose your connection at any point.
++
+[source]
 ----
- $ scp <release-number> admin@<hostname>:/home/admin/<file-name>
+scp <release-number> admin@<hostname>:/home/admin/<file-name>
 ----
 . *Run the `tscli cluster create` command* Run `tscli cluster create <release-number>` in your terminal.
 +
-If you are using an S3 or GCS bucket for object storage, include the flag `--enable_cloud_storage s3a` or `--enable_cloud_storage gcs`.
-GCS is GCP's object storage, and s3 is AWS's object storage.
+If you are using an S3 or GCS bucket for object storage, include the flag `--enable_cloud_storage s3a` or `--enable_cloud_storage gcs`. GCS is GCP's object storage, and s3 is AWS's object storage.
++
 s3 example:
 +
-[source]
+[source,tscli]
 ----
- $ tscli cluster create 6.0.tar.gz --enable_cloud_storage s3a
+tscli cluster create 6.0.tar.gz --enable_cloud_storage s3a
 ----
 +
 GCS example:
 +
-[source]
+[source,tscli]
 ----
- $ tscli cluster create 6.0.tar.gz --enable_cloud_storage gcs
+tscli cluster create 6.0.tar.gz --enable_cloud_storage gcs
 ----
 
 . *Specify your installation information* Fill out the cluster name, cluster ID, email alert preferences and the IP's of the nodes at the prompts specified in xref:parameters-cluster-create.adoc[Parameters of the tscli cluster create command].

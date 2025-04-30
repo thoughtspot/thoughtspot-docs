@@ -1,7 +1,7 @@
 = User API
 :last_updated: 05/04/2020
 
-The User APIs enable you to manage user- and group-related operations in the ThoughtSpot system.
+The User APIs enable you to manage user and group-related operations in the ThoughtSpot system.
 
 You can use the User APIs to manage your users and groups in ThoughtSpot.
 For example, you may want to view all users and groups in your ThoughtSpot cluster.
@@ -18,11 +18,11 @@ NOTE: You cannot transfer objects to or from the system user or the administrati
 
 === Request Parameters
 [width="100%",options="header",cols="20%,15%,65%"]
-|===
+|====================
 | Query Parameter | Data Type | Description
 | `fromUserName` | string | Username to transfer from.
 | `toUserName` | string | Username to transfer to.
-|===
+|====================
 
 === Request Example
 
@@ -57,9 +57,10 @@ This includes group membership.
 * Objects not present in ThoughtSpot, and present in the external list - will be created in ThoughtSpot.
 
 === Resource URL
-
+[source]
+----
 `post` /tspublic/v1/user/sync
-
+----
 === Request Parameters
 
 This API uses `multipart/form-data` content type.
@@ -115,7 +116,6 @@ you may omit it from the input.
 
 Set `visibility` to `NON_SHARABLE` if you do not want users to be able to xref:add-user.adoc#sharing-visibility[share objects] with users in this group.
 
-[source]
 ----
 [
   { "name": "Customer Success",
@@ -170,17 +170,18 @@ Set `visibility` to `NON_SHARABLE` if you do not want users to be able to xref:a
 Use this API to change the password of a user.
 
 === Resource URL
-
+[source]
+----
 `post` /tspublic/v1/user/updatepassword
-
+----
 === Request Parameters
 [width="100%",options="header",cols="20%,15%,65%"]
-|===
+|====================
 | Form Parameter | Data Type | Description
 | `name` | string | The current password of the user.
 | `currentpassword` | string | Username to transfer to.
 | `password` | string | A new password of the user.
-|===
+|====================
 
 === Request Example
 
@@ -208,7 +209,7 @@ Not applicable
 Use this API to get a list of all users, groups, and their inter-dependencies in the form of principal objects.
 A typical principal object contains the following properties:
 [width="100%",options="header",cols="25%,75%"]
-|===
+|====================
 | Property | Description
 | `name` | Name of the principal.
 
@@ -227,20 +228,24 @@ This field, in conjunction with whether the object is a user or group, is used t
 
 In subsequent update, the user password is not updated even if it changes in the source system.
 |`groupNames` | Group names that a principal belongs to. Groups and users can belong to other groups.
-|===
+|====================
 
 === Resource URL
-
+[source]
+----
 `get` /tspublic/v1/user/list
+----
 
 === Request Example
 
 .cURL
+[source]
 ----
 curl -X GET --header 'Accept: application/json' 'https://<instance>/callosum/v1/tspublic/v1/user/list'
 ----
 
 .Request URL
+[source]
 ----
 https://<instance>/callosum/v1/tspublic/v1/user/list
 ----

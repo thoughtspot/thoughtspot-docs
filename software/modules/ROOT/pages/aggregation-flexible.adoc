@@ -27,7 +27,7 @@ The result of this search shows total revenue for each ship mode:
 | sea transport
 |===
 
-The aggregation formulas are described in xref::aggregation-formulas.adoc[Overview of aggregate formulas].
+The aggregation formulas are described in xref:aggregation-formulas.adoc[Overview of aggregate formulas].
 
 == About flexible aggregation
 
@@ -48,13 +48,13 @@ include::partial$flexible-aggregation-best-practices.adoc[]
 == Examples
 
 For a search on `revenue monthly ship mode`, you can add a formula to calculate yearly revenue by ship mode:
-
+[source]
 ----
 group_aggregate(sum(revenue), {ship mode, year(commit date)}, {})
 ----
 
 The same formula can also be written using `query_groups()` and `query_filters()` as following:
-
+[source]
 ----
 group_aggregate(sum(revenue), query_groups() - {commit date} + {year(commit date)}, {})
 ----
@@ -81,8 +81,9 @@ For example, in this search we've added the keyword *min* just before our formul
 +
 where, the `monthly_sales` formula is written as:
 +
+[source]
 ----
-   group_aggregate(sum(revenue), {start_of_month(date)}, {})
+group_aggregate(sum(revenue), {start_of_month(date)}, {})
 ----
 
 * You can create a separate formula, such as in this search for:
@@ -91,6 +92,7 @@ where, the `monthly_sales` formula is written as:
 +
 where, the `min_monthly_sales` formula is written as:
 +
+[source]
 ----
 min(monthly_sales)
 ----
@@ -115,7 +117,7 @@ An example of this is this search:
 *ship mode min monthly_sales*
 
 where the formula `monthly_sales` is written as:
-
+[source]
 ----
 group_aggregate(sum(revenue), query_groups() + {start_of_month(date)}, {})
 ----
