@@ -1,0 +1,25 @@
+[#search-data-error-11036]
+
+=== 11036
+Description:: Unsupported query: nested aggregate function, for example, fx = max(avg(c1)).
+
+
+
+Details::
+This error is displayed in the formula editor when an aggregate formula is defined directly within another aggregate formula, for example, `average(sum(sales))`. Note that this error may be displayed when an aggregate is wrapped around a column, such as `average(total sales)`. In this scenario, the worksheet column would be defined with an aggregate formula, such as `total sales = sum(sales)`.
+
+Cause::
+can’t use an aggregate function within an aggregate function.
+
+Resolution::
+To resolve this, group functions should be used to force the query generation to create a CTE query plan. That is, assume the business requirement is to return the average daily sales for each product. the formula would be defined as the following:
++
+`average daily sales = average(group_aggregate(sum(sales),query_groups()+{date(transactionDate)}, query_filters()))`
++
+Where the following logic is applied
++
+`group_aggregate(sum(sales),query_groups()+{date(transactionDate)}, query_filters()) -> calculate the daily sum of sales`.
++
+`average() -> calculate the average of the daily sales for the level of detail of the search`.
++
+The resulting query would be: `[Product] [Average Daily Sales]`.

@@ -1,0 +1,222 @@
+= Bridge connectivity for Cloud Data Warehouses and Databases
+:last_updated: 4/21/2023
+:author: Naomi
+:linkattrs:
+:page-layout: default-cloud
+:page-aliases:
+:experimental:
+:description: Bridge provides options to securely connect your data source with the ThoughtSpot Cloud, as an alternative to PrivateLink, VPC Peering or VPN tunnels.
+:jira: SCAL-212095, SCAL-233479
+
+Bridge provides options to securely connect your data source with the ThoughtSpot Cloud, as an alternative to PrivateLink, VPC Peering or VPN tunnels. We support Bridge for the following Connectors:
+
+
+* Amazon Athena
+* Amazon Redshift
+* Databricks
+* Google BigQuery
+* PostgreSQL
+* Snowflake
+* Starburst
+* Trino
+
+NOTE: Bridge is only supported for AWS Cloud deployments.
+
+== Bridge components
+
+There are two components to Bridge:
+
+Bridge Server:: This is the server component of the bridge infrastructure. The Bridge Server runs inside a ThoughtSpot cluster and accepts connections from the Bridge Client.
+
+Bridge client:: This is the client component of the bridge infrastructure. The Bridge Client is a custom golang application that needs to be installed by the customer on a machine that can make outbound connections to both the Bridge Server (over the internet) and to the customer’s database (over the internal network).  Bridge Client is also available as a Docker image.
+
+The Bridge Server and Client communicate using the SSH protocol. The Bridge infrastructure's primary function is to establish an SSH tunnel between ThoughtSpot and the customer database. Once the tunnel has been established, the Bridge infrastructure simply copies the bytes into and out of the tunnel.
+
+The Bridge Client needs to make *outbound TCP connections* to Bridge Server on *port 8444*.
+
+Bridge Servers cannot initiate connections to Bridge Clients. A bridge is only active if a Bridge Client has established a connection to Bridge Server. If a Bridge Client is not running, there is no active bridge.
+
+== Install the Bridge Client
+
+Follow these steps to install the Bridge Client:
+
+. Get the authentication details from {support-url} for the Bridge Client.
+
+.. {support-url} will share the following configuration details for the Bridge Client:
+
+... Bridge Token
+... Token Secret
+... Server URL
+
+. The Bridge Client connects to the ThoughtSpot Server URL by making outbound TCP connections on the following port:
+
+.. TCP/8444
++
+NOTE: The protocol used will be SSH-only.
+
+
+. Use the Docker env or config file:
+
+.. The .json config file will be in the following format:
++
+[source]
+----
+{
+"AccessToken" : "<Bridge Token>",
+"TokenSecret" : "<Token Secret>",
+"Servers"     : [ "<Server URL>" ]
+}
+----
+
+.. The .env file for link:https://docs.docker.com/compose/environment-variables/variable-interpolation/#env-file-syntax[Docker^] will be in the following format:
++
+[source]
+----
+MODE_ACCESS_TOKEN=bridge-token
+MODE_TOKEN_SECRET=bridge-token-secret
+MODE_SERVER=some.bridge.host:443
+----
+
+. Install the Bridge Client:
+
+.. For Docker:
+
+... Pull the link:https://hub.docker.com/r/modeanalytics/bridge-client[latest Docker image^] from DockerHub using the command `docker pull modeanalytics/bridge-client` from a terminal.
+
+... Run the following command to download, create, and start your Bridge connector: `docker run --env-file /etc/mode-bridge.env --name mode-bridge modeanalytics/bridge-client:latest`.
+
+... Or run the following command:
++
+[source]
+----
+docker run -it --rm -e MODE_ACCESS_TOKEN=<token> -e MODE_TOKEN_SECRET=<secret> -e MODE_SERVER=<server-url> modeanalytics/bridge-client
+----
+
+.. For Linux:
+
+... Install Bridge using the following command:
++
+[source]
+----
+curl -L https://packagecloud.io/install/repositories/modeanalytics/main/script.deb.sh | sudo bash
+sudo apt-get update
+sudo apt-get install mode-bridge
+----
+
+... Create or edit the Bridge config file located at */opt/mode/Bridge/conf/Bridge.json* with the details of the ports shared by {support-url}.
+
+... Start the Bridge client using `sudo start mode-bridge` or `sudo systemctl start mode-bridge`.
+
+.. For Windows:
+
+... Install the link:https://s3-us-west-2.amazonaws.com/mode-distribution/public/release/mode-bridge/windows-server/ModeBridge-Latest.msi[package].
+
+... Create or edit the Bridge config file located at *C:\Program Files\Mode Analytics\Bridge Connector\Bridge.json* with the details of the ports shared by {support-url}.
+
+... Start the Bridge client using link:http://www.thewindowsclub.com/open-windows-services[Windows Services Manager^].
+
+.. For Mac:
+
+... Install the link:https://s3-us-west-2.amazonaws.com/mode-distribution/public/release/mode-bridge/osx/ModeBridge-Latest.pkg[package^].
+
+... Create or edit the Bridge config file located *$HOME/.modeanalytics/Bridge.json* with the details of the ports shared by {support-url}.
+
+... Start the Bridge client using `launchctl start com.modeanalytics.bridge`.
+
+Once the Bridge Client is set up, you need the `AccessToken` or `Bridge Token` used earlier to initialize the client to create the Connection in ThoughtSpot.
+
+== Creating a Connection
+
+. When creating a Connection in ThoughtSpot, you must enter all connection fields mentioned in the reference documentation.
+
+. To establish the connection via Bridge:
+
+.. Enter the following key-value pair under Advanced configuration:
+
+... Key: `bridgeToken`
+... Value: <AccessToken>
++
+NOTE: Use the AccessToken provided by {support-url}. This informs ThoughtSpot to connect to the CDW via the Bridge server, and which client to connect to, instead of directly connecting to the CDW.
+
+== FAQs
+
+*Who is it useful for?*:: The Bridge connector is ideal for organizations with stringent security policies, complex network configurations, and regulatory requirements. It provides a secure and simplified solution for connecting ThoughtSpot to databases on-prem or behind a firewall, ensuring data privacy and compliance without requiring extensive network reconfigurations.
+
+*What data does the Bridge connector have access to?*:: The Bridge connector provides a tunnel through which the ThoughtSpot platform can connect to your database(s). The connection between the Bridge and ThoughtSpot is fully encrypted. The Bridge connector itself only stores its configuration and does not cache data, store database credentials, queries, or query results. It functions purely as a secure conduit, ensuring no sensitive data is retained within the Bridge layer.
+
+*How can we validate whether the Bridge Client can connect with the Bridge server?*:: If the setup is successful, the Bridge client will log - msg=connected when the connection is established.
++
+image:bridgeconfig.png[msg=connected]
+
+*How are the credentials protected on the Bridge Client?*:: The Bridge Client doesn't contain any database or CDW credentials. All Database-related credentials or configurations are stored in ThoughtSpot’s application layer (Embrace). This is independent of using Bridge or any other connectivity mechanism, such as PrivateLink or VPN.
++
+The Bridge Client currently stores its configuration locally in static configuration files. {support-url} (Bridge Server) generates the secrets and shares them with the customer, to initialize the Bridge Client. These secrets are not CDW/DB related. These secrets are used to establish the connection between client and server.
++
+In the long run, the Bridge Server will have its own APIs to generate the Client secrets on demand and also manage the auto-refresh for secrets to improve security.
+
+*Where is the Bridge configuration file saved?*:: You can locate the configuration file using the following OS-specific paths:
+
+* Linux: `/opt/mode/Bridge/conf/Bridge.json`
+* Mac: `$HOME/.modeanalytics/Bridge.json`
+* Windows: `C:\Program Files\Mode Analytics\Bridge Connector\Bridge.json`
+
+*How do I stop or start the Bridge connector?*:: The commands to start or stop Bridge vary across operating systems.
++
+[options="header"]
+|===
+| OS | Stop Bridge | Start Bridge
+
+| OSX | launchctl stop com.modeanalytics.bridge | launchctl start com.modeanalytics.bridge
+
+| Ubuntu | sudo stop mode-bridge
+| sudo start mode-bridge
+
+| Ubuntu 16.04 | sudo systemctl stop mode-bridge
+| sudo systemctl start mode-bridge
+
+| UCentOS | sudo /etc/init.d/mode-bridge stop
+| sudo /etc/init.d/mode-bridge start
+
+| CentOS 7+ | sudo systemctl stop mode-bridge
+| sudo systemctl start mode-bridge
+
+| Linux | /etc/init.d/mode-bridge stop
+| /etc/init.d/mode-bridge start
+
+| Windows | link:http://www.thewindowsclub.com/open-windows-services[Window Services Manager] | link:http://www.thewindowsclub.com/open-windows-services[Window Services Manager]
+
+|===
+
+*How is tokenization managed?*:: Tokens and secrets are generated by the Bridge server application and persisted in a database. We do not store plain secrets anywhere; we store only the encrypted versions (using the Bcrypt library .hashing mechanism based on the Blowfish cipher).
+
+
+*How are the tokens generated? Are they hardcoded or generated randomly at certain intervals? If yes, what is the interval of token generation?*:: They are generated by ThoughtSpot engineers on demand using an internal API. You may contact the team if you wish to renew the token; otherwise, we do not currently expire the already shared tokens.
+
+
+*What is the timeout mechanism?*:: It is the default timeout for the driver of whatever Cloud data warehouse you are trying to connect to.
+
+
+*Is the call from the Bridge client to the server through an API mechanism?*:: The call from the Bridge client to the server is via SSH. The Bridge client establishes an SSH connection to the Bridge server. We use the library link:https://pkg.go.dev/golang.org/x/crypto/ssh[SSH package -golang.org/x/crypto/ssh - Go Packages]  in the Bridge client.
+
+
+*What is the encryption technique used for communication between client and server?*:: The Bridge connector provides a tunnel through which the ThoughtSpot platform can connect to your database(s). The connection between the Bridge and ThoughtSpot is fully encrypted. The Bridge connector itself only stores its configuration and does not cache data, or store database credentials, queries, or query results. It functions purely as a secure conduit, ensuring no sensitive data is retained within the Bridge layer. We use this library: link:https://pkg.go.dev/golang.org/x/crypto/ssh[SSH package - golang.org/x/crypto/ssh - Go Packages].
++
+The encryption algorithm used is negotiated between the client and server.  The preferred ciphers can be seen in the x/crypto/ssh library source code: link:https://cs.opensource.google/go/x/crypto/+/master:ssh/common.go;bpv=1;bpt=1;l=38[https://cs.opensource.google/go/x/crypto/+/master:ssh/common.go;bpv=1;bpt=1;l=38?gsn=preferredCiphers&gs=KYTHE%3A%2F%2Fkythe%3A%2F%2Fgo.googlesource.com%2Fcrypto%3Flang%3Dgo%3Fpath%3Dssh%23var%2520preferredCiphers].
+
+
+*How is the session timeout handled?*:: The Bridge client continuously sends heartbeats to the Bridge server, keeping the connection active even when no queries are being executed. If there is a network interruption, the client will keep retrying to reconnect.
+
+
+*When authenticating the request from the Client, how can we make sure if it is a legitimate call?*:: The Bridge client connects to the Bridge server using an access token and secret. The Bridge server validates these credentials. This authentication is solely for establishing the tunnel. The database credentials are required to connect to the database through this tunnel.
+
+*From the Bridge client to the Bridge server, will the connection be uni-directional or bi-directional?*:: It is bi-directional since it is over SSH, but the Bridge client initiates the connection.
+
+
+*Can I see a network diagram showing the Bridge server and Bridge client?*::
+[.bordered]
+image:bridge-connectivity.png[Bridge connectivity]
+
+
+*How can I receive a ThoughtSpot vulnerability test report, a ThoughtSpot static code, or a penetration test report for the Bridge connector?*:: Reach out to {support-url}.
+
+

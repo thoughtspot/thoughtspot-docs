@@ -1,0 +1,187 @@
+= Create Models
+:last_updated: 11/19/2024
+:linkattrs:
+:experimental:
+:page-layout: default-cloud
+:description: Models are logical views created on top of a more complex data model, to enable business users to more easily consume data.
+:model: Model
+:jira: SCAL-158357, SCAL-194041 (9.10.5 -drag to create joins), SCAL-194038 (9.10.5 - bulk edit column properties). SCAL-189664 (remove spotapps - removed from image in step 3 of creating a model. SCAL-202208 (sort and filter in columns grid - 9.12.0.cl), SCAL-203404 (model filters limit - 9.12.0.cl), SCAL-221549 (knowledge cards - 10.4.0.cl), SCAL-225747 (models GA)
+
+== Introducing Models
+
+Models are an easier way of creating what previously were called Worksheets. You can create Models from the *Data* tab, just like Worksheets. You can still create and use Worksheets, but ThoughtSpot plans to remove Worksheets in a future release. All worksheets can be migrated to Models in a future release.
+
+Models are created in the new Model editor which provides a more visual and intuitive experience for creating data models.
+
+Benefits of the Model editor include:
+
+- Building a data model visually, by dragging and dropping tables and columns
+- Creating joins between tables is faster and easier
+- Using the tabbed interface allows you to quickly switch between table and column views, as well as formulas, filters, parameters, and settings.
+
+=== Limitations
+
+You can create either Models or Worksheets, however you cannot do the following:
+
+- Switch an individual Worksheet to a Model
+- Switch all Worksheets to Models in a cluster
++
+NOTE: When the {model} feature is available to all customers by default in a future release, you will have the option to request ThoughtSpot to migrate all the Worksheets on your cluster to {model}s.
+
+////
+=== About Models
+
+Models are logical views of data which allow you to model complex datasets. These data models simplify access to data for end-users and application services by incorporating these key features, and more:
+
+* *Table joins* supplement the primary data with information from various other data sources.
+* *Changing data types* ensures that you can handle mismatches gracefully, For example, conversions of date/time type formats, and processing of numeric codes (such as event IDs) correctly.
+* *Derived fields* support flexible expressions and formulas.
+* *Renamed fields* make charts and tables easily accessible.
+* *Selecting fields* allows you to focus only on the  fields that are necessary to the business use case.
+* *Hiding fields* lets you change the visibility of data by obscuring and securing sensitive information without affecting the calculations that depend on it.
++
+NOTE: If a hidden column is used in an Answer pinned to a Liveboard, then the entire Liveboard becomes read-only to users. This limits Liveboard functionality, which means the ability to adjust filters and download data is restricted.
+* *Changing the default aggregation* of fields in a {model} prevents common mistakes when building visuals.
+
+
+After xref:data-modeling.adoc[modeling your data], create {model}s to make searching easier.
+For example, a sales executive might need to search for information about retail sales.
+This data might be contained in several tables (sales, customers, products, stores, etc.), with foreign key relationships between them.
+An administrator who is familiar with the data model can create a retail sales {model}, that combines all of the related fact and dimension tables into a single, easy-to-use view, and share it with the sales executive.
+This provides access to the data without requiring an understanding of how it is structured.
+////
+[#create-model]
+== Creating a {model}
+
+To create a data model:
+
+. Select *Data* on the top navigation bar.
+. Select the *+ Create new* button in the side navigation bar.
+. Select *Model*.
++
+image::model_choose.png[Choose how to model your data]
+
+. Choose how you want to model your data, using one of the following options:
+.. To create your own model, select *Build your own with cloud data* and click *Next*.
+... To create a new connection, refer to xref:connections.adoc[About connections]
+... To use an existing connection, select it from the list, and select *Connect*.
+.. To build a model from tables originally created from dbt models, select *dbt*  and click *Next*.
+... To create a new dbt connection, select *Add dbt connection* and refer to step 5 of xref:dbt-integration.adoc#integrate[Integrating with dbt].
+... To use an existing connection, select it from the list, and select *Connect*.
+.. To import the TML for a model, select *TML* and click *Next*.
+... Upload your tml files. For more information, refer to xref:tml-worksheets.adoc[TML for Worksheets].
++
+NOTE: The information at this link also applies to {model}s.
+
+. <<build-model,Build your data model>>.
+
+.[.badge.badge-early-access]#Early Access#
+****
+If you are not able to see the Models feature, contact your ThoughtSpot administrator to enable it. For more about Early Access features, see xref:release-lifecycle.adoc#early-access[ThoughtSpot Cloud release life cycle].
+****
+
+include::partial$model-build.adoc[]
+
+== Editing a {model}
+
+If you created a {model}, or you have edit permissions on it, you can make changes such as adding sources and columns, adding or editing formulas, changing relationships, and changing column names. You can also rename a {model} or change its description.
+
+To edit a {model}:
+
+. Select *Data* on the top navigation bar.
+. Select the name of the {model} you want to edit.
+. Select the *Edit Worksheet* button in the upper-right of the screen.
++
+NOTE: Even though the button currently says _Edit Worksheet_, it allows you to edit a {model} if you selected one in the previous step.
+. Make your changes to the {model}.
++
+****
+*Edit tables*
+
+Using the More menu image:model_table_join_more.png[More menu] in the upper right of a table, you can edit a table in the following ways:
+
+- Add Join
+- Rename table
+- Duplicate table
+- Remove table
+- Show Join Recommendation
+****
++
+****
+*Edit columns*
+
+You can edit columns in the following ways:
+
+- Add columns by dragging and dropping them
+- Edit fields in columns
+- Delete any column by checking it and selecting *Delete*
+****
++
+****
+*Edit formulas, filters, parameters, and settings*
+
+You can edit in the following ways:
+
+- Delete formulas, filters, and settings
+- Modify properties
+****
+
+. Select *Save changes*.
+
+== Making a copy of a {model}
+
+To make a copy of a {model}:
+
+. Select *Data* on the top navigation bar.
+. Select the name of the {model} you want to make a copy of.
+. Open the *More* menu image:icon-more-10px.png[more menu icon] and select *Make a copy*.
+
++
+The *make a copy* dialog appears.
+
+. Change the name and description, as needed, and select *Save*.
++
+When you navigate back to the Worksheet page, your new {model} name appears in the list.
++
+NOTE: Even though the page currently only uses the term _Worksheet_, it does show both Worksheets and Models. Any models will appear in the list of Worksheets.
+
+[#knowledge-cards]
+== Knowledge cards
+
+With knowledge cards, you can see more detail about tables and columns before you add them to your Model.
+
+To view a knowledge card, do the following:
+
+. Click the knowledge card button image:knowledge-card-button.png[knowledge card button,width="30px"].
+. Click a table or column.
++
+[.bordered]
+image::model-knowledge-card.png[Model knowledge card]
++
+.[.badge.badge-early-access]#Early Access# Knowledge Cards
+****
+This is an Early Access feature and disabled by default. To enable it, contact your ThoughtSpot administrator.
+****
+
+[#role-playing-dimensions]
+== Role-playing dimensions
+
+A role-playing dimension is when a single physical dimension is referenced multiple times in a fact table, with each reference linking to a logically distinct role for the dimension. ThoughtSpot supports role-playing dimensions for {model}s. For example, you may have a fact table joined to a dimension table more than once. This is useful for cases such as when you have a sales fact table and an employee dimension table, where the sales table may record the employee ID who created, updated, and owned a record. In this case, you would want to join these three columns to the employee dimension table on employee ID.
+
+=== Implementing role-playing dimensions with {model}s
+
+To implement role-playing dimensions with Models, do the following in the Model editor:
+
+. Go to the *Tables* tab.
+. Select the More menu image:model_table_join_more.png[More menu] in the upper right of  the dimension table that you want to use in a different role.
+. Select *Duplicate Table*.
+. In the _Duplicate Table Name_ window that opens, assign an alias (since 2 tables cannot have the same name) by entering a new name (or alias) for that table.
+. Click *Save*.
+. Join this logical copy of the dimension table to the fact table with the join condition corresponding to the new role.
++
+. Go to the *Columns* tab.
+. Add columns from the new role-playing dimension.
++
+It will appear as a new table (with the alias assigned in step 4) on the left panel in the *Columns* tab of the model. You can tell it's a role-playing dimension because the original table name appears in parentheses *()* next to the new name.
+
+CAUTION: Copies/aliases of tables that are on the "many" side of a join are not supported in {model}s.
