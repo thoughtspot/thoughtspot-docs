@@ -1,0 +1,147 @@
+= Collect security logs
+:last_updated: 03/15/2023
+:author: Naomi
+:linkattrs:
+:experimental:
+:description: ThoughtSpot Software provides security audit events related to account activities and user actions within ThoughtSpot.
+
+ThoughtSpot Software provides security audit events related to account activities and user actions within ThoughtSpot.
+These events can help your SOC team detect potential security threats or compromised user accounts in your organization.
+
+== How to fetch security events
+
+To fetch security events from ThoughtSpot, you can push the logs to your SIEM server.
+
+=== Push to your SIEM server
+
+ThoughtSpot’s human-readable and comprehensive events can be shipped to your SIEM application in near real-time. Security events remain within the system for 30 days.
+To integrate with your SIEM or view these logs, contact {support-url}.
+
+ThoughtSpot also supports log ingestion to the customer SIEM system. We support multiple output plugins which can be configured to push the security audit events to the configured destination SIEM server at an interval of every 5 seconds.
+
+ThoughtSpot supports the following output plugin options:
+
+- HTTP
+- Splunk
+- Azure Log Analytics
+- Datadog
+
+== ThoughtSpot security events
+
+ThoughtSpot security events include the following information:
+
+* An event ID
+* A unique description of the event (for example,
+"`A user account was created`")
+* Timestamp (in UTC) yyyy/mm/dd:hh:mm:ss
+* User ID of the person initiating the event
+* IP of the user (public IP of the system from which the request comes to ThoughtSpot)
+* Fields specific to the event (for example,
+name of the new account)
+
+[#security-events]
+== ThoughtSpot Security events
+
+The possible events are:
+
+* <<logout-successful,account-logout>>
+* <<create-answer,answer-creation>>
+* <<delete-answers,answer-deletion>>
+* <<update-answers,answer-update>>
+* <<failed-to-create-auth-token,auth-token-creation-failure>>
+* <<auth-token-created-successfully,auth-token-creation-successful>>
+* <<csv-upload-finished,csv-upload-finished>>
+* <<csv-upload-started,csv-upload-started>>
+* <<create-rls-rule,create-rls-rule>>
+* <<delete-rls-rules,delete-rls-rules>>
+* <<login-failed,failed-login>>
+* <<logout-failed,failed-logout>>
+* <<user-groups-created,group-creation>>
+* <<user-groups-deleted,group-deletion>>
+* <<user-group-modified,group-modification>>
+* <<principals-in-group-update,group-principals-update>>
+* <<account-locked,locked-account>>
+* <<share-objects,object-sharing>>
+* <<update-password,password-change>>
+*<<update-password-failed,update-password-failure>>
+* <<create-pinboard,pinboard-creation>>
+* <<delete-pinboards,pinboard-deletion>>
+* <<update-pinboards,pinboard-update>>
+* <<privilege-changes,privilege-change>>
+* <<users-modified,profile-change>>
+* <<login-successful,successful-login>>
+* <<create-tables,table-creation>>
+* <<update-rls-rule,update-rls-rule>>
+* <<users-created,user-account-creation>>
+* <<users-deleted,user-account-deletion>>
+
+
+== Event descriptions
+
+ThoughtSpot defines these events as follows:
+
+[#logout-successful]
+Account logout::  A user logs out from ThoughtSpot.
+[#create-answer]
+Answer creation::  A user attempts to create a new answer.
+[#delete-answers]
+Answer deletion::  A user attempts to delete an answer.
+[#update-answers]
+Answer update::  A user attempts to modify an existing answer.
+[#failed-to-create-auth-token]
+Auth token creation failed:: Auth token creation fails.
+[#auth-token-created-successfully]
+Successful auth token creation:: Auth token creation succeeds.
+[#csv-upload-finished]
+CSV upload finished:: CSV upload finishes.
+[#csv-upload-started]
+CSV upload started:: CSV upload starts.
+[#create-rls-rule]
+Row-level security (RLS) rule creation::  A user creates an RLS rule on a table.
+[#delete-rls-rules]
+RLS rule deletion::  A user deletes an RLS rule on a table.
+[#login-failed]
+Failed login::  A user fails to log in due to an incorrect password, or IDP/ADP deny the authentication request.
+[#logout-failed]
+Failed logout::  User logout failed.
+[#user-groups-created]
+Group creation::  A user creates a new group, either manually through the Admin Portal, or through the internal API.
+[#user-groups-deleted]
+Group deletion::  A user deletes a group, either manually through the Admin Portal, or through the internal API.
+[#user-group-modified]
+Group modification::
+A user modifies the properties of a group, either in Admin Portal or over internal API.
+(Properties include group name, display name, and sharing visibility.)
+[#principals-in-group-update]
+Group principals update::  A user successfully or unsuccessfully attempts to add or remove users or groups from a group.
+[#account-locked]
+Locked account::
+A local user fails to authenticate _x_ times in a row, locking the account.
+Administrators can configure the number of authentication attempts before lockout within ThoughtSpot.
+
+[#share-objects]
+Object sharing::  A user successfully or unsuccessfully attempts to share an object (Pinboard, Worksheet, Answer) with another user or group.
+[#update-password]
+Password change::  A user successfully or unsuccessfully attempts to change their password.
+[#update-password-failed]
+Password update failure:: A user fails to update their password.
+[#create-pinboard]
+Pinboard creation::  A user attempts to create a new Pinboard.
+[#delete-pinboards]
+Pinboard deletion::  A user attempts to delete a Pinboard.
+[#update-pinboards]
+Pinboard update::  A user attempts to modify an existing Pinboard.
+[#privilege-changes]
+Privilege change::  A user adds or removes one or several privileges from a group.
+[#users-modified]
+Profile change::  A user profile changes, either manually in the Admin Portal or over SAML sync.
+[#update-rls-rule]
+RLS rule update::  A user modifies an RLS rule on a table.
+[#login-successful]
+Successful login::  A local, IDP or AD user logs in to ThoughtSpot.
+[#create-tables]
+Table creation::  A user attempts to create a new table.
+[#users-created]
+User account creation::  A new user creates an account, either manually in the Admin Portal or through the internal API.
+[#users-deleted]
+User account deletion::  A user account is deleted, either manually in the Admin Portal or through the internal API.

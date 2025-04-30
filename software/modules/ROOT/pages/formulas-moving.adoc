@@ -1,0 +1,107 @@
+= Moving functions
+:last_updated: 06/15/2021
+:experimental:
+:linkattrs:
+:page-partial:
+:page-aliases: /complex-search/about-moving-formulas.adoc
+:description: Moving formulas can be used to smooth out any irregularities in your data to easily recognize trends.
+
+Moving formulas can be used to smooth out any irregularities in your data to easily recognize trends.
+
+The larger intervals smooth out a larger number of peaks and troughs in your data. When the intervals are smaller, the moving formulas are closer to the actual data points.
+
+== Syntax
+
+Each of the moving formulas accepts a *measure*, two integers to define the *window* or *interval*, and one or more optional *attributes*.
+
+[source]
+----
+formula (
+  measure,windowStart,windowFinish,
+  [attribute1,attribute2,...])
+----
+
+Moving formulas require only the measure and integer values. However, if you do not specify the attributes, the function reverts to a non-moving measure; in other words, a `moving_sum()` functions as a `sum()`. When you specify both required and optional values, the formula returns the aggregate of the *measure* over the provided *attributes* for the defined *window*.
+
+ThoughtSpot determines the *window* through the following formula:
+
+[source]
+----
+current row - integer1, current row + integer2
+----
+
+Therefore, a window of `(1,1)` contains 3 rows in total: one row before the current row, the current row, and one row after the current row.
+
+You can use moving functions to emulate "lag", by specifying negative values for the window values. For example, a window of `(1,-1)` contains only 1 row, the one that precedes the current row. In other words, the interval is `(current row - 1)` through `(current row -1)`.
+
+NOTE: When the windowing attribute is character-based, ThoughtSpot orders values alphanumerically to determine the row order for the window calculation.
+
+For more information on how the time windows work, see this chart:
+
+image::moving_formula_time_window_chart.png[Moving formula time window chart]
+
+ThoughtSpot has the following moving formulas:
+
+* <<moving_average,moving_average>>
+* <<moving_max,moving_max>>
+* <<moving_min,moving_min>>
+* <<moving_sum,moving_sum>>
+
+include::partial$functions/moving_average.adoc[]
+
+include::partial$functions/moving_max.adoc[]
+
+include::partial$functions/moving_min.adoc[]
+
+include::partial$functions/moving_sum.adoc[]
+
+== Calculate a moving average
+
+This example  demonstrates using the `moving_average` formula.
+To use the moving function in a search:
+
+. Start a new search, or edit an existing answer.
+
+. Open the *Data* panel from the upper-right corner if it is not open, and select the + icon next to Formulas. If the xref:answer-experience-new.adoc[new answer experience] is off in your environment, click the more options icon image:icon-more-10px.png[more icon] in the upper-right side of the table, and select *Add formula*.
++
+image::formula-editor-add.png[Add a formula]
+
+. Enter the `moving_average` formula, specifying a measure, the window, and one or more attributes.
++
+The example returns the average of revenue, within the commit date window size of 3.
+The window includes the previous, current, and next rows.
+ThoughtSpot uses the attributes are the ordering columns to compute the moving average.
+The window is `(current - Num1...Current + Num2)` with both end points being included in the window.
+For example, "`1,1`" has a window size of 3.
+To see periods in the past, use a negative number for the second endpoint, as in the example "`moving_average(sales, 1, -1, date)`".
++
+image::moving_average_formula-new.png[Moving average formula in the formula builder]
+
+. Name the formula by entering a title in the top field, and then select *Save*.
++
+The formula appears in the search bar and in the table as its own column.
++
+image::moving_average_table-new.png[Moving average formula as its own column in the table]
++
+A box that displays the moving average within the entire table appears at the bottom of the table.
+
+. To use a different aggregation type, click the current aggregation type at the bottom of the box and select another type.
+
+== Calculate a moving sum of a unique count
+
+ThoughtSpot doesn't have a purpose-built function for calculating a moving sum, or other moving formula, for a unique count. However, for many use cases, you can use a `group_aggregate` to facilitate this type of count. Adding a `group_aggregate` to your formula allows you to pass the aggregate function (in this case, `unique count`) in the windowing function (in this case, `moving_sum`).
+
+See the following example for the general formula for a moving sum of a unique count. In this example, we calculate the moving sum of unique customer names, using `monthly date` as our aggregation bucket.
+
+[source,bash]
+----
+moving_sum (group_aggregate (unique count (Customer Name ),query_groups (),query_filters ()),2,0,start_of_month (Date ))
+----
+
+The result looks something like this:
+
+image::moving-unique-example.png[Moving sum of a unique count of customers]
+
+You can use this syntax on any moving formula: average, maximum, minimum, and sum.
+
+NOTE: This syntax produces a unique count for each individual result, such as *Oct 2021*. However, it doesn't produce a unique count across results. If a customer name appears in both October 2021 and November 2021, for example, that customer would be counted in both those months.
