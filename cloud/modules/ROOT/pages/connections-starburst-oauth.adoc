@@ -6,14 +6,8 @@
 :page-layout: default-cloud
 :connection: Starburst
 :description: How to configure OAuth for a Starburst connection in ThoughtSpot.
-:jira: SCAL-160062, SCAL-199788
 
 To configure OAuth for {connection}, you create an app in the Identity Provider and use the app’s credentials to register it in {connection} as an external token provider. Once these steps are completed, {connection} will allow connections coming in with the JWT issued by the IdP.
-
-NOTE: For OAuth, we recommend checking the {connection} link:https://docs.starburst.io/latest/security/authentication-types.html[documentation^] to confirm any IDP support and their details. This article documents only the most frequently set-up IDP.
-
-IMPORTANT: Each ThoughtSpot instance requires a unique {connection} security integration.
-Each user in {connection} must have a default warehouse and default role.
 
 == Okta OAuth
 The following steps are an example of how you can configure Okta for external OAuth.
@@ -51,8 +45,6 @@ It should follow this format:
 `\https://<your-thoughtspot-instance-host>/callosum/v1/connection/generateTokens`
 +
 image::dremio-oauth3.png[Add the ThoughtSpot redirect URI]
-+
-NOTE: If your IdP supports rotation of refresh tokens with every usage, please ensure that this option is NOT chosen. ThoughtSpot does not support one-time use refresh tokens.
 
 . Assign the application to everyone in the organization or to specific groups. This step may vary for other IdPs.
 +
@@ -92,7 +84,7 @@ http-server.authentication.jwt.principal-field=<value of the claim containing th
 +
 These details should be obtained from the well known open id configuration URL obtained from Okta authorization server (for example, *\https://example.okta.com/oauth2/abc1234xyz/.well-known/oauth-authorization-server*).
 +
-The value for the principal-field configuration should be the claim name in the JWT that contains the username matching the username created in Starburst. This can be found from the token payload. In the following example, the username is in the claim "sub."
+The value for the principal-field configuration should be the claim name in the JWT that contains the username matching the username created in Starburst. This can be found from the token payload. In the following example, the username is in the claim “sub.”
 +
 image::dremio-oauth8.png[Sample external token provider code]
 
@@ -102,22 +94,13 @@ As an admin user, you may run into an issue logging in to connections created us
 
 . Search on a table belonging to the connection you are trying to edit. The following error appears:
 +
-image:oauth-error.png[Error reading "Error in loading data. Connection to Snowflake could not be established. OAuth login required. Login"]
+image:oauth-error.png[Error reading “Error in loading data. Connection to Snowflake could not be established. OAuth login required. Login”]
 
 . Click *Login*. You will be directed to the IDP login page.
 
 . Enter your login credentials.
 
 . You will now have access to edit the connection.
-
-== OAuth connection improvements
-
-If you do not have a valid OAuth access token, you can now directly navigate to the OAuth authorization screen when performing one of the following actions on a connection shared with you:
-
-** View sample data
-** Create a custom SQL view
-** Edit the connection
-
 
 '''
 > **Related information**
@@ -132,4 +115,3 @@ If you do not have a valid OAuth access token, you can now directly navigate to 
 > * xref:connections-starburst-reference.adoc[Connection reference for {connection}]
 > * xref:connections-starburst-private-link.adoc[]
 > * xref:connections-starburst-passthrough.adoc[]
-> * xref:connections-column-indexing-oauth.adoc[]

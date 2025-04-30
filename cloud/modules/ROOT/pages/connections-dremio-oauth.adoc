@@ -5,16 +5,10 @@
 :page-layout: default-cloud
 :connection: Dremio
 :description: Learn how to configure OAuth for a Dremio connection in ThoughtSpot.
-:jira: SCAL-160062, SCAL-180837, SCAL-199788
 
 ThoughtSpot supports OAuth for a {connection} connection.
 
 To configure OAuth for {connection}, you create an app in the Identity Provider and use the app’s credentials to register it in {connection} as an external token provider. Once these steps are completed, {connection} will allow connections coming in with the JWT issued by the IdP.
-
-NOTE: For OAuth, we recommend checking the {connection} link:https://docs.dremio.com/cloud/security/authentication/idp/[documentation^] to confirm any IDP support and their details. This article documents only the most frequently set-up IDP.
-
-IMPORTANT: Each ThoughtSpot instance requires a unique {connection} security integration.
-Each user in {connection} must have a default warehouse and default role.
 
 [#part-1]
 == Part 1: Configuring the IdP with Okta
@@ -41,8 +35,6 @@ It should follow this format:
 `\https://<your-thoughtspot-instance-host>/callosum/v1/connection/generateTokens`
 +
 image::dremio-oauth3.png[Add the ThoughtSpot redirect URI]
-+
-NOTE: If your IdP supports rotation of refresh tokens with every usage, please ensure that this option is NOT chosen. ThoughtSpot does not support one-time use refresh tokens.
 
 . Assign the application to everyone in the organization or to specific groups. This step may vary for other IdPs.
 +
@@ -98,21 +90,13 @@ As an admin user, you may run into an issue logging in to connections created us
 
 . Search on a table belonging to the connection you are trying to edit. The following error appears:
 +
-image:oauth-error.png[Error reading "Error in loading data. Connection to Snowflake could not be established. OAuth login required. Login"]
+image:oauth-error.png[Error reading “Error in loading data. Connection to Snowflake could not be established. OAuth login required. Login”]
 
 . Click *Login*. You will be directed to the IDP login page.
 
 . Enter your login credentials.
 
 . You will now have access to edit the connection.
-
-== OAuth connection improvements
-
-If you do not have a valid OAuth access token, you can now directly navigate to the OAuth authorization screen when performing one of the following actions on a connection shared with you:
-
-** View sample data
-** Create a custom SQL view
-** Edit the connection
 
 '''
 > **Related information**
@@ -126,4 +110,3 @@ If you do not have a valid OAuth access token, you can now directly navigate to 
 > * xref:connections-dremio-private-link.adoc[]
 > * xref:connections-dremio-reference.adoc[]
 > * xref:connections-dremio-passthrough.adoc[]
-> * xref:connections-column-indexing-oauth.adoc[]

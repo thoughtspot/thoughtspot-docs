@@ -1,5 +1,5 @@
 = TML for Worksheets
-:last_updated: 4/26/2023
+:last_updated: 5/19/2023
 :author: Teresa Killmond
 :linkattrs:
 :experimental:
@@ -7,7 +7,6 @@
 :page-aliases: /admin/worksheets/yaml-worksheet.adoc, /admin/worksheets/tml-worksheet.adoc, /admin/worksheets/tsl-worksheet.adoc, /admin/ts-cloud/yaml-worksheet.adoc, /admin/ts-cloud/tml-worksheet.adoc, /admin/ts-cloud/tsl-worksheet.adoc
 :description: Use TML to modify Worksheets in a flat-file format. Then, migrate the Worksheet to a different cluster, or restore it to the same cluster.
 :object: Worksheets
-:jira: SCAL-158490, SCAL-186188
 
 include::partial$tml-intro.adoc[]
 
@@ -18,7 +17,7 @@ include::partial$tml-syntax-worksheet.adoc[]
 == TML parameters for {object}
 These parameters and their definitions are specific to {object}; this list doesn't contain every parameter in every TML file. Similarly, the parameter definitions may vary from object to object, since the parameters may have different roles in different objects.
 
-[width="100%",grid="none",options="header"]
+[width=“100%”,grid=“none”,options="header"]
 |===
 | a - g | i - l | n - w
 a| <<aggregation,aggregation>>
@@ -96,8 +95,6 @@ a| <<id,id>>
 <<lesson_plan_string,lesson_plan_string>>
 
 <<lesson_plans,lesson_plans>>
-
-<<linked_parameters,linked_parameters>>
 
 <<list_choice,list_choice>>
 
@@ -257,7 +254,6 @@ Uses two paired parameters:
 
 - `country: __<country_name>__`
 - `region_name: __<region_name_in_UI>__`; can be State, Postal Code, District, and so on.
-
 `custom_file_guid: <custom map GUID>`;; for columns that use a custom map. Must be followed by `geometryType`
 `geometryType: <custom_map_geometry_type>`;; for columns that use a custom map. Must be preceded by `custom_file_guid`. Accepts the following values: `POINT`, `LINE_STRING`, `LINEAR_RING`, `POLYGON`, `MULTI_POINT`, `MULTI_LINE_STRING`, `MULTI_POLYGON`, `GEOMETRY_COLLECTION`, `CIRCLE`
 
@@ -405,12 +401,6 @@ The content of the xref:search-assist-coach.adoc[] lesson created for the Worksh
 lesson_plans::
 Contains a list of xref:search-assist-coach.adoc[] lessons created for the Worksheet.
 
-[#linked_parameters]
-linked_parameters::
-Links the Worksheet parameter to the underlying table parameter. Takes the syntax "table_name::table_parameter_name". The table parameter name should be the name of the parameter in ThoughtSpot.
-+
-NOTE: Only applicable to tables imported from SAP Hana.
-
 [#list_choice]
 list_choice::
 Contains the list of accepted values for a Parameter, if a list was configured when xref:parameters-create.adoc[creating a Parameter].
@@ -526,12 +516,9 @@ There are certain limitations to the changes you can apply by editing {object} t
 * Formulas and columns can either have a new name, or a new expression.
 You can't change both, unless migrating or updating the Worksheet two times.
 * It isn't possible to reverse the join direction in the TML script.
-* TML doesn't support data type modifications.
 * You can't import manually compressed .zip files.
 You can only import .zip files that you exported from ThoughtSpot: a custom set of TML files, an object and its associated data sources, or multiple objects of the same type that you exported from the object list page.
 * You can't modify joins at the table level from the Worksheet, view, or Answer TML file.
 You can only override the joins for that specific Worksheet, view, or Answer.
 To modify table-level joins, you must edit the source table's TML file.
 * When deleting columns, you only delete ThoughtSpot's record of the column. You don't delete the column in your external database.
-
-
