@@ -1,0 +1,1130 @@
+= ThoughtSpot Cloud Release Notes
+:experimental:
+:last_updated: 1/24/2022
+:linkattrs:
+:page-toclevels: 1
+:page-aliases: /release/notes.adoc
+:page-layout: default-cloud
+:description: These release notes include information about new and enhanced features.
+
+ThoughtSpot 8.0.0.cl is now available.
+
+These release notes include information about new and enhanced features.
+
+To see our feature deprecation plans, please see xref:deprecation.adoc[Deprecation Announcements].
+
+[#new]
+== New Features and Functionality
+
+include::partial$new-features-cloud-release.adoc[]
+
+[#november-2021]
+== ThoughtSpot 8 Cloud November Release (ts8.nov.cl)
+
+* <<november-cloud-2021-first,For the First User>>
+* <<november-cloud-2021-analyst,For the Analyst>>
+* <<november-cloud-2021-business-user,For the Business User>>
+* <<november-cloud-2021-data-engineer,For the Data Engineer>>
+* <<november-cloud-2021-it-ops-engineer,For the IT Ops Engineer>>
+* <<november-cloud-2021-developer,For the Developer>>
+
+[#november-cloud-2021-first]
+=== For the First User
+Getting started with ThoughtSpot Cloud::
+The first user on the account has to complete a series of steps before other people can start using ThoughtSpot with your organization's data.
+For these instructions, see xref:ts-cloud-getting-started.adoc[Getting Started with ThoughtSpot Cloud].
+
+[#november-cloud-2021-analyst]
+=== For the Analyst
+
+
+////
+removing these features for now per alok. may add back in
+
+[#spotapps]
+ServiceNow SpotApp +++<span class="label label-beta">+++Beta+++</span>+++::
+SpotApps are ThoughtSpot's new out-of-the-box solution templates built for specific use cases and data sources. They are built on Blocks, which are pre-built pieces of code that are easy to download and implement directly from the product. This release introduces the ServiceNow SpotApp and Analytics Blocks. Analytics Blocks include pre-built Worksheet, Answer, and Liveboard Blocks. +
+The ServiceNow SpotApp mimics the ServiceNow data model. After you connect to your ServiceNow data in your cloud data warehouse, ThoughtSpot maps that data to SpotApp columns, and creates pre-built but still customizable worksheets, answers, and Liveboards, based on your ServiceNow data. +
+Refer to xref:app-templates.adoc[SpotApps]. +
+This feature is in beta and off by default. It is part of the <<data-tab,Data tab redesign>> beta. To enable SpotApps and the Data tab redesign, link:https://community.thoughtspot.com/customers/s/contactsupport[contact ThoughtSpot Support].
+
+
+
+SQL-based views +++<span class="label label-beta">+++Beta+++</span>+++::
+This release introduces beta support for SQL-based views. Users can create views based on SQL queries, and use those views as data sources. This type of view has the same functionality as a view based on searching your data. +
+This feature is in beta and off by default. To enable it, link:https://community.thoughtspot.com/customers/s/contactsupport[contact ThoughtSpot Support].
+
+
+[#data-tab]
+Data tab redesign +++<span class="label label-beta">+++Beta+++</span>+++::
+This release redesigns the *Data* section of the product. To access this part of the product, select *Data* from the top navigation bar. The redesign introduces several new features, such as SQL-based views and SpotApps, and makes the UI more intuitive. +
+This feature is in beta and off by default. To enable it,  link:https://community.thoughtspot.com/customers/s/contactsupport[contact ThoughtSpot Support].
+////
+
+[#date-interval-functions]
+Date interval functions::
+In this release, we introduced new functions for computing time intervals between two dates. In addition to the existing xref:formula-reference.adoc#diff_days[diff_days] and xref:formula-reference.adoc#diff_time[diff_time] functions, you can now use `diff_years`, `diff_quarters`, `diff_months`, `diff_weeks`, `diff_hours`, and `diff_minutes` to calculate time intervals at these additional granularities.
++
+If your organization uses a xref:connections-cust-cal.adoc[custom calendar], which can specify a new starting date of a year, starting dates of quarters, a starting day of the month, and a starting day of the week, use the optional custom calendar argument with these functions to calculate the difference between the two dates.
+
+[#auto-answer]
+Automated answer creation in Setup::
+We simplified the steps to create Search visualizations during Setup.
+Now, you can select measures, attributes and date columns and immediately view suggested answers and visualizations.
+For more information, see xref:automated-answer-creation.adoc[Create answers in Setup].
+
+[#november-cloud-2021-business-user]
+=== For the Business User
+
+[#liveboard-announcement]
+Starting in December 2021, ThoughtSpot refers to Liveboards instead of pinboards.
+With Liveboards, you can have an interactive experience and get granular insights through live queries on cloud data, tailored for you.
+You can use Liveboards to iterate, explore, and drill into more insights, and tell a continuously evolving data story. +
+ThoughtSpot plans to support for several releases, and then retire, internal processes and external methods that use the older naming convention.
+
+[#session-validity]
+User session timeout and validity::
+ThoughtSpot increased the duration of *idle session timeouts* and the *maximum session validity*, when you click *Remember me* on the login screen.
+There is no change to the duration when you do not click *Remember me*.
+
+* Idle session timeout: If a user is not active for 14 days, ThoughtSpot logs the user out, and the user must enter their login credentials again.
+* Maximum session validity: ThoughtSpot forces the user's session to expire after 14 days, even if they are active throughout that period.
+
+This change *_only_* affects new clusters created on the November Cloud release and later.
+Clusters created on the October Cloud release and earlier have the old experience, even after they update to the November Cloud release.
+In the old experience, the *idle session timeout* is 60 minutes with *Remember me*, and 30 minutes without it.
+The old *maximum session validity* is 7 days with *Remember me*, and not available without it.
+
+To increase idle session timeouts or maximum session validity for clusters created on the October Cloud release and earlier, https://community.thoughtspot.com/customers/s/contactsupport[contact ThoughtSpot Support].
+
+[#search-suggestions]
+Search suggestions::
+Search suggestions are now GA.
+When you xref:search-answers.adoc[search across existing answers and Liveboards], ThoughtSpot now offers search suggestions in the search bar, based on your past searches and popular searches in your environment, in addition to object suggestions.
+For example, if you type `Sal` in the search bar, it might now result in search suggestions like *Sales* and *Sales this year*, in addition to object suggestions like an existing Liveboard called *Sales in the east last year*.
++
+ThoughtSpot provides search suggestions before you begin typing, but not object suggestions.
+
+[#november-cloud-2021-data-engineer]
+=== For the Data Engineer
+[#connections-snowflake-azure-ad-oauth]
+Azure AD external OAuth for Snowflake::
+Snowflake now supports external OAuth through Microsoft Azure AD.
+See xref:connections-snowflake-azure-ad-oauth.adoc[Configure Azure AD external OAuth for a Snowflake connection].
+
+////
+removing for now per alok
+[#connections-flow-data-portal]
+New connection creation flow with data tab redesign::
+If you have the new redesigned data tab enabled, you'll see the new Data Portal page. To start creating a connection, you click *Connections* and then click the connection type you want to create. Also with the new data tab enabled, you have the option to create a connection without selecting tables or columns. On the Data Portal page you can create a SQL-based view from a connection.
+////
+
+[#november-cloud-2021-it-ops-engineer]
+=== For the IT Ops Engineer
+[#saml]
+SAML assertion validity::
+ThoughtSpot now supports 2 methods to increase the duration of validity for your xref:authentication-integration.adoc#saml-assertion[SAML assertion]: the `SessionNotOnOrAfter` attribute and the `maxAuthenticationAge` parameter.
+You can ask ThoughtSpot to disable either one of these checks. If you use both, and either check fails, ThoughtSpot does not authenticate the user. Some IDPs do not support use of `SessionNotOnOrAfter`.
+If your IDP does not support use of `SessionNotOnOrAfter`, remove that attribute from your IDP assertion and https://community.thoughtspot.com/customers/s/contactsupport[ask ThoughtSpot Support] to enable `maxAuthenticationAge`.
+
+[#multiple-idp]
+Multiple Identity Providers for SAML login::
+You can now configure SAML SSO login for more than one Identity Provider (IDP).
+You may have multiple groups of users who need to log into ThoughtSpot but are managed by separate IDPs.
+To configure this, https://community.thoughtspot.com/customers/s/contactsupport[contact ThoughtSpot Support].
+
+[#vpn]
+OpenVPN support for Google BigQuery and Azure Synapse connections::
+ThoughtSpot now supports secure access from ThoughtSpot Cloud to your data in Google BigQuery and Azure Synapse, through your OpenVPN server.
+ThoughtSpot supports the following OpenVPN server implementations:
+
+* https://openvpn.net/community-downloads/[OpenVPN Community Edition^]
+* https://docs.microsoft.com/en-us/azure/vpn-gateway/vpn-gateway-howto-openvpn-clients[Azure VPN^]
+* https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/what-is.html[AWS Client VPN^]
+
+To learn how to configure a VPN connection for your Google BigQuery or Azure Synapse connection, refer to xref:connections-gbq-open-vpn.adoc[OpenVPN for Google BigQuery] and xref:connections-synapse-open-vpn.adoc[OpenVPN for Azure Synapse].
+
+[#november-cloud-2021-developer]
+=== For the Developer
+
+ThoughtSpot Everywhere:: For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation].
+
+[#october-2021]
+== ThoughtSpot 7 Cloud October Release (ts7.oct.cl)
+
+* xref:notes.adoc#october-cloud-2021-first[For the First User]
+* xref:notes.adoc#october-cloud-2021-analyst[For the Analyst]
+* xref:notes.adoc#october-cloud-2021-business-user[For the Business User]
+* xref:notes.adoc#october-cloud-2021-data-engineer[For the Data Engineer]
+* xref:notes.adoc#october-cloud-2021-it-ops-engineer[For the IT Ops Engineer]
+* xref:notes.adoc#october-cloud-2021-developer[For the Developer]
+
+[#october-cloud-2021-first]
+=== For the First User
+[#getting-started]
+Getting started with ThoughtSpot Cloud::
+The first user on the account has to complete a series of steps before other people can start using ThoughtSpot with your organization's data.
+For these instructions, see xref:ts-cloud-getting-started.adoc[Getting Started with ThoughtSpot Cloud].
+
+[#october-cloud-2021-analyst]
+=== For the Analyst
+[#pinboard-gating-conditions]
+Liveboard schedule gating conditions::
+Gating conditions for scheduled Liveboards are now GA.
+Refer to xref:liveboard-schedule.adoc[Schedule a Liveboard job] to learn more about scheduling Liveboards for email delivery, and how to leverage gating conditions so that ThoughtSpot only sends the Liveboards when certain conditions are true.
+
+[#october-cloud-2021-business-user]
+=== For the Business User
+[#geomaps-new-zealand]
+Geo map support::
+We added support for regional councils, cities and districts, and postcodes, for New Zealand.
+See xref:geomap-reference.adoc[Geo Map Reference].
+
+[#october-cloud-2021-data-engineer]
+=== For the Data Engineer
+[#connections-custom-calendar]
+Custom calendar::
+Custom calendar is now available, and it supports the Snowflake, Amazon Redshift, Google BigQuery, Microsoft Azure Synapse, and Databricks cloud data warehouses.
+See xref:connections-cust-cal.adoc[Custom calendar].
+
+[#october-cloud-2021-it-ops-engineer]
+=== For the IT Ops Engineer
+[#profile-ui]
+UI improvement for user profile::
+This release improves the UI and user experience of the xref:user-profile.adoc[user profile].
+
+[#october-cloud-2021-developer]
+=== For the Developer
+
+ThoughtSpot Everywhere:: For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation].
+
+[#september-2021]
+== ThoughtSpot 7 Cloud September Release (ts7.sep.cl)
+
+* xref:notes.adoc#september-cloud-2021-first[For the First User]
+* xref:notes.adoc#september-cloud-2021-analyst[For the Analyst]
+* xref:notes.adoc#september-cloud-2021-business-user[For the Business User]
+* xref:notes.adoc#september-cloud-2021-data-engineer[For the Data Engineer]
+* xref:notes.adoc#september-cloud-2021-it-ops-engineer[For the IT Ops Engineer]
+* xref:notes.adoc#september-cloud-2021-developer[For the Developer]
+
+[#september-cloud-2021-first]
+=== For the First User
+[#getting-started]
+Getting started with ThoughtSpot Cloud::
+The first user on the account has to complete a series of steps before other people can start using ThoughtSpot with your organization's data.
+For these instructions, see xref:ts-cloud-getting-started.adoc[Getting Started with ThoughtSpot Cloud].
+
+[#september-cloud-2021-analyst]
+=== For the Analyst
+[#auto-email]
+Automatic following of How Users are Searching Answers Liveboard::
+The xref:thoughtspot-one-query-intelligence-liveboard.adoc[How Users are Searching Answers Liveboard] allows administrators, and users they share the Liveboard with, to understand how users are searching for existing answers and Liveboards.
+Starting in the September release, ThoughtSpot automatically emails this Liveboard to administrators once a week.
+You can add or remove users from this email list by xref:liveboard-schedule.adoc[editing the follow schedule] for this Liveboard.
+
+[#september-cloud-2021-business-user]
+=== For the Business User
+[#geomaps-denmark]
+Geo map support::
+We added support for regions, municipalities, and postal codes, for Denmark.
+See xref:geomap-reference.adoc[Geo Map Reference].
+
+[#learning-cards]
+Learning cards::
+This release introduces a new in-product learning initiative.
+Sets of learning cards appear when you first view an answer or search result after updating to the September release.
+These cards teach new users about ThoughtSpot, and how to gain insights from searches and answers.
+If you exit the learning cards by clicking the *Hide* or *x* button, you can always get them back by clicking on "`learning mode on`" from the profile menu.
++
+This feature is only available if you have the xref:answer-experience-new.adoc[new answer experience] [.badge.badge-update]#Beta# (off by default in September cloud) on in your environment.
+You can turn the new answer experience on from the *Experience manager* in your profile.
+
+[#watchlist-drag-and-drop]Drag and drop metrics on your watchlist::
+You can now move metrics on your xref:thoughtspot-one-homepage.adoc#quick-links[home page watchlist] using drag and drop.
+Click on a metric, and move it to a different position in your watchlist.
+
+[#search-suggestions]
+Search suggestions [.label.label-beta]#Beta#::
+When you xref:search-answers.adoc[search across existing answers and Liveboards], ThoughtSpot now offers search suggestions in the search bar, based on your past searches and popular searches in your environment, in addition to object suggestions.
+For example, if you type `Sal` into the search bar, it might now result in search suggestions like *Sales* and *Sales this year*, in addition to object suggestions like an existing Liveboard called *Sales in the east last year*.
++
+ThoughtSpot provides these search object suggestions before you begin typing, based on your past searches and popular searches in your environment.
++
+This feature is in beta.
+If you do not see it yet, ThoughtSpot will enable it for you soon.
+
+[#september-cloud-2021-data-engineer]
+=== For the Data Engineer
+[#connections]
+Embrace is now called Connections::
+ThoughtSpot has renamed Embrace to Connections.
+Functionality remains the same.
+To access your connections, navigate to the Data tab and click Connections.
+For more information, see xref:connections.adoc[Connections].
+
+[#september-cloud-2021-it-ops-engineer]
+=== For the IT Ops Engineer
+[#custom-domains]
+Custom domain configuration::
+ThoughtSpot now supports the configuration of a custom domain or multiple domains for your ThoughtSpot Cloud URL.
+By default, the base URL is _<your_company_name>.thoughtspot.cloud_.
+This feature allows you to request a different URL or multiple URLs, such as _analytics.<your_company_name>.com_.
+This is useful when embedding ThoughtSpot pages with TS Everywhere, so that your embedding application and the ThoughtSpot pages have the same base URL.
+If you are embedding ThoughtSpot in multiple environments, such as a staging environment and a production environment, these multiple domains can point to the same ThoughtSpot instance.
++
+Refer to xref:custom-domains.adoc[Custom domain configuration] for more information.
+To set up a custom domain in your ThoughtSpot Cloud URL, https://community.thoughtspot.com/customers/s/contactsupport[contact ThoughtSpot Support].
+
+[#september-cloud-2021-developer]
+=== For the Developer
+[#thoughtspot-everywhere]
+ThoughtSpot Everywhere::  This release introduces the ThoughtSpot Everywhere Edition license, Visual Embed SDK version 1.4.0, and new REST APIs for programmatic management of data connections, metadata objects, user accounts, user groups and privileges, and object sharing permissions.
++
+For more information, refer to https://docs.thoughtspot.com/visual-embed-sdk/release/en/?pageid=whats-new[ThoughtSpot Developer Documentation].
+
+[#august-2021]
+== ThoughtSpot 7 Cloud August Release (ts7.aug.cl)
+
+* xref:notes.adoc#august-cloud-first[For the First User]
+* xref:notes.adoc#august-cloud-analyst[For the Analyst]
+* xref:notes.adoc#august-cloud-business-user[For the Business User]
++
+//* xref:notes.adoc#august-cloud-data-engineer[For the Data Engineer]
+* xref:notes.adoc#august-cloud-it-ops-engineer[For the IT Ops Engineer]
+* xref:notes.adoc#august-cloud-developer[For the Developer]
+
+[#august-cloud-first]
+=== For the First User
+[#getting-started]
+Getting started with ThoughtSpot Cloud::
+The first user on the account has to complete a series of steps before other people can start using ThoughtSpot with your organization's data.
+For these instructions, see xref:ts-cloud-getting-started.adoc[Getting Started with ThoughtSpot Cloud].
+
+[#august-cloud-analyst]
+=== For the Analyst
+[#scriptability]
+Scriptability::
+* *Improved import workflow:* The new import workflow for xref:scriptability.adoc[Scriptability] identifies errors, suggests solutions, and allows you to resolve these errors as part of the import workflow.
+It also has a cleaner, more intuitive UI, with separate sections for different object types.
+* *TML for tables with row-level security:* ThoughtSpot now supports the migration and editing of tables with xref:security-rls-concept.adoc[row level security (RLS)] using xref:tml.adoc#syntax-tables[TML].
+
+[#august-cloud-business-user]
+=== For the Business User
+[#watchlist-metrics]
+Watchlist metrics::  There are several new features for the metrics watchlist on your ThoughtSpot home page:
+
+* You can now open metrics in your watchlist in a new tab by right-clicking on the metric on the home page.
+* There is now no limit to the number of metrics you can add to your watchlist.
+
+Refer to xref:thoughtspot-one-homepage.adoc#quick-links[Home page] for more information about watchlist metrics.
+
+[#scatter-bubble-charts]
+Minimum and maximum on x-axis for scatter and bubble charts::
+You can now specify a minimum and maximum value for measures on the x-axis of xref:chart-scatter.adoc[scatter] and xref:chart-bubble.adoc[bubble] charts.
+For more information on how to add a minimum and maximum value to a chart axis, refer to xref:chart-axes-options.adoc#edit[Change axis options].
+[#deprecations]
+Deprecations::
+ThoughtSpot is dropping support for the following feature in the August Cloud release.
+This feature is *_not_* available in the August release:
+
+* Ask an Expert
+
+Refer to xref:deprecation.adoc#de-support-august-cloud[Deprecation Announcements] for more information.
+
+////
+<h3><a id="august-cloud-data-engineer"></a>For the Data Engineer</h3>
+
+<dl>
+<dlentry id="custom-calendar">
+<dt>Custom calendar enhancements</dt>
+<dd>There are several enhancements for custom calendar in this release:
+<ul><li>Custom calendar offers <span class="badge badge-update">Beta</span> support for Redshift, Teradata, Starburst, Synapse, and SAP HANA connections. These are off by default. To enable them, https://community.thoughtspot.com/customers/s/contactsupport[contact ThoughtSpot support].</li><li>Streamlined custom calendar window with the ability to preview calendar data.</li>
+<li>Simplified workflow.</li>
+<li>Preview calendar data from custom calendar list</li></ul>
+For more information, refer to xref:connections-cust-cal-create.adoc[Custom calendar overview].</dd>
+</dlentry>
+</dl>
+////
+
+[#august-cloud-it-ops-engineer]
+=== For the IT Ops Engineer
+[#credit-usage-pinboard]
+Credit Usage Liveboard::  The Credit Usage Liveboard, a Liveboard for monitoring your credit consumption under the consumption-based pricing model, is now accessible from the Admin Console, under menu:Billing[Credit consumption].
+[#saml-mail-field]
+SAML configuration::
+When configuring SAML authentication for ThoughtSpot, it is now mandatory to map the `mail` attribute in the IDP metadata file to the email address of the user.
+If your company cannot meet this requirement, https://community.thoughtspot.com/customers/s/contactsupport[contact ThoughtSpot support].
+For more information, refer to xref:authentication-integration.adoc[configure SAML].
+[#column-summaries]
+Enable or disable table column summaries::
+This release allows admins to enable or disable table column summaries for users on the new answer experience, from the xref:search-spotiq-settings.adoc#search[Search & SpotIQ] section of the admin console.
+By default, table column summaries are on.
+This does not affect the display of summaries for users on the classic answer experience.
+[#admin-console]
+UI improvement for help customization::  This release improves the UI and user experience of the xref:customize-help.adoc[Help customization] section of the admin console.
+
+[#august-cloud-developer]
+=== For the Developer
+
+ThoughtSpot introduces several new features and enhancements to the Developer Portal and Visual Embed SDK.
+This release also introduces new REST APIs to manage users, user sessions, group privileges, cluster configuration, and metadata objects. For more information, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation].
+
+[#june-2021]
+== ThoughtSpot 7 Cloud June Release (ts7.jun.cl)
+
+* xref:notes.adoc#june-cloud-first[For the First User]
+* xref:notes.adoc#june-cloud-analyst[For the Analyst]
+* xref:notes.adoc#june-cloud-business-user[For the Business User]
+* xref:notes.adoc#june-cloud-data-engineer[For the Data Engineer]
+* xref:notes.adoc#june-cloud-it-ops-engineer[For the IT Ops Engineer]
+* xref:notes.adoc#june-cloud-developer[For the Developer]
+
+[#june-cloud-first]
+=== For the First User
+[#getting-started]
+Getting started with ThoughtSpot Cloud::
+The first user on the account has to complete a series of steps before other people can start using ThoughtSpot with your organization's data.
+For these instructions, see xref:ts-cloud-getting-started.adoc[Getting Started with ThoughtSpot Cloud].
+
+[#june-cloud-analyst]
+=== For the Analyst
+[#pivot-tables]
+Conditional formatting for pivot tables::
+You can now perform conditional formatting on measures in pivot tables.
+Refer to xref:search-conditional-formatting.adoc#table[Apply conditional formatting] and xref:chart-pivot-table.adoc[Pivot tables].
++
+To perform conditional formatting on measures in pivot tables, you must have the xref:answer-experience-new.adoc[New Answer experience] [.badge.badge-update]#Beta# (off by default in June Cloud) enabled on your cluster.
+
+[#embedded-link-format]
+Embedded link format for sharing objects::
+For embedded ThoughtSpot environments, you can now generate links with your host application context and send these links in email notifications.
+You can specify the link format when sharing an object or scheduling a Liveboard job to ensure that the links sent in the email notifications go to the appropriate URL.
+Refer to xref:share-answers.adoc[Share answers] and xref:liveboard-schedule.adoc[Schedule a Liveboard job] for more information.
+[#streamlined-analyst-setup]
+Streamlined analyst setup::
+We simplified the steps to set up an analyst account on ThoughtSpot.
+Now, you can create a connection, create a worksheet to model your business use cases, and immediately search your data in three steps.
+See xref:analyst-onboarding.adoc[Analyst Onboarding] for further details.
+[#group-aggregate-query-filters]
+Group aggregate query filters::
+This release improves support for group aggregate query filters when seeking finer-grained results by adding a secondary dimension, or courser-grained results when dropping one of the existing dimensions.
+You can now also include or drop the filter condition.
+Refer to xref:aggregation-filters.adoc[Aggregation filters] for more information.
+
+[#june-cloud-business-user]
+=== For the Business User
+[#trending-objects]
+View counts for trending objects::
+You can now see the view counts for trending answers and Liveboards on the home page.
+This can help you understand why an object is trending.
+[#trending-objects-link]
+Open trending objects in a new tab::
+You can now open trending objects in a new tab by right-clicking on the object link on the home page.
+Refer to xref:thoughtspot-one-homepage.adoc#trending[Home page] for more information.
+
+[#june-cloud-data-engineer]
+=== For the Data Engineer
+[#embrace-databricks]
+Databricks GA::
+Databricks is now GA in this release of ThoughtSpot Cloud.
+For more information, refer to xref:connections-databricks.adoc[Databricks].
+[#object-usage-pinboard]
+Object Usage Liveboard::
+This release introduces a new default Liveboard for monitoring object usage.
+The xref:object-usage-liveboard.adoc[Object Usage Liveboard] contains data on the following topics:
+
+* Specifies what existing tables, worksheets and views users search on
+* Specifies which columns users search most frequently
+* Tracks the most searched tables, worksheets and views each month
+
+Use this Liveboard to identify what users have accessed, and determine which unused data objects can be deleted.
+
+[#june-cloud-it-ops-engineer]
+=== For the IT Ops Engineer
+[#consumption-pricing]
+Consumption-based pricing system answers::
+ThoughtSpot provides 2 default system answers to help you track and analyze your credit consumption.
+These answers allow you to dive deeper into the credit consumption and activities of a specific user, or over a specific time window.
+
+* *Sample Answer - Credit usage details*: This answer is ideal for looking into object-level details, such as the objects a user accessed and the actions they performed on those objects.
+* *Credit usage from Charging Records*: Use this answer to learn more about API-level details.
+You can map activities and credit consumption to specific API calls.
+
+Refer to xref:consumption-pricing.adoc#user-activity[Consumption-based pricing] for more information.
+[#admin-privileges]
+New admin privileges [.label.label-beta]#Beta#::
+This release introduces new administrator privileges that separate the abilities of the administrator into 4 specific privileges.
+For example, you can allow certain users to create and manage users, while not allowing them to manage SAML integration or other advanced settings.
+These new administrator privileges do *_not_* provide access to all data in ThoughtSpot, unlike the *Can administer ThoughtSpot* privilege.
+Users with the new privileges can only see data that others share with them.
+The *Can administer ThoughtSpot* privilege, which encompasses all 4 new administrator privileges, still appears as an option by default.
+To remove it, https://community.thoughtspot.com/customers/s/contactsupport[contact ThoughtSpot Support].
+The 4 new privileges are:
+
+* Can manage users: Can create, delete, and edit users.
+* Can manage privileges: Can create, delete, and edit groups.
+This includes the group's name, sharing visibility, and privileges.
+* Can operate application: Can configure local and SAML authentication.
+Can manage application settings: search, SpotIQ, and onboarding advanced settings, style and help customization.
+Can view scheduled maintenance.
+* Can see system information: Can view all default admin data, including system worksheets and Liveboards.
+
+This feature is in beta and off by default.
+To enable it, https://community.thoughtspot.com/customers/s/contactsupport[contact ThoughtSpot Support].
+[#security-log-collection]
+Security log collection::
+This release of ThoughtSpot Cloud enables your security team to collect security audit events based on user activity and ship them to your SIEM application in real-time.
+You can view logs for the following events:
+
+* Account logout
+* Failed login
+* Group creation
+* Group deletion
+* Group modification
+* Locked account
+* Object creation
+* Object deletion
+* Object modification
+* Object sharing
+* Password change
+* Privilege change
+* Profile change
+* Row level security (RLS) rule creation
+* RLS rule deletion
+* RLS rule modification
+* Successful login
+* User account creation
+* User account deletion
+* User group change
+
+For further details, see xref:audit-logs.adoc[Collect security logs].
+[#admin-console]
+UI improvement for scheduled maintenance::  This release improves the UI and user experience of the xref:scheduled-maintenance.adoc[Scheduled maintenance] section of the admin console.
+
+[#june-cloud-developer]
+=== For the Developer
+[#global-local-actions]
+Global and local custom actions::
+The ThoughtSpot developer portal now supports designating a custom action as a _global_ or _local_ action.
+This feature allows you to determine and control the placement of custom actions in the ThoughtSpot UI.
+Developers can now choose to create a custom action that will appear on all visualizations or a specific custom action that can be added to a particular visualization by a ThoughtSpot user.
+A custom actions panel in the visualization pages allows ThoughtSpot users to view the available custom actions and add an action to any visualization.
+For example, if you want an action that triggers a callback into your parent app, which would then post its data to Slack, you might want to add a custom action globally to all visualizations.
+Similarly, if you want to send the data obtained from a specific visualization to a URL, you can associate a custom action locally to that visualization.  For more information, see https://developers.thoughtspot.com/docs/?pageid=customize-actions[ThoughtSpot Developer Documentation].
+[#custom-action-auth]
+Authentication schemes for custom actions::
+You can now apply an authentication scheme for custom actions that trigger a data payload to a specific URL target.
+If a custom action requires your users to authenticate to send data to a URL, you can specify the authentication method and authorization attributes when creating a custom action in the Developer portal.  ThoughtSpot will use this authentication information to send the required attributes in the `Authorization` headers to the URL endpoint configured in the custom action.  For more information, see https://developers.thoughtspot.com/docs/?pageid=custom-action-url[ThoughtSpot Developer Documentation].
+[#custom-action-position]
+Custom action position settings::
+ThoughtSpot users with edit privileges can now define or modify the position of a custom action on visualization pages.
+When a developer creates a custom action in the Developer portal, ThoughtSpot adds a menu item to the *More* menu image:icon-ellipses.png[more options menu icon] by default.
+ThoughtSpot users can change this to a context menu action or a primary action at any time.
+If your application instance requires an action that sends only a single row of data from charts or tables, developers can configure a custom action and restrict it to only the contextual menu.
+If this setting is enabled on a custom action, ThoughtSpot users cannot modify this action on a visualization page.  For more information, see https://developers.thoughtspot.com/docs/?pageid=custom-action-viz[ThoughtSpot Developer Documentation].
+[#custom-link-format]
+Custom link format for ThoughtSpot embedded instances::
+ThoughtSpot generates links to access objects, such as Liveboards, visualizations, and search answers, when a user shares an object with another user or follows a Liveboard to receive periodic notifications.
+If you have embedded ThoughtSpot in your application, you might want to generate these links in the format that preserves your host application context.
+For embedded instances, ThoughtSpot now allows you to customize the format of these links in the Developer portal.
+The *Link Settings* page in the Developer portal allows you to customize the link format for various resource URLs and the *unsubscribe* link sent in email notifications.  For more information, see https://developers.thoughtspot.com/docs/?pageid=customize-links[ThoughtSpot Developer Documentation].
+[#rest-apis]
+New REST APIs::  The ThoughtSpot 7 Cloud June release introduces the following REST APIs: +
++
+
+* `POST /tspublic/v1/security/share` +
+You can use this API to share ThoughtSpot objects with another user or user group.
++
+For more information, see xref:public-api-reference.adoc[REST API reference]. +
+
+* `POST /tspublic/v1/security/shareviz` +
+You can use this API to share a specific ThoughtSpot visualization with another user or user group.
++
+For more information, see xref:public-api-reference.adoc[REST API reference]. +
+
+* `GET /tspublic/v1/session/login/token` +
+This API allows you to authenticate and log in a user if trusted authentication is enabled on ThoughtSpot.
++
+For more information, see xref:public-api-reference.adoc[REST API reference]. +
+
+* `POST /tspublic/v1/metadata/assigntag` +
+You can use this API to programmatically assign a tag to a ThoughtSpot object such as Liveboards, search answers, tables, and worksheets.
++
+For more information, see xref:public-api-reference.adoc[REST API reference]. +
+
+* `POST /tspublic/v1/user/updatepreference` +
+This API now includes the optional `username` parameter, which allows API users to specify the `username` of the ThoughtSpot user.
++
+For more information, see xref:public-api-reference.adoc[REST API reference].
+
+[#may-2021]
+== ThoughtSpot 7 Cloud May Release (ts7.may.cl)
+
+* xref:notes.adoc#may-cloud-analyst[For the Analyst]
+* xref:notes.adoc#may-cloud-business-user[For the Business User]
+* xref:notes.adoc#may-cloud-data-engineer[For the Data Engineer]
+* xref:notes.adoc#may-cloud-it-ops-engineer[For the IT Ops Engineer]
+* xref:notes.adoc#may-cloud-developer[For the Developer]
+
+[#may-cloud-analyst]
+=== For the Analyst
+Search Assist Coach::
+xref:search-assist-coach.adoc[Search Assist Coach] enables Analysts, or anyone who has *edit* access to a Worksheet, to create xref:search-assist.adoc[Search Assist] sample queries based on their company data.
+This gives all users the opportunity to experience onboarding and training on data that is relevant to their work, and specific to their line of business.
+
+Scriptable Worksheets with Search Assist Coach lessons::
+You can now use TML to import, export, and update Worksheets with xref:search-assist-coach.adoc[Search Assist Coach] lessons.
+See xref:tml.adoc#syntax-worksheets[Syntax of the Worksheet TML file].
+
+[#may-cloud-business-user]
+=== For the Business User
+[#home-page-metrics]
+Track metrics from the home page::
+You can now add important metrics to your watchlist and track them from the home page.
+Refer to xref:thoughtspot-one-homepage.adoc#quick-links[Home page metrics].
+[#automatic-select]
+Automatic selection of first search result::
+When you search across existing Answers and Liveboards, ThoughtSpot now automatically selects the first result and opens the *Details* panel.
+This allows you to quickly glance at the details for the result that ThoughtSpot determines is most useful for you.
+You can see the metrics, groups, and filters for the Answer or Liveboard, and easily find out if that object answers your question.
+[#latency]
+Improvements in indexing latency for Search Answers::
+This release improves indexing latency to less than 10 minutes (less than 5 in most cases), from 6 hours previously.
+Now, when you create, modify, or delete a new object, update user permissions, or otherwise make changes within ThoughtSpot, the product reflects these changes within 10 minutes.
+[#deprecations]
+Deprecations::
+ThoughtSpot is dropping support for several features in the May Cloud release.
+These features are *_not_* available in the May release.
+ThoughtSpot is also deprecating several features in the May Cloud release.
+These features are still available in the May release, but ThoughtSpot will drop support for them in a later release.
+Refer to xref:deprecation.adoc[Deprecation Announcements] for more information.
+
+[#may-cloud-data-engineer]
+=== For the Data Engineer
+[#embrace-adw]
+Oracle ADW for Connections::
+In this release, Oracle Autonomous Data Warehouse (ADW) is GA.
+For details, see xref:connections-adw.adoc[Oracle ADW].
+[#embrace-starburst]
+Starburst for Embrace::
+Embrace now supports both Starburst Enterprise, and open source Trino databases.
+For details, see xref:connections-starburst.adoc[Starburst].
++
+////
+<dlentry id="embrace-custom-calendar">
+<dt>Custom calendar for Embrace</dt>
+<dd>In this release, custom calendar is available for Snowflake connections only. For details, see xref:connections-cust-cal-create.adoc[Custom calendar]. </dd></dlentry>
+////
+[#embrace-databricks]
+Databricks for Embrace::
+Embrace now supports Databricks.
+This feature is in beta and disabled by default.
+To enable this feature, contact https://community.thoughtspot.com/customers/s/contactsupport[ThoughtSpot Support].
++
+[#may-cloud-it-ops-engineer]
+=== For the IT Ops Engineer
+[#product-usage-worksheet]
+Product Usage Worksheet::
+This release introduces a new default Worksheet for monitoring product usage.
+The Product Usage Worksheet contains data on the following topics:
+
+* Specifies what existing Worksheets, tables, and Views users search on and create objects from, and what those objects are
+* Lists what actions users complete in the product
+* Lists the underlying data sources for any object
+* Lists any object's dependents
+
+You can search on this Worksheet, or create Liveboards based on it, to monitor your users' interaction with the product.
+To access this Worksheet, search for *Product Usage Worksheet* from the *Data* tab, or add it as a source while searching data.
+
++
+[#may-cloud-developer]
+=== For the Developer
+[#custom-actions]
+Custom actions in the context menu::  ThoughtSpot now allows you to add a custom action in the contextual menu for embedded visualizations in the *Answers* or *Liveboards* page.  To add a custom action to the contextual menu, you must have the xref:answer-experience-new.adoc[New Answer experience] [.badge.badge-update]#Beta# (off by default) enabled on your cluster.  For more information, see xref:custom-actions.adoc[Add custom actions].
+[#viz-embed-sdk]
+Visual Embed SDK Version 1.2.0::  The ThoughtSpot 7 Cloud May release introduces the Visual Embed SDK 1.2.0 version with a minor update and backward-compatible improvements.
+[#saml-authentication]
+SAML authentication::
+The Visual Embed SDK packages now include the `noRedirect` attribute as an optional parameter for the `SSO` `AuthType`.
+If you want to display the SAML authentication workflow in a pop-up window, instead of refreshing the application web page to direct users to the SAML login page, you can set the `noRedirect` attribute to `true`.  For more information, see the https://developers.thoughtspot.com/docs/?pageid=getting-started[ThoughtSpot Developer Documentation].
+[#viz-embed-sdk-notification]
+Visual Embed SDK notification when third-party cookies are disabled::
+When a user accesses the embedded application from a web browser that has third-party cookies disabled, the Visual Embed SDK emits the `NoCookieAccess` event to notify the developer.
+Cookies are disabled by default in Safari.
+Users can enable third-party cookies in Safari's Preferences setting page or use another web browser.
+To know how to enable this setting by default on Safari for a ThoughtSpot embedded instance, https://community.thoughtspot.com/customers/s/contactsupport[contact ThoughtSpot Support].
+[#pinboard-embed-enhancements]
+Liveboard embed enhancements::  The More menu image:icon-ellipses.png[more options menu icon] in the embedded Liveboard page now shows the following actions for Liveboard and visualizations.
+
+Liveboard
+
+* Save
+* Make a copy
+* Add filters
+* Configure filters
+* Present
+* Download as PDF
+* Liveboard info
+* Manage schedules
+
+NOTE: Users with edit permissions can view and access the *Save*, *Add filters*, *Configure filters*, and *Manage schedules* actions.
+
+Visualizations on a Liveboard
+
+* Pin
+* Download
+* Edit
+* Present
+* Download as CSV
+* Download as XLSX
+* Download as PDF
+
+NOTE: Users with edit permissions can view and access the *Edit* action.
+The *Download as CSV*, *Download as XSLX*, and *Download as PDF* actions are available for table visualizations.
+The *Download* action is available for chart visualizations.
+
+[#performance-optimization]
+Performance optimization::  This release introduces the following performance improvements for ThoughtSpot embedded applications:
+
+* Faster loading of embedded objects and application pages.
+* Faster loading of preview results in the Playground.
+[#rest-apis]
+REST APIs::  The ThoughtSpot 7 Cloud May release introduces the following new REST APIs: +
++
+
+* `POST /tspublic/v1/user/updatepreference` +
+You can use this API to programmatically update a ThoughtSpot user's profile settings such as the email address, locale preference, notification settings, and the preference for revisiting the onboarding experience. +
++
+For more information, see xref:public-api-reference.adoc[REST API reference]. +
+
+* `GET /tspublic/v1/metadata/listas` +
+You can use this API to get a list of object headers for a ThoughtSpot user or user group.
+For more information, see xref:public-api-reference.adoc[REST API reference].
+
+[#april-2021]
+== ThoughtSpot 7 Cloud April Release (ts7.april.cl)
+
+* xref:notes.adoc#april-cloud-analyst[For the Analyst]
+* xref:notes.adoc#april-cloud-business-user[For the Business User]
+* xref:notes.adoc#april-cloud-it-ops-engineer[For the IT Ops Engineer]
+* xref:notes.adoc#april-cloud-developer[For the Developer]
+
+[#april-cloud-analyst]
+=== For the Analyst
+[#scriptability]
+Scriptability::  There are several enhancements to the xref:scriptability.adoc[Scriptability] feature:
+
+* *Support for selective and linked filters:* You can now import, export, and update Liveboards with xref:liveboard-filters-linked.adoc[linked] or xref:liveboard-filters-selective.html[selective] filters.
+* *Add tables and columns to an Embrace connection (GA):* ThoughtSpot now allows you to use TML to edit tables created through xref:connections.adoc[Embrace], and add columns and tables that already exist in the external database to the connection.
+This feature is now GA and on by default.
+Refer to xref:tml.adoc#syntax-tables[ThoughtSpot Modeling Language] and specify the `connection` information when adding tables or table columns to an Embrace connection.
+[#query-dashboard]
+Enhancements to the Search on Answers Liveboard::
+The xref:thoughtspot-one-query-intelligence-liveboard.adoc[Search on Answers Liveboard] contains several new or updated visualizations, including *Top search queries on existing Answers*, *Position at which users are clicking*, and *What results users are finding useful with autocomplete suggestions*.
+These new visualizations provide more information about click position, what information users look for, and what information they cannot find.
+You can also view the xref:thoughtspot-one-query-intelligence-liveboard.adoc#best-practices[best practices] for this Liveboard.
+
+[#april-cloud-business-user]
+=== For the Business User
+[#new-answer-experience]
+New Answer experience [.badge.badge-update]#Beta#::
+This release redesigns the experience of creating and working with Answers.
+The new Answer experience contains multiple new features and feature enhancements.
+It is in [.badge.badge-update]#Beta# and off by default, but the option to turn it on or off individually is on by default.
+You can toggle it on or off individually from the *Experience manager* in your profile, or for the whole company by https://community.thoughtspot.com/customers/s/contactsupport[contacting ThoughtSpot Support].
+
+The new Answer experience contains the following features and enhancements:
+include::partial$new-answer-experience-features.adoc[]
+
+include::partial$new-answer-experience-deprecations.adoc[]
+
+Refer to xref:answer-experience-new.adoc[New Answer experience] for more information on the behavior of these features.
+[#sticky-search-toggle]
+Sticky Search Answers/ Search Data toggle::
+This release makes the Search Answers/ Search Data toggle image:search-toggle-answers.png[search toggle] sticky.
+ThoughtSpot now remembers your choice across sessions when you switch between xref:search-answers.adoc[Search Answers] and xref:search-data.adoc[Search Data].
+[#latency]
+Improvements in indexing latency for Search Answers::
+This release improves indexing latency to less than 10 minutes, from 6 hours previously.
+Now, when you create, modify, or delete a new object, update user permissions, or otherwise make changes within ThoughtSpot, the product reflects these changes within 10 minutes.
+If you create a new Answer, users can search for and find it 10 minutes after you create it.
+This indexing improvement is in the process of rollout.
+If you don't have it yet, ThoughtSpot will deploy it soon.
+[#unicode]
+Unicode support::
+We added unicode character matching in Search Answers, extending support to all languages and character sets.
+You can now search all artifacts that use unicode characters in titles, descriptions, metadata, and keywords, and see the correct results.
+image:search-answers-unicode.png[Search Answers with full unicode support]
+
+[#april-cloud-it-ops-engineer]
+=== For the IT Ops Engineer
+[#private-link]
+AWS PrivateLink between ThoughtSpot Cloud and your Snowflake or Redshift data warehouse::
+To ensure a secure two-way data exchange between your cloud data warehouse and the ThoughtSpot Cloud tenant, you can use an AWS PrivateLink.
+This option is currently available for your Snowflake or Redshift data warehouse connections.
+Refer to the xref:connections-redshift-private-link.adoc[Redshift] and xref:connections-snowflake-private-link.adoc[Snowflake] articles about enabling an AWS PrivateLink.
+
+[#april-cloud-developer]
+=== For the Developer
+[#developer-privilege]
+Developer privilege::
+You can now grant groups the xref:privileges-end-user.adoc[Developer privilege] from the Admin Console, allowing users in those groups to access and use the xref:spotdev-portal.adoc[Developer Portal].
+In the Developer Portal, users can explore the ThoughtSpot APIs and developer tools, and build web applications with ThoughtSpot content.
+[#tml-api]
+TML APIs::
+The new TML APIs enable you to programmatically export, validate, and import scriptable xref:tml.adoc[TML] objects.
+Use these APIs to automate the change management and deployment processes between your development and production environments.
+With these APIs, analysts can much more easily migrate from one environment to the other by automating the entire change management process, reducing the risk of human error.
+
+See xref:public-api-reference.adoc[REST API reference].
+[#developer-portal]
+ThoughtSpot Developer portal::
+ThoughtSpot users with admin or developer privileges can now access the ThoughtSpot Developer portal by clicking the *Develop* tab in the ThoughtSpot application.
+The Developer portal, referred to as *SpotDev* in the earlier release, includes the following enhancements:
+
+* Playground enhancements +
+The *Playground* page now includes several UI enhancements to improve the interactive coding experience for developers.
+** The *Handle custom actions* checkbox on the *Playground* pages allows you to view the code for the custom action event.
+** The *Navigate to URL* checkbox on the *Playground* > *Full app* page allows you to set a URL path to navigate to when the embedded application loads.
+* Custom action Configuration +
+You can now configure custom actions for embedded Liveboards and visualization pages.
+You can also set a custom action as a primary menu command, or as a menu item in the *More* menu image:icon-more-10px.png[the more options menu].
+* Security settings +
+The *Security Settings* page in the developer portal includes the following new features:
+** Users with developer and admin privileges can now add external application domains to the Content Security Policy (CSP) and Cross-Origin Resource Sharing (CORS) whitelist.
+** Users with admin privileges can add the SAML redirect domains to the allowed list of domains, and thus provide a seamless login experience for federated users who request access to the embedded ThoughtSpot content.
+** Users with admin privileges can enable the trusted authentication method to authenticate ThoughtSpot users who request access to the embedded content.
+[#visual-embed-sdk]
+ThoughtSpot Visual Embed SDK enhancements::
+ThoughtSpot Visual Embed SDK is now available to all external users who want to embed ThoughtSpot content in their application, product, or web page.
++
+You can now download the Visual Embed SDK package from the https://www.npmjs.com/package/@thoughtspot/visual-embed-sdk[NPM site] and get started with embedding ThoughtSpot.
++
+The new Visual Embed SDK package includes several new enhancements to support user authentication, full application rendition, custom action configuration for embedded Liveboards and visualizations, and enumerators for handling the events generated by the embed configuration.
+For more information, see the https://developers.thoughtspot.com/docs/?pageid=js-reference[ThoughtSpot Developer Documentation].
+[#session-api-enhancement]
+Session API enhancement::
+The session REST API service now includes the `/tspublic/v1/session/auth/token` API to enable a client application to programmatically obtain an authentication token for a ThoughtSpot user.
++
+To access this API, visit the ThoughtSpot Swagger portal.
++
+For more information, see xref:public-api-reference.adoc[REST API reference].
+
+[#march-2021]
+== ThoughtSpot 7 Cloud March Release (ts7.mar.cl)
+
+* xref:notes.adoc#mar-cloud-analyst[For the Analyst]
+* xref:notes.adoc#mar-cloud-business-user[For the Business User]
+* xref:notes.adoc#mar-cloud-it-ops-engineer[For the IT Ops Engineer]
+* xref:notes.adoc#mar-cloud-developer[For the Developer]
+
+[#mar-cloud-analyst]
+=== For the Analyst
+[#scriptability]
+Scriptability::
+* *Add tables and columns to an Embrace connection:* ThoughtSpot now allows you to use TML to edit tables created through xref:connections.adoc[Embrace], and add columns and tables that already exist in the external database to the connection.
+Refer to xref:tml.adoc#syntax-tables[ThoughtSpot Modeling Language] and specify the `connection` information when adding tables or table columns to an Embrace connection.
++
+This feature is in *Beta* and off by default;
+to add columns and tables to an Embrace connection through Scriptability, contact your ThoughtSpot administrator.
+* *Improvements to generic join functionality:* The expanded functionality for generic joins in TML files allows the following elements:
+** Constants: int, double, bool, date, and string
+** Comparison operators: `=`, `!=`, `<`, `>`, `+<=+`, and `>=`
+** Columns
+** Boolean operators: `AND`, `OR`, and `NOT` This feature is in *Beta* and on by default.
+
+[#mar-cloud-business-user]
+=== For the Business User
+[#ts-one-ga]
+Search Answers GA::
+Search Answers is now available for all customers.
+It is on by default.
+See xref:search-answers.adoc[Search Answers] and xref:thoughtspot-one-homepage.adoc[Home page] for more information.
+[#bulk-share]
+Bulk share objects from the home page::
+You can now share multiple objects at a time from the home page.
+Refer to xref:thoughtspot-one-homepage.adoc#bulk-share[Home page].
+[#details-panel]
+Frequent metrics and attributes in the *Details* panel::
+The *Details* panel that appears when you click on a Liveboard visualization while searching across your existing Answers and Liveboards now lists frequent metrics and attributes for that Liveboard.
+You can determine if a Liveboard search result is useful for you based on the metrics and attributes used most often in that Liveboard.
+
+[#mar-cloud-it-ops-engineer]
+=== For the IT Ops Engineer
+[#search-spotiq]
+Manage advanced search and SpotIQ settings::
+You can now manage advanced search and SpotIQ settings from the Admin Console.
+You can configure column indexing and enable or disable SpotIQ Analyze and column summaries.
+Refer to xref:search-spotiq-settings.adoc[Manage search and SpotIQ settings].
+[#email-onboarding]
+Manage email and onboarding settings::
+You can manage certain advanced settings for your organization from the Admin Console.
+You can customize welcome emails, scheduled emails, and the workflow that allows users to sign up for ThoughtSpot from the login page.
+Refer to xref:onboarding-email-settings.adoc[Manage email and onboarding settings].
+[#performance-tracking]
+Performance Tracking Liveboard::
+The xref:performance-tracking.adoc[Performance Tracking Liveboard] is now accessible from the Admin Console.
+To view this Liveboard, navigate to the Admin Console by selecting *Admin* from the top navigation bar.
+Select *App performance* from the side navigation bar in the Admin Console.
+
+[#mar-cloud-developer]
+=== For the Developer
+[#thoughtspot-embed]
+ThoughtSpot Embed::
+ThoughtSpot cloud now supports embedding ThoughtSpot content in third-party applications.
+In this release, ThoughtSpot introduces the Visual Embed SDK package [.label.label-beta]#Beta# to help developers embed the ThoughtSpot search functionality, Liveboards, visualizations, or the full application in their web page, portal, or business solution.  For more information on embedding ThoughtSpot, see xref:intro-embed.adoc[ThoughtSpot embedding solution].
+[#spotdev-portal]
+SpotDev portal [.label.label-beta]#Beta#::
+ThoughtSpot cloud now includes the *SpotDev* portal in beta to allow developer users to explore the ThoughtSpot SDK APIs and build sample applications.
+The *SpotDev* tab in the ThoughtSpot application is available for the users with administrator and developer privileges.
+The *SpotDev* portal provides a playground for developers and product owners to evaluate the Visual Embed APIs and preview the results.
+The portal also allows authorized users to rebrand the embedded content, xref:customization-rebranding.adoc[customize styles], and xref:custom-actions.adoc[add custom menu actions] to the embedded instance. For more information, see xref:spotdev-portal.adoc[SpotDev Portal].
+
+[#february-2021]
+== ThoughtSpot 7 Cloud February Release (ts7.feb.cl)
+
+* xref:notes.adoc#feb-cloud-analyst[For the Analyst]
+* xref:notes.adoc#feb-cloud-business-user[For the Business User]
+* xref:notes.adoc#feb-cloud-data-engineer[For the Data Engineer]
+* xref:notes.adoc#feb-cloud-it-ops-engineer[For the IT Ops Engineer]
+
+[#feb-cloud-analyst]
+=== For the Analyst
+[#scriptability]
+Scriptability::
+* You can now create and edit joins at the table level using TML, including range and generic joins.
+You must edit these joins from the source table, not the destination table.
+Refer to xref:tml.adoc#syntax-tables[ThoughtSpot Modeling Language].
++ This feature is in Beta in the February release.
+To enable it, https://community.thoughtspot.com/customers/s/contactsupport[contact ThoughtSpot Support].
+* *Export custom sets of TML files*: Support for export of custom sets of TML files is now GA and on by default.
+You can now export your own custom sets of TML files, or collections of Scriptable ThoughtSpot Answers, Liveboards, Views, tables, and Worksheets, packaged together as a zip file.
+Simply navigate to menu:Data[Utilities > Import/Export TML] and choose the objects you would like to include in a custom set of TML files.
+Refer to xref:tml-import-export-multiple.adoc[Migrate multiple TML files].
+[#simplified-join-creation]
+Simplified join creation::
+This release makes creating and editing joins from a table more flexible and intuitive.
+Our new joins interface allows you to define and edit the join type and cardinality at the table level, where previously this was only possible at the Worksheet level.
+Refer to xref:join-add.adoc#table-join[Table joins].
+[#pinboard-download-api]
+Liveboard Export API::
+Use the new Liveboard Export API to programmatically download Liveboards, or specific visualizations from the Liveboards, as PDFs.
+Refer to xref:public-api-reference.adoc[REST API reference].
+[#spotiq-analyze]
+Support for SpotIQ Analyze::
+In this release, ThoughtSpot Cloud adds support for SpotIQ analyze.
+Now you can analyze any answer, Liveboard visualization, or data source to generate instant insights, by clicking the SpotIQ analyze button image:icon-lightbulb.png[SpotIQ analyze icon].
+For more information, see xref:spotiq-custom.adoc[Custom SpotIQ analysis].
+
+[#feb-cloud-business-user]
+=== For the Business User
+[#home-page-shortcuts]
+Home page shortcuts::
+You can now create and access quick links to your most-used Answers and Liveboards from the home page.
+Refer to xref:thoughtspot-one-homepage.adoc#quick-links[Home page shortcuts].
+
+Search Answers may be off in your environment.
+To enable Search Answers, https://community.thoughtspot.com/customers/s/contactsupport[contact ThoughtSpot Support].
+[#internet-explorer]
+Deprecation of Internet Explorer::
+ThoughtSpot browser support for Internet Explorer is now deprecated.
+Refer to xref:accessing.adoc[ThoughtSpot browser access] for a list of supported browsers.
+
+[#feb-cloud-data-engineer]
+=== For the Data Engineer
+[#embrace]
+Embrace::
+Embrace now supports security passthrough for Snowflake and Google BigQuery using OAuth for authentication and authorization.
+For more information, see xref:connections-snowflake-add.adoc[Snowflake], and xref:connections-gbq-add.adoc[Google BigQuery].
+Embrace passthrough functions are available for Snowflake.
+Passthrough functions allow you to send custom SQL expressions directly to your Snowflake database without being interpreted by ThoughtSpot.
+For more information, see xref:connections-snowflake-passthrough.adoc[Passthrough functions for Snowflake].
+Embrace now supports Oracle Autonomous Database [.label.label-beta]#Beta#.
+This feature is in beta and disabled by default.
+To enable this feature, contact https://community.thoughtspot.com/customers/s/contactsupport[ThoughtSpot Support].
+
+[#feb-cloud-it-ops-engineer]
+=== For the IT Ops Engineer
+[#new-region-support]
+New region support::
+ThoughtSpot Cloud is now available in the following 2 regions, in addition to US East (N.
+Virginia) and West (Oregon), Sydney, and Ireland:
+
+* Frankfurt
+* Singapore
+
+[#search-answers-pinboard]
+Search on Answers Liveboard::
+There are several changes to the behavior of the xref:thoughtspot-one-query-intelligence-liveboard.adoc[How Users are Searching Answers Liveboard]:
+
+* The Liveboard and its underlying Worksheet, *Discover Monitoring Data*, are now accessible only to admins by default.
+Admins can share the Liveboard and Worksheet with anyone else who might need this information.
+* The Liveboard is populated with your users' Search on Answers data by default.
+You do not need to https://community.thoughtspot.com/customers/s/contactsupport[Contact ThoughtSpot Support] to see your users' Search on Answers data in the Liveboard.
+[#pinboard-download-control]
+Liveboard download control::
+You can now limit or remove the options ThoughtSpot provides for downloading Liveboards and their visualizations.
+You can allow users to only download Liveboard visualizations in a specific format (such as .csv), or you can restrict access to downloading Liveboards and their visualizations altogether.
+
+This is a cluster-level feature.
+You cannot configure permissions for specific users.
+
+This is an embed-only feature.
+To enable this functionality, https://community.thoughtspot.com/customers/s/contactsupport[contact ThoughtSpot Support].
+[#consumption-based-pricing]
+Consumption-based pricing::
+ThoughtSpot now offers consumption, or usage, based pricing.
+Refer to xref:consumption-pricing.adoc[Consumption-based pricing].
+To compare consumption- and capacity-based pricing, refer to https://www.thoughtspot.com/pricing[ThoughtSpot pricing].
+
+[#december-2021]
+== ThoughtSpot 6 Cloud December Release (ts6.dec.cl)
+
+=== Scriptability
+
+There are several new features for Scriptability:
+
+* *Export custom sets of TML files*: You can now export your own custom sets of TML files, or collections of Scriptable ThoughtSpot Answers, Liveboards, Views, tables, and Worksheets, packaged together as a zip file.
+Simply navigate to menu:Data[Utilities > Import/Export TML] and choose the objects you would like to include in a custom set of TML files.
+Refer to xref:tml-import-export-multiple.adoc[Migrate multiple TML files].
++
+This feature is in Beta.
+To enable it, https://community.thoughtspot.com/customers/s/contactsupport[contact ThoughtSpot Support].
+
+* *GUID handling*: ThoughtSpot now recognizes pre-existing GUIDs upon import and asks if you would like to update the existing object or create a new one.
+Refer to xref:scriptability.adoc[Scriptability].
+* ThoughtSpot Scripting Language is now called ThoughtSpot Modeling Language.
+
+=== Information Center
+
+ThoughtSpot has a new Information Center, accessible from the help icon *?* next to your profile on the top navigation bar.
+This new help menu contains many useful resources, including a navigation overview, several training videos, and links to more help across the ThoughtSpot product, community, training, and documentation.
+Refer to xref:help-center.adoc[More help and support].
+
+=== Embrace passthrough functions
+
+Embrace now supports passthrough functions which allow you to send SQL expressions directly to the database, without being interpreted by ThoughtSpot.
+If you have custom database functions that ThoughtSpot doesn't support, you can use these new passthrough functions in the ThoughtSpot Formula Assistant to call your custom functions.
+Refer to xref:formula-reference.adoc#passthrough-functions[Embrace passthrough functions].
+
+=== New language support
+
+Starting in the December Cloud release, ThoughtSpot supports the following new locale, including support for language keywords that can be used in the search bar:
+
+* English (India)
+
+To set locale to English (India), click the user icon in the top right corner to navigate to the *Profile* page, and select locale under *Preferences*.
+
+[#october-2020]
+== ThoughtSpot 6 Cloud October Release (ts6.oct.cl)
+
+=== New Home page
+
+The ThoughtSpot xref:thoughtspot-one-homepage.adoc[Home page] allows you to access all your essential actions as a business user.
+You can:
+
+* Search across existing Answers and Liveboards
+* Search your data to create new Answers and Liveboards
+* View objects you viewed recently
+* View trending Liveboards and Answers
+* Filter existing objects by favorite, author, tag, or type of object
+* Sort existing objects by author, views, or most recently viewed
+* Bulk mark objects as favorites
+
+=== Search existing Answers
+
+In addition to the existing Search over data, this release gives business users easy xref:search-answers.adoc[Search over existing Answers and Liveboards].
+This  meets the users' information needs by making Answers searchable, sortable, and applying filters on relevance, recency, number of views, authorship, metrics used, and so on.
+
+=== How Users are Searching Answers Liveboard
+
+Use this default xref:thoughtspot-one-query-intelligence-liveboard.adoc[Liveboard] to analyze how users are searching your existing Answers and Liveboards, so you can determine what objects are the most popular and what assets you may need to create.
+
+=== Disable Answer Search for specific Worksheets
+
+When users search for existing Answers and Liveboards, the default experience is to search across all Worksheets that they have access to.
+You may not want users to search for existing Answer and Liveboards built on certain Worksheets that are works in progress or deprecated.
+You can disable searching for Answers on specific Worksheets.
+Refer to xref:thoughtspot-one-disable-discover-worksheet.adoc[Disable Answer Search].
+
+=== Linked Liveboard filters
+
+You can now create one filter that filters visualizations based on multiple Worksheets by linking the Worksheet columns, at the Liveboard level.
+This is useful when you have a Liveboard built on multiple Worksheets, and you would like to filter on columns that are functionally the same, but exist in multiple Worksheets. +
+
+Refer to xref:liveboard-filters-linked.adoc[Linked Liveboard filters].
+
+
+=== Selective Liveboard filters
+
+You can now configure Liveboard filters to apply to specific visualizations that you choose.
+This is useful when you would like to filter some, but not all, visualizations in a Liveboard. +
+
+Refer to xref:liveboard-filters-selective.adoc[Selective Liveboard filters].
+
+////
+<h3>Enhanced data modeling capabilities</h3>
+This release enables new data modeling capabilities. You can now:
+<ul>
+<li>Join a View to a table</li>
+<li>Build a Worksheet on top of a View</li>
+</ul>
+////
+
+=== Geo maps
+
+ThoughtSpot's Geo maps now have more detailed geographic and infrastructural boundaries by default.
+This includes road names, cities, and so on.
++
+
+ThoughtSpot supports maps of many countries.
+See the complete list in the xref:geomap-reference.adoc[Geo Map Reference].
+
+=== Customize ThoughtSpot Help
+
+You can now tailor the ThoughtSpot Help menu to your organization by customizing it from the Admin Console.
+When you configure these Help settings, you set system-wide defaults for all your users.
+
+Refer to xref:customize-help.adoc[Customize ThoughtSpot Help].
+
+=== User Adoption Liveboard
+
+The xref:user-adoption.adoc[User Adoption Liveboard] is now accessible from the Admin Console.
+
+[#september-2020]
+== ThoughtSpot Cloud September Release (tscloud.5)
+
+=== Scriptability
+
+Scriptability contains the following new features:
+
+* Export and update logical tables
+* Edit, validate, and publish objects using the TML editor
+* Import multiple objects from the menu:Data[Utilities > Import/Export TML] page, or from the object list page
+* Update Views
+* GUID handling: a new `GUID` parameter in an object's .tml file allows ThoughtSpot to recognize pre-existing GUIDs, and determine if you are updating an existing object, or creating a new one
+
+See xref:scriptability.adoc[Scriptability].
+
+=== Style Customization
+
+You can now customize the ThoughtSpot application from the Admin Console.
+With style customization, you can change the fonts, chart color palettes, footer text, application logo, and background colors in your embedded ThoughtSpot instance. +
+
+Refer to xref:style-customization.adoc[Style customization].
+
+=== In-app acceptance of ThoughtSpot's use agreement
+
+You can now sign ThoughtSpot's end-user use agreement from the application itself.
+Even if you previously signed a paper copy of the use agreement, an admin must sign the agreement in the application, within 30 days of ThoughtSpot upgrading your cluster to Cloud 5. +
+
+Refer to xref:use-agreement.adoc[ThoughtSpot use agreement].
+
+=== User adoption and performance Liveboards
+
+This release of ThoughtSpot Cloud contains two new default Liveboards for administrators.
+Use the xref:user-adoption.adoc[User Adoption Liveboard] to understand how your ThoughtSpot users are interacting with ThoughtSpot, and how your user adoption is changing over time.
+Use the xref:performance-tracking.adoc[Performance Tracking Liveboard] to understand how your ThoughtSpot cluster is performing. +
+
+See xref:user-adoption.adoc[User Adoption Liveboard] and xref:performance-tracking.adoc[Performance Tracking Liveboard].
