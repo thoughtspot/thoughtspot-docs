@@ -1,0 +1,193 @@
+= 8.8.0.sw Release Notes
+:experimental:
+:last_updated: 5/19/2022
+:linkattrs:
+:page-aliases: /release/notes.adoc
+:description: These release notes include information about new and enhanced features.
+
+++++
+<style>
+.badge-update-whats-new-beta {
+  font-style: normal !important;
+  top: -0.03rem !important;
+}
+
+</style>
+++++
+
+ThoughtSpot version 8.8.0.sw is now available.
+
+These release notes include information about new and enhanced features.
+
+To see our feature deprecation plans, please see xref:deprecation.adoc[].
+
+For a complete list of issues that we fixed in this release, see xref:fixed.adoc#releases-8-8-x[Fixed issues].
+
+* <<new-8-8-0,8.8.0.sw New Features and Functionality>>
+* <<upgrade-paths,Supported Upgrade Paths>>
+
+[#new-8-8-0]
+== 8.8.0.sw New Features and Functionality
+
+include::partial$limited-availability-notice.adoc[]
+
+* <<analyst-8-8-0-sw,For the Analyst>>
+* <<business-user-8-8-0-sw,For the Business User>>
+* <<data-engineer-8-8-0-sw,For the Data Engineer>>
+* <<developer-8-8-0-sw,For the Developer>>
+
+[#analyst-8-8-0-sw]
+=== For the Analyst
+
+Customizable colors for heatmap and treemap charts::
+You can now customize the colors used for heatmap and treemap charts. Prior to this release, the only available heatmap color was teal in various shades, and the only available treemap color was green in various shades. Now you can choose any color in your color palette. For more information, see xref:chart-heatmap.adoc[] and xref:chart-treemap.adoc[].
+
+New answer experience::
+The xref:answer-experience-new.adoc[new answer experience] is now GA and on by default. The new answer experience contains the following features:
+
+include::partial$new-answer-experience-features.adoc[]
+
+New answer experience deprecations::
+
+include::partial$new-answer-experience-deprecations.adoc[]
+
+New SpotIQ experience::
+
+The new SpotIQ experience is now GA and on by default. The functionality remains the same, but we reorganized the UI to make it more intuitive. You can manage your individual SpotIQ experience xref:user-profile.adoc#spotiq[from your profile]. Note that the new SpotIQ experience is dependent on the xref:answer-experience-new.adoc[new answer experience]; to use the new SpotIQ experience, you must first enable the new answer experience. For more information, refer to xref:spotiq.adoc[SpotIQ].
+
+New Liveboard experience [.badge.badge-update-whats-new-beta]#Beta#::
+The xref:liveboard-experience-new.adoc[new Liveboard experience] is now available. It contains multiple new features and feature enhancements.
+It is part of ThoughtSpot's move to a new stack.
+To learn how to enable it, refer to xref:liveboard-experience-new.adoc[].
++
+The new Liveboard experience contains the following features:
++
+include::partial$new-liveboard-experience-features.adoc[]
+
+New Liveboard experience deprecations::
+include::partial$new-liveboard-experience-deprecations.adoc[]
+
+TML import improvements::
+You can now import xref:tml.adoc[TML] files that contain certain errors. During the import process, ThoughtSpot removes the part of the object that contains errors, and allows you to import the rest of the object. These errors include the following:
++
+--
+* Some Liveboard visualizations contain errors, but the overall Liveboard is valid: ThoughtSpot removes the visualizations that contain errors and imports the Liveboard.
+* Some Liveboard filters contain errors, but the overall Liveboard is valid: ThoughtSpot removes the filters that contain errors and imports the Liveboard.
+* Destination tables for some joins in a table do not exist, but the overall table is valid: ThoughtSpot removes the joins that do not have destination tables and imports the table.
+--
++
+Refer to xref:scriptability.adoc#migrate-object[Migrate an object].
+
+Formula function search bar::
+The formula editor assistant now contains a search bar for formula functions. Use it to search for specific functions to include in your formula. Refer to xref:formula-add.adoc[].
+
+year_name function::
+
+The new `year_name` formula function returns the year in string format for a given date. This improves the behavior of formulas involving years when using a custom calendar with year values that are not in integer format. Refer to xref:formula-reference.adoc#year_name[Formula function reference].
+
+Headline summaries for discontinuous group aggregate formulas::
+
+We changed the default behavior for table aggregation summaries when the search contains formulas that contain both a conditional clause (`if... then... else`) and a group_aggregate expression. When a user searches with a formula containing both a conditional clause and a group_aggregate expression, then ThoughtSpot detects the aggregation type on the first non-constant output clause and uses it in the headline summary. In this context, a non-constant output clause means any base column reference (for example, `Revenue`), or formula (for example, `sum(revenue)`).
++
+For example, in the formula `group_aggregate(sum(if (Color = 'blue') then 0 else group_unique_count(Discount)))`, the headline summary would use `COUNT_DISTINCT`, since the first non-constant output clause within the `if... then... else` clause is `group_unique_count` and has an aggregation type of `COUNT_DISTINCT`.
+
+R analysis in the new answer experience::
+This release introduces support for xref:r-thoughtspot.adoc[custom R analysis] in the xref:answer-experience-new.adoc[new answer experience].
++
+NOTE: We support R only in Falcon deployments (data imported into ThoughtSpot), and R integration is disabled by default. It is not available when creating xref:connections.adoc[connections] and linking to external databases in real time.
+
+[#business-user-8-8-0-sw]
+=== For the Business User
+
+Support for multiple contains, begins_with, and ends_with phrases in versus queries::
+
+ThoughtSpot now supports multiple `contains`, `begins_with`, and `ends_with` phrases in `vs` queries. For example, you can now have a versus query such as `state name begins_with 'a' state name begins_with 'c' vs state name begins_with 'd'`.
+
+For more information, refer to the xref:keywords.adoc#vs[Keyword reference].
+
+Choose sources limitation::
+You can no longer select more than 100 data sources to search on when searching data. This maximum of 100 sources improves performance and limits timeouts due to the selection of too many sources.
+
+Geo charts enhancements::
+This release includes several enhancements to all geo charts:
++
+--
+* Improved map quality: This includes faster map loading, better clarity, and more granular details down to the street level when you zoom in.
+* A new *map type* option that allows you to customize the display of the geo chart map. The new map type options are Light, Dark, Outdoors, Streets, Satellite, and Satellite Streets. The default is Light.
+
+--
+See xref:chart-geo.adoc[].
+
+Improvements to German keywords::
+This release improves the translated German keywords. See xref:keywords-de-DE.adoc[].
+
+[#data-engineer-8-8-0-sw]
+=== For the Data Engineer
+
+Snowflake OAuth improvements::
+This release brings improvements in how ThoughtSpot handles user tokens for Snowflake connections configured with Snowflake OAuth. If a user’s refresh token becomes invalid, the administrator or author of the connection can now run the Invalidate Tokens command to allow the user to re-authenticate and regain access to the insights provided by the connection, and the connection itself. Also, in this release the Role field has been added to the Snowflake OAuth connection details page, allowing a role to be added when the connection is created and changed when a connection is edited. See xref:connections-snowflake-edit.adoc#invalidate-tokens[Invalidating refresh tokens of a Snowflake connection].
+
+Snowflake Okta OAuth::
+You can now use Okta as your authorization server for external OAuth. For details, see xref:connections-snowflake-okta-oauth.adoc[Configure Okta OAuth for a Snowflake connection].
+
+Starburst Azure AD OAuth::
+You can now use Azure AD as your authorization server for external OAuth. For details, see xref:connections-starburst-oauth.adoc[Configure Azure AD OAuth for a Starburst connection].
+
+New connections::
+This release adds the following new connections:
+
+- xref:connections-presto.adoc[Presto]
+- xref:connections-trino.adoc[Trino]
+- xref:connections-denodo.adoc[Denodo], which supports OAuth. See xref:connections-denodo-oauth.adoc[Denodo OAuth].
+
+Delete joins that have dependents::
+You can now delete a join from the ThoughtSpot UI even if the join has dependents. Deleting the join does not delete the dependents. This allows you to delete a join and create it again in the other direction, without invalidating or deleting any dependent objects.
++
+Refer to xref:relationship-create.adoc#delete-join[Delete a join].
+
+[#dbt-improvements]
+Integration with dbt improvements::
+This release includes the following improvements to the dbt integration:
++
+--
+* Integration with dbt for Databricks, Amazon Redshift, and Google BigQuery connections
+* Import of multiple folders at a time
+* Import of a single table within a folder
+* Support for joins across multiple folders
+--
++
+For more information, see xref:dbt-integration.adoc[].
+
+Edit tags from the Data workspace::
+You can now edit tags for tables, worksheets, views, and SQL views from the Data workspace home page. Refer to xref:tags.adoc#data-workspace[Use tags to organize].
+
+[#it-ops-engineer-8-8-0-sw]
+=== For the IT Ops Engineer
+
+Storage of session-based consumption in Snowflake::
+ThoughtSpot now securely stores your consumption data in a searchable Snowflake data store. For more information, see xref:consumption-pricing.adoc#consumption-data-storage[Consumption data storage].
+
+[#developer-8-8-0-sw]
+=== For the Developer
+
+Customers licensed to embed ThoughtSpot can use ThoughtSpot Everywhere features and Visual Embed SDK.
+
+To enable ThoughtSpot Everywhere on your cluster, contact ThoughtSpot Support.
+
+For information about ThoughtSpot Everywhere, refer to  link:https://developers.thoughtspot.com/docs[ThoughtSpot Everywhere Documentation, window=_blank].
+
+[#upgrade-paths]
+== Supported Upgrade Paths
+
+If you are running one of the following versions, you can upgrade to the 8.8.0.sw release directly:
+
+* 7.2.x to 8.8.0.sw
+* 8.4.x to 8.8.0.sw
+
+This includes any hotfixes or customer patches on these branches.
+
+If you are running a different version, you must do a multiple pass upgrade.
+
+First, upgrade to version 7.2.x or 8.4.x, and then to the 8.8.0.sw release.
+
+NOTE: To successfully upgrade your ThoughtSpot cluster, all user profiles must include a valid email address. Without valid email addresses, the upgrade is blocked.

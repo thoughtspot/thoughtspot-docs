@@ -1,0 +1,152 @@
+= Configure trusted authentication
+:last_updated: 04/05/2022
+:experimental:
+:linkattrs:
+:description: Learn how to configure trusted authentication.
+
+
+include::partial$liveboards-announcement.adoc[]
+
+If your organization has an authentication server, you can configure the trusted authentication method on ThoughtSpot to allow authenticated users to access the embedded ThoughtSpot content.
+In the trusted authentication method, the authenticator server uses the secret key issued by ThoughtSpot to request a login token from ThoughtSpot on behalf of a user. Using the login token, client applications can log in a user to ThoughtSpot and allow access to the requested content.
+
+== Enable trusted authentication
+
+When you enable trusted authentication on ThoughtSpot, the system returns a secret key. The authenticator server  must use this secret key to obtain a login token for a user.
+
+. Log in to the Linux shell using SSH.
+. Execute the `tscli tokenauthentication enable` command. +
+The command returns the service secret key. +
+
++
+[source,SHELL]
+----
+ [admin@ourthoughtspot ~]$ tscli tokenauthentication enable
+
+ Token generated. Copy the GUID in the box.
+
+ ########################################
+ # b0cb26a0-351e-40b4-9e42-00fa2265d50c #
+ ########################################
+
+ Override added successfully
+----
++
+. Copy the secret key and store it in a secure location.
+
+
+== How to authenticate users
+
+In the following scenario, a trusted authenticator service forwards requests for ThoughtSpot data from a client application.
+
+image::authentication.png[Authentication diagram. There is an arrow labeled 1 demonstrating the client-side application requiring a user token from the trusted authenticator. There is an arrow labeled 2 demonstrating the trusted authenticator requesting a user token from ThoughtSpot. There is an arrow labeled 3 demonstrating ThoughtSpot verifying the authenticator and returning a user token. There is an arrow labeled 4 demonstrating the authenticator returning the user token to the client-side application. There is an arrow labeled 5 demonstrating the client forwarding the user token to ThoughtSpot. There is an arrow labeled 6 demonstrating ThoughtSpot validating the token and returns information to the client-side application that allows the user to authenticate.]
+
+When a user tries to interact with the embedded ThoughtSpot content, the following sequence is triggered.
+
+. The client application forwards the user's request to the server that is configured as a trusted authenticator.
+. The trusted server authenticates the user and requests a token from ThoughtSpot on the user's behalf.
+. ThoughtSpot verifies the authenticator server's request and returns a login token.
+. The authentication server returns the token to the user's web browser.
+. The client then sends an API request with the login token and redirect URL to ThoughtSpot.
+. ThoughtSpot validates the token and returns the information that the authenticated user has requested.
+
+== Trusted authentication API calls
+
+When a client application sends a request for a login token to the trusted authenticator server, the authenticator server must do the following: +
+
+* Authenticate the request from the web application. +
+* Retrieve username from the request. The `username` must match a user object in ThoughtSpot. +
+* Determine what is being requested: an object, page, or the full application.
+* Send a POST request to the ThoughtSpot server with the `secret_key` and `username`  attributes to obtain a login token on the user's behalf.
++
+----
+POST /tspublic/v1/session/auth/token
+----
++
+This POST request body includes the following `formData` attributes:
+
+`secret_key`::
+
+__String__. The `secret_key` obtained from ThoughtSpot.
+
+`username`::
++
+__String__. The `username` of the ThoughtSpot user.
+
+`access_level`::
++
+__String__. Type of access. Valid values are:
+
+** `FULL`
++
+Allows access to the entire ThoughtSpot application. When a token has been requested in `FULL` mode, it will create a full ThoughtSpot session in the browser and application. The token for `Full` access mode persists through several sessions and stays valid until another token is generated.
+
+
+** `REPORT_BOOK_VIEW`
++
+Allows access to only one object at a time. The token request for this access mode requires you to specify the GUID of the Liveboard or answer. If your application user requires access to another object, a new token request must be sent.
+
+`id`::
++
+__String__. The GUID of the Liveboard or answer.
+This attribute is required only for the `REPORT_BOOK_VIEW` access mode.
+
+ThoughtSpot verifies the authentication server's request and returns a login token.
+
+When the authenticator server returns the token to the user's web browser, the client application can send an API request with the login token and a fully encoded redirect URL to the  `/tspublic/v1/session/login/token` endpoint.
+
+[source, HTML]
+----
+GET https://<ThoughtSpot-host>/callosum/v1/tspublic/v1/session/login/token?username=<user>&auth_token=<token>&redirect_url=<full-encoded-url-with-auth-token>
+----
+The request URL must include the following attributes:
+
+`username`::
++
+_String_. The `username` of the user requesting access to the ThoughtSpot content.
+
+`auth_token`::
++
+_String_. The login token obtained from ThoughtSpot to authorize the API request.
+
+`redirect_url`::
++
+_String_. The URL to which the user is redirected after successful authentication. The URL is fully encoded and includes the login token obtained from ThoughtSpot.
++
+For example, if the user has requested access to a specific visualization on a Liveboard, the redirect URL includes the domain URL of the client application, the login token obtained for the user, and the visualization and Liveboard GUIDs.
+
++
+[source, HTML]
+----
+https://<redirect-domain>/?authtoken=<user_auth_token>&embedApp=true&primaryNavHidden=true#/embed/viz/<pinboard_id>/<visualization_id>
+----
+
+If the request is valid, ThoughtSpot allows access to the requested content.
+
+== Token validity
+
+Based on the following conditions, tokens stay valid for a length of time:
+
+* A token stays valid indefinitely until another token for any user is generated.
+* When a new token is generated using the same `secret_key`, the previous token will expire after five minutes.
+* When a new `secret_key` is generated for the ThoughtSpot server and the first new login token is obtained using the new `secret_key`, all tokens generated using the previous `secret_key` become invalid.
+* If users make multiple attempts to log in to ThoughtSpot using an invalid or expired token, they may get locked out of their accounts.
+
+To set a consistent five-minute expiration time, you can generate a second token to start the expiration clock for the previous login token sent to the user’s browser.
+
+== Disable trusted authentication
+
+To disable the trusted authentication service:
+
+. Log in to the Linux shell using SSH.
+. Execute the `tscli tokenauthentication disable` command. +
+
+[source,text]
+----
+tscli tokenauthentication disable
+----
+
+[NOTE]
+====
+When you disable trusted authentication, the secret key becomes invalid. Your application may become inoperable until you generate another secret key and obtain a new login token.
+====
