@@ -1,13 +1,13 @@
-= 8.5.0.cl Release Notes
+= 8.6.0.cl Release Notes
 :experimental:
-:last_updated: 6/2/2022
+:last_updated: 7/7/2022
 :linkattrs:
 :page-toclevels: 1
 :page-aliases: /release/notes.adoc
 :page-layout: default-cloud
 :description: These release notes include information about new and enhanced features.
 
-ThoughtSpot Cloud 8.5.0.cl is now available.
+ThoughtSpot Cloud 8.6.0.cl is now available.
 
 These release notes include information about new and enhanced features.
 
@@ -17,6 +17,128 @@ To see our feature deprecation plans, please see xref:deprecation.adoc[Deprecati
 == New Features and Functionality
 
 include::partial$new-features-cloud-release.adoc[]
+
+[#8-5-0-cl]
+== ThoughtSpot 8.5.0.cl Release
+
+* <<8-5-0-cl-first,For the First User>>
+* <<8-5-0-cl-analyst,For the Analyst>>
+* <<8-5-0-cl-business-user,For the Business User>>
+* <<8-5-0-cl-data-engineer,For the Data Engineer>>
+* <<8-5-0-cl-it-ops-engineer,For the IT Ops Engineer>>
+* <<8-5-0-cl-developer,For the Developer>>
+
+[#8-5-0-cl-first]
+=== For the First User
+
+Getting started with ThoughtSpot Cloud::
+The first user on the account has to complete a series of steps before other people can start using ThoughtSpot with your organization's data.
+For these instructions, see xref:ts-cloud-getting-started.adoc[Getting Started with ThoughtSpot Cloud].
+
+[#8-5-0-cl-analyst]
+=== For the Analyst
+
+Table formatting for downloaded tables::
+When you download a table in `XLSX` format, the downloaded table now shows the same column width and date formatting as the table in ThoughtSpot. Refer to xref:search-download.adoc#table-formatting[Download your search].
+
+Discoverable Liveboard edit button::
+The *Edit* button for Liveboards in the xref:liveboard-experience-new.adoc[new Liveboard experience] is now more discoverable. We moved it out of the more menu image:icon-more-10px.png[more menu icon] and into the main Liveboard menu. It is now at the top right of the Liveboard.
+
+[#8-5-0-cl-business-user]
+=== For the Business User
+
+Threshold-based alerts for KPI charts [.badge.badge-update]#Beta#::
+You can now use the Monitor feature to receive alerts when your KPI satisfies a given threshold condition. For example, create a condition to receive an alert when your Sales KPI becomes `greater than 200,000`, or when your KPI for Sales weekly `increases by 2%`. For more information, see xref:monitor.adoc#threshold-based-alert[Create a threshold-based alert].
++
+This feature is in beta and off by default. To enable threshold-based alerts, contact {support-url}.
+
+
+Make content discoverable [.badge.badge-update]#Beta#::
+You can now make content easily available to your team members when you save or share an answer or Liveboard. Use the *Make this [answer | Liveboard] discoverable* checkbox that appears when you save or share an answer or Liveboard to grant _view_ access to your teammates. Any user who has access to underlying data source (worksheet, table, view) and is part of the same user group as the author of the content, will be able to  discover and access the answer in *Search Answers*. +
+Select this checkbox to publish your content in the list of relevant results when a teammate uses the *Search Answers* feature, or de-select to keep your content private.
+
+
+Improved usage-based ranking of date columns in Search::
+
+To help you construct answers based on the most relevant time data, ThoughtSpot now supports session-level ranking of Date columns in Search. For example, when you add a date column such as `promotion date` to your search, then the `promotion date` column rises to the top of Search completion suggestions for the duration of your session. Any time keywords you add to your search, such as `monthly`, will automatically filter based on the `promotion date` column, rather than `sale date`, or other possibilities.
+
+[#8-5-0-cl-data-engineer]
+=== For the Data Engineer
+
+[#data-workspace]
+Data Workspace::
+The new Data Workspace is now GA and on by default. It redesigns the *Data* section of the product. To access it, select *Data* from the top navigation bar. The redesign introduces several new features, such as SQL-based views, dbt integration, and SpotApps, and makes the UI more intuitive.
++
+See xref:data-workspace.adoc[Data workspace].
+
+[#sql-views]
+SQL-based views::
+SQL-based views are now GA and on by default. Users can create views based on custom SQL queries, and use those views as data sources. This type of view has the same functionality as a view based on searching your data.
++
+See xref:sql-views.adoc[SQL views].
+
+[#dbt]
+Integration with dbt::
+The dbt integration is now GA and on by default. You can provide your existing dbt models and automatically create worksheets in ThoughtSpot that you can use to perform searches on your data. Integration with dbt is certified only for Snowflake connections in 8.5.0.cl.
++
+See xref:dbt-integration.adoc[dbt integration].
+
+[#spotapps]
+SpotApps::
+SpotApps are now GA and on by default. SpotApps are ThoughtSpot's new out-of-the-box solution templates built for specific use cases and data sources. They are built on xref:tml.adoc[ThoughtSpot Modeling Language (TML)] Blocks, which are pre-built pieces of code that are easy to download and implement directly from the product.
++
+SpotApps mimic the data models of the applications they are based on, such as ServiceNow or Jira. After you connect to your data in your cloud data warehouse, ThoughtSpot maps that data to SpotApp columns, and creates pre-built but still customizable worksheets, answers, and Liveboards, based on your data.
++
+The following SpotApps are now available:
++
+--
+* xref:spotapps-databricks.adoc[Databricks Storage and Performance]
+* xref:spotapps-gbq.adoc[GBQ Performance and Consumption]
+* xref:spotapps-google-analytics.adoc[Google Analytics]
+* xref:spotapps-hubspot.adoc[HubSpot Email Marketing]
+* xref:spotapps-jira-issue.adoc[Jira Issue Management]
+* xref:spotapps-jira-sprint.adoc[Jira Sprint Management]
+* xref:spotapps-okta.adoc[Okta Application Management]
+* xref:spotapps-redshift.adoc[Redshift Performance and Consumption]
+* xref:spotapps-servicenow.adoc[ServiceNow Incident Management]
+* xref:spotapps-snowflake.adoc[Snowflake Performance and Consumption]
+--
++
+See xref:spotapps.adoc[SpotApps].
+
+Okta OAuth for Snowflake connections::
+You can now use Okta as your authorization server for external OAuth. For details, see xref:connections-snowflake-okta-oauth.adoc[Configure Okta OAuth for a Snowflake connection].
+
+[#external-tables]
+Query external tables::
+ThoughtSpot now supports querying external tables in data stores, after you create these tables in your Amazon Redshift, Google BigQuery, or Snowflake environments.
++
+For more information, refer to the following articles:
+
+* xref:connections-gbq-external-tables.adoc[]
+* xref:connections-redshift-external-tables.adoc[]
+* xref:connections-snowflake-external-tables.adoc[]
+
+[#8-5-0-cl-it-ops-engineer]
+=== For the IT Ops Engineer
+
+[#private-link]
+AWS PrivateLink between ThoughtSpot Cloud and your cloud data warehouse::
+ThoughtSpot now supports AWS PrivateLink for several new data warehouse connections. ThoughtSpot encrypts all your data by default. For an additional layer of security and network reliability, you can use an AWS PrivateLink.
+This option is now available for the following new data warehouse connections:
+* xref:connections-databricks-private-link.adoc[Databricks PrivateLink]
+* xref:connections-dremio-private-link.adoc[Dremio PrivateLink]
+* xref:connections-adw-private-link.adoc[Oracle PrivateLink]
+* xref:connections-hana-private-link.adoc[SAP HANA PrivateLink]
+* xref:connections-starburst-private-link.adoc[Starburst PrivateLink]
+* xref:connections-teradata-private-link.adoc[Teradata PrivateLink]
++
+This option was already available for xref:connections-redshift-private-link.adoc[Amazon Redshift] and xref:connections-snowflake-private-link.adoc[Snowflake].
+
+[#8-5-0-cl-developer]
+=== For the Developer
+
+ThoughtSpot Everywhere:: For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation^].
 
 [#8-4-0-cl]
 == ThoughtSpot 8.4.0.cl Release
@@ -39,7 +161,7 @@ For these instructions, see xref:ts-cloud-getting-started.adoc[Getting Started w
 Liveboard and answer download footer::
 This release introduces the ability for admins to specify a standard footer to add to all Liveboard and answer downloads. Use this functionality to add a confidentiality disclaimer, for example.
 +
-This feature is part of the xref:answer-experience-new.adoc[new answer experience] and the xref:liveboard-experience-new.adoc[new Liveboard experience]. The new answer experience is on by default, and the new Liveboard experience is off by default. If you are using the classic experiences, you cannot set a standard download footer. If you are using only the new answer experience, you can only set a standard download footer for answers, *_not_* Liveboards.
+This feature is part of the xref:answer-experience-new.adoc[new answer experience] and the xref:liveboard-experience-new.adoc[new Liveboard experience]. The new answer experience is on by default, and the new Liveboard experience is off by default in 8.4.0.cl. If you are using the classic experiences, you cannot set a standard download footer. If you are using only the new answer experience, you can only set a standard download footer for answers, *_not_* Liveboards.
 +
 For more information, refer to xref:search-spotiq-settings.adoc[].
 

@@ -1,0 +1,166 @@
+ifndef::pendo-links[]
+[label label-dep]#8.7.0.cl# September 2022
+endif::[]
+ifdef::pendo-links[]
+[label label-dep-whats-new]#8.7.0.cl#
+[month-year-whats-new]#September 2022#
+endif::[]
+
+ifndef::pendo-links[]
+NOTE: Features marked as [.badge.badge-update-note]#Beta# are off by default. To enable them, contact {support-url}.
+endif::[]
+ifndef::free-trial-feature[]
+ifdef::pendo-links[]
+NOTE: Features marked as [.badge.badge-update-whats-new]#Beta# are off by default. To enable them, contact {support-url}.
+endif::[]
+endif::free-trial-feature[]
+[#primary-8-7-0-cl]
+
+[#8-7-0-cl-threshold-alerts]
+[discrete]
+=== Threshold-based alerts
+
+// Naomi
+
+Threshold-based alerts are now GA and on by default. You can now use the Monitor feature to receive alerts when your KPI satisfies a given threshold condition. For example, create a condition to receive an alert when your Sales KPI becomes `greater than 200,000`, or when your KPI for Sales weekly `increases by 2%`.
+
+image::monitor-threshold-alerts.gif[Threshold-based alerts]
+
+
+[#8-7-0-cl-sync]
+[discrete]
+=== ThoughtSpot Sync
+
+// Naomi
+
+You can now sync data directly from an answer or custom SQL view to an external business app like Google Sheets, Slack, or Microsoft Teams. Using ThoughtSpot Sync, you can push insights directly to your app, notify your teams, and view data in context. ThoughtSpot Sync automatically establishes a secure pipeline to the destination app and thus eliminates the need for building custom connectors to external apps.
+
+image:ts-sync-wn.png[]
+
+[#8-7-0-cl-geo-maps]
+[discrete]
+=== Geo charts enhancements
+
+This release includes several enhancements to all geo charts:
+
+* Improved map quality: This includes faster map loading, better clarity, and more granular details down to the street level when you zoom in.
+* A new *map type* option that allows you to customize the display of the geo chart map. The new map type options are Light, Dark, Outdoors, Streets, Satellite, and Satellite Streets. The default is Light.
+
+image::geo-chart-zoom-map-type.gif[Geo chart zoom and map type]
+
+[#8-7-0-cl-treemap-heatmap]
+[discrete]
+=== Customizable colors for heatmap and treemap charts
+
+You can now customize the colors used for heatmap and treemap charts. You can select any color in your color palette.
+
+image::treemap-new-color.png[Treemap and heatmap color customization]
+
+[#8-7-0-cl-tabs]
+[discrete]
+=== Liveboard tabs
+
+ThoughtSpot now supports separating Liveboards into multiple tabs. This allows you to group specific visualizations together within a Liveboard. For example, you may have a *Sales* Liveboard that contains top-level KPIs and more detailed charts. You can create a tab for the top-level KPIs for executives to view, and a tab for the more detailed charts that managers need to monitor.
+
+image::liveboard-tabs.gif[Liveboard tabs gif]
+
+////
+[#8-7-0-cl-or-contains]
+[discrete]
+=== Support for OR in contains operator
+
+ThoughtSpot now offers the option to `OR` multiple `contains` clauses for the same attribute in a search, instead of combining them with `AND`, which is the default. For example, with the optional new `OR` behavior, `country name contains 'a' country name contains 'b'` returns results such as `Azerbaijan`, `Bahrain`, `North America`, and `Canada`. With the default `AND` behavior, that search returns `Azerbaijan` and `Bahrain`, but *_not_* `North America` or `Canada`.
+
+To enable this feature, contact {support-url}.
+////
+
+[#8-7-0-cl-vs]
+[discrete]
+=== Support for multiple contains, begins_with, and ends_with phrases in versus queries
+ThoughtSpot now supports multiple `contains`, `begins_with`, and `ends_with` phrases in `vs` queries. For example, you can now have a versus query such as `state name begins_with 'a' state name begins_with 'c' vs state name begins_with 'd'`.
+
+//For more information,
+//ifndef::pendo-links[]
+//see the xref:keywords.adoc#vs[Keyword reference].
+//endif::[]
+//ifdef::pendo-links[]
+//see the xref:keywords.adoc#vs[Keyword reference,window=_blank].
+//endif::[]
+
+'''
+[#secondary-8-7-0-cl]
+[discrete]
+=== _Other features and enhancements_
+
+
+ifndef::free-trial-feature[]
+ifdef::pendo-links[]
+[#8-7-0-cl-snowflake-csv]
+[discrete]
+=== Snowflake CSV upload [.badge.badge-update-whats-new]#Beta#
+endif::[]
+ifndef::pendo-links[]
+[#8-7-0-cl-snowflake-csv]
+[discrete]
+=== Snowflake CSV upload [.badge.badge-update]#Beta#
+endif::[]
+
+Now you have a quick and easy way to complete one-time data loads of small files that are not present in your cloud data warehouse. You can now upload a CSV file to the database of your Snowflake connection that can be joined to other tables or worksheets in your connection. Once your administrator enables this feature, go to *Data* > *Utilities*, and click *Upload CSV*.
+
+image::csv-upload-app.png[]
+// Mark
+endif::free-trial-feature[]
+
+[#8-7-0-cl-denodo-oauth]
+[discrete]
+=== Denodo Oauth
+
+Denodo connections now support OAuth.
+
+// Mark
+
+[#8-7-0-cl-snowflake-oauth]
+[discrete]
+=== Snowflake Oauth improvements
+
+This release brings improvements in how ThoughtSpot handles user tokens for Snowflake connections configured with Snowflake OAuth. If a user's refresh token becomes invalid, the administrator or author of the connection can now run the Invalidate Tokens command to allow the user to re-authenticate and regain access to the insights provided by the connection, and the connection itself. Also, in this release the _Role_ field has been added to the Snowflake OAuth connection details page, allowing a role to be added when the connection is created and changed when a connection is edited.
+
+
+// Mark
+
+[#8-7-0-cl-okta]
+ifndef::free-trial-feature[]
+ifdef::pendo-links[]
+[discrete]
+=== Identity and Access Management V2 [.badge.badge-update-whats-new]#Beta#
+endif::[]
+ifndef::pendo-links[]
+[discrete]
+=== Identity and Access Management V2 [.badge.badge-update]#Beta#
+endif::[]
+
+// confirm again that this will be in 8.7.
+
+In this release, ThoughtSpot switched to a new, industry-standard cloud identity and access management method through Okta. This switch involves several external improvements to authentication:
+
+* New local users now create their own password during activation. Administrators do not create the password prior to activation.
++
+image::okta-activate-account.png[Activate new account]
+* Ability to map IDP attributes for SAML authentication from the ThoughtSpot Admin Console (username, email, and display name).
++
+image::saml-idp-attributes.gif[]
+//image::saml-attribute-mapping.png[SAML attribute mapping]
+* Account activation monitoring from the Users section of the Admin Console: if a user still needs to activate their account, administrators can see that information in the Users section and re-send their activation email.
++
+image::user-account-activation-status.gif[Account activation status gif]
+//image::admin-portal-account-activation.png[Account activation column]
+
+endif::free-trial-feature[]
+
+
+ifndef::free-trial-feature[]
+[discrete]
+=== ThoughtSpot Everywhere
+
+For new features and enhancements introduced in this release of ThoughtSpot Everywhere, see https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation^].
+endif::[]
