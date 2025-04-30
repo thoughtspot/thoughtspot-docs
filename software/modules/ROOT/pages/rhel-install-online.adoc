@@ -20,7 +20,7 @@ Before you build the ThoughtSpot cluster and install the ThoughtSpot application
    - checks that customization scripts can execute on the nodes
    - checks that the partitions meet minimum size requirements
 
-These are the general steps for installing ThoughtSpot on RHEL clusters:
+These are the general steps for installing ThoughtSpot on RHEL clussters:
 
 [cols="5,~",grid=none,frame=none]
 |===
@@ -68,37 +68,51 @@ Ansible inventory file for host configuration.
 
 . Copy the Ansible inventory file `hosts.sample` to `hosts.yaml`, and then use a text editor of your choice to update the file to include your host configuration:
 
+*[7.1.1 and later]* `is_user_wheel_group`::
+Specifies if the administrator user should be added to the wheel group. The default is `true`. If you specify `false`, the administrator user is not added to the wheel group.
+
+*[7.1.1 and later]* `minimal_sudo_install`::
+When this is defined, TS disables certain functionality to avoid making additional sudo calls.  This functionality includes the email notification management system, some cluster statistics reporting, and logging of connectivity status between nodes. The default is undefined.
+
+*[7.1.1 and later]* `external_sudo_manager`::
+When this is configured, ThoughtSpot does not make any changes to the sudoers file, such as adding the administrator user. The user is then responsible for ensuring that the administrator user has the ability to run certain elevated privilege commands. The default is undefined.
+
+*[7.1.1 and later]* `skip_sshd_config`::
+When this is configured, ThoughtSpot does not make any changes to the sshd configuration of the node.  The user must ensure that the MaxSessions value for the administrator user is at least 10. The default is undefined.
+
+*[7.1.1 and later]* `skip_yum_update`::
+When this is defined, the ansible playbook does not attempt to run a blanket yum update to pull the latest packages. The default is undefined.
+
+*[7.1.1 and later]* `no_mail_packages`::
+When this is defined, ThoughtSpot does not install the mail packages `mutt` and `postfix`.  This only applies for online installations. The default is undefined.
+
+*[7.1.1 and later]* `skip_time_sync_setup`::
+When this is defined, ThoughtSpot does not configure time synchronization between nodes using `ntp`. The user must configure time synchronization using either `ntp` or `chronyd` themselves. The default is undefined.
+
 `hosts`::
     Add the IP addresses or hostnames of all hosts in the ThoughtSpot cluster.
 
-`admin_uid`::
-    The admin user ID parameter.
-
-    On-premise deployments;;
-      Use the default values.
-    AWS;;
-      Use the default values.
-    GCP;;
-      Add values that are not currently in use. To determine what values your system uses already, run the following command:
+`user_uid`::
+Specify the user ID for the user who will set up the node. The default is `1081`.
++
+If you do not use the default, add values that are not currently in use. To determine what values your system uses already, run the following command:
 +
 [source]
 ----
 cat /etc/passwd | cut -d ":" -f3-4| sort
 ----
 
-`admin_gid`::
-  The admin user group ID.
-  On-premise deployments;;
-    Use the default values.
-  AWS;;
-    Use the default values.
-  GCP;;
-    Add values that are not currently in use. To determine what values your system uses already, run the following command:
+`user_gid`::
+Specify the user group ID for the user who will set up the node. The default is `1081`.
++
+If you do not use the default, add values that are not currently in use. To determine what values your system uses already, run the following command:
 +
 [source]
 ----
 cat /etc/passwd | cut -d ":" -f3-4| sort
 ----
+`username`::
+Specify the username for the user who will set up the node. The default is `admin`.
 [#ldap_admin_user]
 `ldap_admin_user`::
 *[optional]* One of three parameters required to enable users to use their OpenLDAP admin user to SSH as an admin, instead of using the local ThoughtSpot admin user, which has sudo privileges. Specify the OpenLDAP admin user, in the form _example@company.com_. You must include all 3 of the LDAP parameters (`ldap_admin_user`, `ldap_server_uri`, `ldap_server_base`), or none of them. If you include 1 or 2, the playbook fails.

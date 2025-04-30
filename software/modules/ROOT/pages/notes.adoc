@@ -1,226 +1,267 @@
-= 7.0 Release Notes
+= 7.1 Release Notes
 :experimental:
-:last_updated: 06/06/2021
+:last_updated: 11/22/2021
 :linkattrs:
 :page-aliases: /release/notes.adoc
 
 
-ThoughtSpot version 7.0.1 CU1 is now available. These release notes include information about new and enhanced features.
+ThoughtSpot version 7.1.1.CU1 is now available.
+
+This release provides critical security fixes for log4j, and other fixes to functional issues.
+
+To address the log4j issues, we’ve done the following:
+
+- Upgraded the log4j version used by ThoughtSpot to the latest version.
+- Upgraded the OS packages to the latest version.
+- Fixed remote code execution Java vulnerability in the H2 database console (CVE-2021-42392)
+
+For a complete list of functional issues that we fixed in this release, see xref:fixed.adoc#releases-7-1-x[Fixed issues].
 
 To see our feature deprecation plans, please see xref:deprecation.adoc[].
 
-For a complete list of issues that we fixed in this release, see xref:fixed.adoc#releases-7-0-x[Fixed issues].
+[#new-7-1-1]
+== 7.1.1 New Features and Functionality
+These release notes include information about new and enhanced features.
 
-NOTE: Self-service upgrade is not supported for upgrade to version 7.0.1 CU1.
+For a complete list of issues that we fixed in this release, see xref:fixed.adoc#releases-7-1-x[Fixed issues].
 
-* <<new-7-0-1,7.0.1 New Features and Functionality>>
-* <<upgrade-paths,Supported Upgrade Paths>>
+Here are the most significant new features and improvements in the 7.1.1 Software Release:
 
-[#new-7-0-1]
-== 7.0.1 New Features and Functionality
+* <<analyst-7-1-1,For the Analyst>>
+//* <<business-user-7-1-1,For the Business User>>
+* <<data-engineer-7-1-1,For the Data Engineer>>
+* <<it-ops-engineer-7-1-1,For the IT Ops Engineer>>
+* <<developer-7-1-1,For the Developer>>
 
-For a complete list of issues that we fixed in this release, see xref:fixed.adoc#releases-7-0-x[Fixed issues].
-
-Here are the most significant new features and improvements in the 7.0.1 Software Release:
-
-* <<analyst-7-0-1,For the Analyst>>
-* <<business-user-7-0-1,For the Business User>>
-* <<data-engineer-7-0-1,For the Data Engineer>>
-
-[#analyst-7-0-1]
+[#analyst-7-1-1]
 === For the Analyst
 
-[#search-assist-coach]
-Search Assist Coach::
-xref:search-assist-coach.adoc[Search Assist Coach] enables Analysts, or anyone who has *edit* access to a Worksheet, to create xref:search-assist.adoc[Search Assist] sample queries based on their company’s data. This gives all users the opportunity to experience onboarding and training on data that is relevant to their work, and specific to their line of business.
+TML for tables with row-level security::
+ThoughtSpot now supports the migration and editing of tables with xref:security-rls-concept.adoc[row level security (RLS)] using xref:tml.adoc#syntax-tables[TML].
 
-[#business-user-7-0-1]
+Pinboard schedule gating conditions::
+Gating conditions for scheduled pinboards are now GA. Refer to xref:pinboard-schedule.adoc[] to learn more about scheduling pinboards for email delivery, and how to leverage gating conditions so that ThoughtSpot only sends the pinboards when certain conditions are true.
+
+////
+[#business-user-7-1-1]
 === For the Business User
 
-[#search-assist]
-Search Assist::
-xref:search-assist.adoc[Search Assist] introduces new users to ThoughtSpot’s Search experience by walking them through simple search scenarios on your company’s data. It demonstrates how anyone can get answers to their data questions by typing in the Search bar. Worksheet owners can use xref:search-assist-coach.adoc[Search Assist Coach] to create these sample search queries on your company’s data.
-
-
-[#search-on-enter]
-Search on enter experience::
-The default search experience is now *Search on enter*. This means that you can add new tokens to the search bar, or remove them, without altering your existing search, until you press the *Enter* key on your keyboard, or select *Go* to the right of the search bar.
+New answer experience [.label.label-beta]#Beta#::
+This release redesigns the experience of creating and working with answers. The new answer experience contains multiple new features and feature enhancements. It is in [.label.label-beta]#Beta# and on by default. You can toggle it on or off individually from the *Experience manager* in your profile, or for the whole company by xref:support-contact.adoc[contacting ThoughtSpot Support].
 +
-You may need to press *Enter* or *Go* to ensure that ThoughtSpot updates your search with any new items in the search bar.
+The new answer experience contains the following features and enhancements:
 +
-image::search-on-enter.gif[Search on enter]
+--
+include::partial$new-answer-experience-features.adoc[]
+--
++
+include::partial$new-answer-experience-deprecations.adoc[]
++
+Refer to xref:answer-experience-new.adoc[New answer experience] for more information on the behavior of these features.
+////
 
-
-[#data-engineer-7-0-1]
+[#data-engineer-7-1-1]
 === For the Data Engineer
 
-[#embrace-7-0-1]
-Embrace::
-Embrace now supports Databricks [.label.label-beta]#Beta#. Because this feature is in Beta, it is disabled by default. To enable Databricks, contact https://community.thoughtspot.com/customers/s/contactsupport[ThoughtSpot Support^].
+Custom calendar::
+Custom calendar is now available for Snowflake, Amazon Redshift, Google BigQuery, Microsoft Azure Synapse, and Databricks cloud data warehouses. See xref:connections-cust-cal.adoc[Custom calendar].
+This feature is disabled by default. To enable it, xref:support-contact.adoc[contact ThoughtSpot Support].
 
-[#saml-mail-field]
-SAML configuration::
-  When configuring SAML authentication for ThoughtSpot, it is now mandatory to map the `mail` attribute in the IDP metadata file to the email address of the user. If your company cannot meet this requirement, contact https://community.thoughtspot.com/customers/s/contactsupport[ThoughtSpot Support^]. For more information, refer to xref:saml.adoc[Configure SAML], specifically to xref:saml.adoc#saml-configure-2[Configure SAML 2.0].
 
-[#new-7-0]
-== 7.0 New Features and Functionality
+AWS Secrets Manager for Redshift connection passwords::
+Amazon Redshift connections now support AWS Secrets Manager for clusters deployed on an AWS EC2 instance. With this feature enabled, you no longer need to enter a password when you create a new Redshift connection. For details, see xref:connections-aws-secrets.adoc[Amazon Secrets Manager]. This feature is disabled by default. To enable it, xref:support-contact.adoc[contact ThoughtSpot Support].
 
-Here are the most significant new features and improvements in the 7.0.0 Software Release:
+[#it-ops-engineer-7-1-1]
+=== For the IT Ops Engineer
 
-* <<analyst-7-0,For the Analyst>>
-* <<business-user-7-0,For the Business User>>
-* <<data-engineer-7-0,For the Data Engineer>>
-* <<it-ops-engineer-7-0,For the IT Ops Engineer>>
+Multiple Identity Providers for SAML login::
+You can now configure SAML SSO login for more than one Identity Provider (IDP). You may have multiple groups of users who need to log into ThoughtSpot but are managed by separate IDPs. To configure this, refer to xref:saml.adoc#saml-configure-tscli[Configure SAML using tscli].
++
+Note that multiple IDP configuration is only possible through tscli, and not the Admin Console.
 
-[#analyst-7-0]
+[#developer-7-1-1]
+=== For the Developer
+
+Customers embedding ThoughtSpot in software releases should continue embedding ThoughtSpot using xref:embedding-overview.adoc[legacy embedding tools], which remain supported in 7.x software releases. Upgrading an environment with an existing embedded solution leveraging the legacy embedded technology to SW v.7.x is supported and seamless from an embedding standpoint.
+
+[#new-7-1-0-CU1]
+== 7.1.0.CU1 New Features and Functionality
+
+VMware 6.7 certification::
+ThoughtSpot now certifies VMware version 6.7 on ThoughtSpot versions 7.1.0.CU1 and later. For more information on deploying ThoughtSpot with VMware, refer to xref:vmware.adoc[].
+
+[#new-7-1]
+== 7.1 New Features and Functionality
+
+NOTE: Self-service upgrade is not supported for upgrade to version 7.1.
+
+For a complete list of issues that we fixed in this release, see xref:fixed.adoc#releases-7-1-x[Fixed issues].
+
+Here are the most significant new features and improvements in the 7.1 Software Release:
+
+* <<analyst-7-1,For the Analyst>>
+* <<business-user-7-1,For the Business User>>
+* <<data-engineer-7-1,For the Data Engineer>>
+* <<it-ops-engineer-7-1,For the IT Ops Engineer>>
+
+NOTE: All documentation for software embedding is now available only on the https://docs.thoughtspot.com/visual-embed-sdk/7.1/en/[ThoughtSpot Everywhere documentation^] site.
+
+[#analyst-7-1]
 === For the Analyst
 
-[#scriptability]
-Scriptability enhancements::
-There are several enhancements to the xref:scriptability.adoc[] feature:
-
-Export custom SpotApps:::
-You can now export your own custom SpotApps, or collections of Scriptable ThoughtSpot Answers, Pinboards, SpotIQ results, Views, tables, and Worksheets, packaged together as a zip file. Simply navigate to *Data > SpotApps* and choose the objects you would like to include in a custom SpotApp. Refer to xref:app-templates.adoc[].
-Add tables and columns to an Embrace connection:::
-ThoughtSpot now allows you to use TML to edit tables created through xref:embrace.adoc[], and add columns and tables that already exist in the external database to the connection. Refer to xref:tml.adoc#syntax-tables[ThoughtSpot Modeling Language] and specify the *connection* information when adding tables or table columns to an Embrace connection.
-GUID handling:::
-ThoughtSpot now recognizes pre-existing GUIDs on import, and asks if you would like to update the existing object or create a new one. Refer to xref:scriptability.adoc[].
-Improvements to generic join functionality [.label.label-beta]#Beta#:::
-The expanded functionality for generic joins in TML files allows the following elements:
-+
-Constants:;; `int`, `double`, `bool`, `date`, and `string`
-Comparison operators:;; `=` (equal), `!=` (not equal), `+++&lt;+++` (less than), `+++&gt;+++` (greater than), `+++&lt;+++=` (less than or equal), and `+++&gt;+++=` (greater than or equal)
-Columns;;;
-Boolean operators:;;; `AND` and `NOT`
+Scriptability::
 
 +
-This feature is on by default.
+- *Scriptable worksheets with Search Assist Coach lessons*: You can now use TML to import, export, and update Worksheets with xref:search-assist-coach.adoc[] lessons. See xref:tml.adoc#syntax-worksheets[Syntax of the worksheet TML file].
 
-Joins at the table level:::
-You can now create and edit joins at the table level using TML, including range and generic joins. You must edit these joins from the source table, not the destination table. Refer to xref:tml.adoc[]
-Support for selective and linked filters:::
-You can now import, export, and update pinboards with xref:pinboard-filters-linked.adoc[linked] or xref:pinboard-filters-selective.adoc[selective] filters.
+Query filters::
+Aggregate formulas now support in-line query filters. See xref:formulas-aggregation-flexible.adoc#query-filters[Query filters].
 
-[#join-ui]
-Join creation interface::
-We improved the join workflows to support adding and updating joins on tables, worksheets, and views. See xref:join-add.adoc[] and xref:relationship-create.adoc[].
-
-////
-[Join a table, View, or Worksheet to another data source].
-////
-
-[#chasm-trap]
-Show underlying data for chasm traps::
-ThoughtSpot supports showing underlying data for searches based on schemas with chasm traps by default. If you do not want to show underlying data for schemas with chasm traps, contact {support-url}.
-
-[#business-user-7-0]
+[#business-user-7-1]
 === For the Business User
 
-[#geomaps]
-Geo map support::
-We added support for states and state abbreviations, and also postal codes, for Mexico. See xref:geomap-reference.adoc#mexico[Geo Map reference].
+[#deprecation]
+Deprecations::
+ThoughtSpot is dropping support for the following feature in the 7.1 release. This feature is *_not_* available in the 7.1 release:
++
+- Instant Insights
++
+Refer to xref:deprecation.adoc[Deprecation Announcements] for more information.
 
-[#data-engineer-7-0]
+[#data-engineer-7-1]
 === For the Data Engineer
 
-[#embrace]
-Embrace::
-
-Passthrough functions:::
-Embrace passthrough functions are available for all Embrace connections. Passthrough functions allow you to send custom SQL expressions directly to your cloud data warehouse without being interpreted by ThoughtSpot. For more information, see xref:embrace-passthrough.adoc[] and xref:formula-reference.adoc#passthrough-functions[Passthrough function reference].
-
-SAP HANA [.label.label-update]#Update#:::
-Support for SAP HANA in Embrace is now GA. For more information, see xref:embrace-hana.adoc[SAP HANA].
-
-Security passthrough [.label.label-beta]#Beta#:::
-Embrace now supports security passthrough for Google BigQuery connections, using OAuth for authentication and authorization. This feature is disabled by default. To enable it, contact https://community.thoughtspot.com/customers/s/contactsupport[ThoughtSpot Support^].
-
-Oracle Autonomous Database :::
-Support for Oracle Autonomous Database (ADW) is now GA. For more information, see xref:embrace-adw.adoc[Oracle Autonomous Data Warehouse].
+[#connections]
+Connections:: ThoughtSpot has renamed Embrace to Connections. To access your connections, navigate to the *Data* tab and click *Connections*. For more information, see xref:connections.adoc[].
+Databricks;; Connections now supports Databricks. For more information, see xref:connections-databricks.adoc[].
+Starburst;; Connections now supports Starburst. For more information, see xref:connections-starburst.adoc[].
 
 [#dataflow]
 DataFlow::
-
-Exadata database :::
-See xref:dataflow-exadata.adoc[].
-Greenplum database :::
-See xref:dataflow-greenplum.adoc[].
-Memsql database :::
-See xref:dataflow-memsql.adoc[].
-Splunk file system :::
-See xref:dataflow-splunk.adoc[].
-
-Remote files [.label.label-update]#Update#:::
-When connecting to remote files, DataFlow now supports the ORC and JSON file formats. See xref:dataflow-files.adoc[].
+We added support for the following databases: xref:dataflow-dremio.adoc[Dremio], xref:dataflow-google-sheets.adoc[Google Sheets], and xref:dataflow-vertica.adoc[Vertica].
 +
-Connections for remote files support several new xref:dataflow-files-sync.adoc#file-format[file formats]; in addition to  *Delimited*, we have support for *Parquet*, *JSON* , *LDJSON* [.label.label-beta]#Beta#, and *ORC* .
+DataFlow now automatically selects the options based on source file format, but you can overwrite it. For details, see xref:dataflow-files.adoc[Files].
+When connecting to remote files, DataFlow now supports the XML and Avro file formats.
 
-Utilities:::
-DataFlow includes support for utilities to configure SSL, so you can securely connect to the following source systems:
-xref:dataflow-sql-server-utilities.adoc[SQLServer], xref:dataflow-databricks-delta-lake-utilities.adoc[Databricks Data Lake], xref:dataflow-postgresql-utilities.adoc[PostgreSQL],xref:dataflow-ibm-db2-utilities.adoc[IBM Db2], xref:dataflow-greenplum-utilities.adoc[Greenplum], xref:dataflow-oracle-utilities.adoc[Oracle], and xref:dataflow-teradata-utilities.adoc[Teradata].
+DataFlow Single Sign-On;; DataFlow now supports Single Sign-On (SSO). You can configure the Single Sign-On settings based on the SSO service used in your organization. Once configured, the user login authentication in ThoughtSpot and ThoughtSpot DataFlow is routed through the SSO service, and you do not need to maintain separate user credentials for ThoughtSpot DataFlow. See xref:dataflow-user-management-sso.adoc[] for details.
+Case-sensitive table names;; DataFlow now supports case-sensitive table names. You can now create multiple syncs using different tables with the same name from the same connection and the same database.
+Sync mode advanced settings;; For all DataFlow connections, the Sync mode available in the Sync properties tab now defaults to *Append*.
+////
+SQL Server type;; When setting up a SQL Server connection, you can now select one of three SQL server types: On-premise, Azure SQL database, and SQL Server on Cloud VM. For *On-Premise* and *SQL Server on Cloud VM*, select *Named Instance* to include the *Instance* field. For *Azure SQL Database*, select the *Azure AD User* checkbox to provide authentication details. See xref:dataflow-sql-server-reference.adoc[].
+////
+Salesforce drivers;; In this release, the Salesforce cdata JDBC jar in `agent/lib/jars/salesforce/xx/jdbc/cdata.jdbc.salesforce.jar` upgraded with the latest drivers.
+//ThoughtSpot added new properties `BulkPageSize=2000` and `UseBulkAPI=true` in the JDBC URL.
+Cassandra drivers;; The Cassandra JDBC jar in `agent/lib/jars/cassandra/3.x Jar: cdata.jdbc.cassandra.jar` location upgraded with the latest drivers.
 
-Home page:::
-The DataFlow Home dashboard now shows both the historical and upcoming syncing information. It also supports search by table name. See xref:dataflow-home.adoc[DataFlow home].
+Truncate table;; We removed this functionality because it is no longer necessary.
 
-Custom SQL:::
-All DataFlow database connections (as listed in xref:dataflow-databases.adoc[]) support retrieving data through a custom SQL expression.
+User management;; We removed user management from DataFlow; this function is now integrated with ThoughtSpot user management.
 
-Tips:::
-The new xref:dataflow-tips.adoc[DataFlow Tips] section explains how to:
-+
-xref:dataflow-tips.adoc#truncate-table[Truncate a table];; Truncates the tables during syncs, instead of deleting.
-xref:dataflow-tips.adoc#epochs[Epoch date and timestamp options];; Use epoch format in pre- and post-sync TQL scripts (`$$CurrentDateEpochAdd` and `$$CurrentTimestampEpochAdd` parameters).
-xref:dataflow-tips.adoc#last-sync[Track the last sync start time];; Use the `$$LastSyncStartTime` parameter in custom formulas.
-
-Administration:::
-The Administration interface lets you configure the xref:dataflow-configuration-options.adoc#dataflow-staging-directory[staging directory] and xref:dataflow-configuration-options.adoc#dataflow-allowed-paths[allowed paths] for data files. See dataflow-configuration-options.adoc[Configure DataFlow server].
-
-[#it-ops-engineer-7-0]
+[#it-ops-engineer-7-1]
 === For the IT Ops Engineer
+
+[#search-spotiq]
+Manage advanced search and SpotIQ settings::
+You can now manage advanced search and SpotIQ settings from the Admin Console. You can configure column indexing and enable or disable SpotIQ Analyze and column summaries. Refer to xref:admin-portal-search-spotiq-settings.adoc[Manage search and SpotIQ settings].
+
+[#email-onboarding]
+Manage email and onboarding settings::
+You can manage certain advanced settings for your organization from the Admin Console. You can customize welcome emails, scheduled emails, and the workflow that allows users to sign up for ThoughtSpot from the login page. Refer to xref:admin-portal-onboarding-email-settings.adoc[Manage email and onboarding settings].
+
+[#new-admin-privileges]
+New admin privileges [.label.label-beta]#Beta#::
+This release introduces new administrator privileges that separate the abilities of the administrator into 4 specific privileges. For example, you can allow certain users to create and manage users, while not allowing them to manage SAML integration or other advanced settings. These new administrator privileges do not provide access to all data in ThoughtSpot, unlike the *Can administer ThoughtSpot* privilege. Users with the new privileges can only see data that others share with them. The *Can administer ThoughtSpot* privilege, which encompasses all 4 new administrator privileges, still appears as an option by default. To remove it, xref:support-contact.adoc[contact ThoughtSpot Support]. The 4 new privileges are:
++
+- *Can manage users*: Can create, delete, and edit users.
+- *Can manage privileges*: Can create, delete, and edit groups. This includes the group's name, sharing visibility, and privileges.
+- *Can operate application*: Can configure local and SAML authentication. Can manage application settings: search, SpotIQ, and onboarding advanced settings, style and help customization.
+- *Can see system information*: Can view all default admin data, including system worksheets and pinboards.
++
+This feature is in [.label.label-beta]#Beta# and off by default. To enable it, xref:support-contact.adoc[contact ThoughtSpot Support].
 
 [#rhel]
 RHEL ease of installation::
-This release of ThoughtSpot makes it easier to deploy ThoughtSpot on an xref:rhel.adoc[RHEL image]. You can now enable SELinux when deploying ThoughtSpot on RHEL. If you enable SELinux, ensure that you install the xref:rhel-packages.adoc[yum] `setroubleshoot` package.
-
-[#oel]
-Oracle Enterprise Linux (OEL) support::
-This release of ThoughtSpot introduces deployment support for Oracle Enterprise Linux. This decouples the OS and application files we shipped together in previous releases, and gives you the flexibility to run ThoughtSpot on an OEL image that your organization manages internally.
+You can now configure a specific admin username for the user who sets up the nodes when deploying on RHEL. Previously, you had to use the default `admin` username, the `1081` uid, and the `1081` gid.
 +
-ThoughtSpot certifies OEL version 7.9 on AWS, GCP, and VMware. To deploy ThoughtSpot on OEL, you must have the Ansible tarball; you can obtain the tarball through your ThoughtSpot contact. For more information, see the xref:rhel.adoc[] guide.
+Refer to xref:rhel-install-online.adoc[] and xref:rhel-install-offline.adoc[].
 
+[#saml-attribute]
+SAML configuration::
+When configuring SAML authentication for ThoughtSpot, you can now optionally map the display name subject value in the IDP metadata file to `displayName`. This ensures that your users' display names in SAML match their display names in ThoughtSpot. For more information, refer to xref:saml.adoc[].
+
+////
+cloud-only
 [#security-logs]
-New security logs::
-This release of ThoughtSpot enables your security team to collect security audit events based on user activity. You can view logs for the following events: *Successful login*, *Failed login*, *Locked account*, *Profile change*, *Group creation*, *Group deletion*, *User group change*, *Group modification*, *Privilege change*, *User account creation*, *User account deletion*, *Password change*, *Object creation (Pinboard or Answer)*, *Object deletion (Pinboard or Answer)*, *Object modification (Pinboard or Answer)*, and *Object sharing*.
-+
-To view these logs, run the xref:tscli-command-ref.adoc#tscli-logs[tscli logs collect] command.
+Security log collection::
+This release of ThoughtSpot Cloud enables your security team to collect security audit events based on user activity and ship them to your SIEM application in real-time. You can view logs for the following events:
 
-[#cloud-vm]
-New cloud VM instance types::
-This release of ThoughtSpot introduces support for new cloud VM instance types for AWS and Azure. For all instance types, see the xref:aws-configuration-options.adoc[] and xref:azure-configuration-options.adoc[].
-+
-AWS :::
-The new AWS instance types are `r5a.4xlarge`, `r5a.8xlarge`, `r5a.12xlarge`, `r5a.16xlarge`, and `r5a.24xlarge`.
+- Account logout
+- Answer creation
+- Answer deletion
+- Answer update
+- Failed login
+- Group creation
+- Group deletion
+- Group modification
+- Group principals update
+- Locked account
+- Object sharing
+- Password update
+- Pinboard creation
+- Pinboard deletion
+- Pinboard update
+- Privilege changes
+- Profile change
+- Row level security (RLS) rule creation
+- RLS rule deletion
+- RLS rule modification
+- Successful login
+- Table creation
+- User account creation
+- User account deletion
+- User group change
 
-Azure:::
-The new Azure instance type is `D64s_v4`.
+For further details, see xref:system-security.adoc[Collect security logs].
+////
 
-[#azure-disk-encryption]
-Azure Disk Encryption::
-ThoughtSpot now supports https://docs.microsoft.com/en-us/azure/virtual-machines/linux/disk-encryption-overview[Azure Disk Encryption (ADE)^] for clusters running on an RHEL image in Azure. Azure Disk Encryption provides volume encryption for both the OS and data disks of Azure virtual machines (VMs).
+[#ui-improvement]
+UI improvement for Admin Console::
+This release improves the UI and user experience of the xref:admin-portal-nas-mount-configure.adoc[NAS mount], xref:admin-portal-reverse-ssh-tunnel.adoc[Reverse SSH tunnel], xref:admin-portal-smtp-configure.adoc[SMTP], xref:admin-portal-snapshot-manage.adoc[Snapshot], xref:admin-portal-available-update.adoc[Upgrade], and xref:admin-portal-ssl-configure.adoc[SSL] sections of the Admin Console.
+
+[#product-usage-worksheet]
+Product Usage worksheet::
+This release introduces a new default worksheet for monitoring product usage. The Product Usage worksheet contains data on the following topics:
 +
-To configure Azure Disk Encryption for your cluster(s), contact https://community.thoughtspot.com/customers/s/contactsupport[ThoughtSpot Support^].
+--
+- Specifies what existing worksheets, tables, and views users search on and create objects from, and what those objects are
+- Lists what actions users complete in the product
+- Lists the underlying data sources for any object
+- Lists any object's dependents
+--
++
+You can search on this worksheet, or create pinboards based on it, to monitor your users' interaction with the product. To access this worksheet, search for Product Usage worksheet from the Data tab, or add it as a source while searching data.
++
+This worksheet is the underlying source for the xref:object-usage-pinboard.adoc[Object Usage pinboard].
+
+[#oidc]
+OpenID Connect authentication::
+ThoughtSpot now supports the OpenID Connect authentication framework for your ThoughtSpot Cloud instances. OIDC adds an identity layer to the OAuth 2.0 protocol and allows clients to verify a user’s identity based on the authentication performed by an authorization server.
++
+To configure OIDC, refer to xref:oidc-configure.adoc[OpenID Connect authentication].
 
 [#upgrade-paths]
 == Supported Upgrade Paths
 
-If you are running one of the following versions, you can upgrade to the 7.0.1 CU1 release directly:
+If you are running one of the following versions, you can upgrade to the 7.1.1.CU1 release directly:
 
-* 6.2.x to 7.0.1 CU1
-* 6.3.x to 7.0.1 CU1
+* 6.3.x to 7.1.1.CU1
+* 7.0.x to 7.1.1.CU1
+* 7.1 to 7.1.1.CU1
 
 This includes any hotfixes or customer patches on these branches.
 
 If you are running a different version, you must do a multiple pass upgrade.
-First, upgrade to version 6.2.x, or 6.3.x, and then to the 7.0.1 CU1 release.
+
+First, upgrade to version 6.3.x, 7.0.x, or 7.1 and then to the 7.1.1.CU1 release.
 
 NOTE: To successfully upgrade your ThoughtSpot cluster, all user profiles must include a valid email address. Without valid email addresses, the upgrade is blocked.

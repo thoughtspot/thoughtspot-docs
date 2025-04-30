@@ -1,5 +1,5 @@
 = Azure Blob Storage connection reference
-:last_updated: 03/09/2022
+:last_updated: 09/10/2021
 :experimental:
 :linkattrs:
 :page-aliases: /data-integrate/dataflow/dataflow-azure-blob-storage-reference.adoc
@@ -24,22 +24,34 @@ Storage type:: Choose the Storage type: _Azure Blob Storage_ (default) or _Data 
 Account:: Azure Storage has an address that includes our unique account name which is a combination of the account name and the Azure Storage blob endpoint forms the base address for the objects in your storage account. Mandatory field.
 Example:;; userdi
 [#dataflow-azure-blob-storage-conn-authentication-type]
-Authentication type:: This supports two types of authentication methods:
+Authentication type:: This supports four types of authentication methods:
 Azure account key:;; Choose to authenticate based on access keys and other parameters to produce an encrypted signature string that is passed on the request in the Authorization header.
 Shared access signatures (SAS):;; Choose to grant fine-grained access to resources in your storage account with specified permissions and over a specified time interval. Mandatory field.
+Active directory service principal:;; Choose to authenticate based on active directory service principal credentials.
+Active directory MSI:;; Choose to authenticate using no credentials.
 Example:;; Azure account key
 Valid Values:;; Azure account key +
 Shared access signature
 [#dataflow-azure-blob-storage-conn-key]
 Key:: The 512-bit access key generated while creating storage account. Mandatory field.
 Example:;; ABCDEFGH245HIJK
+
+[#dataflow-azure-blob-storage-conn-aad-client-id]
+AAD client id:: Specify the AAD client id. Mandatory field.
+Other notes:;; Field appears when you select "Active directory service principal" as authentication type.
+[#dataflow-azure-blob-storage-conn-aad-client-secret]
+AAD client secret:: Specify the AAD client secret. Mandatory field.
+Other notes:;; Field appears when you select "Active directory service principal" as authentication type.
+[#dataflow-azure-blob-storage-conn-aad-tenant-id]
+AAD tenant id:: Specify the AAD tenant id. Mandatory field.
+Other notes:;; Field appears when you select "Active directory service principal" as authentication type.
+[#dataflow-azure-blob-storage-conn-folder]
+Folder:: Give the storage folder details. Mandatory field.
+Availability:;; Displayed only when "Authentication type" is Datalake GEN2 Storage.
+Example:;; difolder
 [#dataflow-azure-blob-storage-conn-container]
 Container:: Give container details that organizes a set of blobs, like a directory in a file system. Mandatory field.
 Example:;; container
-[#dataflow-azure-blob-storage-conn-folder]
-Folder:: Give the storage folder details.
-Example:;; difolder
-Other notes:;; Displayed only when "Storage type" is "Datalake GEN2 Storage".
 
 [#sync-properties]
 == Sync properties
@@ -72,7 +84,7 @@ Example:;; gzip
 Valid Values:;; None, gzip
 Default:;; None
 [#dataflow-azure-blob-storage-sync-enclosing-character]
-Enclosing character:: Specify if the text columns in the source data is enclosed in quotes. Mandatory field.
+Enclosing character:: Specify if the text columns in the source data is enclosed in quotes. Optional field.
 Example:;; Single
 Valid Values:;; Single, Double, Empty
 Default:;; Empty

@@ -3,6 +3,7 @@
 :linkattrs:
 :page-aliases: /reference/tscli-command-ref.adoc
 :experimental:
+{h2-toc}
 
 The ThoughtSpot command line interface, or tscli, is an administration interface for the cluster. Use `tscli` to take snapshots (backups) of data, to apply updates, to stop and to start services, and to view information about the system. This reference defines each subcommand.
 
@@ -30,12 +31,7 @@ tscli [-h]
       [--yes]
       [--cluster ]
       [--zoo ]
-      {access,alert,ansible,backup,backup-policy,calendar,callhome,cassandra,
-       cluster,command,config-mode,csp,dataflow,dr-mirror,event,feature,fileserver,
-       firewall,hdfs,ipsec,ldap,logs,map-tiles,monitoring,nas,nitro-switch,
-       node,notification,onboarding,patch,rpackage,saml,scheduled-pinboards,
-       set,smtp,snapshot,snapshot-policy,socialproof,ssl,sssd,storage,support,
-       tokenauthentication,update}
+      {access,alert,ansible,backup,backup-policy,calendar,callhome,cassandra,cluster,command,config-mode,csp,dataflow,dr-mirror,event,feature,fileserver,firewall,hdfs,ipsec,ldap,logs,map-tiles,monitoring,nas,nitro-switch,node,notification,onboarding,patch,rpackage,saml,scheduled-pinboards,set,smtp,snapshot,snapshot-policy,socialproof,ssl,sssd,storage,support,tokenauthentication,update}
 ....
 
 The `tscli` command has several subcommands, such as `alert`, `backup`, and so on.
@@ -75,6 +71,7 @@ There are several optional flags that are common to each `tscli` subcommand:
 [#tscli-flag-help]
 === help
 
+[source,tscli]
 ----
 -h, --help
 ----
@@ -85,6 +82,7 @@ This flag lists the specified command's subcommands and their definitions.
 [#tscli-flag-helpfull]
 === helpfull
 
+[source,tscli]
 ----
 --helpfull HELPFUll
 ----
@@ -94,6 +92,7 @@ This flag shows help for all supported commands.
 [#tscli-flag-verbose]
 === verbose
 
+[source,tscli]
 ----
 --verbose
 ----
@@ -104,6 +103,7 @@ By default, logs are written to both the console and log files, with the log fil
 [#tscli-flag-noautoconfig]
 === noautoconfig
 
+[source,tscli]
 ----
 --noautoconfig
 ----
@@ -113,6 +113,7 @@ Prompts y/n response for each question within a command, instead of assuming `ye
 [#tscli-flag-autoconfig]
 === autoconfig
 
+[source,tscli]
 ----
 --autoconfig
 ----
@@ -123,6 +124,7 @@ User may still be prompted for certain inputs. The default is `False`.
 [#tscli-flag-yes]
 === yes
 
+[source,tscli]
 ----
 --yes
 ----
@@ -133,6 +135,7 @@ User may still be prompted for certain inputs. The default is `False`.
 [#tscli-flag-cluster]
 === cluster
 
+[source,tscli]
 ----
 --cluster CLUSTER
 ----
@@ -143,6 +146,7 @@ Used when a cluster is not automatically detected. The default is `False`.
 [#tscli-flag-zoo]
 === zoo
 
+[source,tscli]
 ----
 --zoo ZOO
 ----
@@ -202,6 +206,7 @@ This section lists each subcommand of the tscli command, and its syntax:
 [#tscli-access]
 === access
 
+[source,tscli]
 ----
 tscli access [-h] {list}
 ----
@@ -218,6 +223,7 @@ tscli access list::
 [#tscli-alert]
 === alert
 
+[source,tscli]
 ----
 tscli alert [-h] {count,info,list,off,on,refresh,silence,status,unsilence}
 ----
@@ -251,6 +257,7 @@ tscli alert unsilence --name NAME::
 [#tscli-ansible]
 === ansible
 
+[source,tscli]
 ----
 tscli ansible [-h] {checkout,commit} [--local]
 ----
@@ -267,13 +274,14 @@ tscli ansible commit --host HOST::
 [#tscli-backup]
 === backup
 
+[source,tscli]
 ----
 tscli backup [-h] {create,delete,ls}
 ----
 
 This subcommand has the following options:
 
-tscli backup create [-h] [--mode {full,light,dataless}] [--type {full,incremental}] [--base BASE] [--storage_type {local,nas,s3a,gcs}] [--remote] [--no-orion-master] name out::
+tscli backup create [-h] [--mode {full,light,dataless}] [--type {full,incremental}] [--base BASE] [--storage_type {local,nas,s3a,gcs}] [--remote] [--no-orion-master] [--bucket_name BUCKET_NAME] [--staging_dir STAGING_DIR] name out::
   Pulls a snapshot and saves it as a backup. You must specify the snapshot name, `name`, and also the backup directory, `out`. The command has the following optional parameters:
   --mode {full,light,dataless};; Mode of backups. The default is `full`.
   --type;; Type of backup. Only `STANDALONE` is supported.
@@ -292,6 +300,7 @@ tscli backup ls::
 [#tscli-backup-policy]
 === backup-policy
 
+[source,tscli]
 ----
 tscli backup-policy [-h] {create,delete,disable,enable,ls,show,status,update}
 ----
@@ -334,6 +343,7 @@ tscli backup-policy update NAME::
 [#tscli-calendar]
 === calendar
 
+[source,tscli]
 ----
 tscli calendar [-h] {create,delete,disable,enable,generate,get,list,update}
 ----
@@ -391,6 +401,7 @@ tscli calendar update::  Updates a custom calendar table in the system, with the
 
 Provides usage statistics to ThoughtSpot by sending them from the cluster to a secure S3 bucket that ThoughtSpot owns.
 
+[source,tscli]
 ----
 tscli callhome [-h] {disable,enable,generate-bundle}
 ----
@@ -405,11 +416,12 @@ tscli callhome disable::
 tscli callhome generate-bundle [--d D] [--since SINCE]::
   Generates the callhome stats `*.tar` file, with the following parameters:
   --d D;; Destination folder for the `*.tar` file. There is no default setting.
-  --since SINCE;; Grabs `callhome` data from the specified time window, in the past. This should be a human-readable duration string, such as `4h` (4 hours), `30m` (30 minutes), `1d` (1 day). This option generates a `*.tar` file of the cluster metrics and writes it to the specified directory. Here, `SINCE` is how many days back the file must start. There is no default setting
+  --since SINCE;; Grabs `callhome` data from the specified time window, in the past. This should be a human-readable duration string, such as `4h` (4 hours), `30m` (30 minutes), `1d` (1 day). This option generates a `*.tar` file of the cluster metrics and writes it to the specified directory. Here, `SINCE` is how many days back the file must start. There is no default setting.
 
 [#tscli-cassandra]
 === cassandra
 
+[source,tscli]
 ----
 tscli cassandra [-h] {backup,restore,tablestats}
 ----
@@ -432,8 +444,9 @@ tscli cassandra tablestats::
 [#tscli-cluster]
 === cluster
 
+[source,tscli]
 ----
-tscli cluster [-h] {abort-update,bucket-migrate,bucket-name,check,create,download-release,get-config,list-available-releases,list-downloaded-releases,load,restore,resume-update,set-config,set-min-resource-spec,setup-release-host,setup-release-host-key,show-id,show-name,show-resource-spec,start,status,stop,update,update-hadoop}
+tscli cluster [-h] {abort-update,bucket-migrate,bucket-name,check,create,download-release,get-config,list-available-releases,list-downloaded-releases,load,restore,resume-update,set-config,set-min-resource-spec,show-id,show-name,show-resource-spec,start,status,stop,update,update-hadoop,update-zookeeper}
 ----
 
 This subcommand has the following options:
@@ -441,10 +454,11 @@ This subcommand has the following options:
 tscli cluster abort-update::
   Aborts an ongoing cluster update, if safe.
 tscli cluster bucket-migrate::
-  Migrates the cluster to use another S3/GCS bucket, also migrating the data from the current s3 bucket to the new bucket. This command has the following optional parameter:
+  Migrates the cluster to use another S3/GCS bucket, also migrating the data from the current bucket to the new bucket. This command has the following optional parameter:
   --name NAME;; Name of the new bucket.
 tscli cluster bucket-name::
-  Returns the name of the s3 bucket associated with the cluster, if there is one.
+  Returns the name of the cloud storage bucket associated with the cluster, if there is one. This command has the following optional parameter:
+  --disable-events;; ThoughtSpot does not raise configuration events if this is set. The default is `False`.
 tscli cluster check [--path PATH] [--includes INCLUDES] [--retry RETRY] [--localhost] [--disable-events]::
   Checks the status of all nodes in the cluster, with the following parameters:
   --path PATH;; Specifies the working directory of the diagnostic tool. The default is `/usr/local/scaligent/release`.
@@ -453,13 +467,13 @@ tscli cluster check [--path PATH] [--includes INCLUDES] [--retry RETRY] [--local
   --localhost;; Runs cluster checks only on localhost. The default is `False`.
   --disable-events;; Disables raising configuration events. The default is `False`.
 
-tscli cluster create release::
+tscli cluster create RELEASE::
   Creates a new cluster from the release file specified by adding the release number. Used by ThoughtSpot Support when installing a new cluster. For example, `tscli cluster create 6.3.1.tar.gz`. This command has the following parameters:
   --disable_rotate_keys;; Disables cluster rotate key configuration. The default is `False`.
   --enable_cloud_storage {s3a,gcs};; Determines whether to enable Cloud Storage setup, and which storage format to use.
   heterogeneous;; Should be set for heterogeneous clusters. The default is `False`.
 
-tscli cluster download-release release::
+tscli cluster download-release RELEASE::
   Downloads the specified release to the Hadoop Distributed File Sytem (HDFS) for a subsequent upgrade.
 
 tscli cluster get-config::
@@ -473,12 +487,12 @@ tscli cluster list-available-releases::
 tscli cluster list-downloaded-releases::
   Lists the releases downloaded to the cluster.
 
-tscli cluster load backupdir::
+tscli cluster load BACKUPDIR::
   Loads the state from a specified backup directory onto an existing cluster. This command has the following parameters:
   --reuse_cluster CLUSTER;; Add this parameter to reuse the cluster service configs, instead of restoring from the backup directory.
   --cloud_data_dir CLOUD_DATA_DIR;; Add this parameter to specify the cloud path to the restore.
 
-tscli cluster restore --release RELEASE backupdir::
+tscli cluster restore --release RELEASE BACKUPDIR::
   Restores a cluster on the specified release number using the backup in the specified directory, `backupdir`. If you are restoring from a data-less backup, you must supply the release tarball for the corresponding software release. This command has the following parameters:
   --disable_rotate_keys;; Disables cluster rotate key configurations. The default is `False`.
   --enable_cloud_storage {s3a,gcs};; Determines whether to enable Cloud Storage setup. For example, run `tscli cluster restore --enable_cloud_storage s3a` to enable AWS S3 object storage.
@@ -542,11 +556,15 @@ tscli cluster update::
   --ignore_if_unhealthy;; A comma-separated list of node IPs on which upgrade is not attempted in case they are found to be unhealthy. If a node outside of this list is found unhealthy, the upgrade is aborted.
 
 tscli cluster update-hadoop::
-  Updates Hadoop/Zookeeper on the cluster.
+  Updates Hadoop on the cluster.
+
+tscli cluster update-zookeeper::
+Updates Zookeeper on the cluster.
 
 [#tscli-command]
 === command
 
+[source,tscli]
 ----
 tscli command [-h] {run}
 ----
@@ -565,6 +583,7 @@ tscli command run COMMAND::
 [#tscli-config-mode]
 === config-mode
 
+[source,tscli]
 ----
 tscli config-mode [-h] {lean}
 ----
@@ -578,6 +597,7 @@ tscli config-mode lean::
 [#tscli-csp]
 === csp
 
+[source,tscli]
 ----
 tscli csp [-h] {add-override,clear-override,remove-override,reset-override}
 ----
@@ -604,6 +624,7 @@ Resets a specified override with a new value, with the following parameters:
 [#tscli-dataflow]
 === dataflow
 
+[source,tscli]
 ----
 tscli dataflow [-h] {disable,enable}
 ----
@@ -619,6 +640,7 @@ tscli dataflow enable::
 [#tscli-dr-mirror]
 === dr-mirror
 
+[source,tscli]
 ----
 tscli dr-mirror [-h] {start,status,stop}
 ----
@@ -627,7 +649,7 @@ This subcommand has the following options:
 
 tscli dr-mirror start::
   Starts a mirror cluster which will continuously recover from a primary cluster, with the following parameters:
-  directory;; Directory where backups of primary cluster can be found
+  directory;; Directory where backups of the primary cluster can be found.
   nodes;; Comma-separated list of IP addresses of nodes in the mirror cluster.
   cluster_name;; The name of the mirror cluster.
   cluster_id;; The ID of the mirror cluster.
@@ -643,6 +665,7 @@ tscli dr-mirror stop::
 [#tscli-event]
 === event
 
+[source,tscli]
 ----
 tscli event [-h] {list}
 ----
@@ -664,6 +687,7 @@ tscli event list [-h] [--include INCLUDE] [--since SINCE] [--from FROM] [--to TO
 [#tscli-feature]
 === feature
 
+[source,tscli]
 ----
 tscli feature [-h] {get-all-config}
 ----
@@ -677,6 +701,7 @@ tscli feature get-all-config::
 [#tscli-fileserver]
 === fileserver
 
+[source,tscli]
 ----
 tscli fileserver [-h] {configure,download-release,purge-config,show-config,upload}
 ----
@@ -710,6 +735,7 @@ tscli fileserver upload [-h] [--user USER] [--password PASSWORD] --file_name FIL
 [#tscli-firewall]
 === firewall
 
+[source,tscli]
 ----
 tscli firewall [-h] {close-ports,disable,enable,open-ports,status}
 ----
@@ -734,6 +760,7 @@ tscli firewall status::
 [#tscli-hdfs]
 === hdfs
 
+[source,tscli]
 ----
 tscli hdfs [-h] {leave-safemode}
 ----
@@ -747,6 +774,7 @@ tscli hdfs leave-safemode::
 [#tscli-ipsec]
 === ipsec
 
+[source,tscli]
 ----
 tscli ipsec [-h] {disable,enable,status}
 ----
@@ -765,13 +793,14 @@ tscli ipsec status::
 [#tscli-ldap]
 === ldap
 
+[source,tscli]
 ----
 tscli ldap [-h] {add-cert,configure,purge-configuration}
 ----
 
 This subcommand has the following options:
 
-tscli ldap add-cert name cert_file::
+tscli ldap add-cert NAME CERT_FILE::
   Adds an SSL certificate for LDAP. Use only if LDAP has already been configured without SSL, when you are adding SSL. Use `name` to supply an alias for the certificate you are installing. Use `cert-file` to specify the certificate file.
 
 tscli ldap configure::
@@ -783,6 +812,7 @@ tscli ldap purge-configuration::
 [#tscli-logs]
 === logs
 
+[source,tscli]
 ----
 tscli logs [-h] {collect,runcmd}
 ----
@@ -824,6 +854,7 @@ tscli logs runcmd [-h] --cmd CMD [--include INCLUDE] [--exclude EXCLUDE] [--sinc
 [#tscli-tiles]
 === map-tiles
 
+[source,tscli]
 ----
 tscli map-tiles [-h] {disable,enable,status}
 ----
@@ -835,6 +866,7 @@ tscli map-tiles enable [-h] [--offline] [--tar TAR] [--md5 MD5]::
 +
 If you don't have internet access, you must download the map tiles tar and md5 files, and append the clause `--offline --tar _TAR_ --md5 _MD5_` to the `tscli map-tiles enable` command:
 +
+[source,tscli]
 ----
 tscli map-tiles enable --offline --tar TAR --md5 MD5
 ----
@@ -857,6 +889,7 @@ tscli map-tiles status::
 [#tscli-monitoring]
 === monitoring
 
+[source,tscli]
 ----
 tscli monitoring [-h] {set-config,show-config}
 ----
@@ -876,6 +909,7 @@ tscli monitoring show-config::
 [#tscli-nas]
 === nas
 
+[source,tscli]
 ----
 tscli nas [-h] {ls,mount-cifs,mount-nfs,unmount}
 ----
@@ -910,6 +944,7 @@ tscli nas unmount [-h] --mount_point __MOUNT_POINT__::
 [#tscli-nitro-switch]
 === nitro-switch
 
+[source,tscli]
 ----
 tscli nitro-switch [-h] {disable,enable}
 ----
@@ -924,6 +959,7 @@ tscli nitro-switch enable::
 [#tscli-node]
 === node
 
+[source,tscli]
 ----
 tscli node [-h] {check,ls,status}
 ----
@@ -947,6 +983,7 @@ tscli node status::
 [#tscli-notification]
 === notification
 
+[source,tscli]
 ----
 tscli notification [-h] {set-apns-config}
 ----
@@ -959,6 +996,7 @@ tscli notification set-apns-config::
 [#tscli-onboarding]
 === onboarding
 
+[source,tscli]
 ----
 tscli onboarding [-h] {configure,purge-configuration}
 ----
@@ -967,9 +1005,6 @@ Onboarding helps application administrators to bulk update user information.
 In particular, it configures various in-app email options.
 
 This subcommand has the following options:
-
-tscli onboarding --help::
-  Prints help for the onboarding configuration.
 
 tscli onboarding configure::
   Configures the onboarding through a series of steps. Asks the user to provide information necessary for onboarding-related functionality, such as:
@@ -989,6 +1024,7 @@ tscli onboarding configure::
 [#tscli-patch]
 === patch
 
+[source,tscli]
 ----
 tscli patch [-h] {abort-apply,apply,ls,resume-apply,resume-rollback,rollback,status}
 ----
@@ -1017,7 +1053,7 @@ tscli patch resume-apply [-h]::
 tscli patch resume-rollback [-h]::
   Resumes patch roll-back.
 
-tscli patch rollback md5 [-h]::
+tscli patch rollback MD5 [-h]::
   Rolls back a specified patch from an existing cluster with the following parameters:
   md5;; Specifies the md5 of the patch to be rolled back.
   --skip_check;; When set, skips all pre-apply checks while rolling back. The default is `False`.
@@ -1028,6 +1064,7 @@ tscli patch status::
 [#tscli-rpackage]
 === rpackage
 
+[source,tscli]
 ----
 tscli rpackage [-h] {add,delete,list}
 ----
@@ -1056,14 +1093,21 @@ tscli rpackage list [-h] [--detailed]::
 [#tscli-saml]
 === saml
 
+[source,tscli]
 ----
-tscli saml [-h] {configure,purge-configuration}
+tscli saml [-h] {configure,get-config,purge-configuration}
 ----
 
 This subcommand has the following options:
 
-tscli saml configure [-h]::
-  Configures SAML.
+tscli saml configure::
+  Configures SAML, with the following subcommands:
+[ 7.1.1 and later] --multi;; Adds multiple Identity Provider (IDP) configuration.
++
+The default is `False`.
+[ 7.1.1 and later] --change_default_idp;; Change your default IDP.
++
+The default is `False`.
 
 tscli saml purge-configuration::
   Purges any existing SAML configuration.
@@ -1073,6 +1117,7 @@ To see a list of prerequisites, refer to xref:saml.adoc[Configure SAML].
 [#tscli-scheduled-pinboards]
 === scheduled-pinboards
 
+[source,tscli]
 ----
 tscli scheduled-pinboards [-h] {disable,enable,status}
 ----
@@ -1094,6 +1139,7 @@ Contact xref:support-contact.adoc[ThoughtSpot Support]  for help on how to confi
 [#tscli-set]
 === set
 
+[source,tscli]
 ----
 tscli set [-h] {heterogeneous}
 ----
@@ -1108,6 +1154,7 @@ tscli set heterogeneous::
 [#tscli-smtp]
 === smtp
 
+[source,tscli]
 ----
 tscli smtp [-h] {remove-mailfromname,remove-mailname,remove-realname,remove-relayhost,remove-saslcredentials,reset-canonical-mapping,set-canonical-mapping,set-mailfromname,set-mailname,set-realname,set-relayhost,set-saslcredentials,show-canonical-mapping,show-mailfromname,show-mailname,show-realname,show-relayhost}
 ----
@@ -1119,6 +1166,9 @@ tscli smtp remove-mailfromname::
 
 tscli smtp remove-mailname::
   Removes current cluster mail name. It is the second half of the email address, the part after the @ sign. In _example@company.com_, it is _company_.
+
+tscli smtp remove-optparams::
+*[7.1.1 and later]* Removes any optional Postfix settings you configured. Postfix is the service ThoughtSpot uses for routing and delivering email.
 
 tscli smtp remove-realname::
   Removes current cluster realname.
@@ -1140,6 +1190,9 @@ tscli smtp set-mailfromname mailfromname::
 
 tscli smtp set-mailname mailname::
   Sets the domain from where email alerts are sent for the cluster. It is the second half of the email address, the part after the @ sign. In _example@company.com_, it is _company_.
+
+tscli smtp set-optparams::
+*[7.1.1 and later]* Allows you to configure optional Postfix settings. Postfix is the service ThoughtSpot uses for routing and delivering email.
 
 tscli smtp set-realname::
   Sets the realname for the cluster.
@@ -1164,6 +1217,9 @@ tscli smtp show-mailfromname::
 tscli smtp show-mailname::
   Shows the mailname, from which email alerts are sent, for the cluster.
 
+tscli smtp show-optparams::
+*[7.1.1 and later]* Shows any optional Postfix settings you configured. Postfix is the service ThoughtSpot uses for routing and delivering email.
+
 tscli smtp show-realname::
   Shows the realname for the cluster.
 
@@ -1173,6 +1229,7 @@ tscli smtp show-relayhost::
 [#tscli-snapshot]
 === snapshot
 
+[source,tscli]
 ----
 tscli snapshot [-h] {backup,create,delete,ls,pin,restore,unpin,update-ttl,validate}
 ----
@@ -1181,7 +1238,7 @@ To learn more about snapshots and backups, see xref:backup-strategy.adoc[].
 
 This subcommand has the following options:
 
-tscli snapshot backup [-h] [--mode {full,light,dataless}] [--type {full,incremental}] [--base __BASE__] [--storage_type local,nas,s3a,gcs}] [--remote] [--no-orion-master] [--bucket_name __BUCKET_NAME__] [--staging_dir __STAGING_DIR__] __name__ __out__::
+tscli snapshot backup [-h] [--mode {full,light,dataless}] [--type {full,incremental}] [--base __BASE__] [--storage_type {local,nas,s3a,gcs}] [--remote] [--no-orion-master] [--bucket_name __BUCKET_NAME__] [--staging_dir __STAGING_DIR__] __name__ __out__::
   Pulls snapshot out as a backup. This command has two required elements: `name` and `out`. The rest of the flags are optional:
   name;; Name of snapshot to pull out as a backup. To list all snapshots, run `tscli snapshot ls`.
   out;; Directory where backup will be written. The directory must not already exist.
@@ -1194,24 +1251,24 @@ tscli snapshot backup [-h] [--mode {full,light,dataless}] [--type {full,incremen
   --bucket_name __BUCKET_NAME__;; The name of the s3a/gcs bucket to create the backup. The platform depends on the storage type of the cluster. You must specify `--storage_type` as one of `s3a` or `gcs`.
   --staging_dir __STAGING_DIR__;; Specify the staging directory for hdfs data in cloud-based backups. No effect in backups not based on cloud. You must specify `--storage_type` as one of `s3a` or `gcs`.
 
-tscli snapshot create [-h] name reason ttl::
-  Creates a new snapshot with the specified `name` and `reason`. This command does not accept `.` (periods). It does accept `-` (dashes or hyphens). The `ttl` parameter is the number of days after which this snapshot is automatically deleted. A value of `-1` disables automatic deletion.
+tscli snapshot create [-h] NAME REASON TTL::
+  Creates a new snapshot with the specified `name` and `reason`. This command does not accept `.` (periods). It does accept `-` (dashes or hyphens). The `ttl`, or 'time to live,' parameter is the number of days after which this snapshot is automatically deleted. A value of `-1` disables automatic deletion.
 
-tscli snapshot delete [-h] name::
+tscli snapshot delete [-h] NAME::
   Deletes the named snapshot.
 
 tscli snapshot ls [-h]::
   Lists available snapshots.
 
-tscli snapshot pin [-h] name::
+tscli snapshot pin [-h] NAME::
   Pins a snapshot with the specified _name_ so it cannot be deleted or garbage collected.
 
-tscli snapshot restore [-h] [--allow_release_change] [--only_service_state] name::
+tscli snapshot restore [-h] [--allow_release_change] [--only_service_state] NAME::
   Restores cluster to the specified snapshot _name_. Accepts the following flags:
   --allow_release_change;; Allows restoration to a snapshot at a different release. The default is `False`.
   --only_service_state;; Restores only the service state. The default is `False`.
 
-tscli snapshot unpin [-h] name::
+tscli snapshot unpin [-h] NAME::
   Unpins the specified snapshot _name_ so it can be deleted or garbage-collected.
 
 tscli snapshot update-ttl [-h] [--disable DISABLE] __name__ __ttl__::
@@ -1226,6 +1283,7 @@ tscli snapshot validate::
 [#tscli-snapshot-policy]
 === snapshot-policy
 
+[source,tscli]
 ----
 tscli snapshot-policy [-h] {disable,enable,show,update}
 ----
@@ -1243,11 +1301,12 @@ tscli snapshot-policy show [-h]::
 
 tscli snapshot-policy update [-h] [--config CONFIG]::
   Updates periodic snapshot config, with the following parameter:
-  --config CONFIG;; Text format of periodic backup policy config.
+  --config CONFIG;; Text format of the periodic backup policy configuration.
 
 [#tscli-socialproof]
 === socialproof
 
+[source,tscli]
 ----
 tscli socialproof [-h] {disable,enable}
 ----
@@ -1263,6 +1322,7 @@ tscli socialproof enable::
 [#tscli-ssl]
 === ssl
 
+[source,tscli]
 ----
 tscli ssl [-h] {add-cert,add-valid-hosts,clear-min-tls-version,enable-dhparam,get-dhparam,off,on,remove-valid-hosts,reset-cipher,revert-dhparam,rm-cert,set-alert-days,set-cipher,set-min-tls-version,show-valid-hosts,status,tls-status}
 ----
@@ -1278,7 +1338,7 @@ Refer to xref:ssl.adoc[Configure SSL] for more information.
 
 This subcommand has the following options:
 
-tscli ssl add-cert [-h] key certificate valid_hosts::
+tscli ssl add-cert [-h] KEY CERTIFICATE VALID_HOSTS::
   Adds a specified SSL certificate and key pair. Requires a comma-separated host list. Nginx will reject if the hosts are not valid. This command has the following optional flag:
   --force;; Forces setting of key and certification without validation. The default is `False`.
 
@@ -1309,7 +1369,7 @@ tscli ssl remove-valid-hosts::
   Turns off validation of hosts.
 
 tscli ssl reset-cipher::
-Resets SSL cipher list to the factory default.
+  Resets SSL cipher list to the factory default.
 
 tscli ssl revert-dhparam::
   Reverts current SSL DH parameters to the default key size of 1024 bits.
@@ -1317,8 +1377,8 @@ tscli ssl revert-dhparam::
 tscli ssl rm-cert::
   Removes the existing SSL certificate, if any. Reverts to default self-signed certificate.
 
-tscli ssl set-alert-days days::
-  Sets alert threshold for a specifed number of days to check before SSL certificate expires. The default is `30 days`.
+tscli ssl set-alert-days DAYS::
+  Sets alert threshold for a specified number of days to check before SSL certificate expires. The default is `30 days`.
 
 tscli ssl set-cipher __cipher__::
   Specify enabled ciphers, with the following parameter:
@@ -1339,6 +1399,7 @@ tscli ssl tls-status::
 [#tscli-sssd]
 === sssd
 
+[source,tscli]
 ----
 tscli sssd {clear-sudo-group,disable,disable-openldap,enable,enable-openldap,set-sudo-group}
 ----
@@ -1386,6 +1447,7 @@ tscli sssd set-sudo-group _SUDO_GROUP_::
 [#tscli-storage]
 === storage
 
+[source,tscli]
 ----
 tscli storage [-h] {gc,df}
 ----
@@ -1394,7 +1456,7 @@ This subcommand has the following options:
 
 tscli storage gc [-h] [--log_age LOG_AGE] [--force] [--localhost_only]::  Garbage collects unused storage.
 +
-Before issuing this command, you must stop the cluster using `tscli     cluster stop`.
+Before issuing this command, you must stop the cluster using `tscli cluster stop`.
 +
 After garbage collection finishes, you can restart the cluster with `tscli cluster start`.
 +
@@ -1420,9 +1482,9 @@ tscli storage df::
 [#tscli-support]
 === support
 
+[source,tscli]
 ----
 tscli support [-h] {bundle,remove-maintenance,restart-remote,rm-admin-email,rm-admin-phone,rm-feedback-email,schedule-maintenance,set-admin-email,set-admin-phone,set-debug-ui-password,set-feedback-email,set-remote,show-admin-email,show-admin-phone,show-feedback-email,show-remote,start-remote,stop-remote}
-
 ----
 
 This subcommand has the following options:
@@ -1440,9 +1502,6 @@ tscli support bundle [-h] [--include INCLUDE] [--exclude EXCLUDE] [--list_select
 
 tscli support remove-maintenance::
   Removes a scheduled maintenance.
-
-tscli support remove-maintenance::
- Removes a scheduled maintenance.
 
 tscli support restart-remote::
   Restarts remote support.
@@ -1464,13 +1523,13 @@ tscli support schedule-maintenance [-h] [--start_time START_TIME] [--duration_mi
   --type {upgrade,patch};; The type of maintenance event, either  `upgrade` or `patch`. The default is `upgrade`.
   --description __DESCRIPTION__;; Description of the scheduled maintenance event.
 
-tscli support set-admin-email email::
+tscli support set-admin-email EMAIL::
   Sets the specified email address for contacting the customer administrator.
 
-tscli support set-feedback-email email::
+tscli support set-feedback-email EMAIL::
   Sets the specified email address for sending feedback.
 
-tscli support set-admin-phone phone_number::
+tscli support set-admin-phone PHONE_NUMBER::
   Sets the specified phone number for contacting the customer administrator. Specify a phone number using any value, such as `+1 800-508-7008 Ext. 1`.
 
 tscli support set-debug-ui-password [--stdin_password]::
@@ -1501,6 +1560,7 @@ tscli support stop-remote::
 [#tscli-tokenauthentication]
 === tokenauthentication
 
+[source,tscli]
 ----
 tscli tokenauthentication [-h] {disable,enable}
 ----
@@ -1516,6 +1576,7 @@ tscli tokenauthentication disable::
 [#tscli-update]
 === update
 
+[source,tscli]
 ----
 tscli update [-h] {get-history}
 ----

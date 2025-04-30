@@ -1,0 +1,187 @@
+= Group_aggregation formulas other than group_aggregate()
+:last-updated: 11/05/2021
+:linkattrs:
+:experimental:
+
+In this article, we consider examples of aggregation formulas other than group_aggregate(). To test for yourself, use the data set we provide in <<prerequisites,prerequisites>>.
+
+[#prerequisites]
+include::partial$group-aggregate-prerequisite.adoc[]
+
+== Group aggregation functions
+
+As mentioned in xref:group-aggregation-basic.adoc[], there are a number of group aggregation functions whose functionality is subsumed by group_aggregate(). These are:
+
+- group_average()
+- group_count()
+- group_max()
+- group_min()
+- group_stddev()
+- group_sum()
+- group_unique_count()
+- group_variance
+
+Each of these functions can be implemented using only group_aggregate(). These optional functions are maintained for backward compatibility, and in some cases can provide a simpler syntax, but they are not as flexible as group_aggregate().
+
+Let’s use group_sum() as an example. +
+[source,groovy,linenums]
+----
+average(
+  group_sum(
+    revenue,
+    account,
+    region
+    )
+  )
+----
+
+_is the same as_: +
+[source,groovy,linenums]
+----
+average(
+  group_aggregate(
+    sum(revenue),
+    {account, region},
+    query_filters()
+    )
+  )
+----
+
+Keep the following points in mind:
+
+* Group_* functions require outer aggregation in exactly the same manner that as group_aggregate(). +
+* The only way to specify that the level of detail should include the search level of detail is to use group_aggregate() with the query_groups() functionality. You cannot to use query_groups() with the  group_* functions. +
+* Filters on the search bar are automatically included in the group_* functions, but are not included in group_aggregate() unless you use query_filters().
+
+The lack of ability to specify query_groups() in the group_* functions can be problematic, depending on the organization of your data and what you are trying to search. Understanding the use of query_groups() is important in general, and this discussion will help if you don’t yet fully understand its purpose.
+
+Using our Meetings dataset, imagine you want to get the average number of hours by activity classification, and then you want to average those hours. In other words, for Snowflake you want to get the average hours spent in meetings (2 hours) and the average hours spent in calls (5/3 = 1.67), and then you want to average these to get (2 + 1.67)/2 = 1.83.
+
+The following formula calculates this correctly, regardless of the level of detail specified in the search:
+
+average hours per activity classification::
++
+[source,groovy,linenums]
+----
+average(
+  group_aggregate(
+    average(hours),
+    query_groups() + {activity classification},
+    {}
+    )
+  )
+----
+
+If your search includes _account_, this aggregates correctly to the account level of detail by averaging the values calculated by the inner aggregation, which are at the query_groups() + {activity classification} level of detail.  The inner aggregation creates a "virtual table" that calculates that average like this:
+
+[options="header"]
+|===
+| Account | average hours per activity classification
+
+| Amazon | 2.75
+
+| Oracle | 6
+
+| Redshift | 1.75
+
+| Snowflake | 1.83
+|===
+
+If the search contains _account_, the final table looks exactly like that shown above.
+
+1. Search for: `account`    `average hours per activity classification`.
+2. The following table results:
++
+[#example-7-1]
+.Example 7.1
+[options="header"]
+|===
+| Account | average hours per activity classification
+
+| Amazon | 2.75
+
+| Oracle | 6
+
+| Redshift | 1.75
+
+| Snowflake | 1.83
+|===
++
+If you do not include `account` in the search bar, the formula aggregate up to the table level, averaging the four values.
+
+3. Search for: `average hours per activity classification`.
++
+The following table results:
++
+[options="header"]
+|===
+| average hours per activity classification
+
+| 2.55
+|===
+
+
+However, if you instead create a formula that omits query_groups:
+
+average house per activity classification::
++
+[source,groovy,linenums]
+----
+average(
+  group_aggregate(
+    average(hours),
+    {activity classification},
+    {}
+    )
+  )
+----
+
+The inner aggregation aggregates to the activity classification level of detail. In this case, the inner aggregation creates a virtual table that looks like this:
+
+[options="header"]
+|===
+| Activity classification | Average hours per activity classification
+
+| call | 1.5
+
+| meeting | 3.6
+|===
+
+If you now execute a search that contains account, your table will not be meaningful.
+
+1. Search for: `account`    `average hours per activity classification`.
++
+[#example-7-2]
+.Example 7.2
+[options="header"]
+|===
+| Account | average hours per activity classification
+
+| Amazon | 2.55
+
+| Oracle | 2.55
+
+| Redshift | 2.55
+
+| Snowflake | 2.55
+|===
+
+This result is not meaningful because the `average hours per activity classification` was computed without regard for the account. In this case, `average hours per activity classification` is disjoint from account, and it does not make sense to aggregate it to the account level.
+
+This is an important concept to understand, and specifically important if you use the group_* functions other than group_aggregate, where query_groups() is not supported.
+
+<<example-7-1,Example 7.1>> illustrates the above cases using group_aggregate with and without query_groups() and an example using group_average.
+
+== Summary
+
+Aggregation to specific levels of details is complex. It takes time to understand the concepts. The types of calculations shown in this document are common across many BI products and each product has its own set of formulas for executing these calculations, but in practice, the concepts are the same.
+
+Remember the following key points when using ThoughtSpot’s group_aggregate formula:
+
+- Make sure you have specified the outer level of aggregation. Omitting the outer level of aggregation often leads to results that are at the level of detail of the inner aggregation, rather than the search. We recommend that you place your outer level of aggregation within the formula, but in certain cases you may prefer to place it in the search bar.
+
+- If you have calculations or expressions that need to be combined with group aggregation, push those expressions and calculations inside the group_aggregate (as the first argument, the inner aggregation). ThoughtSpot currently does not support nesting of group_aggregate formulas.
+
+- You cannot do aggregation on a calculation that is already aggregated to the level specified in the search bar.
+
+- When confused, experiment with a small example where you can understand that data. Getting a grasp of how group aggregation works is much easier when you understand the data set.

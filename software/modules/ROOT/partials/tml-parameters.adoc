@@ -20,8 +20,6 @@ a| <<aggregation,aggregation>>
 
 <<client_state,client_state>>
 
-<<color,color>>
-
 <<column,column>>
 
 <<columns,columns>>
@@ -29,8 +27,6 @@ a| <<aggregation,aggregation>>
 <<column_id,column_id>>
 
 <<column_type,column_type>>
-
-<<conditional_formatting,conditional_formatting>>
 
 <<connection,connection>>
 
@@ -98,10 +94,6 @@ a| <<filters,filters>>
 
 <<locked,locked>>
 
-<<max,max>>
-
-<<min,min>>
-
 <<name,name>>
 
 <<on,on>>
@@ -116,11 +108,9 @@ a| <<phrase,phrase>>
 
 <<properties,properties>>
 
-<<plotAsBand,plotAsBand>>
+<<rls_rules,rls_rules>>
 
-<<range,range>>
-
-<<rule,rule>>
+<<rules,rules>>
 
 <<schema,schema>>
 
@@ -207,10 +197,6 @@ chart_columns::
 client_state::
   A JSON string with more advanced chart and table configuration.
 
-[#color]
-color::
-  Color to use for conditional formatting or for the columns of an Answer in chart form, in the form of a HEX value.
-
 [#column]
 column::
   The id of the column(s) being filtered on. When a Pinboard contains xref:pinboard-filters-linked.adoc[linked filters], or filters that affect visualizations based on more than one Worksheet, the primary filter column appears first in the list of columns in the TML. The linked filter column appears after the primary filter column.
@@ -241,15 +227,11 @@ For formulas, the default depends on the <<data_type,data_type>>.
 +
 If the data type is `INT` or `BIGINT`, the formula output's `column_type` defaults to `Measure`.
 +
-If the data type is `BOOL`, `VARCHAR`, `DOUBLE`, `FLOAT`, `DATE`, `DATETIME`, or `TIME`, the formula output's `column_type` defaults to `Attribute`
-
-[#conditional_formatting]
-conditional_formatting::
-  Conditional formatting for the chart or table of an Answer.
+If the data type is `BOOL`, `VARCHAR`, `DOUBLE`, `FLOAT`, `DATE`, `DATETIME`, or `TIME`, the formula output's `column_type` defaults to `Attribute`.
 
 [#connection]
 connection::
-  A way to identify the external data warehouse connection that the table resides in. To add tables or columns to an Embrace connection, you must specify this parameter.
+  A way to identify the external data warehouse connection that the table resides in. To add tables or columns to an external connection, you must specify this parameter.
 
 [#currency_type]
 currency_type::
@@ -316,7 +298,7 @@ excluded_visualizations::
 
 [#expr]
 expr::
-  The definition of the formula
+  The definition of the formula or, in release 7.1.1 and later, row level security (RLS) rule. For RLS rules, the syntax for variables in TML should be the same as the syntax of the variables in the rule on the table.
 
 [#filters]
 filters::
@@ -380,7 +362,7 @@ id::
 For Answers, `id` refers to how the column appears in the query.
 For example, if you sorted by `Quarter` in your search, from the `Commit Date` column, the `id` of the column is `Quarter(Commit Date)`.
 +
-Refer to xref:search-data-api.adoc#components[Components of a Search Query] to understand syntax.
+Refer to link:https://developers.thoughtspot.com/docs/search-data-api#_search_query[Components of a Search Query] to understand syntax.
 +
 For formulas within Answers, `id` refers to the display name of the formula.
 +
@@ -513,22 +495,14 @@ locked::
   The 'automatically select my chart' option in the UI.
 If set to `true`, the chart type does not change, even when you add items to the query.
 
-[#max]
-max::
-  Maximum value for conditional formatting.
-
-[#min]
-min::
-  Minimum value for conditional formatting.
-
 [#name]
 name::
   The name of an object.
-Applies to `worksheet`, `table`,`joins`, `formula`, `answer`, `pinboard`, `view`, `table`, `connection`, `destination`, and so on.
+Applies to `worksheet`, `table`,`joins`, `formula`, `rls_rules`, `answer`, `pinboard`, `view`, `table`, `connection`, `destination`, and so on.
 +
 For Answers, `name` refers to how the column appears in the query.
 For example, if you sorted by `Quarter` in your search, from the `Commit Date` column, the `name` of the column is `Quarter(Commit Date)`.
-Refer to xref:search-data-api.adoc#components[Components of a Search Query] to understand syntax.
+Refer to link:https://developers.thoughtspot.com/docs/search-data-api#_search_query[Components of a Search Query] to understand syntax.
 
 [#on]
 on::
@@ -562,19 +536,13 @@ Worksheets and Views themselves can have the following properties that affect qu
 +
 For Answers, each formula's output can have the following properties, depending on its definition: `column_type` and `aggregation`.
 
-[#plotAsBand]
-plotAsBand::
-  Specifies whether to plot the chart conditional formatting like a band on the Visualization.
-+
-This is the 'fill chart' option in the UI.
+[#rls_rules]
+rls_rules::
+In release 7.1.1 and later, a container for the full definition of xref:security-rls-concept.adoc[row level security] rules for the table.
 
-[#range]
-range::
-  Range for the conditional formatting to apply to, with a specified `min` and `max`.
-
-[#rule]
-rule::
-  A conditional formatting rule.
+[#rules]
+rules::
+In release 7.1.1 and later, a container for the names and expressions of xref:security-rls-concept.adoc[row level security] rules for the table.
 
 [#schema]
 schema::
@@ -587,7 +555,7 @@ Name of the column generated by the view. To change the name of the column in th
 [#search_query]
 search_query::
   A string that represents the fully disambiguated search query.
-Refer to xref:search-data-api.adoc#components[Components of a Search Query] to understand syntax.
+Refer to link:https://developers.thoughtspot.com/docs/search-data-api#_search_query[Components of a Search Query] to understand syntax.
 
 [#show_headline]
 show_headline::
@@ -638,7 +606,7 @@ Each table path is identified by the `id`, and additional attributes of `table` 
 
 [#tables]
 tables::
-  List of tables used by the Worksheet or Answer.
+  List of tables used by the Worksheet, Answer, or table RLS rule.
 +
 Each table is identified by `name`.
 
@@ -650,7 +618,7 @@ Possible values: `LEFT_OUTER` for left outer join, `RIGHT_OUTER` for right outer
 +
 Default: `INNER`
 +
-For tables, this is the Embrace connection type.
+For tables, this is the connection type.
 +
 Possible values: `Snowflake`, `Google BigQuery`, `Microsoft Azure`, or `Amazon Redshift`.
 +
