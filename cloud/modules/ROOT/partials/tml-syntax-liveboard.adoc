@@ -1,6 +1,6 @@
 == Syntax of the Liveboard TML file
 
-The `TML` file for Scriptable Liveboards has a specific syntax.
+The `TML` file for Liveboards has a specific syntax.
 
 See the xref:parameters[TML parameters] for details about the keywords used in this example.
 
@@ -8,23 +8,32 @@ You may not see each of these parameters in your own TML files, depending on whe
 For example, if you do not have any filters on your Liveboard, the `filters` parameter does not appear.
 You can add that variable to the TML file to specify filters for your Liveboard.
 
+[NOTE]
+====
+In 8.9.0.cl, ThoughtSpot changed the `pinboard` parameter to `liveboard`, consistent with our rebrand of pinboards as Liveboards.
+
+Liveboard TML files exported from older versions still work. However, if you export a Liveboard TML file in 8.9.0.cl and try to import that file in an environment on 8.8.0.cl or earlier, the import fails. You must replace `liveboard` with `pinboard` in earlier versions.
+====
+
 [subs=+macros]
 ....
 
-<<guid,guid>>: <pinboard_guid>
-<<pinboard,pinboard>>:
-  <<name,name>>: <pinboard_name>
+<<guid,guid>>: <liveboard_guid>
+<<liveboard,liveboard>>:
+  <<name,name>>: <liveboard_name>
   <<description,description>>:
-    This is a multi-line description of the pinboard
+    This is a multi-line description of the Liveboard.
     Description line 2
   <<visualizations,visualizations>>:
   - <<id,id>>: <viz_id_1>
     <<answer,answer>>:
-    This section includes all the Answer specification for a visualization, from name to display_mode, in the Answer syntax section above.
+    This section includes all the Answer specification for a visualization, from name to display_mode, in the <<syntax-answers,Answer syntax>> section.
+    <<viz_guid,viz_guid>>: <vizualization_1_guid>>
   - <<id,id>>: <viz_id_2>
     <<answer,answer>>:
-    This section includes all the Answer specification for a second visualization. In this case, the visualization is a headline.
+    This section includes all the <<syntax-answers,Answer specification>> for a second visualization. In this case, the visualization is a headline.
     <<display_headline_column,display_headline_column>>: <headline_column>
+    <<viz_guid,viz_guid>>: <vizualization_2_guid>>
   <<filters,filters>>:
   - <<column,column>>:
    - <xref:liveboard-filters-linked.adoc[primary_filter]_column_name_1>
@@ -41,9 +50,32 @@ You can add that variable to the TML file to specify filters for your Liveboard.
   - <<column,column>>: <filtered_column_name_2>
    ...
   <<layout,layout>>:
-    tiles:
-    - <<visualization_id,visualization_id>>: <visualization_id_1>
-      <<size,size>>: <viz_id_1_size>
-    - <<visualization_id,visualization_id>>: <visualization_id_2>
+    <<tabs,tabs>>:
+    - <<name,name>>: <tab_1_name>
+      <<description,description>>: <tab_1_description>
+      tiles:
+      - <<visualization_id,visualization_id>>: <visualization_id_1>
+        <<x,x>>: <viz_1_horizontal_location>
+        <<y,"y">>: <viz_1_vertical_location>
+        <<height,height>>: <viz_1_height>
+        <<width,width>>: <viz_1_width>
+      - <<visualization_id,visualization_id>>: <visualization_id_2>
+        <<x,x>>: <viz_2_horizontal_location>
+        <<y,"y">>: <viz_2_vertical_location>
+        <<height,height>>: <viz_2_height>
+        <<width,width>>: <viz_2_width>
+      - <<visualization_id,visualization_id>>: <visualization_id_n>
+        <<x,x>>: <viz_n_horizontal_location>
+        <<y,"y">>: <viz_n_vertical_location>
+        <<height,height>>: <viz_n_height>
+        <<width,width>>: <viz_n_width>
+    - <<name,name>>: <tab_2_name>
+      <<description,description>>: <tab_2_description>
+      tiles:
+      ...
+    - <<name,name>>: <tab_n_name>
+      <<description,description>>: <tab_n_description>
+      tiles:
+      ...
 
 ....

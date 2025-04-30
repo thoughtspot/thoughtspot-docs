@@ -1,0 +1,122 @@
+= ThoughtSpot query tags
+:author: Naomi
+:last_updated: 3/23/2023
+:linkattrs:
+:experimental:
+:page-layout: default-cloud
+:description: Learn what query tags are in ThoughtSpot and how to use them.
+
+== What are query tags?
+
+// [query tags starting in 7.2.0.sw, ts7.aug.cl]
+
+ThoughtSpot uses query tags in order to support better debuggability from the data warehouses connected to ThoughtSpot, to support analytics and reporting by data warehouses, and to help optimize query performance. Query tags enable administrators to trace the specific ThoughtSpot activity that originates queries to their remote SQL databases.
+
+You can use query tags to categorize or group queries by subject, department, or other criteria. This organization can make it easier to find and manage queries, especially in large analytics environments. Query tags can also be used to track the history and status of a query, as well as to document who created, modified, or reviewed it. Finally, query comments can be used to provide additional information about the data schema, data quality, or business rules underlying a query. This information can help troubleshoot errors or unexpected results.
+
+When sending SQL queries to different databases, ThoughtSpot adds comments to the query indicating that the query originated from ThoughtSpot, and containing metadata information such as Liveboard ID, visualization ID, and user ID. ThoughtSpot query tags are not the same as link:https://docs.snowflake.com/en/user-guide/object-tagging[Snowflake query tags], which are schema-level objects that can be assigned to another Snowflake object.
+
+== Sample query tags for different databases
+
+The following example API is for all databases:
+
+[source]
+----
+/*
+partner:"ThoughtSpot"
+{
+"user_id","<SHA1 Hashed ThoughtSpot User Id>", // Optional
+"dashboard_id"":”<NUMERIC or ALPHANUMERIC>”, // Required
+"chart_id":"<NUMERIC or ALPHANUMERIC>", // Required
+}
+*/
+<query text>
+----
+
+
+[#tag-redshift]
+=== Amazon Redshift
+
+For SQL queries sent to Redshift, we add a note at the beginning of the query marking it as coming from ThoughtSpot (/*partner: ThoughtSpot */) as well as a note at the end of the query containing type, id, vizId, userId, and requestId. See the following example:
+
+[source]
+----
+/* partner: ThoughtSpot */
+select "csmallint", "cinteger", "cbigint", "cdecimal", "creal", "cdoubleprecision",
+"cboolean", "cchar", "cvarchar", "cdate", "ctimestamp", "ctimestamptz" from
+"tpch5k"."all_datatypes"."alldatatypes" limit 5
+/* type: ,
+id: ,
+vizId: ,
+userId: 59481331-ee53-42be-a548-bd87be6ddd4a,
+requestId: ec01d055-0af4-42ec-94f5-95dba326e8b7 */
+----
+
+==== Check query tagging on Redshift
+
+You can use the query tag indicating a query originates from ThoughtSpot to filter out recently executed queries via the Redshift query editor or console. Users will need access to the “STL_CONNECTION_LOG” table and the “STL_QUERY” table. STL_CONNECTION_LOG logs authentication attempts, connections, and disconnections. STL_QUERY stores query-related information, such as query text, type, start and end time. To debug the latest queries from ThoughtSpot, users need to join STL_CONNECTION_LOG and STL_QUERY on the PID field, and filter by application_name.
+
+Reference the following example query run on the Redshift console:
+
+[source]
+----
+Select * FROM stl_query q, stl_connection_log c
+WHERE q.pid = c.pid AND q.pid=23088 and c.application_name='ThoughtSpot';
+----
+
+NOTE: STL system views are generated from Amazon Redshift log files to provide a history of the system. The STL views take information from the logs and format them into usable views for system administrators. +
+To manage disk space, the STL log views retain approximately two to five days of log history, depending on log usage and available disk space. In order to retain the log data, you will need to periodically copy it to other tables, or upload it to Amazon S3.
+
+[#tag-synapse]
+=== Azure Synapse
+
+For queries sent to Synapse, we add “application name” = “ThoughtSpot” in the connection property for the JDBC driver. Users can check the following system tables:
+
+dm_pdw_exec_sessions:: Holds information about all sessions currently or recently open on the appliance (ex: session_id, client_id, app_name). This table lists one row per session.
+dm_pdw_exec_requests:: Holds information about all requests currently or recently active in Azure Synapse Analytics (ex: command, start_time, status). This table lists one row per request or query.
+
+Join the preceding two tables on session_id and filter by app_name. Sort the results by start_time to know the latest queries coming from ThoughtSpot.
+
+Reference the following sample query:
+
+[source]
+----
+SELECT app_name, command, start_time
+FROM sys.dm_pdw_exec_sessions as sessions JOIN sys.dm_pdw_exec_requests as requests
+ON sessions.session_id = requests.session_id
+WHERE app_name = 'ThoughtSpot'
+ORDER BY start_time DESC;
+----
+
+[#tag-gbq]
+=== Google BigQuery
+
+In order to help track consumption, we enable an identifier, a user agent string, in API calls. See the following example:
+
+[source]
+----
+embrace/6.2 (GPN:thoughtspot; pinboard_id) viz/chart_id
+GoogleHTTPJavaClient/1.20.0
+----
+
+[#tag-presto]
+=== Presto
+We use `applicationNamePrefix` to set the source name for Presto queries. If neither `applicationNamePrefix` nor `ApplicationName` are set, the query source is recorded as `presto-jdbc`.
+
+[#tag-saphana]
+=== SAP HANA
+
+For all indexing, system, and user-generated queries sent to SAP HANA, we tag the queries with the JDBC parameter, “APPLICATION=thoughtspot” and “APPLICATIONUSER=SHA Hashed ThoughtSpot User Id”.
+
+Reference the following example:
+[source]
+----
+jdbc:sap://ykfl00540545a:30115/?autocommit=false&sessionVariable:APPLICATION=myapp&sessionVariable:APPLICATIONUSER=user1&sessionVariable:myvar=myval&distribution=connection
+----
+
+[#tag-snowflake]
+=== Snowflake
+
+For all indexing, system, and user-generated queries sent to Snowflake, we tag the query with the JDBC parameter, “application=thoughtspot”.
+
+
