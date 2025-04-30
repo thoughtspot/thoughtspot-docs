@@ -1,0 +1,38 @@
+[#search-data-error-11037]
+
+=== 11037
+
+Description:: Formulas that mix aggregates and non-aggregate expressions are not supported.
+
+
+
+Details::
+This error is displayed in the formula editor when a formula incorrectly includes a combination of an aggregate expression and a non-aggregate expression (non-group-by).
++
+The following is an example of a formula that results in an error.  Where
++
+* region='apac' is the non-aggregate
+
+* sum(sales) is an aggregate
+
+`fx = if(region='apac' then sum(sales) else 0`.
+
+Cause::
+Historically these formulas could be written in ThoughtSpot. However, these often resulted in SQL generation queries. In the example above, if the region column is not included in the search, then a group by sql query would be returned. This is because the:
+
+* aggregate function is calculated across all rows of data : sum(sales).
+
+* non-aggregate is a calculation at the row level : region='apac'.
+
+
+
+Resolution::
+The formula must be re-written with the following as examples:
++
+Option 1: wrap the non-aggregate column in an aggregate function.
++
+`fx = if(max(region)='apac' then sum(sales) else 0`
++
+Option 2: re-write the function as an aggregate if formula.
++
+`fx = sum_if(region='apac', sales)`
