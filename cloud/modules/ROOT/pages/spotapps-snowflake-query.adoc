@@ -168,7 +168,7 @@ CREATE or replace TASK query_stats_task
             q_h.USER_NAME,
             q_p.STEP_ID,
             q_p.OPERATOR_ID,
-            q_p.PARENT_OPERATOR_ID,
+            q_p.PARENT_OPERATORS,
             q_p.OPERATOR_TYPE,
             q_p.OPERATOR_STATISTICS,
             q_p.EXECUTION_TIME_BREAKDOWN,
@@ -212,7 +212,7 @@ CREATE or replace TASK query_stats_task
             query_stats.USER_NAME,
             STEP_ID,
             OPERATOR_ID,
-            PARENT_OPERATOR_ID,
+            cast(PARENT_OPERATORS[0] as number(38,0)) as PARENT_OPERATOR_ID,
             OPERATOR_TYPE,
             OPERATOR_STATISTICS,
             EXECUTION_TIME_BREAKDOWN,
@@ -250,6 +250,8 @@ CREATE or replace TASK query_stats_task
     return query_id;
   end
   $$;
+
+
 ----
 --
 ====
@@ -284,6 +286,7 @@ NOTE: The number of days can be set based on your requirements.
 . Wait for the tasks created above to run, capturing the query profile stats at the individual query level.
 +
 Once the stats are captured, you are ready to deploy the {spotapp}.
+
 
 
 
