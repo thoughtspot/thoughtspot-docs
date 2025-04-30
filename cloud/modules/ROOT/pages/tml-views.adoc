@@ -1,0 +1,445 @@
+= TML for views
+:last_updated: 4/26/2023
+:author: Teresa Killmond
+:linkattrs:
+:experimental:
+:page-layout: default-cloud
+:page-aliases: /admin/scriptability/tsl-view.adoc, /admin/scriptability/tml-view.adoc, /admin/ts-cloud/tsl-view.adoc
+:description: Use TML to modify views in a flat-file format. Then, migrate the view to a different cluster, or restore it to the same cluster.
+:object: views
+
+include::partial$tml-intro.adoc[]
+
+[#syntax-views]
+include::partial$tml-syntax-view.adoc[]
+
+[#view-parameters]
+== TML parameters for {object}
+These parameters and their definitions are specific to {object}; this list doesn't contain every parameter in every TML file. Similarly, the parameter definitions may vary from object to object, since the parameters may have different roles in different objects.
+
+[width=“100%”,grid=“none”,options="header"]
+|===
+| a - g | i - o | p - v
+a| <<aggregation,aggregation>>
+
+<<calendar,calendar>>
+
+<<column,column>>
+
+<<column_id,column_id>>
+
+<<column_type,column_type>>
+
+<<currency_type,currency_type>>
+
+<<data_type,data_type>>
+
+<<description,description>>
+
+<<destination,destination>>
+
+<<expr,expr>>
+
+<<filters,filters>>
+
+<<format_pattern,format_pattern>>
+
+<<formulas,formulas>>
+
+<<fqn,fqn>>
+
+<<geo_config,geo_config>>
+
+<<guid,guid>>
+
+a| <<id,id>>
+
+<<index_priority,index_priority>>
+
+<<index_type,index_type>>
+
+<<is_additive,is_additive>>
+
+<<is_attribution_dimension,is_attribution_dimension>>
+
+<<is_hidden,is_hidden>>
+
+<<is_one_to_one,is_one_to_one>>
+
+<<join,join>>
+
+<<join_path,join_path>>
+
+<<joins,joins>>
+
+<<joins_with,joins_with>>
+
+<<name,name>>
+
+<<on,on>>
+
+<<oper,oper>>
+
+a| <<phrase,phrase>>
+
+<<properties,properties>>
+
+<<search_output_column,search_output_column>>
+
+<<search_query,search_query>>
+
+<<source,source>>
+
+<<spotiq_preference,spotiq_preference>>
+
+<<synonyms,synonyms>>
+
+<<table,table>>
+
+<<tables,tables>>
+
+<<table_columns,table_columns>>
+
+<<table_paths,table_paths>>
+
+<<type,type>>
+
+<<values,values>>
+
+<<view,view>>
+
+<<view_columns,view_columns>>
+
+|===
+
+[#aggregation]
+aggregation::
+The default aggregation of the view column, or the aggregation of the output for a formula.
++
+Aggregation options depend on the data type.
++
+Possible values are `SUM`, `COUNT`, `AVERAGE`, `MAX`, `MIN`, `COUNT_DISTINCT`, `NONE`, `STD_DEVIATION`, and `VARIANCE`
++
+Default: `SUM`.
+
+[#calendar]
+calendar::
+Specifies the calendar used by a date column.
++
+Can be the Gregorian calendar (`default`), a fiscal calendar, or any custom calendar.
++
+See xref:connections-cust-cal.adoc[Set up a custom calendar].
+
+[#column]
+column::
+The id of the column(s) being filtered on.
+
+[#column_id]
+column_id::
+The `id` of the view column.
++
+`column_id` is in the following format: `column_id: <id>::<name>`. `id` comes from `View.table_path`, and `name` comes from `Table.column`. For example: `column_id: Customer_Dimension::Customer_Name`.
+
+[#column_type]
+column_type::
+The type of data the column represents.
+For a formula, the `column_type` refers to the output of the formula.
++
+Possible values: `MEASURE` or `ATTRIBUTE`
++
+For formulas, the default depends on the <<data_type,data_type>>.
++
+If the data type is `INT` or `BIGINT`, the formula output's `column_type` defaults to `Measure`.
++
+If the data type is `BOOL`, `VARCHAR`, `DOUBLE`, `FLOAT`, `DATE`, `DATETIME`, or `TIME`, the formula output's `column_type` defaults to `Attribute`.
+
+[#currency_type]
+currency_type::
+The source of the currency type.
++
+One of:
++
+`is_browser : true`;; infer the currency data from the locale of your browser
+`column : <column_name>`;; extracts the currency information from a specified column
+`iso_code : <valid_ISO_code>`;; applies currency based on the ISO code;
++
+See https://www.iso.org/iso-4217-currency-codes.html[ISO 4217 Currency Codes^] and xref:data-modeling-patterns.adoc#set-currency-type[Set currency type] for more information.
+
+[#data_type]
+data_type::
+The data type of the formula output or column.
+If the data type is `INT32` or `INT64`, the formula output's `column_type` defaults to `Measure`.
+If the data type is `BOOL`, `VARCHAR`, `DOUBLE`, `FLOAT`, `DATE`, `DATETIME`, or `TIME`, the formula output's `column_type` defaults to `Attribute`.
+
+[#description]
+description::
+The text that describes an object: a `view`, `view_column` and so on.
+
+[#destination]
+destination::
+The name of the destination table or view for a join.
+
+[#expr]
+expr::
+The definition of the formula.
+
+[#filters]
+filters::
+Contains specifications for view filters.
+
+[#format_pattern]
+format_pattern::
+The format pattern string that controls the display of a number, date, or currency column.
++
+See xref:data-modeling-patterns.adoc[Set number, date, and currency formats]
+
+[#formulas]
+formulas::
+The list of formulas in the view.
++
+Each formula is identified by `name`, the `expr` (expression), and an optional `id` attribute.
+
+[#fqn]
+fqn::
+The table or connection's GUID.
+You can find this string of letters and numbers at the end of the URL for that table or connection.
++
+For example, in `\https://<company>.thoughtspot.com/#/data/tables/34226aaa-4bcf-4d6b-9045-24cb1e9437cb`, the GUID is `34226aaa-4bcf-4d6b-9045-24cb1e9437cb`.
++
+Use this optional parameter to reduce ambiguity and identify a specific table, if you have multiple tables with the same name. When exporting a TML file, you have the option to *Export FQNs of referenced objects*, which ensures that the TML files you export contain FQNs for the underlying tables and connections. If you do not add the `fqn` parameter, and the connection or table you reference does not have a unique name, the file import fails.
+
+[#geo_config]
+geo_config::
+Specifies the geographic information of a column. See xref:data-modeling-geo-data.adoc[Add a geographical data setting]
++
+One of:
++
+`latitude : true`;; for columns that specify the latitude
+`longitude : true`;; for columns that specify the longitude
+`country : true`;; for columns that specify the country
+`region_name`;; for specifying a region in a country
++
+Uses two paired parameters:
+
+- `country: __<country_name>__`
+- `region_name: __<region_name_in_UI>__`; can be State, Postal Code, District, and so on.
+
+[#guid]
+guid::
+The GUID for the view.
++
+You can find this string of letters and numbers at the end of the URL for an object.
+
+[#id]
+id::
+Specifies the id of an object, such as `table_paths`, `formula`.
+
+[#index_priority]
+index_priority::
+A value (1-10) that determines where to rank a column's name and values in the search suggestions
++
+ThoughtSpot prioritizes columns with higher values.
++
+See xref:data-modeling-index.adoc#column-suggestion-priority[Change a column's suggestion priority].
+
+[#index_type]
+index_type::
+The indexing option of the view column.
++
+Possible values: `DONT_INDEX`, `DEFAULT` (see xref:data-modeling-index.adoc#default-indexing[Understand the default indexing behavior]), `PREFIX_ONLY`, `PREFIX_AND_SUBSTRING`, and `PREFIX_AND_WORD_SUBSTRING`
++
+Default: `DEFAULT`
++
+See xref:data-modeling-index.adoc#override-system-default-column[Index Type Values].
+
+[#is_additive]
+is_additive::
+Controls extended aggregate options for attribute columns.
++
+For attribute columns that have a numeric data type (`FLOAT`, `DOUBLE`, or `INTEGER`) or a date data type (`DATE`, `DATETIME`, `TIMESTAMP`, or `TIME`)
++
+Possible values: `true` or `false`.
++
+Default: `true`.
++
+See xref:data-modeling-aggreg-additive.adoc#make-attribute-additive[Making an ATTRIBUTE column ADDITIVE].
+
+[#is_attribution_dimension]
+is_attribution_dimension::
+Controls if the column is an attribution dimension.
++
+Used in managing chasm traps.
++
+Possible values: `true` by default, `false` to designate a column as not producing meaningful attributions across a chasm trap.
++
+Default: `true`
++
+See xref:data-modeling-attributable-dimension.adoc[Change the attribution dimension].
+
+[#is_hidden]
+is_hidden::
+The visibility of the column.
++
+Possible values: `true` to hide the column, `false` not to hide the column +
+Default: `false`
++
+See xref:data-modeling-visibility.adoc[].
+
+[#is_one_to_one]
+is_one_to_one::
+Specifies the cardinality of the join. This is an optional parameter.
++
+Possible values: `true`, `false`
++
+Default: `false`
+
+////
+[#is_primary_key]
+is_primary_key::
+  Determines if the table column is the primary key.
+Can be `true` or `false`.
+
+[#is_foreign_key]
+is_foreign_key::
+  Determines if the table column is the foreign key.
+Can be `true` or `false`.
+////
+
+[#join]
+join::
+Specific join, used in defining higher-level objects, such as table paths.
++
+Defined as `name` within `joins` definition
+
+[#join_path]
+join_path::
+Specification of a composite join as a list of distinct `join` attributes.
++
+These `join` attributes list relevant joins, previously defined in the `joins`, by name.
++
+Default: `{}`
+
+[#joins]
+joins::
+Contains a list of joins between the tables and views.
++
+If you edit the joins in the view TML file, you are only editing the joins for that specific view. You are not editing the joins at the table level. To modify table-level joins, you must edit the source table's TML file.
++
+Each join is identified by `name`, and the additional attributes of `source`, `destination`, `type`, and `is_one_to_one.`
+
+[#joins_with]
+joins_with::
+Contains a list of external joins for which this view is the source. +
+Each join is identified by `name` and optional `description`, and the additional attributes of `destination`, `type`, `on`, and `is_one_to_one`.
+
+[#name]
+name::
+The name of an object.
+Applies to `joins`, `formula`, `view`, and so on.
+
+[#on]
+on::
+The join expression: the relationship definition, or the keys that your tables are joined on. For example, `[sale::Sale_Last Name] = [employee::Employee_Last Name] AND [sale::Sale_First Name] = [employee::Employee_First Name]`.
++
+To alter a relationship definition, edit this parameter.
+
+[#oper]
+oper::
+The operator of the view filter.
+Accepted operators are `"in"`, `"not in"`, `"between"`, `=<`, `!=`, `+<=+`, `>=`, `>`, or `<`.
+
+[#phrase]
+phrase::
+Phrase associated with a view column.
+
+[#properties]
+properties::
+The list of properties of a view column or the properties of the output for a formula within a view.
++
+Each column can have the following properties, depending on its definition: `column_type`, `aggregation`, `index_type`, `is_hidden`, `index_priority`, `synonyms`, `is_attribution_dimension`, `is_additive`, `calendar`, `format_pattern`, `currency_type`, `geo_config`, and `spotiq_preference`.
+
+[#search_output_column]
+search_output_column::
+Name of the column generated by the view. To change the name of the column in the view, edit the `name` parameter.
+
+[#search_query]
+search_query::
+A string that represents the fully disambiguated search query.
+Refer to https://developers.thoughtspot.com/docs/?pageid=search-data-api[Components of a Search Query^] to understand syntax.
+
+[#source]
+source::
+Name of the source table or view for a join.
+
+[#spotiq_preference]
+spotiq_preference::
+Specifies whether to include a column in SpotIQ analysis.
+Specify `EXCLUDE`, or this property defaults to include the column in SpotIQ Analysis.
++
+Refer to xref:spotiq-data-model-preferences.adoc[Set columns to exclude from SpotIQ analyses].
+
+[#synonyms]
+synonyms::
+Alternate names for the column, used in search.
++
+See xref:data-modeling-visibility.adoc[].
+
+[#table]
+table::
+Specific table, used in defining higher-level objects, such as table paths.
++
+Defined as `name` within `tables` definition.
+
+[#tables]
+tables::
+List of tables used by the View.
++
+Each table is identified by `name`.
+
+[#table_columns]
+table_columns::
+The columns in an Answer or View that is being displayed in table format.
+
+[#table_paths]
+table_paths::
+The list of table paths.
++
+Each table path is identified by the `id`, and additional attributes of `table` and `join_path`.
+
+[#type]
+type::
+This is the join type. This is an optional parameter.
++
+Possible values: `LEFT_OUTER` for left outer join, `RIGHT_OUTER` for right outer join, `INNER` for inner join, `OUTER` for full outer join.
++
+Default: `INNER`
+
+[#values]
+values::
+The values being filtered (excluded or included) in a view.
+
+[#view]
+view::
+Top-level container for all object definitions within the view.
+
+[#view_columns]
+view_columns::
+The list of columns in the view.
++
+Each column is identified by `name`, `description`, `column_id`, `phrase` and `properties`.
+
+[#limitations]
+== Limitations of working with TML files
+
+There are certain limitations to the changes you can apply by editing {object} through TML.
+
+* Formulas and columns can either have a new name, or a new expression.
+You can't change both, unless migrating or updating the Worksheet two times.
+* It isn't possible to reverse the join direction in the TML script.
+* You can't create or export TML files for R- or Python-powered visualizations.
+* You can't import manually compressed .zip files.
+You can only import .zip files that you exported from ThoughtSpot: a custom set of TML files, an object and its associated data sources, or multiple objects of the same type that you exported from the object list page.
+* You can't modify joins at the table level from the Worksheet, view, or Answer TML file.
+You can only override the joins for that specific Worksheet, view, or Answer.
+To modify table-level joins, you must edit the source table's TML file.
+* When deleting columns, you only delete ThoughtSpot's record of the column. You don't delete the column in your external database.

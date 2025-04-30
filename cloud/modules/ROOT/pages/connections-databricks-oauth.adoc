@@ -1,0 +1,96 @@
+= Configure OAuth for a {connection} connection
+:last_updated: 4/18/2024
+:author: Naomi
+:linkattrs:
+:page-aliases:
+:experimental:
+:page-layout: default-cloud
+:connection: Databricks
+:description: ThoughtSpot supports OAuth for a Databricks connection.
+:jira: SCAL-203358
+
+ThoughtSpot supports OAuth for a {connection} connection. This page describes the setup and configuration required.
+
+Databricks SQL warehouses are configured with OAuth 2.0 authentication. ThoughtSpot supports all IDPs supported by Databricks in OAuth 2.0, including Microsoft Azure’s Azure Active Directory (AAD), AWS, and Okta.
+
+ThoughtSpot initiates the authorization request to Databricks for OAuth. Databricks acts as the auth token-issuing authority. The IDP (for example, Okta) is only involved in the authentication between Databricks and the IDP. That is, the IDP is responsible for signing in to Databricks. Once you are logged in to Databricks, ThoughtSpot requests Databricks send the access and refresh tokens, and these tokens are then used for the JDBC connection.
+
+The configuration details on the ThoughtSpot connection form should be derived from the custom application parameters set up in the Databricks account. There is no integration between ThoughtSpot and the specific IDP for the Databricks authentication process.
+
+NOTE: For OAuth, we recommend checking the {connection} link:https://docs.databricks.com/en/administration-guide/users-groups/single-sign-on/index.html[documentation] to confirm any IDP support and their details.
+
+[#step-1]
+== Step 1: Registering an OAuth application from Databricks Account Console
+
+You can register an OAuth application for U2M in your account from the Databricks Account Console by following these steps:
+
+. Log in to the link:https://accounts.cloud.databricks.com[Databricks Account Console].
+
+. Navigate to *Settings > App connections*.
+
+. Click link:https://accounts.cloud.databricks.com/settings/app-integrations/add[*Add connection*].
+
+. Enter the application name Redirect URLs and leave all other fields as default.
+
+.. Enter the *Redirect URL(s)* in `<thoughtspot-cluster-url>/callosum/v1/connection/generateTokens` format.
+.. For *Access scopes*, select *SQL*.
+.. For *Client Secret*, select *Generate a client secret*.
++
+image:databricks-oauth-redirect.png[Redirect url, access scopes, client secret]
+
+. Click *Add* to create your OAuth application.
+
+. In the *Connection created* dialog box, copy the *Client ID* and *Client Secret* and store them in a safe location. The *Client Secret* will not be shown to you again.
+
+[#step-2]
+== Step 2: Configure the ThoughtSpot Connection form
+
+To create a connection to Databricks, follow these steps:
+
+. Navigate to the Connection creation page and enter the connection name and description. Select *Databricks* as the connection type and click *Continue*.
+
+. Select the Authentication type as *OAuth* or *OAuth with PKCE*.
+
+. Enter the following fields:
+
+.. link:https://docs.databricks.com/en/integrations/compute-details.html[Server Hostname].
+
+.. link:https://docs.databricks.com/en/integrations/compute-details.html[HTTP Path].
+
+.. Client ID (generated in <<step-1,Step 1>>).
+
+.. Client Secret (generated in <<step-1,Step 1>>).
+
+.. Auth URL (in the format `<databricks-instance-url>/oidc/v1/auth`).
+
+.. Token URL (in the format `<databricks-instance-url>/oidc/v1/token`).
+
+.. Scope ("sql offline_access").
++
+image:databricks-oauth-connection-details.png[Connection details]
+
+=== Configure OAuth with Okta example
+
+As a prerequisite, follow the link:https://docs.databricks.com/en/administration-guide/users-groups/single-sign-on/index.html[Databricks documentation] to enable Single Sign-on (SSO) on your account.
+
+Once SSO has been enabled on your account, you will need to authenticate the Databricks connection using the SSO details. The ThoughtSpot Connection details will be the same as those detailed in <<step-2,step 2>>.
+
+This is a three-legged OAuth process where Databricks authentication is governed by the IDP.
+
+== Limitation
+
+ThoughtSpot does not support link:https://docs.databricks.com/en/integrations/jdbc/authentication.html#oauth-machine-to-machine-m2m-authentication[OAuth machine-to-machine authentication], also known as Service Principal and OAuth authentication.
+
+'''
+> **Related information**
+>
+> * xref:connections-databricks-add.adoc[Add a {connection} connection]
+> * xref:connections-databricks-edit.adoc[Edit a {connection} connection]
+> * xref:connections-databricks-remap.adoc[Remap a {connection} connection]
+> * xref:connections-databricks-delete-table.adoc[Delete a table from a {connection} connection]
+> * xref:connections-databricks-delete-table-dependencies.adoc[Delete a table with dependent objects]
+> * xref:connections-databricks-delete.adoc[Delete a {connection} connection]
+> * xref:connections-databricks-private-link.adoc[]
+> * xref:connections-databricks-reference.adoc[Connection reference for {connection}]
+> * xref:connections-databricks-passthrough.adoc[]
+> * xref:connections-column-indexing-oauth.adoc[]
