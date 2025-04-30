@@ -1,0 +1,174 @@
+= Basic use of group aggregation
+:last-updated: 11/05/2021
+:experimental:
+:linkattrs:
+
+In this article, we walk through examples of basic aggregation. To test for yourself, use the data set we provide in <<prerequisites,prerequisites>>.
+
+[#prerequisites]
+include::partial$group-aggregate-prerequisite.adoc[]
+
+[#example-1]
+== Basic aggregation: Aggregate the sum of hours at _account_ level of detail
+
+First, let's try a formula that aggregates sum(hours) at the account level. If the search level of detail is coarser than account, it "aggregates up" by averaging the aggregation at the account level.
+
+To try using this formula, follow these steps:
+
+1. Begin your search, using _Meetings_tiny.csv_ as your data source.
+2. Enter `hours` `account` in the search bar and click *Go*.
+3. Click the **more options** icon image:icon-more-10px.png[] and select *Create formula*.
+4. In the formula pop-up window, name your formula. Here, we name the formula *hours per account*.
+5. Enter the following formula and click *Save*:
++
+[source,groovy,linenums]
+----
+average(
+  group_aggregate(
+    sum(hours),
+    {account},
+    {}
+    )
+  )
+----
+
+6. In the search bar, enter the following terms: `account`  `hours`  `hours per account` `sort by account`.
+
+7. The resulting table shows that the search level aggregation of hours (Total hours) is the same as the aggregation specified by our formula, hours per account. We see this result because both columns aggregate to the account level.
++
+[#example-1-1]
+.Example 1.1
+[cols="50%,25%,25%",options="header"]
+|===
+| Account | Total hours | Hours per account
+| Amazon | 11 | 11
+| Oracle | 18 | 18
+| Redshift | 6 | 6
+| Snowflake | 7 | 7
+|===
+
+
+== Aggregation with unspecified level of detail in search
+
+Using the same formula shown in the previous example, let's see what changes when our search does not specify any level of detail:
+
+1. Search for: `hours` `hours per account`.
+
+2. The following table results:
++
+[#example-1-2]
+.Example 1.2
+[cols="50%,50%",options="header"]
+|===
+| Total hours | Hours per account
+| 42 | 10.5
+|===
++
+In this example, we do not specify a dimension in the search bar, so the search defines the level of detail as the whole table. In other words, our search is at the coarsest level of detail while the formula specifies an aggregation at a finer level of detail (the _account_ level of detail). The first column of the table above displays the aggregation of all hours to the table (coarsest) level.
++
+The second column, which shows the result of our formula, computes as follows:
+
+* First, aggregate using the inner_aggregation function (sum) to the account level of detail, which gives results like those shown in <<example-1-1,example 1.1>> (values as 7, 6, 11, and 18 for the account level hours).
+* Then, aggregate to the coarser search level of detail by using the outer aggregation function, which is Average. That average gives us (7 + 6 + 11 + 18)/4, which results in the 10.5 value shown above.
+
+
+== Aggregating when the search level of detail is finer than formula
+
+In this example, we use the same formula as above. This time, we use a search that specifies a level of detail that is finer than the account level.
+
+1. Search for: `account` `activity classification`  `hours`  `hours per account`  `sort by account`.
++
+_Activity classification_ is a finer level of detail because there are multiple activity classes for each account. In this case, our formula aggregates to the account level and then "copies down" or "replicates" to the finer level of detail.
+2. The resulting table looks like this:
++
+[#example-1-3]
+.Example 1.3
+[cols="25%,25%,25%,25%",options="header"]
+|===
+| Account | Activity classification | Total hours | Total hours per account
+
+| Amazon | meeting | 11 | 11
+
+| Oracle | meeting | 18 | 18
+
+| Redshift | meeting | 5 | 6
+
+| Redshift | call | 1 | 6
+
+| Snowflake | meeting | 2 | 7
+
+| Snowflake | call | 5 | 7
+|===
+
+== Aggregating with multiple levels of detail in your formula
+
+If we want to specify multiple levels of detail within the formula, we can do that by using a comma-separated list of dimensions. Our small data set makes coming up with a "useful" example difficult, but it can still demonstrate this functionality.
+
+In the example below, our inner aggregation aggregates to the _account_ and _activity classification_ level of detail.
+
+1. Enter `hours` `account` in the search bar and click *Go*.
+2. Click the **more options** icon image:icon-more-10px.png[] and select *Create formula*.
+3. In the formula pop-up window, name your formula. Here, we name the formula *average of average by account and activity classification*.
+4. Enter the following formula and click *Save*:
++
+[source,groovy,linenums]
+----
+average(
+  group_aggregate(
+    average(hours),
+    {account, activity classification},
+    {}
+    )
+  )
+----
+
+.. When the search specifies `account` and `activity classification` as the level of detail, this formula generates the same values as those generated by the simple average hours aggregation. You can see this with the following search:
+
+... Search for: `account` `activity classification`    `average hours`  `average of average by account and activity classification` `sort by account` `sort by activity classification`
++
+The following table results:
++
+[#example-1-4-supplement]
+.Example 1.4 - Supporting
+[cols="10%,15%,25%,50%",options="header"]
+|===
+| Account | Activity Classification | Average Hours | Average of average by account and activity classification
+
+| Amazon | meeting | 2.75 | 2.75
+
+| Oracle | meeting | 6 | 6
+
+| Redshift | call | 1 | 1
+
+| Redshift | meeting | 2.5 | 2.5
+
+| Snowflake | call | 1.67 | 1.67
+
+| Snowflake | meeting | 2 | 2
+|===
+
+.. If we aggregate to the table level by removing _account_ and _activity classification_ from the search, our formula "aggregates" up, resulting in a table with a single value that represents the average of the above values. If we put both average hours and our formula in this table level table, we can see that they result in different values.:
+
+... Search for: `average of average by account and activity classification`    `average hours`.
++
+The following table results:
+[#example-1-4]
+.Example 1.4
+[options="header"]
+|===
+| Average of average by account and activity classification | Average hours
+
+| 2.65 | 3
+|===
++
+We receive this result because our formula adds the six values that represent the average hours by account and activity classification and then divides by six, while "average hours" sums the hours value from each of the 14 lines in the original table, and then divides by 14.
+
+There are many business use cases that require very specific aggregation; understanding the subtleties of level of detail calculations and how to implement them with group_aggregate functions key to being successful at implementing these more complex aggregations.
+
+For more examples of aggregation, see xref:group-aggregation-querygroups.adoc[Using "query_groups() +/-"].
+
+> Related information:
+>
+> * xref:aggregation-intro.adoc[]
+> * xref:group-aggregation-intro.adoc[]
+> * xref:group-aggregation-querygroups.adoc[]

@@ -1,0 +1,419 @@
+= Overview of the ODBC Driver
+:last_updated: 01/16/2021
+:linkattrs:
+:experimental:
+
+Use the ODBC driver to bring data in from your ETL tool or database.  ThoughtSpot comes packaged with an ODBC (Open Database Connectivity) driver, so that you can transfer data between ThoughtSpot and other databases.
+Basic knowledge of ODBC data source administration is helpful when setting up ODBC.
+
+Supported operating systems for the ODBC driver are:
+
+* Microsoft Windows 32-bit
+* Microsoft Windows 64-bit
+* Linux 32-bit
+* Linux 64-bit
+
+== Version compatibility and connection parameters
+
+To ensure compatibility, always use the ODBC driver with the same version number as the ThoughtSpot instance to which you are connecting.
+You can make a secure ODBC connection to the ThoughtSpot database by configuring a user and password combination with the driver.
+For detailed information about connection parameters, see the xref:odbc-jdbc-configuration.adoc[ODBC and JDBC configuration properties]
+
+== Supported Data Types
+
+The ODBC driver supports these data types:
+
+* `INT`
+* `BIGINT`
+* `BOOLEAN`
+* `DOUBLE`
+* `FLOAT`
+* `DATE`
+* `TIME`
+* `TIMESTAMP`
+* `DATETIME`
+* `CHAR`
+* `VARCHAR`
+
+== Source and target data compatibility
+
+By default, ThoughtSpot takes a permissive approach to data type compatibility between source and target data in ODBC.
+In this mode, ThoughtSpot _assumes_ that the incoming data matches exactly with the target data types and loads the table as is.
+
+Alternatively, you can explicitly require that ThoughtSpot match the source data types exactly and, if it can't find a match, it returns an error and the data load fails.
+In this mode, for example, if the target ThoughtSpot data type for a column is INT, the source data type for that column must be INT in order for the data load to succeed.
+
+By toggling _*strict*_ and _*permissive*_ `true` and `false` options, you can configure settings along a scale of behavior between the permissive, automatic approach and the strictness of the "must match" approach.
+
+Strictness = `true`, Permissiveness = `true`::
+  Data types are inferred and automatically converted. ThoughtSpot returns an error in cases where the data conversion is not possible. Data load fails in its entirety if any data contains mismatches. You must correct the problem in the source data and try the load again.
+
+Strictness = `true`, Permissiveness = `false`::
+The source and target data types must match. If any data contains mismatches, ThoughtSpot returns an error to the client a data load fails in its entirety. You must correct the problem in the source data and try the load again.
++
+This is the strictest configuration.
+
+Strictness = `false`, Permissiveness = `true`::
+  Data types are inferred and automatically converted. No error is thrown even if source and target data types don’t match. Data load continues even when the source and target data types don’t match. This means your data load may contain data types that you do not intend or that are not helpful. You are responsible for checking and validating the data in this case.
+
+Strictness = `false`, Permissiveness = `false`::
+  No data types are inferred and conversion does not check for matches. This is the most permissive configuration.
+
+Your customer support engineer can assist you in configuring custom ODBC behavior.
+Regardless of the configuration you choose, you must validate that the results of data loading _as they appear_ in ThoughtSpot are what you require.
+
+== Data type conversion matrix
+
+The following table describes the conversion matrix between SQL data types and ThoughtSpot data types.
+
+:table-caption!:
+.Allowable conversions between data types
+[%header,cols="15h,9*"]
+|===
+| Source SQL data types| `BOOL` | `INT` | `BIGINT` | `DOUBLE` | `FLOAT` | `CHAR` | `DATE` | `TIME` | `DATETIME`
+
+| `SQL_BIT`
+| &check;
+| &check;
+| &check;
+| &check;
+| &check;
+| &check;
+| &cross;
+| &cross;
+| &cross;
+
+| `SQL_TINYINT`
+| &check;
+| &check;
+| &check;
+| &check;
+| &check;
+| &check;
+| &cross;
+| &cross;
+| &cross;
+
+| `SQL_SMALLINT`
+| &check;
+| &check;
+| &check;
+| &check;
+| &check;
+| &check;
+| &cross;
+| &cross;
+| &cross;
+
+| `SQL_INTEGER`
+| &check;
+| &check;
+| &check;
+| &check;
+| &check;
+| &check;
+| &cross;
+| &cross;
+| &cross;
+
+| `SQL_BIGINT`
+| &check;
+| &check;
+| &check;
+| &check;
+| &check;
+| &check;
+| &cross;
+| &cross;
+| &cross;
+
+| `SQL_CHAR`
+| &check;
+| &check;
+| &check;
+| &check;
+| &check;
+| &check;
+| &check;
+| &check;
+| &check;
+
+| `SQL_VARCHAR`
+| &check;
+| &check;
+| &check;
+| &check;
+| &check;
+| &check;
+| &check;
+| &check;
+| &check;
+
+| `SQL_LONGVARCHAR`
+| &check;
+| &check;
+| &check;
+| &check;
+| &check;
+| &check;
+| &check;
+| &check;
+| &check;
+
+| `SQL_BINARY`
+| &cross;
+| &cross;
+| &cross;
+| &cross;
+| &cross;
+| &check;
+| &cross;
+| &cross;
+| &cross;
+
+| `SQL_VARBINARY`
+| &cross;
+| &cross;
+| &cross;
+| &cross;
+| &cross;
+| &check;
+| &cross;
+| &cross;
+| &cross;
+
+| `SQL_LONGVARBINARY`
+| &cross;
+| &cross;
+| &cross;
+| &cross;
+| &cross;
+| &check;
+| &cross;
+| &cross;
+| &cross;
+
+| `SQL_DOUBLE`
+| &check;
+| &check;
+| &check;
+| &check;
+| &check;
+| &check;
+| &cross;
+| &cross;
+| &cross;
+
+| `SQL_REAL`
+| &check;
+| &check;
+| &check;
+| &check;
+| &check;
+| &check;
+| &cross;
+| &cross;
+| &cross;
+
+| `SQL_FLOAT`
+| &check;
+| &check;
+| &check;
+| &check;
+| &check;
+| &check;
+| &cross;
+| &cross;
+| &cross;
+
+| `SQL_NUMERIC`
+| &check;
+| &check;
+| &check;
+| &check;
+| &check;
+| &check;
+| &cross;
+| &cross;
+| &cross;
+
+| `SQL_GUID`
+| &cross;
+| &cross;
+| &cross;
+| &cross;
+| &cross;
+| &check;
+| &cross;
+| &cross;
+| &cross;
+
+| `SQL_INTERVAL_MINUTE_TO_SECOND`
+| &cross;
+| &cross;
+| &cross;
+| &cross;
+| &cross;
+| &check;
+| &cross;
+| &cross;
+| &cross;
+
+| `SQL_INTERVAL_HOUR_TO_SECOND`
+| &cross;
+| &cross;
+| &cross;
+| &cross;
+| &cross;
+| &check;
+| &cross;
+| &cross;
+| &cross;
+
+| `SQL_INTERVAL_HOUR_TO_MINUTE`
+| &cross;
+| &cross;
+| &cross;
+| &cross;
+| &cross;
+| &check;
+| &cross;
+| &cross;
+| &cross;
+
+| `SQL_INTERVAL_DAY_TO_SECOND`
+| &cross;
+| &cross;
+| &cross;
+| &cross;
+| &cross;
+| &check;
+| &cross;
+| &cross;
+| &cross;
+
+| `SQL_INTERVAL_DAY_TO_MINUTE`
+| &cross;
+| &cross;
+| &cross;
+| &cross;
+| &cross;
+| &check;
+| &cross;
+| &cross;
+| &cross;
+
+| `SQL_INTERVAL_DAY_TO_HOUR`
+| &cross;
+| &cross;
+| &cross;
+| &cross;
+| &cross;
+| &check;
+| &cross;
+| &cross;
+| &cross;
+
+| `SQL_INTERVAL_YEAR`
+| &cross;
+| &check;
+| &check;
+| &cross;
+| &cross;
+| &check;
+| &cross;
+| &cross;
+| &cross;
+
+| `SQL_INTERVAL_MONTH`
+| &cross;
+| &check;
+| &check;
+| &cross;
+| &cross;
+| &check;
+| &cross;
+| &cross;
+| &cross;
+
+| `SQL_INTERVAL_DAY`
+| &cross;
+| &check;
+| &check;
+| &cross;
+| &cross;
+| &check;
+| &cross;
+| &cross;
+| &cross;
+
+| `SQL_INTERVAL_HOUR`
+| &cross;
+| &check;
+| &check;
+| &cross;
+| &cross;
+| &check;
+| &cross;
+| &cross;
+| &cross;
+
+| `SQL_INTERVAL_MINUTE`
+| &cross;
+| &check;
+| &check;
+| &cross;
+| &cross;
+| &check;
+| &cross;
+| &cross;
+| &cross;
+
+| `SQL_INTERVAL_SECOND`
+| &cross;
+| &check;
+| &check;
+| &cross;
+| &cross;
+| &check;
+| &cross;
+| &cross;
+| &cross;
+
+| `SQL_TYPE_TIME`
+| &cross;
+| &cross;
+| &cross;
+| &cross;
+| &cross;
+| &check;
+| &cross;
+| &check;
+| &check;
+
+| `SQL_TYPE_DATE`
+| &cross;
+| &cross;
+| &cross;
+| &cross;
+| &cross;
+| &check;
+| &check;
+| &cross;
+| &check;
+
+| `SQL_TYPE_TIMESTAMP`
+| &cross;
+| &cross;
+| &cross;
+| &cross;
+| &cross;
+| &check;
+| &check;
+| &check;
+| &check;
+|===
+
+NOTE: If a conversion is not possible, ThoughtSpot returns an error.
+The ETL tool must add a data transformation step if the source column data type does not exactly match the target's ThoughtSpot column data type.
+The driver does not do any implicit conversions.

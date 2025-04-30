@@ -1,0 +1,57 @@
+= Upgrade your Python version
+:last_updated: 4/26/2022
+:linkattrs:
+:experimental:
+
+By default, your ThoughtSpot cluster comes with either Python 3.6 or Python 3.7. You can upgrade your Python version to Python 3.9 or remain on the default version.
+
+[NOTE]
+====
+*_ThoughtSpot-managed CentOS deployments only:_* If you upgraded to Python 3.9 while on ThoughtSpot version 7.2.1, you must upgrade your Python version to 3.9 again after you upgrade to ThoughtSpot version 8.4.0.sw.
+
+This does not apply to customer-managed Amazon Linux 2 or RHEL deployments. Amazon Linux 2 or RHEL deployments do not need to upgrade their Python version again.
+====
+
+[#supported-versions]
+== Supported Python versions
+ThoughtSpot supports use of the following versions of Python 3 for deployment. Python 3.6 is the current default version for customer-managed RHEL, customer-managed OEL, and ThoughtSpot-managed CentOS. Python 3.7 is the current default version for customer-managed Amazon Linux 2.
+
+* Python 3.6: ThoughtSpot-managed CentOS for AWS, GCP, VMware, Azure, SMC, and Dell; customer-managed xref:rhel.adoc[RedHat Enterprise Linux (RHEL)]; customer-managed xref:rhel.adoc[Oracle Enterprise Linux (OEL)]; customer-managed xref:al2.adoc[Amazon Linux 2]
+* Python 3.7: customer-managed Amazon Linux 2
+* Python 3.9: ThoughtSpot-managed CentOS for AWS, GCP, and Azure; customer-managed xref:rhel.adoc[RedHat Enterprise Linux (RHEL)]; customer-managed xref:al2.adoc[Amazon Linux 2]
+
+== Upgrade your Python version
+After you create the cluster, upgrade your Python version to Python 3.9.
+
+To upgrade your Python version, follow these steps:
+
+. `ssh` into a node as an admin user.
++
+----
+ssh admin@<node-IP>
+----
+
+. Run the following command to stop your cluster:
++
+----
+tscli cluster stop
+----
+
+. Ensure that the version of Python you want to use is <<supported-versions,ThoughtSpot-certified>> for your deployment type. Python 3.9 is not certified for customer-managed OEL or ThoughtSpot-managed CentOS for VMware, SMC, or Dell.
+. Install Python version 3.9.
+. Navigate to the correct location to run the command:
++
+----
+cd /usr/local/scaligent/release/
+----
+. Run the following command on all nodes, at `/usr/local/scaligent/release/` for each node:
++
+----
+PATH=/usr/pgsql-11/bin:$PATH pip3 install -r production/prod_image/current/pip_packages/requirements_no_versions.txt --upgrade
+----
+. Run the following command to start your cluster again:
++
+----
+tscli cluster start
+----
+
