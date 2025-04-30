@@ -4,12 +4,35 @@
 :experimental:
 :page-partial:
 :page-aliases: /admin/manage-jobs/schedule-a-pinboard-job.adoc
+:description: With scheduled pinboard email updates, you can analyze your data offline and share pinboards with your colleagues.
 
-You can schedule a pinboard job for any Pinboard by using the *Add a schedule* prompt page.
+With scheduled pinboard email updates, you can analyze your data offline and share pinboards with your colleagues, including people who may not have a ThoughtSpot account.
 
-You can add multiple schedules with different configurations for a single Pinboard. However, each job is limited to one Pinboard schedule. To add a schedule, you must either be an administrator, or have the *Schedule pinboard* privilege, and at least view-only access for the pinboard.
+You can schedule a pinboard job for any pinboard by using the *Add a schedule* prompt page.
 
-To schedule a Pinboard, follow these steps:
+You can add multiple schedules with different configurations for a single pinboard. However, each job is limited to one pinboard schedule. To add a schedule, you must either be an administrator, or have the *Schedule pinboard* privilege, and at least view-only access for the pinboard.
+
+== Pinboard schedule email format
+The format of the scheduled pinboard email is the following. You can customize aspects of the scheduled pinboard email, such as the email address ThoughtSpot sends it from, from the *Onboarding* section of the Admin Console. Refer to xref:admin-portal-onboarding-email-settings.adoc[].
+
+Sender:: admin <no-reply@notification.thoughtspot.com>
+Subject:: <Pinboard name> update
+Body::
+Hi <user>,
++
+Attached is your scheduled update with the latest data from the <Pinboard name> pinboard.
++
+*[If you set a description]* Description: <Your description text>
++
+*View Pinboard* button
+Attachment(s)::
+CSVs (one for each table in the pinboard) or 1 PDF
+
+image::pinboard-schedule-email.png[Pinboard schedule email]
+
+== Scheduling a pinboard
+
+To schedule a pinboard, follow these steps:
 
 . Sign in to ThoughtSpot from a browser.
 . Click *Pinboards*, on the top navigation bar.
@@ -24,18 +47,25 @@ image::pinboard-schedule-create.png[Create a pinboard schedule]
 . Set the values for your schedule:
 +
 Repeats::
-  You can rebuild a pinboard every _n_ minutes, hourly, daily, weekly, or monthly. For some of these, you can also choose specific times of the day or days of the week. Make sure to note the *Server time zone*.
+You can rebuild a pinboard every _n_ minutes, hourly, daily, weekly, or monthly. For some of these, you can also choose specific times of the day or days of the week.
++
+If you schedule a pinboard hourly or every _n_ minutes, ThoughtSpot bases the schedule on when you first schedule the pinboard. For example, if you schedule a pinboard to repeat every 3 hours, and you first click on *Schedule* at 8:14 A.M., ThoughtSpot sends it to you at 11:14 A.M., 2:14 P.M., and so on.
++
+Make sure to note the *Server time zone*.
 Name::
-  Provide a short name for this schedule. This name should be descriptive and unique.
+  Provide a short name for this schedule. This name should be descriptive and unique. This section does not appear in the pinboard schedule email.
 Description::
-  Enter a description to remind yourself and to inform others. If this is an important schedule for a meeting or a report, you should mention that.
+  Enter a description to remind yourself and to inform others. If this is an important schedule for a meeting or a report, you should mention that. This section appears as *Description: <your content>* in the pinboard schedule email.
 Type::
-  * *CSV files* provide all data for tables, with one attachment fopr each table. Use CSV files to perform further analysis offline.
-  * *PDF files* show all visualizations in the Pinboard. Each chart uses a page in the file; tables show only the first 100 rows of a table. Use PDF files to skim the data.
+  * *CSV files* provide all data for tables, with one attachment for each table. If your pinboard has 3 tables and 4 charts, the pinboard schedule email contains 3 CSVs, one for each table, and no content on the charts in the pinboard. Use CSV files to perform further analysis offline.
+  * *PDF files* show all visualizations in the pinboard. Each chart uses a page in the file; tables show only the first 100 rows of a table. Use PDF files to skim the data. The pinboard schedule email contains 1 PDF with the entire pinboard.
+* *Configure layout options* allows you to specify the Pinboard layout, after you choose either *CSV* or *PDF*. For more details about the layout options, refer to xref:pinboard-download-pdf.adoc[].
++
+Refer to xref:schedule-pinboards.adoc#format[format of scheduled pinboards] for more information about the differences between CSV and PDF attachments in a scheduled pinboard email.
 Gating condition::
   Write a statement that returns a single boolean value (`true` or `false`). For example, `sum (revenue) > 100` is a valid condition, but `is_weekend (commit_date)` is not, since it returns a result per row of data. You can use any data source (table, worksheet, or view) for the gating condition, since ThoughtSpot executes the query as an admin with access to all data sources. The gating condition formula and any tables you use in it do not need to be related to the pinboard the gating condition is for. You can use any valid formula in your statement. ThoughtSpot checks the formula syntax, but does not validate if the formula returns a valid single boolean.
 +
-At the scheduled time, ThoughtSpot executes the gating condition query as a ThoughtSpot admin user. If the condition evaluates to `true`, ThoughtSpot processes the Pinboard.
+At the scheduled time, ThoughtSpot executes the gating condition query as a ThoughtSpot admin user. If the condition evaluates to `true`, ThoughtSpot processes the pinboard.
 +
 For a list of valid formulas, see xref:formula-reference.adoc[Formula function reference].
 +
@@ -43,7 +73,7 @@ For an in-depth example of a scenario where a gating condition is useful and pow
 +
 NOTE: ThoughtSpot executes the gating condition as a ThoughtSpot admin user. If you are using passthrough security for your external data warehouse connection, the gating condition may not work.
 Recipients::
-  You are limited to 1000 recipients for each job. You can add *Users* or *groups*. Use *Emails* to add recipients who are not ThoughtSpot users. Your ThoughtSpot admin must set these email domains as allowed domains in advance. Contact xref:support-contact.adoc[ThoughtSpot Support] to add allowed domains.
+  You are limited to 1000 recipients for each job. You can add *Users* or *groups*. Use *Emails* to add recipients who are not ThoughtSpot users. Your ThoughtSpot admin must set these email domains as allowed domains in advance. Contact {support-url} to add allowed domains.
 +
 If you experience problems with sending email, your cluster may not have SMTP enabled. Contact your system administrator to resolve this issue.
 . Click *Schedule* to save your schedule configuration.

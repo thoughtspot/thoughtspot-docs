@@ -12,12 +12,12 @@ NOTE: Not available for row-level security (RLS) formulas.
 
 [#if-then-else]
 `if...then...else`::
-  Conditional operator.
+  Conditional operator. Allows for multiple clauses.
 Examples;;
 +
 ----
-if (3 > 2) then 'bigger' else 'not bigger'
 if (cost > 500) then 'flag' else 'approve'
+if ( item type in {'shirts', 'jackets', 'sweatshirts', 'sweaters'}) then 'tops' else if ( item type in {'shorts', 'pants'}) then 'bottoms' else 'all other apparel'
 ----
 
 [#ifnull]
@@ -55,6 +55,15 @@ Examples;;
 ----
 not (3 > 2) = false
 not (state = 'texas')
+----
+
+[#not-in]
+`not in`::
+Takes a column name and a list of values. It checks each column value against the list of values in the formula, and returns `true` if the column value *_does not_* match any of the values in the formula.
+Example;;
++
+----
+state not in { 'texas' , 'california' }
 ----
 
 [#or]

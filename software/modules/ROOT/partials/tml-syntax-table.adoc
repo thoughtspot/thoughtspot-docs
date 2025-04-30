@@ -1,14 +1,15 @@
 == Syntax of the table TML file
 
-The `TML` file for Scriptable tables has a specific syntax.
+The `TML` file for tables has a specific syntax.
 
 See the xref:parameters[TML parameters] for details about the keywords used in this example.
 
 You may not see each of these parameters in your own TML files, depending on whether each variable is explicitly defined.
-For example, if you did not define any conditional formatting, the `conditional_formatting` variable does not appear.
-You can add that variable in the TML file to specify conditional formatting.
+For example, the `fqn` parameter is not present in any TML file by default, but you can add it to differentiate a table from another table with the same name.
 
 Refer to xref:tml.adoc#syntax-joins[join syntax] for more information on the functionality and syntax of Worksheet, View, and table joins in TML.
+
+NOTE: To reduce ambiguity, you may need to add the optional `fqn` parameter to your TML file when you reference source tables or connections. This is necessary if you have multiple connections or tables with the same name. If you do not add the `fqn` parameter, and the connection or table you reference does not have a unique name, the file import fails.
 
 [subs=+macros]
 ....
@@ -21,7 +22,7 @@ xref:tml.adoc#guid[guid]: <table_guid>
   <<db_table,db_table>>: <database_table_name>
   <<connection,connection>>:
     <<name,name>>: <connection_name>
-    <<type,type>>: <connection_type>
+    <<fqn,fqn>>: <optional_connection_GUID>
   <<columns,columns>>:
   - <<name,name>>: <column_name_1>
     <<db_column_name,db_column_name>>: <database_column_name>
@@ -67,7 +68,7 @@ xref:tml.adoc#guid[guid]: <table_guid>
     <<tables,tables>>:
     - <<name,name>>: <table_name_1>
       <<id,id>>: <optional_table_id>
-      <<fqn,fqn>>: <optional_GUID_of_table_name>
+      <<fqn,fqn>>: <optional_table_GUID>
     - <<name,name>>: <table_name_2>
     - <<name,name>>: <table_name_n>
     <<joins,joins>>:

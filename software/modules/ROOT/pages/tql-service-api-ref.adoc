@@ -2,6 +2,8 @@
 :last_updated: 02/20/2021
 :linkattrs:
 :experimental:
+:description: The TQL service APIs enable you to query the ThoughtSpot TQL cli from a remote machine.
+:jira: SCAL-219616
 
 The TQL service APIs enable you to query the ThoughtSpot TQL cli from a remote machine.
 
@@ -191,17 +193,10 @@ message TqlOptions {
     // If true, thoughtspot system generates guids for objects to be
     // created, otherwise guids are used from sql script specification
     optional bool generate_guids_in_ddl = 7 [default = true];
-    // If true, allows certain \"unsafe\" commands to be executed.
-    // Specifically if sharding keys are not included in primary key
-    // of a table, currently primary key enforcement is not guaranteed
-    // by the system. In this case caller if they know that input data
-    // has unique rows for primary key, they can override system behavior
-    //  to still allow such schema to be generated.
-    optional bool allow_unsafe = 8;
     // If true, continues to execute remaining sql statements in input
     // file in case of execution error. Otherwise sql statements
     // execution is terminated.
-    optional bool continue_execution_on_error = 9 [default = true];
+    optional bool continue_execution_on_error = 8 [default = true];
   }
 
   optional QueryOptions query_options = 1;
@@ -379,7 +374,6 @@ JSESSIONID=<token>
 		"scripting_options": {},
 		"adv_options": {
 			"skip_cache": true,
-			"allow_unsafe": true,
 			"continue_execution_on_error": true
 		}
 	},
@@ -470,11 +464,12 @@ Requests will have the flag passing mechanism too.
 ----
 {
 	"context": {
-		"server_schema_version": "generation id"
+		"server_schema_version": 999
 	},
 	"options": {
-		"skip_cache": true,
-		"top_row_count": 100
+		"adv_options": {
+             "skip_cache": true
+         }
 	},
 	"script_type": TQL_SCRIPT,
 	"script": "show databases;\nshow tables;"
@@ -569,7 +564,7 @@ The output is a JSON representation of the "DynamicAutocompleteResponse", shown 
 
 [source,console]
 ----
-/ts_tqlservice/v1/public/schema_version
+/ts_tqlservice/v1/public/tql/schema_version
 ----
 
 ===== Input

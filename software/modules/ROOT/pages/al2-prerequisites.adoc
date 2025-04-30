@@ -13,11 +13,13 @@ These are the general steps for installing ThoughtSpot on Amazon Linux 2:
 | &#10063; | xref:aws-ssm[2. (Optional) Set up AWS Systems Manager Agent]
 | &#10063; | xref:partition-hosts[3. Partition the hosts]
 | &#10063; | xref:enable-hosts[4. Enable the hosts to download Amazon Linux 2 packages]
-| &#10063; | xref:disable-selinux[5. Disable SELinux or run it in permissive mode]
-| &#10063; | xref:tmp-permission[6. Ensure tmp has permission 777]
+| &#10063; | xref:tmp-permission[5. Ensure tmp has permission 777 or 1777]
+| &#10063; | xref:proc[6. Ensure /proc mount point flags are compatible]
 | &#10063; | xref:etc-sudoers[7. Remove Defaults requiretty from /etc/sudoers]
 | &#10063; | xref:enable-ansible[ (Optional) Enable an Ansible Control Server]
 |===
+
+TIP: ThoughtSpot recommends using private subnets for communication. Wherever there is a need to connect to the public internet, you should do it through a NAT gateway.
 
 [#set-up-hosts]
 == Set up hosts for the ThoughtSpot cluster
@@ -68,7 +70,7 @@ Do not partition the data drives. ThoughtSpot partitions the data drives during 
 [#yum-repository]
 Yum repositories::
   You must enable the following Yum repositories in your cluster: +
-  `epel`, `google-cloud-sdk`, and `azure-cli`.
+  `epel`, `google-cloud-sdk`, `pgdg11`, and `pgdg95`..
 
 [#python-repository]
 Python repository::
@@ -78,7 +80,7 @@ Python repository::
 R repository::
   For R, ensure that the machine is able to reach the `CRAN` repository located at https://cran.rstudio.com/[].
   Make sure that you can download Amazon Linux 2 packages to all hosts, either from the xref:official-package-repository[official package repositories], or from a xref:mirror-repository[mirror repository] owned and managed by your organization
-  If you cannot access the Amazon Linux 2 repositories, there is no mirror repository in your organization, or you are unable to access Yum, Python, or R repositories, please contact xref:support-contact.adoc[ThoughtSpot Support].
+  If you cannot access the Amazon Linux 2 repositories, there is no mirror repository in your organization, or you are unable to access Yum, Python, or R repositories, please contact {support-url}.
 
 [#official-package-repository]
 Official package repositories::
@@ -89,16 +91,15 @@ Official package repositories::
 Internal mirror repository::
   If the hosts of your ThoughtSpot cluster have access to an internal repository that mirrors the public repositories, copy the xref:yum-repository[Yum], xref:python-repository[Python], and xref:r-repository[R] package repositories to your hosts.
 
-[#disable-selinux]
-== Disable SELinux or run it in permissive mode
-
-ThoughtSpot does not support policies that enforce SELinux.
-We recommend that you disable SELinux, or run it in permissive mode.
-
 [#tmp-permission]
-== Ensure tmp has permission 777
+== Ensure tmp has permission 777 or 1777
 
-The `/tmp` directory must have `777` permission.
+The `/tmp` directory must have either the `777` or `1777` permission. `1777` is the `777` permission but with the sticky bit set. If you mount the `/tmp` directory as a separate partition, it must NOT have the `noexec` flag set.
+
+[#proc]
+== Ensure /proc mount point flags are compatible
+
+You cannot mount the /proc mount point with the `hidepid` flag. You must mount it without that flag.
 
 [#etc-sudoers]
 == Remove Defaults requiretty from /etc/sudoers
@@ -114,3 +115,13 @@ You must install both `rsync` and Ansible on the Ansible Control Server host.
 == Next steps
 
 Next, xref:al2-ts-artifacts.adoc[get ThoughtSpot artifacts].
+
+'''
+> **Related information**
+>
+> * xref:al2-ts-artifacts.adoc[ThoughtSpot deployment artifacts for Amazon Linux 2]
+> * xref:al2-install-online.adoc[Online Amazon Linux 2 install]
+> * xref:al2-install-offline.adoc[Offline Amazon Linux 2 install]
+> * xref:al2-upgrade.adoc[Amazon Linux 2 upgrade]
+> * xref:al2-add-node.adoc[Adding new nodes to clusters in Amazon Linux 2]
+> * xref:al2-packages.adoc[Packages installed with Amazon Linux 2]

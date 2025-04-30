@@ -1,5 +1,5 @@
 = tsload connector reference
-:last_updated: 02/12/2021
+:last_updated: 03/22/2022
 :linkattrs:
 :experimental:
 
@@ -90,9 +90,9 @@ Specification of the target. This D`B/Schema/Table` must exist on the destinatio
 Format specifiers for parsing the input data.
 
 `type`::
-  (optional) Input format; Either `csv` or `delimited`.
+  (optional) Input format; Either `CSV`, or  `DELIMITED`.
   Data type;; string
-  Default;; `csv`
+  Default;; `CSV`
 `field_separator`::
   (optional) Field separator character in source data.
 Data type;; string
@@ -129,7 +129,7 @@ Default;; `false`
 When `true`, attempts to load like this:
 +
 . If there are extra columns in the input file, the system discards them.
-. If there are fewer columns in the input file, the syste  fills the missing columns using `null` values.
+. If there are fewer columns in the input file, the system fills the missing columns using `null` values.
 +
 When `false`, the load proceeds if input data file exactly matches the target schema.
 
@@ -266,7 +266,7 @@ curl -i -X POST -b 'JSESSIONID=<GUID-XYZ>' -d '{"target_database": "<DB1>", "tar
 [source]
 include::partial$status-codes/202-json-code.adoc[]
 
-=== Example: failure responses
+=== Example failure responses
 
 [source, console]
 include::partial$status-codes/401.adoc[]
@@ -292,7 +292,7 @@ All data is uploaded directly to the ThoughtSpot cluster, unless you issue a com
 
 [source,console]
 ----
-POST /ts_dataservice/v1/public/loads/cycle_id
+POST /ts_dataservice/v1/public/loads/<cycle_id>
 Cookie: <token>
 Content-Type: multipart/form-data; boundary=bndry
 --bndry
@@ -309,7 +309,7 @@ NOTE: We only support multipart form/data.
 [source,console]
 include::partial$status-codes/202-upload-complete.adoc[]
 
-=== Example: failure responses
+=== Example failure responses
 
 [source,console]
 include::partial$status-codes/401.adoc[]
@@ -338,7 +338,7 @@ After the data load  completes, use the *CommitLoad* command to commit data load
 
 [source]
 ----
-POST /ts_dataservice/v1/public/loads/cycle_id/commit
+POST /ts_dataservice/v1/public/loads/<cycle_id>/commit
 Cookie: <token>
 ----
 
@@ -347,7 +347,7 @@ Cookie: <token>
 [source]
 include::partial$status-codes/202-load-request.adoc[]
 
-=== Example: failure responses
+=== Example failure responses
 
 [source, console]
 include::partial$status-codes/401.adoc[]
@@ -367,7 +367,7 @@ Use this API to stop loading data.
 
 [source,console]
 ----
-POST /ts_dataservice/v1/public/loads/cycle_id/cancel
+POST /ts_dataservice/v1/public/loads/<cycle_id>/cancel
 Cookie: token
 ----
 
@@ -375,7 +375,7 @@ Cookie: token
 
 include::partial$status-codes/200-plain.adoc[]
 
-=== Example: failure responses
+=== Example failure responses
 
 [source,console]
 include::partial$status-codes/401.adoc[]
@@ -394,7 +394,7 @@ Use the api to get the current status of a load.
 
 [source,console]
 ----
-GET /ts_dataservice/v1/loads/cycle_id
+GET /ts_dataservice/v1/public/loads/<cycle_id>
 Cookie: token
 ----
 
@@ -436,6 +436,15 @@ if (status != OK) {
 == Bad records
 
 Use this api to view the bad records file data.
+
+=== Request
+
+[source,console]
+----
+GET /ts_dataservice/v1/public/loads/<cycle_id>/bad_records_file
+Cookie: token
+Content-range: xxx-xxxx
+----
 
 === Response
 

@@ -7,7 +7,9 @@
 
 SpotApps, ThoughtSpot's scriptable applications, allow you to migrate multiple objects to and from clusters.
 
-A SpotApp is a collection of Pinboards, Answers, Worksheets, Views & tables packaged together as a zip file. SpotApps take advantage of xref:scriptability.adoc[Scriptability], ThoughtSpot's solution for migrating data models (Worksheets, Tables, and Views) and content (Pinboards and Answers) between different environments, such as development and production. You can optionally edit these ThoughtSpot objects during the migration process.
+A SpotApp is a collection of Pinboards, Answers, Worksheets, Views & tables packaged together as a zip file. SpotApps take advantage of ThoughtSpot's solution for xref:scriptability.adoc[migrating data models (Worksheets, Tables, and Views) and content (Pinboards and Answers)] between different environments, such as development and production. You can optionally edit these ThoughtSpot objects during the migration process.
+
+NOTE: In ThoughtSpot Software releases 7.2 and earlier, ThoughtSpot refers to any collection of TML files as a *SpotApp*. These SpotApps are separate from the ThoughtSpot Cloud SpotApp offering. https://docs.thoughtspot.com/cloud/latest/spotapps[ThoughtSpot Cloud SpotApps^] are ThoughtSpot’s out-of-the-box solution templates built for specific use cases and data sources, such as Snowflake Performance and Consumption. These pre-built SpotApps are *_not_* available on ThoughtSpot Software.
 
 [#export-spotapps]
 == Export SpotApps
@@ -30,7 +32,7 @@ To export your own custom SpotApps, follow these steps:
 
 7. Open the downloaded `TML` zip file. The SpotApp zip file contains a document called the `Manifest` file, which defines the objects you exported, their underlying data sources, and any export errors. If an individual export fails, you can find an error message in the `Manifest` file. The zip file still exports, even if an individual object's export fails.
 
-See xref:scriptability.adoc[Scriptability] for more information on exporting and importing objects.
+See xref:scriptability.adoc[Import and export TML files] for more information on exporting and importing objects.
 
 image:spotapp-export.gif[SpotApp export gif]
 
@@ -42,14 +44,15 @@ You can import SpotApps from the SpotApps page, under menu:Data[SpotApps].
 
 . In the *Import* interface, click *Select .tml or .zip files to upload*.
 . In your file system, find and select the .zip file for the SpotApp.
-. If you constructed the file correctly, the *Import* interface displays a _Validation successful_ message, and shows you which objects are validated.
-You can now import the objects. The `GUID` parameter in an object's TML file allows ThoughtSpot to recognize pre-existing GUIDs, and determine if you are updating an existing object, or creating a new one. If you are updating an existing object, the system asks if you would like to create a new object, or update the existing one.
+. The `GUID` parameter in an object's TML file allows ThoughtSpot to recognize pre-existing GUIDs, and determine if you are updating an existing object, or creating a new one. If you are updating an object with an existing GUID, the system asks if you would like to create a new object, or update the existing one.
 . You can unselect any files in the `.zip` file you do not want to upload.
-. Click *Import selected files*.
+. If there are errors in any of the objects you are importing, the *Status* column says *Cannot import* for that object. Next to *Cannot import*, you can click on *View Errors* to see the errors, and a suggested resolution.
+. Resolve any errors by selecting the *Edit* button for the object with errors. This opens the xref:scriptability.adoc#tml-editor[TML editor]. Within the editor, resolve the errors using the method suggested under *View Errors* in the Import workflow.
+. After you resolve the errors, click *Validate*, and then *Save*. Exit the TML editor.
+. Select the objects you want to import. ThoughtSpot automatically selects objects with no errors, but does not select objects with errors, even after you resolve them. You must select the objects yourself.
+. Click *Import selected*.
 . The *Import Status* screen displays the status of the objects you imported.
-You can open the object(s) that you imported, or click *Done* to return to the main object page.
-+
-image:scriptability-migrate-answers-created.png[Go to object]
+You can open the object(s) that you imported, or click *Exit* to return to the main object page.
 
 [#pre-built-spotapps]
 == Pre-built SpotApps
@@ -58,7 +61,7 @@ Once you connect to your data, you can work with your ThoughtSpot contacts to de
 
 ThoughtSpot offers 1 pre-built SpotApp, for *ServiceNow*. This SpotApp contains a worksheet with your ServiceNow data for your users to query on, as well as several pre-built answers and pinboards based on your data.
 
-When you are ready to move to a production environment, you can migrate these ThoughtSpot objects to your new environment using xref:scriptability.adoc[Scriptability], ThoughtSpot's flat-file editing and migration system for ThoughtSpot objects.
+When you are ready to move to a production environment, you can migrate these ThoughtSpot objects to your new environment by xref:scriptability.adoc[importing and export TML files], ThoughtSpot's flat-file editing and migration system for ThoughtSpot objects.
 
 === Limitations
 
