@@ -1,15 +1,16 @@
-= Connection reference for Snowflake
+= Connection reference for {connection}
 :last_updated: 12/10/2020
 :linkattrs:
 :experimental:
 :description: Learn about the fields used to create a Snowflake connection.
-:page-aliases: /data-integrate/embrace/embrace-snowflake-reference.adoc
+:page-aliases: /admin/ts-cloud/ts-cloud-embrace-snowflake-connection-reference.adoc, /data-integrate/embrace/embrace-snowflake-reference.adoc
+:connection: Snowflake
 
-Here is a list of the fields of a Snowflake connection.
+Here is a list of the fields of a {connection} connection.
 You need specific information to establish a seamless and secure connection.
 All fields are required, except where noted.
 [#connection-name]
-Connection name::  Enter a new Snowflake connection name.
+Connection name::  Enter a new {connection} connection name.
 [#connection-description]
 Connection description::
 Provide a short description of the connection.
@@ -17,7 +18,8 @@ _(Optional)_
 [#account-name]
 Account name::
 Enter the account name associated with your Snowflake connection.
-The account name is part of the URL that you use to access the Snowflake UI.
++
+The account name is part of the URL that you use to access the {connection} UI.
 It is the portion of the URL before `snowflakecomputing.com`. +
 *Example*: If your URL is `+https://abcd.xyz.efg.snowflakecomputing.com+`, your account name is `abcd.xyz.efg`.
 
@@ -34,7 +36,7 @@ Cloud platform  | Region | Full account name
 |  | EU (Ireland) | xy12345.eu-west-1
 |  | EU (Frankfurt) | xy12345.eu-central-1
 |  | Asia Pacific (Singapore) | xy12345.ap-southeast-1
-|  | Asia Pacific (Sydney) | xy12345.ap-sowtheast-2
+|  | Asia Pacific (Sydney) | xy12345.ap-southeast-2
 | *GCP* *_- Preview_* | us-central1 (Iowa) | xy12345.us-central1.gcp
 | *Azure* | East US 2 | xy12345.east-us-2.azure
 |  | US Gov Virginia | xy12345.us-gov-virginia.azure
@@ -44,9 +46,9 @@ Cloud platform  | Region | Full account name
 |====================
 
 [#user]
-User::  Enter the Snowflake account username.
+User::  Enter the {connection} account username.
 [#password]
-Password::  Enter the Snowflake account password.
+Password::  Enter the {connection} account password.
 [#role]
 Role::  Specify the privilege of the user.
 [#warehouse]
@@ -58,20 +60,46 @@ _(Optional)_
 [#schema]
 Schema::  Specify the schema associated with the database.
 [#oauth]
-OAuth:: Enter the OAuth client ID associated with the Snowflake database.
+OAuth Client ID:: Enter the OAuth client ID associated with the {connection} database.
++
+(External OAuth) Enter the client id of the OAuth application created in the identity provider.
 [#oauth-client-secret]
-OAuth client secret:: Enter the OAuth client secret associated with the Snowflake database.
+OAuth client secret:: Enter the OAuth client secret associated with the {connection} database.
++
+(External OAuth) Enter the client secret of the OAuth application created in the identity provide
 [#oauth-scope]
-Scope:: (Azure AD OAuth) Enter the scope associated with your Azure AD OAuth.
+Scope:: (External OAuth) Scope maps to a role in your Snowflake database.
 +
-Scope maps to a role in your Snowflake database.
+For OAuth with Azure AD provider, it should be similar to `\https://<APPLICATION_ID_URI>/session:role:developer offline_access openid`.
+For more information, see: xref:connections-snowflake-azure-ad-oauth.adoc#step-8[part 1, step 8] in Configure Azure AD external OAuth for a {connection} connection.
 +
-It should be similar to: `session:role:developer  offline_access`.
+For OAuth with Okta, it should be similar to `session:role:developer offline_access openid`.
 [#oauth-url]
-Auth Url:: (Azure AD OAuth) Enter the Auth URL associated with your Azure AD OAuth.
+Auth Url:: ThoughtSpot performs an "Authorization Code" grant type flow to get the access token. Get the authorization endpoint for the respective identity provider from its console.
 +
-ThoughtSpot performs an "Authorization Code" grant type flow to get the access token. Get the authorization endpoint for Azure AD OAuth app from Azure portal. It should be similar to **\https://login.microsoftonline.com/<tenant_id>/oauth2/v2.0/authorize**.
+For Azure AD, it can be obtained from the Azure portal by navigating to Azure Active Directory resource. It should be similar to *\https://login.microsoftonline.com/<tenant_id>/oauth2/v2.0/authorize*.
++
+For Okta, it should be similar to *\https://<organization>.okta.com/oauth2/<alphanumeric id>/v1/authorize*.
 [#oauth-token-url]
-Access Token Url:: (Azure AD OAuth) Enter the Access Token Url associated with your Azure AD OAuth.
+Access Token Url:: (External OAuth) Enter the Access Token Url associated with your external identity provider.
 +
-Token endpoint can be obtained from the Azure portal by navigating to the OAuth application in Azure Active Directory resource. It should be similar to **\https://login.microsoftonline.com/<tenant_id>/oauth2/v2.0/token**.
+For Azure AD, it can be obtained from the Azure portal by navigating to Azure Active Directory resource. It should be similar to *\https://login.microsoftonline.com/<tenant_id>/oauth2/v2.0/token*.
++
+For Okta, it should be similar to *\https://<organization>.okta.com/oauth2/<alphanumeric id>/v1/token*.
+
+'''
+> **Related information**
+>
+> * xref:connections-snowflake-add.adoc[Add a Snowflake connection]
+> * xref:connections-snowflake-edit.adoc[]
+> * xref:connections-snowflake-remap.adoc[]
+> * xref:connections-snowflake-external-tables.adoc[]
+> * xref:connections-snowflake-delete-table.adoc[]
+> * xref:connections-snowflake-delete-table-dependencies.adoc[]
+> * xref:connections-snowflake-delete.adoc[]
+> * xref:connections-snowflake-oauth.adoc[]
+> * xref:connections-snowflake-azure-ad-oauth.adoc[]
+> * xref:connections-snowflake-okta-oauth.adoc[]
+> * xref:connections-snowflake-best.adoc[Best practices]
+> * xref:connections-query-tags.adoc#tag-snowflake[Snowflake query tags]
+> * xref:connections-snowflake-partner.adoc[Partner Connect], with an accompanying xref:connections-snowflake-tutorial.adoc[Tutorial]

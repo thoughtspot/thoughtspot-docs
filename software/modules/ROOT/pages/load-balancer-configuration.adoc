@@ -2,7 +2,6 @@
 :last_updated: 12/30/2020
 :experimental:
 :linkattrs:
-:description: A load balancer is needed in front of a server group in order to direct traffic to individual servers in a way that maximizes efficiency.
 
 A load balancer is needed in front of a server group in order to direct traffic to individual servers in a way that maximizes efficiency.
 
@@ -21,8 +20,6 @@ You can also place a load balancer or proxy in front of the ThoughtSpot applianc
 The best way to load balance across all ThoughtSpot nodes in a cluster is to map one domain name (FQDN) to all the IPs in the cluster in a round robin fashion.
 
 For example, if you want to use a DNS server based load balancing, then you can define multiple "A" resource records (RR) for the same name.
-
-Below is an example of how you could set that up
 
 ----
 thoughtspot.customer.com IN A 69.9.64.11
@@ -50,3 +47,8 @@ Instead, ThoughtSpot is commonly placed behind a web HTTP/HTTPS proxy.
 Additionally, the proxy can round robin across multiple nodes in the ThoughtSpot backend.
 You can essentially use the web proxy as a load balancer.
 Therefore, your session will carry over if the proxy round robins between the ThoughtSpot backends as long as the URL doesn't change.
+
+[#timeout]
+== Load balancer timeout
+
+As a best practice, set your load balancer timeout to 5 minutes, or 300 seconds. The default is often 20 seconds, which may cause queries to time out.

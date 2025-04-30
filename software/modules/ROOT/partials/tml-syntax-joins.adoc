@@ -2,14 +2,16 @@
 
 The syntax and functionality of joins in the table TML file differs from the syntax and functionality for Worksheet and View TML files.
 
-When you edit the information in the <<joins,joins>> section of the TML for a Worksheet or View, you override the table join(s) from the table the Worksheet or View comes from. However, you only override the join(s) for the specific Worksheet or View you are editing, *not* for the source table.
+When you edit the information in the <<joins_syntax,joins>> section of the TML for a worksheet or view, you override the table join(s) from the table the worksheet or view comes from. However, you only override the join(s) for the specific worksheet or view you are editing, *not* for the source table.
 
-When you edit the information in the <<joins_with,joins_with>> section of the TML for a table, you edit the join information for the source table, the destination table, and any dependents, such as Worksheets and Views. Note that you can only edit joins for which the table is the source table.
+When you edit the information in the <<joins_with_syntax,joins_with>> section of the TML for a table, worksheet, view, or SQL view, you edit the join information for the source object, the destination object, and any dependents, such as worksheets and views. Note that you can only edit joins for which the object is the source.
 
-=== Worksheet and View join syntax
+=== Syntax for joins a worksheet or view is built on
 
-For Worksheets and Views, the join syntax is the following:
+For the joins a worksheet or view is built on, the join syntax is the following. The <<joins_syntax,joins>> section defines the joins that the worksheet or view was built on, and the <<joins_with_syntax,joins_with>> section defines the joins from that worksheet, view, or SQL view to another object. Note that SQL views and tables do not have the <<joins_syntax,joins>> section, but they may have the <<joins_with_syntax,joins_with>> section.
 
+[#joins_syntax]
+`joins` syntax
 [subs=+macros]
 ....
 <<joins,joins>>:
@@ -28,21 +30,40 @@ For Worksheets and Views, the join syntax is the following:
     - <join_name_2>
 ....
 
-=== Worksheet and View join functionality and Limitations
+[#joins_with_syntax]
+`joins_with` syntax
+[subs=+macros]
+....
+<<joins_with,joins_with>>:
+- <<name,name>>: <join_name_1>
+  <<description,description>>: <optional_join_description_1>
+  <<destination,destination>>:
+    <<name,name>>: <destination_table_name_1>
+    <<fqn,fqn>>: <optional_table_guid_1>
+  <<on,on>>: <join_expression_string_1>
+  <<type,type>>: [RIGHT_OUTER | LEFT_OUTER | INNER | OUTER]
+  <<is_one_to_one,is_one_to_one>>: [ false | true ]
+  <<name,name>>: <join_name_2>
+  <<name,name>>: <join_name_n>
+....
 
-With Worksheet and View joins, you can accomplish the following tasks:
+=== Functionality and limitations of the joins section
 
-- Add new joins at the Worksheet or View level
-- Modify existing joins at the Worksheet or View level
-- Delete existing joins at the Worksheet or View level
+You can accomplish the following tasks:
 
-Worksheet and View joins have the following limitation:
+- Add new joins at the worksheet, view, or SQL view level
+- Modify existing joins at the worksheet, view, or SQL view level
+- Delete existing joins at the worksheet, view, or SQL view level
 
-- You cannot modify joins at the table level from the Worksheet or View TML file. You can only override the joins for that specific Worksheet or View.
+You have the following limitation:
 
-=== Table join syntax
+- You cannot modify joins at the table level from the worksheet, view, or SQL view TML file. You can only override the joins for that specific worksheet, view, or SQL view.
+
+=== Syntax for joins from a table, worksheet, view, or SQL view to another object
 
 To reduce ambiguity, you may need to add the optional `fqn` parameter to your TML file when you reference source tables or connections. This is necessary if you have multiple connections or tables with the same name. If you do not add the `fqn` parameter, and the connection or table you reference does not have a unique name, the file import fails.
+
+The <<joins_with_syntax,joins_with>> section defines the joins from the data source to another object. It may appear in tables, worksheets, views, and SQL views.
 
 [subs=+macros]
 ....
@@ -60,9 +81,9 @@ To reduce ambiguity, you may need to add the optional `fqn` parameter to your TM
 ....
 
 [#table-join-functionality]
-=== Table join functionality and limitations
+=== Functionality and limitations of the joins_with section
 
-With table joins, you can accomplish the following tasks:
+You can accomplish the following tasks:
 
 - Add new joins at the table level. Joins only appear in the table TML file of the source table in a join, or the table on the Many side of a Many to One join. You can only add and edit table joins from the TML file of the table on the Many side of the join.
 - Create generic or range joins at the table level, such as `Table1.date = Table2.date AND Table1.date > Table2.start_date AND Table1.date < Table2.end_date`.
@@ -83,7 +104,7 @@ name: LO to Date Range Join
 
 - Edit existing joins by changing the name of the join and modifying it to your specifications. Changing the name of the join creates a new join; you must then delete the old join in the UI. Joins only appear in the table TML file of the source table in a join, or the table on the Many side of a Many to One join. You can only add and edit table joins from the TML file of the table on the Many side of the join.
 
-Table joins have the following limitations:
+You have the following limitations:
 
 - You cannot delete a join by removing it from the TML. You must delete it through the UI.
 - You cannot directly edit an existing join; you must rename it, edit it to your specifications, and then delete the old join in the UI.

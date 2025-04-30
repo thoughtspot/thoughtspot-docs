@@ -2,6 +2,7 @@
 :last_updated: 02/02/2021
 :linkattrs:
 :experimental:
+:page-aliases: /admin/loading/sharding.adoc
 :description: Sharding partitions very large tables into smaller, faster, more easily managed parts called data shards.
 
 Sharding partitions very large tables into smaller, faster, more easily managed parts called data shards.
@@ -72,7 +73,7 @@ Consult with your ThoughtSpot contact if you are unsure how to handle sharding o
 
 === Sharding recommendations example
 
-Let's use an example to see how the 6 guidelines listed above in <<sharding-guidelines,Table sizes and sharding recommendations>> work.
+Let's use an example to see how the 6 guidelines listed in <<sharding-guidelines,Table sizes and sharding recommendations>> work.
 
 You have a fact table with 2.4 billion rows.
 Your cluster has 24 nodes, and 56 CPU cores per node.
@@ -181,10 +182,10 @@ CONSTRAINT PRIMARY KEY("saleid,vendorid”))
 PARTITION BY HASH(n) KEY ("vendorid");
 ----
 
-In the above examples, the table has a primary key.
+In the preceding examples, the table has a primary key.
 The `KEY` parameters specified, `saleid` and `vendorid`, are subsets of the primary key.
 
-In the below example, the table has a primary key.
+In the following example, the table has a primary key.
 The `KEY` parameter specified, `locationid`, is _not_ a subset of the primary key, and therefore cannot be used as the shard key.
 
 *_AVOID_*
@@ -277,11 +278,11 @@ Your primary key may include several columns.
 For example, suppose the table you want to shard has a primary key made up of `saleid`, `custid`, and `locationid`, as in the example in guideline three.
 The table has 10K sales, 40 locations, and 200 products.
 Based on the best practice outlined in guideline three (*choose a shard key that results in a wide variety of keys*), you should not use `locationid` in your shard key.
-Both `saleid` and `custid` are good shard keys, based on the four best practices mentioned above.
+Both `saleid` and `custid` are good shard keys, based on the four best practices.
 Instead of picking one column to use as your shard key, use both `saleid` and `custid`.
 
 You can always use your primary key as a shard key.
-If you have trouble picking another shard key based on the above requirements and best practices, use your primary key.
+If you have trouble picking another shard key based on the requirements and best practices, use your primary key.
 
 [#dimension-tables]
 == Sharded dimension tables
@@ -366,7 +367,7 @@ Data also changes naturally over time, so you should re-evaluate sharding at a r
 To evaluate your sharding strategy, run the following script.
 It checks for over- or under-sharded tables on your cluster.
 
- .. Log into your cluster on the command line.
+ .. Log in to your cluster on the command line.
 +
 [source,console]
 ----
@@ -387,9 +388,11 @@ See xref:schema-change.adoc#sharding[Change sharding on a table].
 Note that resharding automatically loads data into a new incarnation of the table you sharded.
 You do not need to reload the table's data.
 
-. Check your `row count skew` ratio when you re-evaluate sharding.
+. Check your *row count skew ratio* when you re-evaluate sharding.
 +
-You can view your `row count skew` from the ThoughtSpot application.
-Go to *Data > Usage > Data*. Find the correct table name, and scroll to `row count skew`.
-Use this number to calculate your row count skew ratio: row count skew / (total row count / number of partitions).
+You can view your `row count skew` from the ThoughtSpot application:
++
+Go to *Admin > Table Status*. Scroll down to the *Table information* table. Find the relevant table name, and scroll to `row count skew`.
++
+To calculate your row count skew ratio, use this formula: row count skew / (total row count / number of partitions).
 A row count skew ratio higher than 1 may require changes to your data modeling.

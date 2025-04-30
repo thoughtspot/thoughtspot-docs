@@ -2,14 +2,15 @@
 :last_updated: 02/20/2021
 :linkattrs:
 :experimental:
-:description: The ThoughtSpot SQL Command Line (TQL) service APIs enable you to query the ThoughtSpot TQL cli from a remote machine.
+:description: The TQL service APIs enable you to query the ThoughtSpot TQL cli from a remote machine.
+:jira: SCAL-219616
 
 The TQL service APIs enable you to query the ThoughtSpot TQL cli from a remote machine.
 
 == Design
 
 The TQL service accepts HTTP/HTTPS requests through a python client to provide a TQL-cli like experience.
-You can develop your own REST client to use the REST APIs documented below.
+You can develop your own REST client to use the REST APIs.
 No setup is required on the server side.
 
 == Client requirements
@@ -382,7 +383,7 @@ JSESSIONID=<token>
 }
 ----
 
-The request body is a JSON representation of the "ExecuteQueryRequest", shown above.
+The request body is a JSON representation of the "ExecuteQueryRequest".
 
 ===== Output
 
@@ -430,7 +431,7 @@ Status:   200 OK
 }
 ----
 
-The output is a JSON representation of the "ExecuteQueryResponse", shown above.
+The output is a JSON representation of the "ExecuteQueryResponse".
 
 === Execute file
 
@@ -463,25 +464,26 @@ Requests will have the flag passing mechanism too.
 ----
 {
 	"context": {
-		"server_schema_version": "generation id"
+		"server_schema_version": 999
 	},
 	"options": {
-		"skip_cache": true,
-		"top_row_count": 100
+		"adv_options": {
+             "skip_cache": true
+         }
 	},
 	"script_type": TQL_SCRIPT,
 	"script": "show databases;\nshow tables;"
 }
 ----
 
-The request body is a JSON representation of the "ExecuteSqlScriptRequest", shown above.
+The request body is a JSON representation of the "ExecuteSqlScriptRequest".
 
 ===== Output
 
 An array of JSON objects will be sent by the server.
 Same as what is sent for the non-file-upload case - one JSON per tql-command in the script.
 
-The output is a JSON representation of the "ExecuteSqlScriptRequest", shown above.
+The output is a JSON representation of the "ExecuteSqlScriptRequest".
 
 === Autocomplete static
 
@@ -512,7 +514,7 @@ JSESSIONID=<token>
 }
 ----
 
-The output is a JSON representation of the "StaticAutocompleteResponse", shown above.
+The output is a JSON representation of the "StaticAutocompleteResponse".
 
 === Autocomplete dynamic
 
@@ -552,7 +554,7 @@ Server side code is written so that the in-memory data-structure lookup is organ
 }
 ----
 
-The output is a JSON representation of the "DynamicAutocompleteResponse", shown above.
+The output is a JSON representation of the "DynamicAutocompleteResponse".
 
 === Get schema version
 
@@ -562,7 +564,7 @@ The output is a JSON representation of the "DynamicAutocompleteResponse", shown 
 
 [source,console]
 ----
-/ts_tqlservice/v1/public/schema_version
+/ts_tqlservice/v1/public/tql/schema_version
 ----
 
 ===== Input
