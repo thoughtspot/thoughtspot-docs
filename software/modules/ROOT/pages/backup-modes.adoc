@@ -46,7 +46,7 @@ Don't forget that the backup size can grow over time, so you should occasionally
 
 == Lightweight backups
 
-Lightweight backups contain everything that is in a dataless backup, as well as everything that makes up a cluster:
+Lightweight backups contain everything that makes up a cluster:
 
 * Cluster configuration (SSH, LDAP, and so on)
 * In-memory data cache
@@ -64,63 +64,7 @@ In this case, the data, like the tables they were loaded into, are saved.
 
 == Dataless backups
 
-A dataless backup saves a backup of the schema (metadata), with no customer data or search indices saved to the backup.
-Dataless backups allow you to send a copy of your cluster metadata to ThoughtSpot Support for troubleshooting. For clusters where you connected to an external cloud data warehouse, you can use dataless backups to recover the cluster in the case of irrecoverable issues, such as a cluster crash or a non-restartable cluster.
+A dataless backup saves a backup of the schema (metadata), with no data.
+Dataless backups allow you to send a copy of your cluster metadata to ThoughtSpot Support for troubleshooting without compromising data security and privacy.
 
-When restoring from a dataless backup, you must supply the correct release tarball, since this type of backup does not include the release tarball, just the release version. Note that the release version that you use to restore the cluster from the backup must exactly match the version information in the backup.
-
-=== Dataless backup contents for deployments with ThoughtSpot's in-memory database
-Dataless backups contain the following information for deployments with ThoughtSpot's in-memory database:
-
-* Metadata:
-** Users, groups, answers, Pinboards, visualizations, worksheets, data modeling settings, row level security filters
-* Scheduled jobs (for example, scheduled Pinboards)
-* Cluster details: ID, name, version
-* *[For clusters with S3 storage]:* AWS configuration (label, region, S3 bucket name)
-* Cluster manager configuration (e.g. backup policy), and service configuration (e.g. service enabled or disabled, memory limits for service)
-* Database schema: Definitions of databases, tables and views. Definition of a table includes its type (dimension/fact), version, internal/external, column details, region, primary key, unique key, relationships (foreign key)
-* End-user license agreement (EULA) policy and file
-* ThoughtSpot Software artifacts: version, checksum of binaries
-* Hadoop layout
-* Firewall configuration
-* `mailname` and `mailfromname`
-* SAML configuration
-* Consumption pricing user activity
-
-Dataless backups for ThoughtSpot's in-memory database DO NOT include the following information:
-
-* Data stored in the in-memory database
-* Search index tokens
-* Usage information
-* Traces
-
-=== Dataless backup contents for deployments with connections to external cloud data warehouses
-Dataless backups contain the following information for deployments with connections to external cloud data warehouses:
-
-* Metadata:
-** Users, groups, answers, Pinboards, visualizations, worksheets, data modeling settings, row level security filters, tables, columns
-** Configuration of connections to external cloud data warehouses
-* Scheduled jobs (for example, scheduled Pinboards)
-* Cluster details: ID, name, version
-* *[For clusters with S3 storage]:* AWS configuration (label, region, S3 bucket name)
-* Cluster manager configuration (e.g., backup policy), and service configuration (e.g., service enabled or disabled, memory limits for service)
-* End-user license agreement (EULA) policy and file
-* ThoughtSpot Software artifacts: version, checksum of binaries
-* Hadoop layout
-* Firewall configuration
-* `mailname` and `mailfromname`
-* SAML configuration
-* Consumption pricing user activity
-
-Dataless backups for connections to external cloud data warehouses DO NOT include the following information:
-
-* Search index tokens
-* Usage information
-* Traces
-
-'''
-> **Related information**
->
-> * xref:backup-manual.adoc[Create a manual backup]
-> * xref:backup-configure-schedule.adoc[Configure periodic backups]
-> * xref:restore.adoc[About restore operations]
+When restoring from a dataless backup, you must supply the correct release tarball, since this type of backup does not include the software release.

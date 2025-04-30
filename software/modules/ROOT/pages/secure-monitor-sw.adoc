@@ -19,17 +19,16 @@ For more information about Qualys, see the http://www.qualys.com/documentation/[
 SNMP (Simple Network Management Protocol):: SNMP is an industry standard protocol used for monitoring network traffic and alert events.
 Splunk:: You can install Splunk rsyslog and use it to forward ThoughtSpot logs to Splunk.
 For more information about Splunk, see the http://docs.splunk.com/[Splunk documentation^].
-CrowdStrike Falcon Agent:: Crowdstrike Falcon Agent is a cloud-delivered endpoint protection service. For more information, refer to the https://www.crowdstrike.com/endpoint-security-products/falcon-platform/[CrowdStrike Falcon Agent^] website.
 
-WARNING: ThoughtSpot does not support, certify or maintain any third-party software other than the Qualys agent, the SNMP agent for Linux, the Splunk agent, the CrowdStrike Falcon Agent, or AWS SSM. Use of non-certified software is very likely to result in loss of functionality for your ThoughtSpot cluster, or otherwise impact the ThoughtSpot application. Use of McAfee or any other virus scanner to scan directories, memory (RAM), filesystems or disks will result in severe loss of performance and/or functionality.
+WARNING: ThoughtSpot does not support, certify or maintain any third-party software other than the Qualys agent, the SNMP agent for Linux, the Splunk agent, or AWS SSM. Use of non-certified software is very likely to result in loss of functionality for your ThoughtSpot cluster, or otherwise impact the ThoughtSpot application. Use of McAfee or any other virus scanner to scan directories, memory (RAM), filesystems or disks will result in severe loss of performance and/or functionality.
 
 === Install third-party software
 
-For details on how to install third-party software, see xref:secure-monitor-sw-install.adoc[Installing third-party security and monitoring software].
+For details on how to install third-party software, see xref:secure-monitor-sw-install.adoc[Installing third-party security and monitoring software]
 
 == What is not supported
 
-When installing and configuring third-party software on a ThoughtSpot cluster, follow these guidelines to avoid interfering with cluster operations:
+When installing and configuring third-party software on a ThoughtSpot cluster, follow theese guidelines to avoid interfering with cluster operations:
 
 * Avoid making any direct changes to any files outside of the `/home` directory.
 * Do not remove existing SSH keys or authorized keys from `/home/admin/.ssh`
@@ -48,14 +47,13 @@ Qualys is supported for scanning of ThoughtSpot clusters for security vulnerabil
 
 == SNMP Traps
 
-ThoughtSpot does *_not_* automatically support SNMP traps. However, you can install a third-party tool for SNMP traps and route them as necessary. Before installing a third-party SNMP tool, check that ThoughtSpot supports it with your ThoughtSpot contact.
+ThoughtSpot has a built-in alerting service that can also be used to send SNMP traps.
+Many third-party monitoring systems share the common standard of using SNMP traps, and you can take advantage of those capabilities with ThoughtSpot.
 
-If you install a third-party tool, ThoughtSpot supports SNMP for read only.
-So for example, you can read the IP address of the cluster, but you can't change it using SNMP.
+ThoughtSpot supports SNMP for read only.
+So for example, you can read the IP address of the cluster, but not change it using SNMP.
 
-Alternatively, use ThoughtSpot’s built-in monitoring alert system. Specify an email address using the `tscli monitoring set-config --email` command to route all ThoughtSpot-generated alerts to that email address. See xref:monitoring-setup.adoc[].
-
-See the xref:alerts-reference.adoc[Alert code reference] for details on the alerts ThoughtSpot may generate.
+See the xref:alerts-reference.adoc[Alert code reference] for details.
 
 == Splunk rsyslog
 
@@ -65,8 +63,5 @@ This allows you to use rsyslog to collect them and send them to Splunk.
 Here are some links to help you learn where various logs are written in ThoughtSpot:
 
 * xref:system-monitor.adoc[Monitoring logs]
-* xref:system-security.adoc[Audit logs]
+* xref:audit-logs.adoc[Audit logs]
 * xref:alerts-reference.adoc[Alert code reference]
-
-== CrowdStrike Falcon Agent
-Crowdstrike Falcon Agent is a cloud-delivered endpoint protection service. ThoughtSpot certifies only Crowdstrike Falcon Agent version `falcon-sensor-6.16.0-11307.el7.x86_64.rpm`. For more information, refer to the https://www.crowdstrike.com/endpoint-security-products/falcon-platform/[CrowdStrike Falcon Agent^] website.

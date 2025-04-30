@@ -23,9 +23,7 @@ For Worksheets and Views, the join syntax is the following:
 - <<id,id>>: <table_path_name_1>
   <<table,table>>: <table_name_1>
   <<join_path,join_path>>:
-  - <<join,join>>
-    - <join_name_1>
-    - <join_name_2>
+  - {}
 ....
 
 === Worksheet and View join functionality and Limitations
@@ -42,8 +40,6 @@ Worksheet and View joins have the following limitation:
 
 === Table join syntax
 
-To reduce ambiguity, you may need to add the optional `fqn` parameter to your TML file when you reference source tables or connections. This is necessary if you have multiple connections or tables with the same name. If you do not add the `fqn` parameter, and the connection or table you reference does not have a unique name, the file import fails.
-
 [subs=+macros]
 ....
 <<joins_with,joins_with>>:
@@ -59,13 +55,12 @@ To reduce ambiguity, you may need to add the optional `fqn` parameter to your TM
   <<name,name>>: <join_name_n>
 ....
 
-[#table-join-functionality]
 === Table join functionality and limitations
 
 With table joins, you can accomplish the following tasks:
 
 - Add new joins at the table level. Joins only appear in the table TML file of the source table in a join, or the table on the Many side of a Many to One join. You can only add and edit table joins from the TML file of the table on the Many side of the join.
-- Create generic or range joins at the table level, such as `Table1.date = Table2.date AND Table1.date > Table2.start_date AND Table1.date < Table2.end_date`.
+- Create generic or range joins at the table level. Previously, you could only create non-generic joins through the TML, such as `Table1.date = Table2.date`. Now, you can create generic joins through the TML, such as `Table1.date = Table2.date AND Table1.date > Table2.start_date AND Table1.date < Table2.end_date`.
 +
 Note that you must have an 'equals' clause before you can have a 'greater than/less than' clause. `Table1.date = Table2.date AND Table1.date > Table2.start_date AND Table1.date < Table2.end_date` is valid, but `Table1.date < Table2.end_date` is not.
 +
@@ -97,4 +92,4 @@ The functionality for generic joins in TML files allows the following elements:
 - Constants: int, double, bool, date, and string
 - Comparison operators: `=`, `!=`, `<`, `>`, `<=`, and `>=`
 - Columns
-- Boolean operators: `AND` and `NOT`. TML does *_not_* support use of `OR` in generic joins.
+- Boolean operators: `AND`, `OR`, and `NOT`

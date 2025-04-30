@@ -20,6 +20,8 @@ a| <<aggregation,aggregation>>
 
 <<client_state,client_state>>
 
+<<color,color>>
+
 <<column,column>>
 
 <<columns,columns>>
@@ -27,6 +29,8 @@ a| <<aggregation,aggregation>>
 <<column_id,column_id>>
 
 <<column_type,column_type>>
+
+<<conditional_formatting,conditional_formatting>>
 
 <<connection,connection>>
 
@@ -94,6 +98,10 @@ a| <<filters,filters>>
 
 <<locked,locked>>
 
+<<max,max>>
+
+<<min,min>>
+
 <<name,name>>
 
 <<on,on>>
@@ -108,13 +116,17 @@ a| <<phrase,phrase>>
 
 <<properties,properties>>
 
+<<plotAsBand,plotAsBand>>
+
+<<range,range>>
+
 <<rls_rules,rls_rules>>
+
+<<rule,rule>>
 
 <<rules,rules>>
 
 <<schema,schema>>
-
-<<search_output_column,search_output_column>>
 
 <<search_query,search_query>>
 
@@ -197,6 +209,10 @@ chart_columns::
 client_state::
   A JSON string with more advanced chart and table configuration.
 
+[#color]
+color::
+  Color to use for conditional formatting or for the columns of an Answer in chart form, in the form of a HEX value.
+
 [#column]
 column::
   The id of the column(s) being filtered on. When a Pinboard contains xref:pinboard-filters-linked.adoc[linked filters], or filters that affect visualizations based on more than one Worksheet, the primary filter column appears first in the list of columns in the TML. The linked filter column appears after the primary filter column.
@@ -207,12 +223,10 @@ columns::
 
 [#column_id]
 column_id::
-  The `id` of the worksheet or view column.
+  The `id` of the Worksheet or View column.
 +
-For answers, `column_id` refers to how the column appears in the query.
+For Answers, `column_id` refers to how the column appears in the query.
 For example, if you sorted by `Quarter` in your search, from the `Commit Date` column, the `column_id` of the column is `Quarter(Commit Date)`.
-+
-For worksheets and views, `column_id` is in the following format: `column_id: <id>::<name>`. `id` comes from `Worksheet.table_path`, and `name` comes from `Table.column`. For example: `column_id: Customer_Dimension::Customer_Name`.
 
 [#column_type]
 column_type::
@@ -227,7 +241,11 @@ For formulas, the default depends on the <<data_type,data_type>>.
 +
 If the data type is `INT` or `BIGINT`, the formula output's `column_type` defaults to `Measure`.
 +
-If the data type is `BOOL`, `VARCHAR`, `DOUBLE`, `FLOAT`, `DATE`, `DATETIME`, or `TIME`, the formula output's `column_type` defaults to `Attribute`.
+If the data type is `BOOL`, `VARCHAR`, `DOUBLE`, `FLOAT`, `DATE`, `DATETIME`, or `TIME`, the formula output's `column_type` defaults to `Attribute`
+
+[#conditional_formatting]
+conditional_formatting::
+  Conditional formatting for the chart or table of an Answer.
 
 [#connection]
 connection::
@@ -318,12 +336,12 @@ Each formula is identified by `name`, the `expr` (expression), and an optional `
 
 [#fqn]
 fqn::
-  The table or connection's GUID.
+  The table's GUID.
 You can find this string of letters and numbers at the end of the URL for that table.
 +
 For example, in `\https://<company>.thoughtspot.com/#/data/tables/34226aaa-4bcf-4d6b-9045-24cb1e9437cb`, the GUID is `34226aaa-4bcf-4d6b-9045-24cb1e9437cb`.
 +
-Use this optional parameter to reduce ambiguity and identify a specific table or connection, if you have multiple tables or connections with the same name. If you do not add the `fqn` parameter, and the connection or table you reference does not have a unique name, the file import fails.
+Use this optional parameter to identify a specific table, if you have multiple tables with the same name.
 
 [#geo_config]
 geo_config::
@@ -362,7 +380,7 @@ id::
 For Answers, `id` refers to how the column appears in the query.
 For example, if you sorted by `Quarter` in your search, from the `Commit Date` column, the `id` of the column is `Quarter(Commit Date)`.
 +
-Refer to link:https://developers.thoughtspot.com/docs/search-data-api#_search_query[Components of a Search Query] to understand syntax.
+Refer to xref:search-data-api.adoc#components[Components of a Search Query] to understand syntax.
 +
 For formulas within Answers, `id` refers to the display name of the formula.
 +
@@ -495,6 +513,14 @@ locked::
   The 'automatically select my chart' option in the UI.
 If set to `true`, the chart type does not change, even when you add items to the query.
 
+[#max]
+max::
+  Maximum value for conditional formatting.
+
+[#min]
+min::
+  Minimum value for conditional formatting.
+
 [#name]
 name::
   The name of an object.
@@ -502,7 +528,7 @@ Applies to `worksheet`, `table`,`joins`, `formula`, `rls_rules`, `answer`, `pinb
 +
 For Answers, `name` refers to how the column appears in the query.
 For example, if you sorted by `Quarter` in your search, from the `Commit Date` column, the `name` of the column is `Quarter(Commit Date)`.
-Refer to link:https://developers.thoughtspot.com/docs/search-data-api#_search_query[Components of a Search Query] to understand syntax.
+Refer to xref:search-data-api.adoc#components[Components of a Search Query] to understand syntax.
 
 [#on]
 on::
@@ -536,9 +562,23 @@ Worksheets and Views themselves can have the following properties that affect qu
 +
 For Answers, each formula's output can have the following properties, depending on its definition: `column_type` and `aggregation`.
 
+[#plotAsBand]
+plotAsBand::
+  Specifies whether to plot the chart conditional formatting like a band on the Visualization.
++
+This is the 'fill chart' option in the UI.
+
+[#range]
+range::
+  Range for the conditional formatting to apply to, with a specified `min` and `max`.
+
 [#rls_rules]
 rls_rules::
 In release 7.1.1 and later, a container for the full definition of xref:security-rls-concept.adoc[row level security] rules for the table.
+
+[#rule]
+rule::
+A conditional formatting rule.
 
 [#rules]
 rules::
@@ -548,14 +588,10 @@ In release 7.1.1 and later, a container for the names and expressions of xref:se
 schema::
   The schema that the table is a part of.
 
-[#search_output_column]
-search_output_column::
-Name of the column generated by the view. To change the name of the column in the view, edit the `name` parameter.
-
 [#search_query]
 search_query::
   A string that represents the fully disambiguated search query.
-Refer to link:https://developers.thoughtspot.com/docs/search-data-api#_search_query[Components of a Search Query] to understand syntax.
+Refer to xref:search-data-api.adoc#components[Components of a Search Query] to understand syntax.
 
 [#show_headline]
 show_headline::

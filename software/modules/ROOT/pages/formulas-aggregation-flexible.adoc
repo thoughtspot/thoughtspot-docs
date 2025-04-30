@@ -36,14 +36,14 @@ The aggregation formulas are described in xref:formulas-aggregation.adoc[Overvie
 
 == About flexible aggregation
 
-ThoughtSpot provides flexible aggregation with the `group_*` function.
-You can use group_* formulas when you want to specify columns and filters to include or ignore in your query.
+ThoughtSpot provides flexible aggregation with the `group_aggregate` function.
+You can use this formula to group and filter query results on different dimensions and granularities from the columns already used in the search bar query.
 
-The `group_*` formulas use a sub-query to perform these custom aggregations.
-If the sub-query is at less detailed than the original query, ThoughtSpot adds the result column to the result of original query.
-When the sub-query is at a finer detail level than the original query, ThoughtSpot re-aggregates to formula's results to match the groupings of the original query.
+The `group_aggregate` formula uses a sub-query to perform these custom aggregations.
+If the sub-query is at a higher detailed level, ThoughtSpot adds the result column to the result of original query.
+When the sub-query is at a finer detail level than the original query, ThoughtSpot uses _roll-up_, or _reaggregation_.
 
-To ensure that the level of aggregation of the sub-query is returned the sub-query grouping columns must be included in the search query and/or visualized chart columns.
+This is particularly useful for comparison analysis.
 
 To use the groups and filters, specify them using the `query_groups` and `query_filters` keywords, respectively.
 You can also add or exclude groups or filters.
@@ -79,7 +79,7 @@ You can use `+/-` to modify the set of groups included from the query.
 
 == When group formula results are finer-grained than the search
 
-With the flexibility of groupings for group formulas, the computed column created by a formula can be finer or coarser grained than the search itself. Note that ThoughtSpot by default aggregates formula results to the level of detail defined in the search bar. To increase the level of detail in your results, you must add filters to your search as well as defining them in your formula.
+With the flexibility of groupings for group formulas, the computed column created by a formula can be finer or courser grained than the search itself.
 
 For example, you can have a search that shows *total yearly sales* and a formula that computes total sales _for each month_ (a finer-grained calculation than the search).
 
@@ -114,11 +114,11 @@ where, the `min_monthly_sales` formula is written as:
 min(monthly_sales)
 ----
 
-If no aggregation is specified, then the search query aggregates to the level of detailed defined in the search bar. In the following search:
+Alternatively, if no aggregation is specified, then the search query also inherits the formula groupings, as in this search:
 
 *sum revenue yearly monthly_sales*
 
-the original query is computed at a yearly grain instead of monthly.
+where, the original query is computed at a monthly grain instead of yearly.
 
 == Reaggregation scenarios
 
@@ -127,7 +127,7 @@ Some scenarios require aggregation on an already aggregated result.
 For example, computing minimum monthly sales per ship mode, requires two aggregations:
 
 * the first aggregation of *sum* to compute total monthly sales per ship mode.
-* the second aggregation of *min* to compute the minimum sale that happened for any given month for that ship mode.
+* the second aggregation of *min* to compute minimum sale that happened for any given month for that ship mode.
 
 An example of this is this search:
 
@@ -144,7 +144,7 @@ group_aggregate(
 )
 ----
 
-For more extensive examples of using the `group-aggregate` function, we encourage you to see xref:reaggregation-scenarios.adoc[Reaggregation scenarios in practice]
+For more extensive examples of using the `group-aggregate` function, we encourage you to see xref:reaggregation-scenarios.adoc[Reaggreggation scenarios in practice]
 
 == Query groups and query filters
 
@@ -197,13 +197,5 @@ In this case, the results will be aggregated based on the dimensions in the sear
 > **Related information**
 >
 > * For more examples of flexible aggregation, see the xref:formula-reference.adoc#aggregate-functions[group_aggregate] function in the xref:formula-reference.adoc[Formula function reference].
-> * To learn about aggregation formulas in general, see xref:formulas-aggregation.adoc[Overview of aggregate formulas] and xref:formulas-aggregation-group.adoc[Group aggregation functions].
-> * To learn about how the `group-aggregate` function can be used within your business practice, we encourage you to see xref:reaggregation-scenarios.adoc[Reaggregation scenarios in practice].
-
-'''
-> **Related information**
->
-> * xref:formulas-cumulative.adoc[Cumulative functions]
-> * xref:formulas-moving.adoc[Moving functions]
-> * xref:formulas-aggregation-group.adoc[Grouping functions]
-> * xref:formulas-aggregation-filtered.adoc[Filtered aggregation functions]
+> * To learn about aggregation formulas in general, see xref:formulas-aggregation.adoc[Overview of aggregate formulas] and xref:formulas-aggregation-group.adoc[Group aggregation functions]
+> * To learn about how the `group-aggregate` function can be used within your business practice, we encourage you to see xref:reaggregation-scenarios.adoc[Reaggregation scenarios in practice]

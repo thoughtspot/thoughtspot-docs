@@ -38,10 +38,16 @@ To set up the Ansible, follow these steps:
 . Download it to your local machine.
 . Unzip the Ansible tarball, to see the following files and directories on your local machine:
 
-`customize.sh`:: This script runs as the last step in the preparation process. You can use it to inject deployment-specific customizations, such as enabling or disabling a corporate proxy, configuring extra SSH keys, installing extra services, and so on.
+`customize.sh`:: This script runs as the last step in the preparation process. You can use it to inject deployment-specific customizations, such as enabling or disabling a corporate proxy, configuring extra SSH keys, installing extra services, and so on. Additionally, you can include the `prepare_disks` script here.
++
+Add the following line to the `customize.sh` file:
++
+[source]
+----
+sudo /usr/local/scaligent/bin/prepare_disks.sh.
+----
 
 `hosts.sample`::
-Ansible inventory file for host configuration.
 
 `prod_image`::
   This directory contains the ThoughtSpot tools and `tscli`, the ThoughtSpot CLI binary.
@@ -179,20 +185,11 @@ As the Ansible Playbook runs, it will perform these tasks:
     - Format and create export partitions, if they do not exist
     - Format the data disks
 
-After the Ansible Playbook finishes, run the `prepare_disks` script on every node. You *must* run this script as an admin user. Specify the data drives by adding the full device path for all data drives, such as `/dev/sdc`, after the script name. Separate data drives with a space.
+After the Ansible Playbook finishes, run the `prepare_disks` script on every node, if you did not include it in the `customize.sh` file. Specify the data drives by adding the full device path for all data drives, such as `/dev/sdc`, after the script name. Separate data drives with a space.
 
-. Switch to the admin user, if necessary:
-+
 [source]
 ----
-su admin
-----
-
-. Run the `prepare_disks` script:
-+
-[source]
-----
-/usr/local/scaligent/bin/prepare_disks.sh /dev/sdc /dev/sdd
+sudo /usr/local/scaligent/bin/prepare_disks.sh /dev/sdc /dev/sdd
 ----
 
 Your hosts are ready for installing the ThoughtSpot application.
@@ -215,13 +212,3 @@ Follow these general steps to install ThoughtSpot on the prepared hosts:
 . Upload the release artifact to the first host.
 . Run the `tscli cluster create` command. This script prompts for user input.
 . Check the cluster health by running health checks and logging into the application.
-
-'''
-> **Related information**
->
-> * xref:rhel-prerequisites.adoc[RHEL and OEL prerequisites]
-> * xref:rhel-ts-artifacts.adoc[ThoughtSpot deployment artifacts for RHEL and OEL]
-> * xref:rhel-install-offline.adoc[Offline RHEL and OEL install]
-> * xref:rhel-upgrade.adoc[RHEL and OEL upgrade]
-> * xref:rhel-add-node.adoc[Add new nodes to clusters on RHEL or OEL]
-> * xref:rhel-packages.adoc[Packages installed with RHEL and OEL]
