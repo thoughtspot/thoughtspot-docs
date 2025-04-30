@@ -6,7 +6,7 @@
 :page-aliases: /admin/ts-cloud/ts-cloud-embrace-snowflake-azure-ad-oauth.adoc
 :connection: Snowflake
 :description: ThoughtSpot supports Microsoft Azure Active Directory (AD) OAuth for a Snowflake connection.
-:jira: SCAL-160062
+:jira: SCAL-160062, SCAL-245587
 
 ThoughtSpot supports Microsoft Azure Active Directory (AD) OAuth for a {connection} connection.
 With Azure AD OAuth, the authorization server generates an access token from Azure AD on behalf of the ThoughtSpot user which authenticates them with {connection} and authorizes ThoughtSpot to query the database using their {connection} user account.
@@ -47,6 +47,8 @@ image::snow-expose-api.png[Click Expose an API]
 [#step-8]
 . Next to Application ID URI, select *Set* and change its value from *api://<alphanumeric value>* to *\https://<alphanumeric value>* and select *Save*.
 +
+NOTE: Not all configurations will allow you to change the URI from `api://` to `https://`.
++
 // []({{ site.baseurl }}/images/snow-app-uri.png)
 +
 image::snow-app-uri-oauth-client2.png[Update the App ID URI]
@@ -73,7 +75,7 @@ To create a {connection} OAuth client app, do the following:
 
 . Sign in to the https://portal.azure.com/[Microsoft Azure Portal^], and navigate to *Azure Active Directory*, if needed.
 . Select *App registrations*, and then select *New registration*.
-. For Name, enter a name for the client (example: `{connection} OAuth User`).
+. For Name, enter a name for the client (example: `{connection} OAuth Client`).
 . For Supported account types, make sure it is set to *Single tenant*.
 . Select *Register*.
 . Once the app is created, select *Overview*.
@@ -170,6 +172,22 @@ create security integration external_oauth_azure_2
     external_oauth_any_role_mode = 'ENABLE' (optional)
     external_oauth_snowflake_user_mapping_attribute = 'login_name';
 ----
+
+.Example security integration format
+[source]
+----
+create security integration external_oauth_azure_2
+    type = external_oauth
+    enabled = true
+    external_oauth_type = azure
+    external_oauth_issuer = '<AZURE_AD_ISSUER>'
+    external_oauth_jws_keys_url = '<AZURE_AD_JWS_KEY_ENDPOINT>'
+    external_oauth_audience_list = 'urn:spn:<SNOWFLAKE_APPLICATION_ID_URI>')
+    external_oauth_token_user_mapping_claim = ['email']
+    external_oauth_any_role_mode = 'ENABLE' (optional)
+    external_oauth_snowflake_user_mapping_attribute = 'email_address';
+----
+
 
 Example:
 

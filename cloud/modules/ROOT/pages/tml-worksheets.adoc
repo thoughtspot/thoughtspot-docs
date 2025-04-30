@@ -7,13 +7,16 @@
 :page-aliases: /admin/worksheets/yaml-worksheet.adoc, /admin/worksheets/tml-worksheet.adoc, /admin/worksheets/tsl-worksheet.adoc, /admin/ts-cloud/yaml-worksheet.adoc, /admin/ts-cloud/tml-worksheet.adoc, /admin/ts-cloud/tsl-worksheet.adoc
 :description: Use TML to modify Worksheets in a flat-file format. Then, migrate the Worksheet to a different cluster, or restore it to the same cluster.
 :object: Worksheets
-:jira: SCAL-158490, SCAL-186188, SCAL-210659, SCAL-234878, SCAL-220585
+:jira: SCAL-158490, SCAL-186188, SCAL-210659, SCAL-234878, SCAL-220585, SCAL-231618, SCAL-220584
 
 IMPORTANT: Worksheet creation is deprecated starting in the 10.4.0.cl release, and is disabled by default. If you need to create a Worksheet and the option is not available to you in ThoughtSpot, contact your ThoughtSpot administrator to enable Worksheet creation.
 
 include::partial$tml-intro.adoc[]
 
 include::partial$tml-syntax-mandatory.adoc[]
+
+include::partial$tml-date-bucket.adoc[]
+
 
 [#syntax-worksheets]
 include::partial$tml-syntax-worksheet.adoc[]
@@ -50,6 +53,8 @@ a| <<aggregation,aggregation>>
 <<data_type,data_type>>
 
 <<date_range_condition,date_range_condition>>
+
+<<default_date_bucket,default_date_bucket>>
 
 <<default_value,default_value>>
 
@@ -97,6 +102,10 @@ a| <<id,id>>
 
 <<is_one_to_one,is_one_to_one>>
 
+<<is_sage_enabled,is_sage_enabled>>
+
+<<is_time_bucket_restricted,is_time_bucket_restricted>>
+
 <<join,join>>
 
 <<join_path,join_path>>
@@ -134,6 +143,8 @@ a| <<name,name>>
 <<range_max,range_max>>
 
 <<range_min,range_min>>
+
+<<sage_config>>
 
 <<source,source>>
 
@@ -227,6 +238,9 @@ The data type of the Parameter.
 
 [#date_range_condition]
 date_range_condition:: Defines that the condition is based upon a date range. Note that this is curently the only condition that is supported.
+
+[#default_date_bucket]
+default_date_bucket:: The default date bucket for the column, options include daily, weekly, monthly, quarterly, yearly, hourly, and auto. Hourly is only available for datetime columns. When defined for a column, date bucket will always be included in a search containing that column. For example, if defined as "daily" for Revenue, searching for "revenue order date" will be interpreted as "revenue order date daily".
 
 [#default_value]
 default_value::
@@ -390,6 +404,14 @@ Possible values: `true`, `false`
 +
 Default: `false`
 
+[#is_sage_enabled]
+is_sage_enabled:: Defines whether Sage is enabled on the Worksheet.
+
+[#is_time_bucket_restricted]
+is_time_bucket_restricted:: When defined as "true" for a column, only the defined default time bucket is shown in the bucketing menu.
++
+NOTE: To enable this property, contact {support-url}. For time bucket restriction to be enabled, default_date_bucket must be set.
+
 [#join]
 join::
 Specific join, used in defining higher-level objects, such as table paths.
@@ -492,6 +514,9 @@ The maximum value for the range of values allowed for a Parameter, if a range is
 [#range_min]
 range_min::
 The minimum value for the range of values allowed for a Parameter, if a range is specified when xref:parameters-create.adoc[creating a Parameter].
+
+[#sage_config]
+sage_config:: A container for the is_sage_enabled property.
 
 [#source]
 source::

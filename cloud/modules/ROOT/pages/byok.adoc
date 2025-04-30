@@ -5,7 +5,7 @@
 :linkattrs:
 :page-layout: default-cloud
 :description:
-:jira: SCAL-233879
+:jira: SCAL-233879, SCAL-245596
 
 == Overview
 Bring Your Own Key (BYOK) is a method of key management that allows an organization to use their own encryption keys in cloud-based services instead of relying on the keys provided by the SaaS application or cloud service provider.
@@ -84,7 +84,12 @@ NOTE: Make sure the key ring is selected as *Regional KeyRing* during creation.
 +
 Use the following settings for the key:
 
-* Protection level - Software
+* Protection level - Choose one of:
+** Software (standard protection)
+** Cloud HSM (Hardware Security Module protection)
++
+The Cloud HSM option provides additional security through hardware-based key protection and FIPS 140-2 Level 3 compliance.
+
 * Key Material - Generated key
 * Purpose - Symmetric encrypt/decrypt
 * Algorithm - Google Symmetric key
@@ -92,6 +97,33 @@ Use the following settings for the key:
 * Duration of *scheduled for destruction*. This is the duration in which a KMS Key or Key Version which was bound for deletion would get permanently deleted. Before this window expires, it’s possible to recover the KMS Key. By default it’s 30 days, and depends on your policy.
 +
 NOTE: Once a key or key version is permanently deleted, there is no way to recover the data in ThoughtSpot VPT which was encrypted using the said key.
+
+=== Cloud HSM considerations
+
+When implementing Cloud HSM for your BYOK solution, consider the following:
+
+* Enhanced security
+** Keys stored and processed in FIPS 140-2 Level 3 certified hardware security modules
+** Physical tamper protection and resistance
+** Hardware-based key generation and storage
+
+* Compliance benefits
+** Meets requirements for regulated industries
+** Provides additional assurance for sensitive data protection
+** Supports compliance with standards requiring hardware-based key protection
+
+* Cost considerations
+** Cloud HSM protection level has additional costs compared to software protection
+** Pricing is based on key versions and operations
+** Consult GCP pricing documentation for current rates
+
+* Regional availability
+** Verify Cloud HSM availability in your chosen region (us-east4 for primary deployment)
+** Ensure HSM availability for future BCP region (us-west1) if planning to use HSM there as well
+
+* Performance
+** Similar performance to software-protected keys for most operations
+** Slightly higher latency for key operations due to hardware security processing
 
 === Add necessary IAM policies to the Key
 
@@ -152,5 +184,6 @@ you would run the following command:
 `cloudkms.cryptoKeys.getIamPolicy`
 `cloudkms.cryptoKeys.get`
 . After this is done, share the KMS key ID with ThoughtSpot.
-
++
+NOTE: When sharing the KMS key ID with ThoughtSpot, specify whether you're using software or Cloud HSM protection level to ensure proper configuration and support.
 
