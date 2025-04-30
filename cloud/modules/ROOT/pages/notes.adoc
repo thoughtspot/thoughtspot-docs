@@ -1,13 +1,13 @@
-= 9.8.0.cl Release Notes
+= 10.3.0.cl Release Notes
 :experimental:
-:last_updated: 10/23/2023
+:last_updated: 9/5/2024
 :linkattrs:
 :page-toclevels: 1
 :page-aliases: /release/notes.adoc
 :page-layout: default-cloud
 :description: These release notes include information about new and enhanced features.
 
-ThoughtSpot Cloud 9.8.0.cl is now available.
+ThoughtSpot Cloud 10.3.0.cl is now available.
 
 These release notes include information about new and enhanced features.
 
@@ -15,15 +15,884 @@ To see our feature deprecation plans, please see xref:deprecation.adoc[Deprecati
 
 For a complete list of issues that we fixed in this release, see xref:fixed.adoc[Fixed issues].
 
-//For a complete list of known issues in this release, see xref:known.adoc[Known issues].
+// For a complete list of known issues in this release, see xref:known.adoc[Known issues].
 
 [#new]
 == New Features and Functionality
 
 include::partial$new-features-cloud-release.adoc[]
 
+== ThoughtSpot 10.1.0.cl
 
-[#9-7-0-cl]
+* <<10-1-0-cl-first,For the First User>>
+* <<10-1-0-cl-analyst,For the Analyst>>
+* <<10-1-0-cl-business-user,For the Business User>>
+* <<10-1-0-cl-data-engineer,For the Data Engineer>>
+* <<10-1-0-cl-developer,For the Developer>>
+
+[#10-1-0-cl-first]
+=== For the First User
+
+Getting started with ThoughtSpot Cloud::
+The first user on the account has to complete a series of steps before other people can start using ThoughtSpot with your organization's data.
+For these instructions, see xref:ts-cloud-getting-started.adoc[Getting Started with ThoughtSpot Cloud].
+
+[#10-1-0-cl-analyst]
+=== For the Analyst
+
+// Mary – Jira: SCAL-158900. docs JIRA: SCAL-212555
+Import and export sets using TML [.badge.badge-beta-relnotes]#Beta#:: You can now use TML to import and export column sets and query sets in ThoughtSpot. For more information, see xref:tml-sets.adoc[TML for Sets].
+
+
+
+[#10-1-0-cl-business-user]
+=== For the Business User
+
+// Naomi – JIRA: SCAL-207062
+Anomaly-based alerts [.badge.badge-early-access-relnotes]#Early Access#:: You can now receive alerts when data of KPIs you are subscribed to fall outside the predicted value range.
+When creating an alert, you can specify the time and frequency at which ThoughtSpot checks the KPI’s data against the values predicted by ML models trained on the data. For example, you can create an alert for a `sales weekly` KPI, and specify that ThoughtSpot compare the values every Monday at 5 PM. You may also add individual subscribers to the alert. If the KPI's data falls outside the predicted range, ThoughtSpot sends an alert to your email and, if applicable, your subscribers' emails.
++
+For more information, see xref:monitor.adoc#create_an_anomaly_alert[Create an anomaly alert].
+
+// Naomi -- JIRA SCAL-201298
+Keywords "of" and "percentage of":: The "of" and "percentage of" keywords are now on by default and available to all users. You can use the "of" and "percentage of" keywords to answer questions related to mix, contribution, share of, percentage, and total ratios. These keywords help answer questions such as, "What is the share of a certain store’s sales as a percentage of the regional whole?" To try out this feature, enter a search phrase in the search bar containing the keyword, such as `sales percentage of store region`, and press *Go*.
++
+For more information, see xref:formulas-keywords.adoc[Keywords: Of and Percentage of].
+
+// Naomi -- JIRA: SCAL-218932
+Sort and filter fragment and query feedback:: You can now sort and filter columns in the Sage Coach fragment and query feedback pages. You can also search for specific values for `worksheet`, `feedback provider`, and `edited by` to further narrow your selection.
+
+// Naomi – JIRA SCAL-214756
+Semi-additive measures with first and last values:: Semi-additive measures with first and last values are now available to all users and on by default. A semi-additive measure, also known as snapshot data, is a measure that is usually aggregated for all attributes except for date and time. For certain measures, like inventory, you want to know what the value was at the beginning or end of a period. In that case, you can use the `last_value` function to find the inventory at the end of a month, rather than aggregating all values over the month. Similarly, you can use the `first_value` function to find out your stock at the beginning of a month.
++
+For more information, see
+xref:semi-additive-measures.adoc[Semi-additive measures with `first_value` and `last_value` functions] and xref:semi-additive-modeling.adoc[Modeling data for semi-additive measures].
+
+[#10-1-0-cl-data-engineer]
+=== For the Data Engineer
+
+// Naomi - JIRA: SCAL-209029
+OAuth for Starburst using Proof Key for Code Exchange (PKCE):: We now support xref:connections-starburst-add.adoc[OAuth with PKCE for Starburst].
+
+// Naomi - JIRA: SCAL-212095
+Bridge connectivity for Cloud Data Warehouses (CDWs) and Databases::
+Bridge provides options to securely connect your data source with the ThoughtSpot Cloud, as an alternative to PrivateLink, VPC Peering or VPN tunnels. We support Bridge for the following Connectors:
++
+--
+* Amazon Athena
+* Amazon Redshift
+* Databricks
+* Google BigQuery
+* PostgreSQL
+* Snowflake
+* Starburst
+* Trino
+--
++
+For more information, see
+xref:connections-bridge.adoc[Bridge connectivity for Cloud Data Warehouses and Databases].
+
+[#10-1-0-cl-it-ops]
+=== For the IT/Ops Engineer
+
+// Mary. JIRA: SCAL-197810. docs JIRA: SCAL-216615
+// PM: Aashica - Awaiting Doc JIRA and access to PRD and release status
+
+Local authentication support with IAMv2 [.badge.badge-early-access-relnotes]#Early Access#::
+ThoughtSpot allows customers to enable or disable local authentication at the Org and cluster levels. To enable local authentication at the cluster level, administrators require the *Can manage authentication* privilege. To enable local authentication at the Org level, contact {support-url}.
++
+NOTE: Org level settings override cluster level settings.
++
+For more information, see xref:authentication-local.adoc[Managing local authentication].
+
+// Mary. JIRA: SCAL-202402. docs JIRA: SCAL-212285
+// PM: Aashica - Awaiting more info from Aashica
+Org-specific URLs [.badge.badge-beta-relnotes]#Beta#::
+ThoughtSpot introduces Org-specific URLs. URLs in emails now include Org context so that users are taken directly to the correct Liveboard in the correct Org even if they belong to multiple Orgs.
+You can also move between different browser tabs that point to different Orgs.
++
+For more information, see xref:orgs-overview.adoc[Multi-tenancy with Orgs].
+
+[#10-1-0-cl-developer]
+=== For the Developer
+
+ThoughtSpot Embedded:: For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation^].
+
+
+== ThoughtSpot 10.0.0.cl
+
+* <<10-0-0-cl-first,For the First User>>
+* <<10-0-0-cl-analyst,For the Analyst>>
+//* <<10-0-0-cl-business-user,For the Business User>>
+* <<10-0-0-cl-data-engineer,For the Data Engineer>>
+* <<10-0-0-cl-developer,For the Developer>>
+
+[#10-0-0-cl-first]
+=== For the First User
+
+Getting started with ThoughtSpot Cloud::
+The first user on the account has to complete a series of steps before other people can start using ThoughtSpot with your organization's data.
+For these instructions, see xref:ts-cloud-getting-started.adoc[Getting Started with ThoughtSpot Cloud].
+
+[#10-0-0-cl-analyst]
+=== For the Analyst
+
+// Naomi. SCAL-201639
+Advanced conditional formatting [.badge.badge-early-access-relnotes]#Early Access#::
+In addition to using conditional formatting to visually highlight a threshold in a measure (for example, `sales > 10000`), you can now use conditional formatting to compare a column's measures to another column.
+// or to a parameter.
++
+For example, if you search for `sales this year` compared to `sales last year`, you can highlight where sales this year were less than last year. You can set multiple conditional formatting rules to a single table. To enable this feature, contact your administrator.
++
+For more information, see
+xref:search-conditional-formatting.adoc#advanced-conditional-formatting[Advanced conditional formatting].
+
+Grouping measures in pivot tables [.badge.badge-beta-whats-new]#Beta#::
+
+ThoughtSpot now supports grouping measure in pivot tables. You can now move measures, and position them where you want in rows and columns. For more information, see xref:chart-pivot-table.adoc[Pivot tables].
+// Mary. SCAL-181678. docs JIRA: SCAL-211771
+
+
+// [#10-0-0-cl-business-user]
+// === For the Business User
+
+[#10-0-0-cl-data-engineer]
+=== For the Data Engineer
+
+Version control for Liveboards and Answers::
+Version control for Liveboards and Answers is now available to all users. Now teams of analysts can more easily collaborate on content development of Liveboards and Answers. You can enable version control on specific Liveboards and Answers. With version control enabled, every time you save the Liveboard or Answer, a new version is created and stored. You can browse the version history in ThoughtSpot and restore any saved versions whenever you need to. To enable this feature, contact your administrator. For more information, see
+xref:liveboard.adoc#version-history[Liveboards] and xref:answers.adoc#version-history[Answers].
+
+// doc jira: SCAL-213208
+
+[#10-0-0-cl-it-ops]
+=== For the IT/Ops Engineer
+
+IAM v2 migration::
+ThoughtSpot is upgrading our Identity and Access Management (IAM) capabilities to provide a more secure login and authentication experience. This experience has been improved to ensure that you can upgrade to IAM v2 easily and with minimal downtime. For more information, see xref:okta-iam.adoc[Identity and Access Management V2].
+// Mary. SCAL-191815. docs JIRA: SCAL-211956
+
+Org deletion::
+You can now delete an Org without first manually deleting the data objects, connections, groups, and users within the Org. For more information, see xref:admin-console-orgs-page.adoc[Create, edit, and delete Orgs].
+// Mary. SCAL-179795. docs JIRA: SCAL-201819
+
+[#10-0-0-cl-developer]
+=== For the Developer
+
+ThoughtSpot Embedded:: For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation^].
+
+== ThoughtSpot 9.12.5.cl
+
+* <<9-12-5-cl-first,For the First User>>
+* <<9-12-5-cl-analyst,For the Analyst>>
+* <<9-12-5-cl-business-user,For the Business User>>
+* <<9-12-5-cl-data-engineer,For the Data Engineer>>
+* <<9-12-5-cl-developer,For the Developer>>
+
+[#9-12-5-cl-first]
+=== For the First User
+
+Getting started with ThoughtSpot Cloud::
+The first user on the account has to complete a series of steps before other people can start using ThoughtSpot with your organization's data.
+For these instructions, see xref:ts-cloud-getting-started.adoc[Getting Started with ThoughtSpot Cloud].
+
+[#9-12-5-cl-analyst]
+=== For the Analyst
+
+Note tile enhancements::
+ThoughtSpot introduces the ability to customize note tiles. You can now customize the appearance of note tiles. You can also edit hyperlinks and iFrames that previously had to be deleted and replaced to make changes. Images within note tiles are now responsive to screen size. For more information, see xref:liveboard-notes.adoc[].
+//For the animated gif: Change the background and text colors, adjust the heading size and text indentation, and insert horizontal dividers within note tiles.
+// Mary. epic: SCAL-142949. doc: SCAL-205501. include less words about what you can do and add a gif.
+// PM: Arpit
+
+Query sets [.badge.badge-early-access-relnotes]#Early Access#::
+You can create query sets, which can be used to classify values in a list that you can then reuse across multiple analyses. A query set is a custom group of values from a collection of objects in your database.
+Query sets are community objects which remain when you navigate away from the *Search Data* page and can be used by any user with view access to the underlying Worksheet. To enable this feature, contact {support-url}. For more information, see xref:custom-groups.adoc[].
+// Mary. epic: SCAL-164083. doc: SCAL-203599.
+// PM: Damian
+
+Custom charts [.badge.badge-beta-relnotes]#Beta#::
+You can now use custom charts created outside of ThoughtSpot, including third-party chart libraries. To enable this feature, contact {support-url}. For more information, see xref:chart-custom.adoc[Custom charts].
+// Mark -- SCAL-202002, doc jira: SCAL-179003
+
+// Naomi. jira: SCAL-181350. docs jira: SCAL-223848
+Alation authentication::
+You can now connect to Alation using token-based authentication as well as service account authentication. For more information, see xref:catalog-integration.adoc[Alation catalog integration].
+
+Sage Coach enhancements::
+// Naomi. epic: SCAL-194540. doc: SCAL-209711
+// PM: Alok, Anant
+We made the following changes to Sage Coach:
+
+
+* Only users with Worksheet editing rights can promote feedback to the global access level so that it applies user queries on the Worksheet.
+* Once feedback is promoted to global access level, users without worksheet editing access cannot take any actions on it. For more information on the changes in the permission model, refer to
+xref:sage-coach.adoc#permissions[Sage Coach permissions].
+* When a Worksheet column is modified, such as a column name change, the changes are reflected in Sage Coach feedback. When a column is deleted, any feedback using that column is also removed. While saving a changed Worksheet, you have the option to review the impacted feedback, ensuring accurate updates upon confirmation.
+* You can now edit query fragment text before submitting feedback. Additionally, you can edit the natural language query terms along with the Answer tokens through the Sage Coach flow.
+
+Save table layouts in the schema viewer::
+ThoughtSpot introduces the ability to save table layouts in the schema viewer. Table location and size are now maintained and saved in the schema viewer. For more information, see xref:schema-viewer.adoc[].
+// Mary. epic: SCAL-180590. doc: SCAL-202068.
+//https://docs.thoughtspot.com/cloud/latest/schema-viewer - steps to access the schema viewer have changed
+// PM: Samridh
+
+Language updates::
+// Naomi. epic: SCAL-181448. doc: SCAL-199383 (approved). epic: SCAL-159833. doc: SCAL-208059 (approved)
+// PM: Aashna
+ThoughtSpot now supports xref:keywords-ko-KR.adoc[Korean], and we've also added synonyms for date and time based keywords in xref:keywords-de-DE.adoc[German] and xref:keywords-fr-FR.adoc[French] for a more accurate experience.
+
+[#9-12-5-cl-business-user]
+=== For the Business User
+
+Redesigned home page [.badge.badge-early-access-relnotes]#Early Access#::
+// Mark. doc jira: SCAL-151210
+In this release, you can try our redesigned and customizable home page, where you can ask natural-language questions with Sage, view your watchlist, favorites, library of Answers and Liveboards, and more. With the new left-hand navigation, you can go directly to your Liveboards, Answers, SpotIQ Analysis, and Monitor Subscriptions.
++
+This new home page experience is disabled by default. Contact your ThoughtSpot administrator to enable this feature for your cluster. After that, open your user profile, and in the _Experience_ section, set the _Navigation and Homepage_ to *New experience*. Note that this setting also enables persona-based navigation. For more information, see xref:thoughtspot-homepage.adoc[].
+
+New persona-based navigation [.badge.badge-early-access-relnotes]#Early Access#::
+// Mark. Doc jira: SCAL-175398
+In this release, you can try our completely redesigned navigation experience organized by persona. The new app switcher allows business users, analysts, data engineers, administrators, and developers to work in separate contextual sections designed specifically for their needs. In addition, each app has left-hand navigation to create better consistency and ease of use for users switching between the different apps.
++
+This new navigation experience is disabled by default. Contact your ThoughtSpot administrator to enable this feature for your cluster. After that, open your user profile, and in the _Experience_ section, set the _Navigation and Homepage_ to *New experience*. Note that this setting also enables the redesigned home page. For more information, see xref:thoughtspot-homepage.adoc[].
+
+Drill down in change analysis::
+// Naomi – SCAL-180942. doc: SCAL-205576 (approved)
+// PM: Vikas
+Drill down in change analysis is now on by default and available to all users. You can now drill down on specific columns in change analysis, in order to identify change drivers within your data. For example, if you run an analysis on sales monthly and find out that the 'jacket' item type changed the most, you can easily drill down on jacket sales and identify which region contributed the most to the change in sales. For more information, see xref:spotiq-change.adoc#iterative[Iterative change analysis].
+
+Forecasting [.badge.badge-early-access-relnotes]#Early Access#::
+// Naomi. epic: SCAL-188788. doc: SCAL-205575 (approved)
+// add gif?
+// PM: Vikas
+You can now use SpotIQ analysis to forecast future trends for your KPIs. ThoughtSpot uses machine learning models that learn from past trends, growth, and seasonality to project how the target metric will trend in the future. To enable this feature, contact your administrator. For more information, see xref:spotiq-forecasting.adoc[].
+
+AI Highlights for Liveboards::
+// Mark. epic: SCAL-180913. doc: SCAL-209562
+// PM: Manan
+AI Highlights for Liveboards is now on by default and available to all users. With AI Highlights, you get quick insights on how top metrics have changed in your Liveboard, dramatically reducing the time to derive insights from your KPIs. For more information, see xref:liveboard-ai-highlights.adoc[].
+
+[#9-12-5-cl-data-engineer]
+=== For the Data Engineer
+
+Rules to sort TML::
+ThoughtSpot introduces a consistent sort order when exporting the TML of an object (table, SQL view, Liveboard, etc.). This ensures that unnecessary differences don’t show up between TML files when the objects haven't really changed, and makes it easier to compare TML files.
+// Mary. epic: SCAL-133208. doc: SCAL-199958.
+//does this need to be in the what's new? sounds like a fix, not a feature. - awaiting confirmation from Samridh
+//https://docs.thoughtspot.com/cloud/latest/tml-liveboards
+// PM: Samridh
+
+[#9-12-5-cl-developer]
+=== For the Developer
+
+ThoughtSpot Embedded:: For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation^].
+
+
+== ThoughtSpot 9.12.0.cl
+
+* <<9-12-0-cl-first,For the First User>>
+* <<9-12-0-cl-analyst,For the Analyst>>
+* <<9-12-0-cl-business-user,For the Business User>>
+* <<9-12-0-cl-data-engineer,For the Data Engineer>>
+* <<9-12-0-cl-developer,For the Developer>>
+
+[#9-12-0-cl-first]
+=== For the First User
+
+Getting started with ThoughtSpot Cloud::
+The first user on the account has to complete a series of steps before other people can start using ThoughtSpot with your organization's data.
+For these instructions, see xref:ts-cloud-getting-started.adoc[Getting Started with ThoughtSpot Cloud].
+
+[#9-12-0-cl-analyst]
+=== For the Analyst
+
+// Naomi – SCAL-181312. documentation JIRA scal-201645.
+Remember personalized columns in change analysis::
+Personalized columns are now available to all users and on by default. Users with edit permissions on a Liveboard can set their preferred attribute columns through the change analysis window and select *Apply to all users* to keep those selections for any subsequent change analysis calculations on that Liveboard. Individual users can still override these preferences for their own calculations. +
+For more information, see
+xref:spotiq-change.adoc#remember-personalized[Remember personalized columns].
+
+// Naomi – SCAL-176265. documentation JIRA scal-201646.
+Drill down in change analysis [.badge.badge-early-access-relnotes]#Early Access#:: You can now drill down on specific columns in change analysis, in order to identify change drivers within your data. For example, if you run an analysis on sales monthly and find out that the 'jacket' item type changed the most, you can easily drill down on jacket sales and identify which region contributed the most to the change in sales. To enable this feature, contact your administrator. +
+For more information, see
+xref:spotiq-change.adoc#iterative[Iterative change analysis].
+
+// Naomi – SCAL-180961. SCAL-130010. Documentation JIRA scal-201647. documentation JIRA scal-201649.
+ThoughtSpot Sync::
+We made the following enhancements to ThoughtSpot Sync:
+
+* Using ThoughtSpot Sync, you can now sync data directly from an Answer or a custom SQL view, to xref:sync-ms-excel.adoc[Excel].
+* You can now click the preview link when you create a Sync from the Data workspace to see a preview of the resulting Answer, Liveboard, or Custom SQL view. Answer, Liveboard, and Custom SQL view previews appear in a new tab.
+* When running a Sync, you can see the following information depending on the destination:
+
+** Slack: channel name
+** Microsoft Teams: team and channel
+** Sheets: file name and spreadsheet name
+** All others: object name and operation name
+
+[#9-12-0-cl-business-user]
+=== For the Business User
+
+// Naomi – SCAL-188039. documentation jira SCAL-201656.
+Ask Sage [.badge.badge-beta-relnotes]#Beta#::
+You can now conversationally search ThoughtSpot using natural language on a Liveboard visualization, asking follow-up questions for further clarification or to take your analysis in a new direction. This conversational approach allows you to begin with a simple question, and ask successive questions to refine the answer you receive. ThoughtSpot translates each natural language question into a query, and answers in chart format. To enable this feature, contact your administrator.
++
+For more information, see xref:ask-sage.adoc[Ask Sage].
+
+// Naomi -- SCAL-153878. documentation jira SCAL-201644.
+Forecasting [.badge.badge-beta-relnotes]#Beta#::
+You can now use SpotIQ analysis to forecast future trends for your KPIs. ThoughtSpot uses machine learning models that learn from past trends, growth, and seasonality to project how the target metric will trend in the future. To enable this feature, contact {support-url}.
++
+For more information, see xref:spotiq-forecasting.adoc[Forecasting].
+
+// Naomi – SCAL-179981. documentation jira SCAL-202909 (approved).
+Sage Coach::
+We made the following enhancements to Sage Coach:
+
+* Sage Coach shows the feedback from the selected Org-ID only.
+* Renamed the labels for Sage Coach under the *Data* tab as *Sage Feedback - Queries* and *Sage Feedback - Fragments*.
+* Added an *Edited by* column to indicate the last person to edit specific feedback in both Fragments and Queries pages.
+* Added a *Rating* column to the Fragments page to record whether the original Answer was rated accurate or inaccurate.
+* Added a *Chart* preference column to the Queries page.
+* Added an *Access* column to the *Sage Feedback - Fragments* page to record whether the access level is user-level or global to make it consistent with *Sage Feedback - Queries* page.
+
+// Naomi -- SCAL-187745. documentation JIRA scal-201640
+Collibra integration::
+Collibra integration is now available to all users and on by default. You can now see verification status and descriptions on tables and columns imported from Collibra. This information appears when you click on the corresponding table or column in *Search data*. Once connected, this information is visible to all users. For more information, see xref:catalog-integration-collibra.adoc[Collibra catalog integration].
+
+////
+Email digest::
+ThoughtSpot delivers an email digest to users to provide updates about new and trending Liveboards from their cluster based on total views, favorites, and noteworthy community articles. All users who sign in to ThoughtSpot are automatically subscribed to email digests. Users can manage their preferences for email digests. Administrators can turn this feature on and off, or change the default frequency to weekly, monthly, or quarterly.
+    // Mary – SCAL-179683 Doc JIRA SCAL-201820. move lower possibly?
+// PM: Mohil - May 6 removed from 9.12.0.cl per Mohil
+////
+
+Support for Excel (XLSX) attachments in Scheduled Liveboards::
+ThoughtSpot introduces support for scheduling Liveboards with Excel (XLSX) attachments, in addition to the existing PDF and CSV options. This allows users to explore tabular data from these reports by using the XLSX data files.
+For more information, see xref:liveboard-schedule.adoc[Schedule a Liveboard job].
+// Mary – SCAL-140254 Doc JIRA SCAL-201825 .
+
+Show underlying data sources::
+ThoughtSpot now shows you which data sources are used in a Liveboard. A Liveboard may contain visualizations from many data sources. Authors may choose to use this feature to provide other Liveboard editors with access to the underlying data sources.
++
+The data sources appear in the *Show Liveboard details* modal under *Data source*.
++
+NOTE: If a data source is unavailable due to permissions, a message appears to indicate that in place of the data source name.
++
+For more information, see xref:liveboard.adoc[Details about a Liveboard].
+// Mary – SCAL-190726 Doc JIRA SCAL-201822.
+
+// Naomi. SCAL-178764. docs JIRA SCAL-204357
+Error message improvements:: We have improved the error messages for CSV upload and custom calendar.
+
+Filters available for Liveboards with hidden columns included in a visualization::
+You can now change the filter values on Liveboards  that have visualizations that include hidden columns, or a formula created from a hidden column.
++
+Liveboard filters are now accessible to all users who have view or edit permissions to the underlying data source.
++
+NOTE: Previously, users who did not have edit access to the underlying worksheet of a Liveboard with filters, could not update the Liveboard filters if the Liveboard used a hidden column. This was the case even if the user had view access to the underlying worksheets. While you can now change filter values on the visualizations, you cannot change filters created directly on the hidden column. To get hidden column filter access, you must have edit access to the data source and the *Can manage data* privilege.
++
+For more information, see xref:liveboard-filters.adoc[Liveboard filters].
+// Mary – SCAL-157372 Doc JIRA SCAL-201823
+
+[#9-12-0-cl-data-engineer]
+=== For the Data Engineer
+
+// Naomi – SCAL-180544. documentation JIRA SCAL-204538 (approved)
+Semi-additive measures with first and last values [.badge.badge-early-access-relnotes]#Early Access#::
+A semi-additive measure, also known as snapshot data, is a measure that is usually aggregated for all attributes except for date and time. For certain measures, like inventory, you want to know what the value was at the beginning or end of a period. In that case, you can use the `last_value` function to find the inventory at the end of a month, rather than aggregating all values over the month. Similarly, you can use the `first_value` function to find out your stock at the beginning of a month. To enable this feature, contact your administrator.
++
+For more information, see xref:semi-additive-measures.adoc[Semi-additive measures with `first_value` and `last_value` functions] and xref:semi-additive-modeling.adoc[Modeling data for semi-additive measures].
+
+Version control for Liveboards and Answers [.badge.badge-early-access-relnotes]#Early Access#::
+// Mark – doc jira: SCAL-196890
+// PM: Nico
+Now teams of analysts can more easily collaborate on content development of Liveboards and Answers. You can enable version control on specific Liveboards and Answers. With version control enabled, every time you save the Liveboard or Answer, a new version is created and stored. You can browse the version history in ThoughtSpot and restore any saved versions whenever you need to. To enable this feature, contact your administrator. For more information, see xref:liveboard.adoc#version-history[Liveboards] and xref:answers.adoc#version-history[Answers].
+
+
+
+// Naomi -- SCAL-187745. documentation JIRA scal-201640.
+Collibra catalog integration::
+Collibra catalog integration is now available to all users and on by default. You can now import metadata information related to your tables and columns from Collibra into ThoughtSpot. From the Data tab, you can set up a connection to Collibra to import column descriptions, column verification status, table descriptions, and table verification status. For more information, see xref:catalog-integration-collibra.adoc[].
+
+// Naomi – SCAL-191462, documentation jira scal-196178
+Snowflake secondary role configuration for External OAuth::
+ThoughtSpot now supports secondary role configuration when you create a Snowflake connection using External OAuth. When you set secondary roles to `ALL`, you can access all tables that any single role has access to and combine them in a single SQL query without having to switch roles.
++
+For more information on primary and secondary roles, see link:https://docs.snowflake.com/en/user-guide/security-access-control-overview#enforcement-model-with-primary-role-and-secondary-roles[Enforcement model with primary role and secondary roles] and xref:connections-snowflake-add.adoc#secondary[Add a Snowflake connection].
+
+Multiple configurations for Snowflake connections [.badge.badge-early-access-relnotes]#Early Access#::
+// Mark – SCAL-94921, doc jira: SCAL-136317
+// PM: Aaghran
+You can now create multiple configurations for each Snowflake connection. This allows you to allocate a separate Snowflake warehouse for different ThoughtSpot users or groups, eliminating the need to duplicate Liveboards and configure multiple Snowflake connections and helping you with cost tracking and chargeback. You can also use this for your search indexing so that you can control and balance the computing load. In addition, this allows you to easily test a set of Liveboards against different environments (dev, qa, prod), and configure different databases for multi-tenancy / multi-org deployments.
+For more information, see xref:connections-snowflake-add.adoc#additional-configurations-create[Creating additional configurations for your Snowflake connection].
+
+// Naomi - Doc jira: SCAL-203459
+Redshift AWS IDC OAuth:: We now support Redshift connections using AWS IDC OAuth. For more information, see
+xref:connections-redshift-aws-idc-oauth.adoc[Configure AWS IDC OAuth for a Redshift connection].
+
+// Naomi – SCAL-179763. documentation JIRA scal-201642.
+User Adoption Liveboard::
+You can now use the User Adoption Liveboard to understand how ThoughtSpot is saving you time with ad-hoc insights, and how many users are accessing ThoughtSpot and creating new insights every month. For more information, see
+xref:user-adoption.adoc[User Adoption Liveboard] and xref:user-productivity.adoc[].
+
+
+// Naomi – SCAL-148626. documentation jira SCAL-202207 (approved). SCAL-132544. documentation jira SCAL-202209 (approved)
+Connection TML::
+You can now use the table TML file to make changes to connection details like remapping columns and changing data type, rather than using the connection.yaml file. This allows you to make small changes to a Connection without the need to resolve all possible errors first. You can also edit or export the Connection TML file from the Data workspace.  For more information, see xref:tml-connections.adoc[TML for connections].
+
+
+Enabling GIT integration for version control of Liveboards and Answers [.badge.badge-early-access-relnotes]#Early Access#::
+// Mark – doc jira: SCAL-196890
+// PM: Nico
+Administrators can now enable version control of Liveboards and Answers. You enable version control for your ThoughtSpot Org by connecting it to a GitHub repository. Once enabled for the Org, version control can be enabled individually for any Liveboard or Answer. Each time a user saves changes, a new version of the Liveboard or Answer is created and stored in your GitHub repository. Users can easily browse and restore an older version from the Liveboard or Answer itself. For more information, see
+xref:git-version-control.adoc[Version control for Liveboards and Answers].
+
+[#9-12-0-cl-developer]
+=== For the Developer
+
+// mark -- SCAL-194041
+Develop custom charts [.badge.badge-beta-relnotes]#Beta#:: Developers can now create custom charts for ThoughtSpot using the ThoughtSpot Charts SDK. To enable this feature, contact {support-url}. For more information, see xref:chart-custom.adoc[Custom charts].
+
+ThoughtSpot Embedded:: For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation^].
+
+== ThoughtSpot 9.10.5.cl
+
+* <<9-11-0-cl-first,For the First User>>
+* <<9-11-0-cl-analyst,For the Analyst>>
+* <<9-11-0-cl-business-user,For the Business User>>
+* <<9-11-0-cl-data-engineer,For the Data Engineer>>
+* <<9-11-0-cl-developer,For the Developer>>
+
+[#9-11-0-cl-first]
+=== For the First User
+
+Getting started with ThoughtSpot Cloud::
+The first user on the account has to complete a series of steps before other people can start using ThoughtSpot with your organization's data.
+For these instructions, see xref:ts-cloud-getting-started.adoc[Getting Started with ThoughtSpot Cloud].
+
+[#9-11-0-cl-analyst]
+=== For the Analyst
+
+////
+// Naomi -- scal-177005
+Advanced conditional formatting [.badge.badge-early-access-relnotes]#Early Access#::
+Rather than simply using conditional formatting comparing a column's measures to a single value (for example, `sales > 10000`), you can now use conditional formatting to compare a column's measures to another column or to a parameter. For example, if you search for `sales this year` versus `sales last year`, you can highlight where sales this year were less than last year. You can set multiple conditional formatting rules to a single table.
+For more information, see xref:search-conditional-formatting.adoc#advanced-conditional-formatting[Advanced conditional formatting].
+////
+
+// Naomi -- scal-174127
+ThoughtSpot Sync for Google BigQuery::
+ThoughtSpot Sync for Google BigQuery is now on by default and available to all users. Using ThoughtSpot Sync, you can now sync data directly from an Answer or a custom SQL view, to your Google BigQuery cloud data warehouse.
+For more information, see xref:sync-gbq.adoc[Sync to Google BigQuery].
+
+// Mark -- SCAL-202002, doc jira: SCAL-179003
+Custom charts [.badge.badge-beta-relnotes]#Beta#::
+You can now use custom charts created outside of ThoughtSpot, including third-party chart libraries. To enable this feature, contact {support-url}. For more information, see xref:chart-custom.adoc[Custom charts].
+
+
+// Mary -- SCAL-150356
+Custom sets [.badge.badge-early-access-whats-new]#Early Access#::
+You can create custom sets, which can be used to classify values in a list that you can then reuse across multiple analyses. ThoughtSpot introduces custom column sets in this release. A column set is a custom group of values from a single column. For example, you can use custom sets to define regions with specific countries included or excluded. Custom sets are community objects which remain when you navigate away from the Search Data page and can be used by any user with view access to the underlying Worksheet. To enable this feature, contact {support-url}. For more information, see xref:custom-sets.adoc[Custom sets].
+
+[#9-11-0-cl-business-user]
+=== For the Business User
+// Mark -- SCAL-162712, doc jira: SCAL-178264
+AI Highlights [.badge.badge-early-access-relnotes]#Early Access#::
+
+With AI Highlights, you get quick insights on how top metrics have changed in your Liveboard, dramatically reducing the time to derive insights from your KPIs. To enable this feature, contact your administrator.
+For more information, see xref:liveboard-ai-highlights.adoc[AI Highlights].
+
+Keywords "of", "percentage of" [.badge.badge-beta-relnotes]#Beta#:: To enable business users to answer questions related to mix, contribution, share of, percentage, and total ratios, we added the keywords "of" and "percentage of". These keywords help answer questions such as "What is the share of a certain store’s sales as a percentage of the regional whole?" To try out this feature, enter a search phrase in the search bar containing the keyword, such as `sales percentage of store region`, and press *Go*. +
+For more information, see
+xref:formulas-keywords.adoc[Keywords: Of and Percentage of].
+
+// Naomi -- SCAL-174136, SCAL-201297
+Collibra integration [.badge.badge-beta-relnotes]#Beta#::
+You can now see verification status and descriptions on tables and columns imported from Collibra. This information appears when you click on the corresponding table or column in *Search data*. Once connected, this information is visible to all users. To enable this feature, contact {support-url}.
++
+For more information, see xref:catalog-integration-collibra.adoc[Collibra integration].
+
+
+[#9-11-0-cl-data-engineer]
+=== For the Data Engineer
+
+// Naomi -- SCAL-176923, SCAL-201296
+Mode connector [.badge.badge-early-access-relnotes]#Early Access#:: ThoughtSpot now supports connections to Mode. Import reusable Datasets created in Mode as table extracts to leverage the full ThoughtSpot product, from Worksheet/Model creation to Search, Answer creation, and KPI monitoring. For more information, see
+xref:connections-mode.adoc[Connect to Mode].
+
+Click and drag to create joins with Models [.badge.badge-early-access-relnotes]#Early Access#::
+
+You can now create joins in your Model by clicking and dragging from one table to another. To enable the Models feature, contact your administrator. For more information, see xref:models.adoc[Create models].
+
+// Mark -- SCAL-194041
+
+
+Granular privileges for can-manage-data [.badge.badge-beta]#Beta#::
+ThoughtSpot Role-Based Access Control (RBAC) enhances the granularity of permissions with the addition of new data management privileges. The following data control privileges have been added:
+
+* Can create/edit Connections
+* Can manage data models
+* Can manage custom calendars
+* Can upload user data
+
+RBAC is disabled by default. To enable this feature, contact {support-url}.
+// Mary -- SCAL-139496
+
+
+
+// Naomi -- SCAL-154204, SCAL-201299
+Feedback review::
+We made the following changes to ThoughtSpot feedback review for AI Answers:
+
+* Feedback for AI Answers is now Org-aware.
+* When you make a change to a Worksheet, ThoughtSpot now alerts you if this will affect any related query feedback. If you accept this and make the change, the feedback depending on that Worksheet is deleted.
+//* You can now import query feedback when you move information from a development cluster to a production cluster.
+
+// Naomi -- SCAL-126451
+Sharing dbt connections::
+You can now select a dbt connection and click *Share* to share the connection with other users or groups. You can select whether to allow edit access to the dbt user from the *Share connection* dialog box. For more information, see
+xref:dbt-integration.adoc#share[Share a dbt connection].
+
+// Naomi -- SCAL-180960
+dbt error message handling::
+ThoughtSpot displays dbt error messages that clearly describe whether the error originated in dbt or in ThoughtSpot, where the error was encountered, and what steps users should take to resolve the issue. For a list of the error messages ThoughtSpot supports, see xref:dbt-integration.adoc#error[dbt error messages].
+
+// Naomi -- SCAL-126453, SCAL-201305
+dbt connections join enhancement::
+When creating a Worksheet from a dbt connection, ThoughtSpot joins the tables based on the relationships defined in the underlying .yml schema file. Now, joins between the tables will be created local to the Worksheet instead of creating a global join between the tables.
+
+// Naomi -- SCAL-164290, SCAL-201306
+Ts_Groups system variable::
+ThoughtSpot now supports the `ts_groups` system variable in Answer and Worksheet formulas. You can use the `ts_groups` variable for data masking, or deciding whether to display the value of a column to a user based on their group membership.
+
+// Naomi -- SCAL-178532, SCAL-201307
+Enhancements to error messages for Search and Answers::
+To improve our error messaging when an error prevents data from loading, we introduced a broader classification that allows you to understand issues more clearly. You can click "Copy error details" to download and send a file to your administrators.
+
+// Doc jira: SCAL-202377
+Answer data panel enhancements::
+Now in the new Answer data panel, you can filter as you hover on a column, _By category_ grouping by default, and display the information panel when you click a column.
+
+[#9-11-0-cl-developer]
+=== For the Developer
+
+// mark -- SCAL-194041
+Develop custom charts [.badge.badge-beta-relnotes]#Beta#:: Developers can now create custom charts for ThoughtSpot using the ThoughtSpot Charts SDK. To enable this feature, contact {support-url}. For more information, see xref:chart-custom.adoc[Custom charts].
+
+ThoughtSpot Embedded:: For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation^].
+
+== ThoughtSpot 9.10.0.cl Release
+
+* <<9-10-0-cl-first,For the First User>>
+* <<9-10-0-cl-analyst,For the Analyst>>
+* <<9-10-0-cl-business-user,For the Business User>>
+* <<9-10-0-cl-data-engineer,For the Data Engineer>>
+* <<9-10-0-cl-developer,For the Developer>>
+
+[#9-10-0-cl-first]
+=== For the First User
+
+Getting started with ThoughtSpot Cloud::
+The first user on the account has to complete a series of steps before other people can start using ThoughtSpot with your organization's data.
+For these instructions, see xref:ts-cloud-getting-started.adoc[Getting Started with ThoughtSpot Cloud].
+
+[#9-10-0-cl-analyst]
+=== For the Analyst
+
+// Naomi -- scal-182100, documentation JIRA scal-201040
+Renaming columns::
+You can now rename columns in an Answer and see the new name reflected on the table header, tooltips, legend, and chart configuration menu. Changes made to an Answer are not reflected in the underlying Worksheet. For more information, see xref:chart-column-axis-rename.adoc#column-rename[Rename a table column].
+
+// Naomi -- scal-174127, documentation JIRA scal-201041
+ThoughtSpot Sync for Google BigQuery [.badge.badge-beta-relnotes]#Beta#::
+Using ThoughtSpot Sync, you can now sync data directly from an Answer or a custom SQL view, to your Google BigQuery cloud data warehouse. To enable this feature, contact {support-url}.
+For more information, see xref:sync-gbq.adoc[Sync to Google BigQuery].
+
+// Naomi -- scal-176730, documentation JIRA scal-201311
+ThoughtSpot Sync from unsaved Answers:: You can now create syncs from Answers without saving first.
+
+//Mary -- scal-143396
+//Customized Tooltips:: You can now customize the tooltips that are displayed on charts to provide users with information that leads to better insights.
+
+
+////
+// Mary -- SCAL-158469.
+Functional enhancements for verified Liveboards::
+Easily find verified Liveboards with trusted content and sort Liveboards to view verified content. Request verification of Liveboards and cancel requests when needed.
+////
+
+
+[#9-10-0-cl-business-user]
+=== For the Business User
+
+
+
+
+// Naomi -- scal-169683, documentation JIRA scal-201035
+Null and missing values in charts::
+You can now choose how null and missing values appear in line, column, and bar charts in ThoughtSpot. Null and missing values appear as bars of 1 pixel width on bar and column charts. You can choose whether to display null date values as zero values, line breaks, or an average of proximate values on a line chart. Rather than showing a sharp decline to zero every time there is null or missing data on your line chart, you can see the missing values represented as line breaks or averages of the closest values instead. For more information, see
+xref:chart-null-missing.adoc[Null and missing values in charts].
+
+////
+// Naomi -- scal-175485, scal-177391. actually EA.
+Ask Sage:: You can now conversationally search ThoughtSpot using natural language, asking follow-up questions for further clarification or to take your analysis in a new direction. To access Ask Sage, ask a question using the Natural Language Search interface on the Home page, and click *Ask a follow up*. For more information, see xref:ask-sage.adoc[Ask Sage].
+////
+
+// Naomi -- scal-141936, scal-176265, documentation JIRA scal-178860
+Iterative change analysis [.badge.badge-beta-relnotes]#Beta#::
+You can now drill down on specific columns in change analysis, in order to identify change drivers within your data. For example, if you run an analysis on sales monthly and find out that the 'jacket' item type changed the most, you can easily drill down on jacket sales and identify which region contributed the most to the change in sales. For more information, see xref:spotiq-change.adoc#iterative[Iterative change analysis].
+
+// Naomi -- SCAL-127727, documentation jira scal-201033
+Contextual alert creation on KPI charts:: ThoughtSpot now preserves the filters you use on a KPI when you create a Monitor alert. Users with view access to the underlying Liveboard can now receive alert emails for filtered KPIs without saving the filters on the Liveboard. For more information, see xref:monitor.adoc[Monitor alerts].
+
+// Naomi -- SCAL-159819, documentation jira scal-201314
+ThoughtSpot for Slack [.badge.badge-early-access-relnotes]#Early Access#::
+You can now ask ThoughtSpot questions using Slack. Install the ThoughtSpot Slack app, add it to a Slack channel, and you can ask questions of your data sources in natural language. ThoughtSpot answers in chart format. For more information, see xref:spotdev.adoc[].
+
+// Naomi -- scal-159515, documentation JIRA scal-201031
+Commenting on Liveboards:: You can now add or reply to comments, tag other users, or subscribe to comment threads directly on a Liveboard. Users can point out insights or reach out for clarification without leaving ThoughtSpot. To try it out, click the comment icon to the right of the edit icon, and select the data point you would like to comment on. For more information, see xref:liveboard-comment.adoc[].
+
+// Naomi -- scal-173345, scal-89341, documentation jira: scal-201032
+
+Anomaly insights with Monitor alerts for time-series KPI::
+When you receive an email alert about a threshold or scheduled alert, ThoughtSpot now surfaces any anomalies found in your KPI. You can see the expected range of values, and click a link to view your KPI in the original Liveboard. To enable this feature, contact your administrator. For more information, see
+xref:monitor.adoc#early-access[Monitor].
+
+
+
+// Naomi -- scal-166121, documentation jira scal-201034. actually EA.
+Chart customizations [.badge.badge-early-access-relnotes]#Early Access#:: You can now access advanced chart customization settings for Answers by selecting the *Edit chart configuration* icon image:icon-gear-10px.png[chart customization icon] and selecting *Advanced settings*. Use these settings to adjust the size and appearance of tooltips, regression lines, gridlines, and chart backgrounds. For more information, see xref:chart-settings-advanced.adoc[Advanced chart settings].
+
+// Naomi -- scal-141936. actually beta. spotiq-change.adoc#iterative
+
+Run change analysis iteratively:: You can now drill down on specific columns in change analysis, in order to identify change drivers within your data. When you right-click on an attribute value in the change analysis window to drill down, ThoughtSpot adds the attribute value as a filter and re-calculates change analysis for the specific window of time specified in your original search. For more information, see xref:spotiq-change.adoc#iterative[Iterative change analysis].
+
+// Naomi -- scal-147558, scal-201036
+Change analysis: remember personalized columns [.badge.badge-early-access-relnotes]#Early Access#::
+Users with edit permissions on a Liveboard can set their preferred attribute columns through the change analysis window and select *Apply to all users* to keep those selections for any subsequent change analysis calculations on that Liveboard. Individual users can still override these preferences for their own calculations. For more information, see xref:spotiq-change.adoc#remember-personalized[Remember personalized columns].
+
+
+
+// Naomi -- scal-156247, documentation JIRA scal-201037
+Natural language search chart type:: You can now specify the answering chart type when you use Natural Language Search. For example, search for "sales by region pie chart", and the results appear in pie chart format. For more information, see xref:ai-answers.adoc[].
+
+// Naomi -- scal-177253, documentation JIRA scal-201038
+Add formula or parameter to Answer::
+You can now add a formula or parameter to an Answer by navigating to the *Category* image:icon-by-category.png[Category view] or *A to Z* image:icon-a-to-z.png[Alphabetical view] view of the Data panel, clicking *+ Add*, and selecting *Formula* or *Parameter*.
+
+//Mary -- scal-134503
+Functional enhancements for verified Liveboards:: Easily find verified Liveboards marked with banners, and icons. Sort search results to view content tagged as verified. Request verification of Liveboards and cancel requests when needed. For more information, see xref:liveboard-verify.adoc[Verify Liveboards].
+
+// Mark -- SCAL-178264
+AI Highlights [.badge.badge-beta-relnotes]#Beta#:: With AI Highlights, you get quick insights on how top metrics have changed in your Liveboard, dramatically reducing the time to derive insights from your KPIs.
+For more information, see xref:liveboard-ai-highlights.adoc[].
+
+//Mary scal-174139, scal-158579, scal-174139
+Roles and more granular access privileges:: ThoughtSpot introduces role-based access control (RBAC) to allow for more granular access privileges. Use roles to apply privileges customized for your organizational needs.
+ThoughtSpot includes some standard roles to help existing customers transition to RBAC. RBAC is supported in Primary Orgs. To enable RBAC, contact {support-url}. For more information, see xref:rbac.adoc[Understand RBAC and privileges].
+
+//scal-159581, scal-102588, scal-95381, scal-165060, scal-161325, scal-154973, scal-142097, scal-102588, scal-158204
+Mobile enhancements:: We made the following improvements to ThoughtSpot mobile:
+
+* We simplified the log in process for the ThoughtSpot mobile app. You can now enter your company email to receive an email with a magic link login, rather than entering the server URL.
+* ThoughtSpot now supports IAMv2 login.
+* You can now change your ThoughtSpot locale through the Mobile app. When your locale is updated, ThoughtSpot translates labels, date formats and number formats to match the default for your country and language.
+* You can now use SpotIQ analysis to directly identify the key drivers for recent change in your KPIs in ThoughtSpot Mobile. KPI change analysis allows you to drill down into the causes of change in your KPIs and customize the insights generated by SpotIQ.
+To access this feature, go to your KPI chart and select the caret icon to the right of the percent change label. The *Run change analysis* pop-up allows you to customize the columns ThoughtSpot analyzes. Note that ThoughtSpot runs change analysis between the two most recent data points defined by the KPI’s time bucket (for example, `daily` or `weekly`).
+* We introduced improved deep linking to ThoughtSpot mobile. When you click a link you no longer need to choose whether you want to view the link in your default mobile browser or the ThoughtSpot app. The default behavior is to open the link in ThoughtSpot if it is supported.
+* You can now receive ThoughtSpot mobile push notifications. Receive push notifications when a Liveboard or Answer is shared with you. Monitor scheduled and threshold alerts with push notifications.
+
+[#9-10-0-cl-data-engineer]
+
+=== For the Data Engineer
+
+// Naomi -- scal-166158, documentation JIRA scal-201042
+Google Cloud SQL for MySQL connection:: We added support for xref:connections-google-cloud-sql-mysql.adoc[Google Cloud SQL for MySQL].
+
+// Naomi -- scal-118895, documentation JIRA SCAL-201045
+Validate metadata for connections::
+You can now validate connections to discover any changes in metadata after the connection was created. When you validate a connection, ThoughtSpot provides a JSON file containing details on the metadata changes. Once alerted to a metadata change, you can use TML to update the connection.
+
+////
+// Naomi -- scal-158415
+Row-level security in custom calendars:: We now support row-level security in custom calendars.
+////
+
+// Mark -- SCAL-161198
+Looker Modeler connection:: You can now create a connection to Looker Modeler. For more information, see xref:connections-looker.adoc[Looker Modeler].
+
+
+// Naomi -- scal-169065, documentation JIRA scal-201046
+dbt public API:: dbt core users can now use the dbt public API to upload dbt project files to ThoughtSpot. Use the dbt sync API to upload your dbt project's zip files.
+
+// Naomi -- scal-169614, documentation JIRA scal-201047
+dbt version 1.7:: ThoughtSpot now supports dbt version 1.7.
+
+[#9-10-0-cl-developer]
+=== For the Developer
+
+ThoughtSpot Embedded:: For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation^].
+
+
+== ThoughtSpot 9.8.0.cl Release
+
+* <<9-8-0-cl-first,For the First User>>
+* <<9-8-0-cl-analyst,For the Analyst>>
+* <<9-8-0-cl-business-user,For the Business User>>
+* <<9-8-0-cl-data-engineer,For the Data Engineer>>
+* <<9-8-0-cl-developer,For the Developer>>
+
+[#9-8-0-cl-first]
+=== For the First User
+
+Getting started with ThoughtSpot Cloud::
+The first user on the account has to complete a series of steps before other people can start using ThoughtSpot with your organization's data.
+For these instructions, see xref:ts-cloud-getting-started.adoc[Getting Started with ThoughtSpot Cloud].
+
+[#9-8-0-cl-analyst]
+=== For the Analyst
+
+// SCAL-158474
+Database as a destination for Answer sync:: Using ThoughtSpot Sync you can now sync data directly from an Answer or a custom SQL view, to your Snowflake or Redshift cloud data warehouse.
+
+//  SCAL-158473
+Enhancements for TS Sync::
+ThoughtSpot Sync allows you to connect and share complete Liveboards using Microsoft Teams and Slack. Previously, only Answers could be shared.
+
+//SCAL-154204
+
+Sage Coach feedback review::
+You can now review user feedback from the Data workspace, and determine whether it should apply to only that user’s queries, or to the entire cluster. Use the *Query Feedback* modal to review feedback given to individual natural language queries, and use the *Query Term Feedback* modal to review the translation of individual natural language terms to search tokens.
+For more information, see
+xref:sage-coach.adoc[Sage Coach].
+
+//  SCAL-156895
+Custom Sorting [.badge.badge-early-access]#Early Access#::
+ThoughtSpot introduces custom sorting of attributes to sort all chart types in a way that helps users to consume charts more efficiently. Previously custom sorting could only be applied to an Answer using custom columns and the search bar, and could not be applied to some chart types. You can now sort on any column in a chart, in ascending or descending order, from the column heading menu. To enable this feature, contact your administrator.
+
+
+
+
+[#9-8-0-cl-business-user]
+=== For the Business User
+
+
+// SCAL-154204
+Give feedback to AI-generated Answers:: When giving feedback to AI-generated Answers in Sage, you now tell ThoughtSpot what search tokens to use to signify certain key terms. For example, when you search for "best performing products this year", ThoughtSpot responds with the top five products sorted by sum of sales. You can correct top five to top ten by clicking the thumbs-down icon and editing the Answer. ThoughtSpot then stores that feedback, and admin users and Worksheet owners can decide to apply the feedback globally, so that every time someone searches for "best" products, they receive the top ten results.
+For more information, see xref:ai-answers.adoc#sage-coach[Give feedback to AI-generated Answers].
+
+
+// SCAL-127727
+Contextual alert creation on KPI charts [.badge.badge-early-access-relnotes]#Early Access#:: ThoughtSpot now preserves the filters you use on a KPI when you create a Monitor alert. Users with view access to the underlying Liveboard can now receive alert emails for filtered KPIs without saving the filters on the Liveboard. For more information, see xref:monitor.adoc[Monitor alerts].
+
+// SCAL-172513
+Change analysis: More insights:: Change analysis _More insights_ are now available to all customers and are enabled by default. For example, ThoughtSpot finds values that underwent the highest percentage change between the two data points defined in your analysis, and values whose share of the total changed the most. The insights appear below the main analysis in the change analysis pop-up window. Note that insights do not appear for measures of type `count` and `ratios`. For more information, see xref:spotiq-change.adoc#additional[Change analysis].
+
+// SCAL-89341
+Anomaly insights with Monitor alerts for time-series KPI [.badge.badge-early-access-relnotes]#Early Access#:: When you receive an email alert about a threshold or scheduled alert, ThoughtSpot now surfaces any anomalies found in your KPI. You can see the expected range of values, and click a link to view your KPI in the original Liveboard. For more information, see xref:monitor.adoc#early-access[Monitor].
+
+
+// SCAL-177812
+KPI scheduled watchlist alert:: When you add a KPI to your homepage watchlist, ThoughtSpot automatically creates a scheduled alert. You receive emails with updates to the KPI on a periodic basis. You can edit all scheduled alerts from the *Monitor* tab. For more information, see xref:thoughtspot-one-homepage.adoc#monitor[Track important KPIs].
+
+////
+// SCAL-159818
+ThoughtSpot for Slack::
+You can now ask ThoughtSpot questions using Slack. Install the ThoughtSpot Slack app, add it to a Slack channel, and you can ask questions of your data sources in natural language. ThoughtSpot answers in chart format. For more information, see xref:spotdev.adoc[ThoughtSpot Slack app].
+////
+
+//SCAL-163617
+Personalized views::
+Personalized views are now available to all users and on by default. Personalized views allow you to save your own set of values for filters and parameters in a Liveboard without editing the original Liveboard. You can change the values of the already present filters and parameters in a Liveboard and save the view for future use. Any changes made to the master Liveboard are carried over to the view, including changes made to pinned visualizations, tabs, filter chips, and re-ordering. Changes made to the view are not pushed to the master Liveboard. This eliminates the need to make multiple copies of a Liveboard with your preferred filter values, that can fall out of sync with the original.
+
+// SCAL-169279
+Atlan:: Atlan is now available to all customers and is on by default. You can now see verification status and descriptions on tables and columns imported from Atlan. This information appears when you click on the corresponding table or column in *Search data*. Once connected, this information is visible to all users. For more information, see xref:catalog-integration-atlan.adoc[Atlan catalog integration].
+
+// SCAL-204112
+Webhooks for KPI monitor alerts:: Webhooks for Monitor are now available to all users and on by default. You can create webhooks to initiate workflows in third-party applications based on KPI changes, or send KPI alert notifications to custom channels. For example, if you are monitoring a "current inventory" KPI for an inventory management use case, you can build a workflow to trigger an order placement in a third-party app when your current inventory drops below a particular threshold value. For more information, see xref:monitor-webhooks.adoc[].
+
+
+// scal-162075
+Donut charts:: We have renamed the pie chart as donut chart. For more information, see xref:chart-donut.adoc[Donut charts].
+
+[#9-8-0-cl-data-engineer]
+=== For the Data Engineer
+
+//SCAL-138688
+Custom calendar enabled by default::
+In this release, custom calendar is enabled by default for all connections, except for the following which don’t support custom calendar:
+
+- Dremio
+- Denodo
+
+For details, see xref:connections-cust-cal.adoc[Custom calendar overview].
+
+// SCAL-166161, SCAL-166160, SCAL-166159, SCAL-164909
+Connections::
+The following connections are now available to all customers and are on by default:
+
+* xref:connections-google-alloydb-postgresql.adoc[Google AlloyDB for PostgreSQL]
+* xref:connections-google-cloud-sql-postgresql.adoc[Google Cloud SQL for PostgreSQL]
+* xref:connections-google-cloud-sql-sql-server.adoc[Google Cloud SQL for SQL Server]
+* xref:connections-singlestore.adoc[SingleStore]
+
+// SCAL-192459
+Redshift-managed PrivateLink:: You can now create Redshift Connections using Redshift-managed PrivateLink, as well as AWS PrivateLink. For more information, see xref:connections-redshift-managed-private-link.adoc[].
+
+
+// SCAL-169279
+Atlan catalog integration:: You can now import metadata information related to your tables and columns from Atlan into ThoughtSpot. From the Data tab, you can set up a connection to Atlan to import column descriptions, column verification status, table descriptions, and table verification status. For more information, see xref:catalog-integration-atlan.adoc[Atlan catalog integration].
+
+// SCAL-132886
+dbt public API::
+You can now use the dbt public API to perform the following tasks:
+
+* Create a dbt connection
+* Delete a dbt connection
+* Search a list of dbt connections
+* Update a dbt connection
+* Run dbt Sync
+* Update dbt Sync
+
+//For more information, see xref:dbt-integration.adoc#public-api[dbt public API].
+
+
+// SCAL-160062
+OAuth connection improvements:: If you do not have a valid OAuth access token, you can now directly navigate to the OAuth authorization screen when performing one of the following actions on a connection shared with you:
+
+** View sample data
+** Create a custom SQL view
+** Edit the connection
+** Upload a CSV file (Snowflake connections only)
+
+// Naomi-- scal-187049
+
+Snowflake account name restrictions::
+In accordance with link:https://community.snowflake.com/s/article/Behaviour-Change-Release-information-associated-with-Snowflake-JDBC-driver-version-3-13-25#:~:text=This%20change%20was%20made%20to,my_account.snowflakecomputing.com[Snowflake's recent JDBC update], ThoughtSpot does not support Snowflake account names that contain underscores for connections that use Private Link. For more information on how to adjust your account name behavior to avoid this restriction, see xref:connections-snowflake-private-link.adoc#account-name[Snowflake Private Link].
+
+////
+// SCAL-134057. moved to 9.12
+Support for deletion of Orgs::
+You can now delete an Org without first removing all users, connections and objects.
+////
+
+// scal-187722
+Org name limitations:: When an Org name is created, it becomes a subdomain of the cluster URL. As a DNS subdomain, an Org name cannot contain a space (' ') as a character. When used as a subdomain, any spaces in the Org name will be replaced with hyphens ('-').
+
+
+
+// scal-164805
+Disable SQL passthrough functions::
+Admin users can now ban passthrough functions for all connections on their cluster, to prevent SQL injection attacks. This option is available under the *Search & SpotIQ* section of the *Admin* tab.
+
+
+[#9-8-0-cl-developer]
+=== For the Developer
+
+For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation^].
+
 == ThoughtSpot 9.7.0.cl Release
 
 
@@ -64,9 +933,11 @@ System Variables in Answer and Worksheet formulas:: Previously, ThoughtSpot supp
 Request access to data source from filter:: When creating a filter on a Liveboard or Answer, you must have access to the underlying data source. Users can now request access to the underlying Worksheet through the filter modal on a Liveboard or Answer. For more information, see
 xref:liveboard-filters.adoc#filter-request[Liveboard filters].
 
-//scal-142071
-ThoughtSpot Slack bot integration:: Get notified in Slack when Liveboards are updated. ThoughtSpot's Slack integration lets you preview Liveboard and Answer links directly in Slack.
 
+//scal-142071
+////
+ThoughtSpot Slack bot integration:: Get notified in Slack when Liveboards are updated. ThoughtSpot's Slack integration lets you preview Liveboard and Answer links directly in Slack.
+////
 //scal-161459
 New data panel GA:: The new data panel experience is available for all customers in this release, and is enabled by default. In this release, you can now filter data sources by how they are tagged.
 
@@ -74,9 +945,21 @@ New data panel GA:: The new data panel experience is available for all customers
 
 [#9-7-0-cl-business-user]
 === For the Business User
+////
+//scal-151210
+Redesigned home page [.badge.badge-early-access-relnotes]#Early Access#::
+In this release,  we have a completely redesigned home page, where you can ask natural-language questions with Sage, view your watchlist, favorites, library of Answers and Liveboards, and more. With the new left-hand navigation, you can go directly to your Liveboards, Answers, SpotIQ Analysis, and Monitor Subscriptions. The _Search Data_ button has been renamed _Open Query Builder_ to more easily distinguish it from the Sage search bar.
++
+This new home page experience is disabled by default. To enable it, open your user profile, and in the _Experience_ section, set the Navigation and Homepage to *New experience*.
+
+// SCAL-175398
+New persona-based navigation [.badge.badge-early-access-relnotes]#Early Access#:: In this release, we introduce a completely redesigned navigation experience organized by persona. The new app switcher allows business users, analysts, data engineers, IT Ops, and developers to work in separate contextual sections designed specifically for their needs. In addition, each app has left-hand navigation to create better consistency and ease of use for users switching between the different apps. When you switch to a different app, that app opens in a new browser tab. The redesigned home page is part of the new persona-based navigation, in this release.
++
+This new navigation experience is disabled by default. To enable it, open your user profile, and in the _Experience_ section, set the Navigation and Homepage to *New experience*.
 
 ////
 //scal-159818
+////
 ThoughtSpot Slack app [.badge.badge-beta-relnotes]#Beta#:: You can now ask ThoughtSpot questions using Slack. Install the ThoughtSpot Slack app, add it to a Slack channel, and you will be able to ask questions of your data sources in natural language. ThoughtSpot answers in chart format. For more information, see
 xref:spotdev.adoc[ThoughtSpot Slack app].
 ////
@@ -94,7 +977,7 @@ Mobile enhancements:: We made the following improvements to ThoughtSpot mobile:
 * You can now change your ThoughtSpot locale through the Mobile app. When your locale is updated, ThoughtSpot translates labels, date formats and number formats to match the default for your country and language.
 * You can now use SpotIQ analysis to directly identify the key drivers for recent change in your KPIs in ThoughtSpot Mobile. KPI change analysis allows you to drill down into the causes of change in your KPIs and customize the insights generated by SpotIQ.
 To access this feature, go to your KPI chart and select the caret icon to the right of the percent change label. The *Run change analysis* pop-up allows you to customize the columns ThoughtSpot analyzes. Note that ThoughtSpot runs change analysis between the two most recent data points defined by the KPI’s time bucket (for example, `daily` or `weekly`).
-* We introduced improved linking to ThoughtSpot mobile. When you click a link you no longer need to choose whether you want to view the link in your default mobile browser or the ThoughtSpot app. The default behavior is to open the link in ThoughtSpot if it is supported.
+* We introduced improved deep linking to ThoughtSpot mobile. When you click a link you no longer need to choose whether you want to view the link in your default mobile browser or the ThoughtSpot app. The default behavior is to open the link in ThoughtSpot if it is supported.
 * You can now receive ThoughtSpot mobile push notifications. Receive push notifications when a Liveboard or Answer is shared with you. Monitor scheduled and threshold alerts with push notifications.
 
 
@@ -122,7 +1005,7 @@ OAuth for Databricks using Proof Key for Code Exchange (PKCE):: We now support x
 [#9-7-0-cl-developer]
 === For the Developer
 
-ThoughtSpot Everywhere:: For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation^].
+For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation^].
 
 [#9-6-0-cl]
 == ThoughtSpot 9.6.0.cl Release
@@ -161,7 +1044,7 @@ Query performance visibility [.badge.badge-beta-relnotes]#Beta#::
 You can now see the state of query execution for any Liveboard visualization while it loads. If a visualization takes longer than three seconds to load, ThoughtSpot displays the current query execution status (executing query, waiting for connection, or processing query) to help users identify the reason for the delay.
 
 Hidden columns in tables::
-You can now hide a column from your table without removing it from your current Search. If you hide the column you’re using to sort results, the sorting order is unchanged. To try it out, create an Answer, open the chart configuration menu gear icon, and drag the selected column to *Hidden Columns*.
+You can now hide a column from your table without removing it from your current Search. If you hide the column you’re using to sort results, the sorting order is unchanged. To try it out, create an Answer, open the *Edit chart configuration* icon, and drag the selected column to *Hidden Columns*.
 
 Commenting on Liveboards [.badge.badge-early-access-relnotes]#Early Access#::
 You can now add or reply to comments, tag other users, or subscribe to comment threads directly on a Liveboard. Users can point out insights or reach out for clarification without leaving ThoughtSpot. To try it out, click the comment icon to the right of the edit icon, and select the data point you would like to comment on. This feature must be enabled by your administrator. For more information, see xref:liveboard-comment.adoc[Comment on a Liveboard].
@@ -212,7 +1095,7 @@ Previously, when a Worksheet was created from a dbt model, the default worksheet
 [#9-6-0-cl-developer]
 === For the Developer
 
-ThoughtSpot Everywhere:: For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation^].
+For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation^].
 
 
 [#9-5-0-cl]
@@ -234,7 +1117,7 @@ For these instructions, see xref:ts-cloud-getting-started.adoc[Getting Started w
 [#9-5-0-cl-analyst]
 === For the Analyst
 
-Improved multi-tab PDF export from Liveboards:: Previously, you couldn’t export a liveboard with more than 40 visualizations, even if they were across multiple tabs. Starting in this release, you can now export a Liveboard with more than 40 visualizations, as long a single tab has no more than 40 visualizations.
+Improved multi-tab PDF export from Liveboards:: Previously, you couldn't export a Liveboard with more than 40 visualizations, even if they were across multiple tabs. Starting in this release, you can now export a Liveboard with more than 40 visualizations, as long a single tab has no more than 40 visualizations.
 
 Verified Liveboards:: Admin-assigned verifiers can now mark Liveboards as verified. Users can now request these verifiers to review their Liveboards, and verify if the information displayed is trusted content. Verified Liveboards carry a tag that signifies that they have been audited for correctness. For more information, see xref:liveboard-verify.adoc[Verified Liveboards].
 
@@ -277,11 +1160,12 @@ Responsive Liveboards:: We have improved the responsiveness of Liveboards. For w
 
 Chart display enhancements:: When you create bar and column charts and slice by color, ThoughtSpot automatically enables gridlines to make the chart easier to read. You can choose to disable gridlines under the chart configuration menu.
 
+////
 ServiceNow Incident Management (Snowflake Connector for ServiceNow):: In this release, there is a new ServiceNow Incident Management SpotApp which allows you to use your ServiceNow data stored in Snowflake. If you use the ServiceNow Snowflake connector to move your data from ServiceNow to Snowflake, use this SpotApp to track the number of tickets submitted, and understand the efficiency of how those tickets are resolved.
 +
 For more information, see
 xref:spotapps-servicenow.adoc[ServiceNow Incident Management SpotApps].
-
+////
 
 [#9-5-0-cl-business-user]
 === For the Business User
@@ -335,7 +1219,7 @@ xref:rbac.adoc[Understand RBAC and privileges].
 ThoughtSpot for Connected Sheets add-on:: ThoughtSpot Connected Sheets is an add-on that allows you to connect to a ThoughtSpot instance, pull data directly into a Google Sheet from trusted data sources connected to that instance (like Snowflake, Google BigQuery, DataBricks, and others), and use the tools in Google Sheets for ad-hoc analysis.
 +
 For more information, see
-xref:thoughtspot-sheets.adoc#sheets-connected[ThoughtSpot Connected Sheets].
+xref:thoughtspot-sheets.adoc[ThoughtSpot Connected Sheets].
 
 [#9-5-0-cl-data-engineer]
 === For the Data Engineer
@@ -350,7 +1234,7 @@ Redshift OAuth with Azure AD IDP:: Redshift now supports external OAuth through 
 [#9-5-0-cl-developer]
 === For the Developer
 
-ThoughtSpot Everywhere:: For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation^].
+For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation^].
 
 [#9-4-0-cl]
 == ThoughtSpot 9.4.0.cl Release
@@ -401,9 +1285,10 @@ xref:chart-geo.adoc#enhancement[Geo chart enhancements].
 
 Responsive Liveboards:: We have improved the responsiveness of Liveboards. For windows between 1024 pixels and 500 pixels, the Liveboard columns respond to re-sizing. For windows smaller than 500 pixels in width, a horizontal scroll bar appears.
 
-
+////
 Snowflake Query Profile SpotApp:: The Snowflake Query Profile SpotApp is now available. Use this SpotApp to analyze Snowflake query data to understand execution time better and pinpoint key areas for query optimization. For more information, see
 xref:spotapps-snowflake-query.adoc[Snowflake Query Profile SpotApp].
+////
 
 Table column case definition [.badge.badge-beta-relnotes]#Beta#::
 We are introducing the ability to specify the case of a table column (for example, upper, lower, or mixed). Previously, SQL generated by ThoughtSpot was always wrapped in a LOWER function with no configuration options. Now, users will be able to define whether columns in tables are mixed case or lower case. To enable this feature, contact {support-url}.
@@ -462,8 +1347,7 @@ New London cloud region for AWS:: ThoughtSpot Cloud now supports the London regi
 
 [#9-4-0-cl-developer]
 === For the Developer
-
-ThoughtSpot Everywhere:: For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation^].
+For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation^].
 
 
 [#9-3-0-cl]
@@ -539,7 +1423,7 @@ You can now identify the key change drivers for changes in your metrics in a KPI
 For more information, see
 xref:spotiq-change.adoc#change-analysis-contextual[Contextual change analysis].
 
-Keywords "of", "percentage of" [.badge.badge-beta-relnotes]#Beta#:: To enable business users to answer questions related to mix, contribution, share of, percentage, and total ratios, we added the keywords “of” and “percentage of”. These keywords help answer questions such as “What is the share of a certain store’s sales as a percentage of the regional whole?” Previously, searches such as these required the use of a group aggregate formula, which presented a barrier to users. +
+Keywords "of", "percentage of" [.badge.badge-beta-relnotes]#Beta#:: To enable business users to answer questions related to mix, contribution, share of, percentage, and total ratios, we added the keywords "of" and "percentage of". These keywords help answer questions such as "What is the share of a certain store’s sales as a percentage of the regional whole?" Previously, searches such as these required the use of a group aggregate formula, which presented a barrier to users. +
 For more information, see
 xref:formulas-keywords.adoc[Keywords: Of and Percentage of]. This feature is off by default. To enable it, contact {support-url}.
 
@@ -607,7 +1491,7 @@ In-app billing reporting:: Admin users will be able to access a Liveboard reflec
 [#9-3-0-cl-developer]
 === For the Developer
 
-ThoughtSpot Everywhere:: For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation^].
+For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation^].
 
 
 [#9-2-0-cl]
@@ -675,7 +1559,7 @@ Change filter order for Liveboard filters::
 Arrange Liveboard filters in the filter bar so that they are in a logical, coherent order, by dragging and dropping them to different spots in the list. This makes it easier for viewers of the Liveboard to understand and use the filters on the Liveboard. For more information, see xref:liveboard-filters.adoc#order[Change the filter order].
 
 TML for Monitor alerts::
-TML for Monitor alerts is now GA and on by default. Export, edit, and import xref:monitor.adoc[KPI Monitor alerts] programmatically, using ThoughtSpot Modeling Language. For more information, see xref:tml.adoc#syntax-alerts[Syntax of the Monitor alert TML file].
+TML for Monitor alerts is now GA and on by default. Export, edit, and import xref:monitor.adoc[KPI Monitor alerts] programmatically, using ThoughtSpot Modeling Language. For more information, see xref:tml-alerts.adoc#syntax-alerts[Syntax of the Monitor alert TML file].
 
 Remove attached files from scheduled emails:: For data security, you may choose to remove attached files from scheduled Liveboard emails. When this feature is enabled, scheduled Liveboard email recipients will receive an email with a link to the Liveboard, which they will need to sign in to see.To ensure that only signed-in users can access your data, contact {support-url} to enable this option. For more information, see xref:schedule-liveboards.adoc#disable-csv-pdf[Scheduled Liveboards].
 
@@ -806,7 +1690,7 @@ Certify Amazon Aurora and Amazon Relational Database Service (RDS) for PostgreSQ
 
 Databricks Catalog field:: When creating a connection to Databricks, you can now enter your catalog name under the *Catalog* field. For more information, see xref:connections-databricks-add.adoc[Add a Databricks connection].
 
-Create a sync as an admin:: When creating a sync to an external app, admin users will no longer see destinations created by other users in the *Destinations* dropdown menu. Admin users will still be able to see a list of all destinations created by users in their organization when they navigate to the *Destinations* tab in the Data Workspace.
+Create a sync as an admin:: When creating a sync to an external app, admin users will no longer see destinations created by other users in the *Destinations* dropdown menu. Admin users will still be able to see a list of all destinations created by users in their organization when they navigate to the *Destinations* tab in the Data workspace.
 
 Delete table columns using TML::
 
@@ -814,7 +1698,7 @@ Remove columns from tables in ThoughtSpot by deleting them in the tables' TML fi
 
 Edit join conditions using TML::
 
-Use TML to directly edit a join condition by editing the TML file's `on` parameter. This replaces the existing process of deleting and recreating the join in TML or the ThoughtSpot application. For more information, see xref:tml.adoc#syntax-joins[TML join syntax].
+Use TML to directly edit a join condition by editing the TML file's `on` parameter. This replaces the existing process of deleting and recreating the join in TML or the ThoughtSpot application. For more information, see xref:tml-joins.adoc#syntax-joins[TML join syntax].
 
 Join creation for views [.badge.badge-beta-relnotes]#Beta#::
 We standardized the method of creating joins for all data objects in ThoughtSpot. When creating a join from a view, users are now directed to a *Create join* page where they can choose a connection, name the join, and map the source and destination columns.
@@ -835,7 +1719,7 @@ Object Usage Liveboard:: Use the Object Usage Liveboard to easily track how spec
 [#9-2-0-cl-developer]
 === For the Developer
 
-ThoughtSpot Everywhere:: For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation^].
+For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation^].
 
 [#9-0-0-cl]
 == ThoughtSpot 9.0.0.cl Release
@@ -881,7 +1765,7 @@ Every time when a user drag and drop the fields in the chart configuration panel
 For more information, see xref:chart-x-axis.adoc[Reorder labels on the axis or legend,window=_blank].
 
 TML for Monitor alerts [.badge.badge-beta-relnotes]#Beta#::
-Export, edit, and import xref:monitor.adoc[KPI Monitor alerts] programmatically, using ThoughtSpot Modeling Language. For more information, see xref:tml.adoc#syntax-alerts[Syntax of the Monitor alert TML file].
+Export, edit, and import xref:monitor.adoc[KPI Monitor alerts] programmatically, using ThoughtSpot Modeling Language. For more information, see xref:tml-alerts.adoc#syntax-alerts[Syntax of the Monitor alert TML file].
 +
 This feature is in Beta and off by default. To enable it, contact {support-url}.
 
@@ -951,7 +1835,7 @@ In this release, administrators can selectively enable or disable Early Access f
 [#9-0-0-cl-developer]
 === For the Developer
 
-ThoughtSpot Everywhere:: For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation^].
+For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation^].
 
 
 [#8-10-0-cl]
@@ -960,7 +1844,6 @@ ThoughtSpot Everywhere:: For information about the new features and enhancements
 * <<8-10-0-cl-first,For the First User>>
 * <<8-10-0-cl-analyst,For the Analyst>>
 * <<8-10-0-cl-business-user,For the Business User>>
-* <<8-10-0-cl-data-engineer,For the Data Engineer>>
 * <<8-10-0-cl-it-ops-engineer,For the IT Ops Engineer>>
 * <<8-10-0-cl-developer,For the Developer>>
 
@@ -978,9 +1861,10 @@ Admins can manage all Monitor alerts::
 
 Admins will be able to view, edit or delete alerts even if they are not the creator or subscriber of those alerts. For more information, see xref:monitor.adoc[Permissions].
 
+////
 SpotApps::
-
 The DEI Workforce Diversity SpotApp is now available. Get invaluable insight into your workforce diversity data from your HR application. See xref:spotapps-dei.adoc[DEI Workforce Diversity SpotApp].
+////
 
 [#8-10-0-cl-business-user]
 === For the Business User
@@ -1020,7 +1904,7 @@ Use the Object Usage Liveboard to easily track how specific objects (Liveboards,
 [#8-10-0-cl-developer]
 === For the Developer
 
-ThoughtSpot Everywhere:: For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation^].
+For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation^].
 
 [#8-9-0-cl]
 == ThoughtSpot 8.9.0.cl Release
@@ -1051,8 +1935,9 @@ Liveboard ThoughtSpot Modeling Language (TML) files now contain distinct GUIDs f
 Pinboard to Liveboard change in TML::
 ThoughtSpot changed the `pinboard` parameter in Liveboard TML files to `liveboard`, consistent with our rebrand of pinboards as Liveboards.
 +
-For more information, see xref:tml.adoc#syntax-liveboards[Syntax of the Liveboard TML file].
+For more information, see xref:tml-liveboards.adoc#syntax-liveboards[Syntax of the Liveboard TML file].
 
+////
 [#spotapps-8-9]
 SpotApps::
 
@@ -1060,6 +1945,7 @@ The following SpotApps are now available:
 * xref:spotapps-google-ad-analysis.adoc[Google Ad Analysis]: Use this SpotApp to get invaluable insight into your Google Ads performance, from high-level usage to identifying popular campaigns.
 * xref:spotapps-linkedin-ads.adoc[LinkedIn Ads]: Use this SpotApp to get invaluable insight into your LinkedIn Ads performance, from high-level usage to identifying popular projects.
 * xref:spotapps-procurement-vulnerability.adoc[Procurement Vulnerability Analysis for SAP]: Use this SpotApp quickly identify where disruptions could occur in your global supply chain, reducing risk and building resilience.
+////
 
 [#8-9-0-cl-business-user]
 === For the Business User
@@ -1113,7 +1999,7 @@ The new Billable Query Stats Liveboard allows administrators of customers who ha
 [#8-9-0-cl-developer]
 === For the Developer
 
-ThoughtSpot Everywhere:: For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation^].
+For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation^].
 
 [#8-8-0-cl]
 == ThoughtSpot 8.8.0.cl Release
@@ -1151,12 +2037,14 @@ We changed the default behavior for table aggregation summaries when the search 
 +
 For example, in the formula `group_aggregate(sum(if (Color = 'blue') then 0 else group_unique_count(Discount)))`, the headline summary would use `COUNT_DISTINCT`, since the first non-constant output clause within the `if... then... else` clause is `group_unique_count` and has an aggregation type of `COUNT_DISTINCT`.
 
+////
 [#spotapps-8-9]
 SpotApps::
 
 The following SpotApps are now available:
 * xref:spotapps-facebook.adoc[Facebook Ads]: Use this SpotApp to measure ad performance across platforms to grow reach, engagement, & sales.
 * xref:spotapps-salesforce.adoc[Salesforce Pipeline Analysis]: Use this SpotApp to track how prospects progress closer to closed deals.
+////
 
 [#8-8-0-cl-business-user]
 === For the Business User
@@ -1248,7 +2136,7 @@ For more information, see link:https://www.thoughtspot.com/legal/thoughtspot-clo
 [#8-8-0-cl-developer]
 === For the Developer
 
-ThoughtSpot Everywhere:: For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation^].
+For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation^].
 
 
 
@@ -1260,7 +2148,7 @@ ThoughtSpot Everywhere:: For information about the new features and enhancements
 * <<8-7-0-cl-business-user,For the Business User>>
 * <<8-7-0-cl-data-engineer,For the Data Engineer>>
 * <<8-7-0-cl-it-ops-engineer,For the IT Ops Engineer>>
-* <<8-7-0-cl-developer,For the Developer>>
+
 
 [#8-7-0-cl-first]
 === For the First User
@@ -1313,7 +2201,7 @@ See xref:chart-geo.adoc[].
 === For the Data Engineer
 
 Denodo OAuth::
-Denodo connections now support OAuth. For details, see xref:connections-denodo-oauth[Configure OAuth for a Denodo connection].
+Denodo connections now support OAuth. For details, see xref:connections-denodo-oauth.adoc[Configure OAuth for a Denodo connection].
 
 Snowflake Oauth improvements::
 This release brings improvements in how ThoughtSpot handles user tokens for Snowflake connections configured with Snowflake OAuth. If a user's refresh token becomes invalid, the administrator or author of the connection can now run the Invalidate Tokens command to allow the user to re-authenticate and regain access to the insights provided by the connection, and the connection itself. Also, in this release the _Role_ field has been added to the Snowflake OAuth connection details page, allowing a role to be added when the connection is created and changed when a connection is edited.
@@ -1321,8 +2209,7 @@ This release brings improvements in how ThoughtSpot handles user tokens for Snow
 See xref:connections-snowflake-edit.adoc#invalidate-tokens[Invalidating refresh tokens of a Snowflake connection].
 
 Snowflake CSV upload [.badge.badge-beta-relnotes]#Beta#:: Now you have a quick and easy way to complete one-time data loads of small files that are not present in your cloud data warehouse. You can now upload a CSV file to the database of your Snowflake connection that can be joined to other tables or Worksheets in your connection. Once your administrator enables this feature, go to *Data* > *Utilities*, and click *Upload CSV*.
-
-ifndef::pendo-links[]
++
 See xref:connections-snowflake-csv-upload-config.adoc[Configure CSV upload for your Snowflake connection], and xref:connections-snowflake-csv-upload.adoc[Upload a CSV file in your Snowflake connection].
 
 
@@ -1421,7 +2308,7 @@ Denodo is now supported as a connection. See xref:connections-denodo.adoc[Denodo
 
 [#tags]
 Edit tags from the Data workspace::
-You can now edit tags for tables, Worksheets, views, and SQL views from the Data workspace home page. Refer to xref:tags.adoc#data-workspace[Use tags to organize].
+You can now edit tags for tables, Worksheets, views, and SQL views from the Data workspace home page. Refer to xref:tags.adoc#data-workspace-create[Use tags to organize].
 
 [#8-6-0-cl-it-ops-engineer]
 === For the IT Ops Engineer
@@ -1434,8 +2321,7 @@ See xref:connections-denodo-private-link.adoc[Enabling an AWS PrivateLink betwee
 
 [#8-6-0-cl-developer]
 === For the Developer
-
-ThoughtSpot Everywhere:: For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation^].
+For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation^].
 
 [#8-5-0-cl]
 == ThoughtSpot 8.5.0.cl Release
@@ -1484,8 +2370,8 @@ To help you construct Answers based on the most relevant time data, ThoughtSpot 
 === For the Data Engineer
 
 [#data-workspace]
-Data Workspace::
-The new Data Workspace is now GA and on by default. It redesigns the *Data* section of the product. To access it, select *Data* from the top navigation bar. The redesign introduces several new features, such as SQL-based views, dbt integration, and SpotApps, and makes the UI more intuitive.
+Data workspace::
+The new Data workspace is now GA and on by default. It redesigns the *Data* section of the product. To access it, select *Data* from the top navigation bar. The redesign introduces several new features, such as SQL-based views, dbt integration, and SpotApps, and makes the UI more intuitive.
 +
 See xref:data-workspace.adoc[Data workspace].
 
@@ -1501,6 +2387,7 @@ The dbt integration is now GA and on by default. You can provide your existing d
 +
 See xref:dbt-integration.adoc[dbt integration].
 
+////
 [#spotapps]
 SpotApps::
 SpotApps are now GA and on by default. SpotApps are ThoughtSpot's new out-of-the-box solution templates built for specific use cases and data sources. They are built on xref:tml.adoc[ThoughtSpot Modeling Language (TML)] Blocks, which are pre-built pieces of code that are easy to download and implement directly from the product.
@@ -1523,6 +2410,7 @@ The following SpotApps are now available:
 --
 +
 See xref:spotapps.adoc[SpotApps].
+////
 
 Okta OAuth for Snowflake connections::
 You can now use Okta as your authorization server for external OAuth. For details, see xref:connections-snowflake-okta-oauth.adoc[Configure Okta OAuth for a Snowflake connection].
@@ -1555,8 +2443,7 @@ This option was already available for xref:connections-redshift-private-link.ado
 
 [#8-5-0-cl-developer]
 === For the Developer
-
-ThoughtSpot Everywhere:: For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation^].
+For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation^].
 
 [#8-4-0-cl]
 == ThoughtSpot 8.4.0.cl Release
@@ -1607,8 +2494,7 @@ We now support more detailed geographic maps for France. You can now create maps
 
 [#8-4-0-cl-developer]
 === For the Developer
-
-ThoughtSpot Everywhere:: For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation^].
+For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation^].
 
 [#8-3-0-cl]
 == ThoughtSpot 8.3.0.cl Release
@@ -1700,8 +2586,7 @@ To enable Advanced EAR in your environment, contact {support-url}.
 
 [#8-3-0-cl-developer]
 === For the Developer
-
-ThoughtSpot Everywhere:: For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation^].
+For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation^].
 
 [#8-2-0-cl]
 == ThoughtSpot 8.2.0.cl Release
@@ -1738,7 +2623,7 @@ This feature is in beta and off by default. To enable it, contact {support-url}.
 [#data-tab]
 Data tab redesign [.badge.badge-beta-relnotes]#Beta#::
 
-This release redesigns the *Data* section of the product. The new Data Workspace is still in the same place in the product. To access it, select *Data* from the top navigation bar. The redesign introduces several new features, such as SQL-based views and SpotApps, and makes the UI more intuitive.
+This release redesigns the *Data* section of the product. The new Data workspace is still in the same place in the product. To access it, select *Data* from the top navigation bar. The redesign introduces several new features, such as SQL-based views and SpotApps, and makes the UI more intuitive.
 +
 This feature is in beta and off by default. To enable it,  contact {support-url}.
 
@@ -1786,12 +2671,11 @@ This feature is in *Beta* and on only for select customers.
 
 [#connections-flow-data-portal]
 New connection creation flow with data tab redesign::
-If you have the new <<data-tab,redesigned data tab>> enabled, you can see the new Data Workspace page from the *Data* tab in the top navigation bar. To start creating a connection, click *Connections*, then click the connection type you want to create. The new Data Workspace allows you to create a connection without selecting tables or columns.
+If you have the new <<data-tab,redesigned data tab>> enabled, you can see the new Data workspace page from the *Data* tab in the top navigation bar. To start creating a connection, click *Connections*, then click the connection type you want to create. The new Data workspace allows you to create a connection without selecting tables or columns.
 
 [#8-2-0-cl-developer]
 === For the Developer
-
-ThoughtSpot Everywhere:: For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation^].
+For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation^].
 
 [#8-1-0-cl]
 == ThoughtSpot 8.1.0.cl Release
@@ -1887,8 +2771,7 @@ ThoughtSpot provides advanced data encryption at rest (EAR) that allows for gran
 
 [#8-1-0-cl-developer]
 === For the Developer
-
-ThoughtSpot Everywhere:: For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation^].
+For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation^].
 
 [#8-0-0-cl]
 == ThoughtSpot 8.0.0.cl Release
@@ -1925,8 +2808,6 @@ For users who followed a Liveboard in November Cloud or earlier, those Liveboard
 Search answers::
 You can now navigate to the *Search answers and Liveboards* page from anywhere within ThoughtSpot.
 To search Answers and Liveboards, select **Search answers and Liveboards** from the top navigation bar.
-+
-image::search-answers-bar.png[Search across existing Answers]
 +
 For more information, see xref:search-answers.adoc#search-answers-navigate[Search Answers].
 
@@ -1987,8 +2868,7 @@ To configure OIDC, refer to xref:oidc-configure.adoc[OpenID Connect authenticati
 
 [#january-cloud-2022-developer]
 === For the Developer
-
-ThoughtSpot Everywhere:: For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation^].
+For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation^].
 
 [#november-2021]
 == ThoughtSpot 8 Cloud November Release (ts8.nov.cl)
@@ -2118,8 +2998,7 @@ To learn how to configure a VPN connection for your Google BigQuery or Azure Syn
 
 [#november-cloud-2021-developer]
 === For the Developer
-
-ThoughtSpot Everywhere:: For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation].
+For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation].
 
 [#october-2021]
 == ThoughtSpot 7 Cloud October Release (ts7.oct.cl)
@@ -2167,8 +3046,7 @@ This release improves the UI and user experience of the xref:user-profile.adoc[u
 
 [#october-cloud-2021-developer]
 === For the Developer
-
-ThoughtSpot Everywhere:: For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation].
+For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation].
 
 [#september-2021]
 == ThoughtSpot 7 Cloud September Release (ts7.sep.cl)
@@ -2253,8 +3131,8 @@ To set up a custom domain in your ThoughtSpot Cloud URL, contact {support-url}.
 [#september-cloud-2021-developer]
 === For the Developer
 [#thoughtspot-everywhere]
-ThoughtSpot Everywhere::  This release introduces the ThoughtSpot Everywhere Edition license, Visual Embed SDK version 1.4.0, and new REST APIs for programmatic management of data connections, metadata objects, user accounts, user groups and privileges, and object sharing permissions.
-+
+This release introduces the ThoughtSpot Embedded Edition license, Visual Embed SDK version 1.4.0, and new REST APIs for programmatic management of data connections, metadata objects, user accounts, user groups and privileges, and object sharing permissions.
+
 For more information, refer to https://docs.thoughtspot.com/visual-embed-sdk/release/en/?pageid=whats-new[ThoughtSpot Developer Documentation].
 
 [#august-2021]
@@ -2281,7 +3159,7 @@ For these instructions, see xref:ts-cloud-getting-started.adoc[Getting Started w
 Scriptability::
 * *Improved import workflow:* The new import workflow for xref:scriptability.adoc[Scriptability] identifies errors, suggests solutions, and allows you to resolve these errors as part of the import workflow.
 It also has a cleaner, more intuitive UI, with separate sections for different object types.
-* *TML for tables with row-level security:* ThoughtSpot now supports the migration and editing of tables with xref:security-rls-concept.adoc[row-level security (RLS)] using xref:tml.adoc#syntax-tables[TML].
+* *TML for tables with row-level security:* ThoughtSpot now supports the migration and editing of tables with xref:security-rls-concept.adoc[row-level security (RLS)] using xref:tml-tables.adoc#syntax-tables[TML].
 
 [#august-cloud-business-user]
 === For the Business User
@@ -2425,7 +3303,7 @@ These Answers allow you to dive deeper into the credit consumption and activitie
 * *Credit usage from Charging Records*: Use this Answer to learn more about API-level details.
 You can map activities and credit consumption to specific API calls.
 
-Refer to xref:consumption-pricing.adoc#user-activity[Consumption-based pricing] for more information.
+Refer to xref:consumption-pricing.adoc#credits[Consumption-based pricing] for more information.
 [#admin-privileges]
 New admin privileges [.badge.badge-beta-relnotes]#Beta#::
 This release introduces new administrator privileges that separate the abilities of the administrator into 4 specific privileges.
@@ -2549,7 +3427,7 @@ This gives all users the opportunity to experience onboarding and training on da
 
 Scriptable Worksheets with Search Assist Coach lessons::
 You can now use TML to import, export, and update Worksheets with xref:search-assist-coach.adoc[Search Assist Coach] lessons.
-See xref:tml.adoc#syntax-worksheets[Syntax of the Worksheet TML file].
+See xref:tml-worksheets.adoc#syntax-worksheets[Syntax of the Worksheet TML file].
 
 [#may-cloud-business-user]
 === For the Business User
@@ -2615,7 +3493,7 @@ To access this Worksheet, search for *Product Usage Worksheet* from the *Data* t
 [#may-cloud-developer]
 === For the Developer
 [#custom-actions]
-Custom actions in the context menu::  ThoughtSpot now allows you to add a custom action in the contextual menu for embedded visualizations in the *Answers* or *Liveboards* page.  To add a custom action to the contextual menu, you must have the xref:answer-experience-new.adoc[New Answer experience] [.badge.badge-beta]#Beta# (off by default) enabled on your cluster.  For more information, see xref:custom-actions.adoc[Add custom actions].
+Custom actions in the context menu::  ThoughtSpot now allows you to add a custom action in the contextual menu for embedded visualizations in the *Answers* or *Liveboards* page.  To add a custom action to the contextual menu, you must have the xref:answer-experience-new.adoc[New Answer experience] [.badge.badge-beta]#Beta# (off by default) enabled on your cluster.  For more information, see xref:developer-user.adoc[Custom Actions].
 
 [#viz-embed-sdk]
 Visual Embed SDK Version 1.2.0::  The ThoughtSpot 7 Cloud May release introduces the Visual Embed SDK 1.2.0 version with a minor update and backward-compatible improvements.
@@ -2693,7 +3571,7 @@ Scriptability::  There are several enhancements to the xref:scriptability.adoc[S
 * *Support for selective and linked filters:* You can now import, export, and update Liveboards with xref:liveboard-filters-linked.adoc[linked] or xref:liveboard-filters-selective.adoc[selective] filters.
 * *Add tables and columns to an Embrace connection (GA):* ThoughtSpot now allows you to use TML to edit tables created through xref:connections.adoc[Embrace], and add columns and tables that already exist in the external database to the connection.
 This feature is now GA and on by default.
-Refer to xref:tml.adoc#syntax-tables[ThoughtSpot Modeling Language] and specify the `connection` information when adding tables or table columns to an Embrace connection.
+Refer to xref:tml-tables.adoc#syntax-tables[ThoughtSpot Modeling Language] and specify the `connection` information when adding tables or table columns to an Embrace connection.
 [#query-dashboard]
 Enhancements to the Search on Answers Liveboard::
 The xref:thoughtspot-one-query-intelligence-liveboard.adoc[Search on Answers Liveboard] contains several new or updated visualizations, including *Top search queries on existing Answers*, *Position at which users are clicking*, and *What results users are finding useful with autocomplete suggestions*.
@@ -2747,7 +3625,7 @@ Refer to the xref:connections-redshift-private-link.adoc[Redshift] and xref:conn
 === For the Developer
 [#developer-privilege]
 Developer privilege::
-You can now grant groups the xref:privileges-end-user.adoc[Developer privilege] from the Admin Console, allowing users in those groups to access and use the xref:spotdev-portal.adoc[Developer Portal].
+You can now grant groups the xref:privileges-end-user.adoc[Developer privilege] from the Admin Console, allowing users in those groups to access and use the Developer Portal.
 In the Developer Portal, users can explore the ThoughtSpot APIs and developer tools, and build web applications with ThoughtSpot content.
 [#tml-api]
 TML APIs::
@@ -2802,7 +3680,7 @@ For more information, see xref:public-api-reference.adoc[REST API reference].
 [#scriptability]
 Scriptability [.badge.badge-beta-relnotes]#Beta#::
 * *Add tables and columns to an Embrace connection:* ThoughtSpot now allows you to use TML to edit tables created through xref:connections.adoc[Embrace], and add columns and tables that already exist in the external database to the connection.
-Refer to xref:tml.adoc#syntax-tables[ThoughtSpot Modeling Language] and specify the `connection` information when adding tables or table columns to an Embrace connection.
+Refer to xref:tml-tables.adoc#syntax-tables[ThoughtSpot Modeling Language] and specify the `connection` information when adding tables or table columns to an Embrace connection.
 +
 This feature is in *Beta* and off by default;
 to add columns and tables to an Embrace connection through Scriptability, contact your ThoughtSpot administrator.
@@ -2849,16 +3727,15 @@ Select *App performance* from the side navigation bar in the Admin Console.
 [#mar-cloud-developer]
 === For the Developer
 [#thoughtspot-embed]
-ThoughtSpot Embed::
 ThoughtSpot cloud now supports embedding ThoughtSpot content in third-party applications.
 
-In this release, ThoughtSpot introduces the Visual Embed SDK package [.badge.badge-beta]#Beta# to help developers embed the ThoughtSpot search functionality, Liveboards, visualizations, or the full application in their web page, portal, or business solution.  For more information on embedding ThoughtSpot, see xref:intro-embed.adoc[ThoughtSpot embedding solution].
+In this release, ThoughtSpot introduces the Visual Embed SDK package [.badge.badge-beta]#Beta# to help developers embed the ThoughtSpot search functionality, Liveboards, visualizations, or the full application in their web page, portal, or business solution.  For more information on embedding ThoughtSpot, see xref:developer-user.adoc[ThoughtSpot embedding solution].
 [#spotdev-portal]
 SpotDev portal [.badge.badge-beta-relnotes]#Beta#::
 ThoughtSpot cloud now includes the *SpotDev* portal in beta to allow developer users to explore the ThoughtSpot SDK APIs and build sample applications.
 The *SpotDev* tab in the ThoughtSpot application is available for the users with administrator and developer privileges.
 The *SpotDev* portal provides a playground for developers and product owners to evaluate the Visual Embed APIs and preview the results.
-The portal also allows authorized users to rebrand the embedded content, xref:customization-rebranding.adoc[customize styles], and xref:custom-actions.adoc[add custom menu actions] to the embedded instance. For more information, see xref:spotdev-portal.adoc[SpotDev Portal].
+The portal also allows authorized users to rebrand the embedded content, xref:developer-user.adoc[customize styles], and xref:developer-user.adoc[Custom Actions] to the embedded instance. For more information, see ThoughtSpot Developer Portal.
 
 [#february-2021]
 == ThoughtSpot 7 Cloud February Release (ts7.feb.cl)
@@ -2874,7 +3751,7 @@ The portal also allows authorized users to rebrand the embedded content, xref:cu
 Scriptability [.badge.badge-beta-relnotes]#Beta#::
 * You can now create and edit joins at the table level using TML, including range and generic joins.
 You must edit these joins from the source table, not the destination table.
-Refer to xref:tml.adoc#syntax-tables[ThoughtSpot Modeling Language]. +
+Refer to xref:tml-tables.adoc#syntax-tables[ThoughtSpot Modeling Language]. +
 This feature is in Beta in the February release.
 To enable it, contact {support-url}.
 * *Export custom sets of TML files*: Support for export of custom sets of TML files is now GA and on by default.

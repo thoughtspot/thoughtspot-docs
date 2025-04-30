@@ -1,0 +1,197 @@
+= Change analysis
+:last_updated: 1/17/2024
+:author: Naomi
+:experimental:
+:linkattrs:
+:description: With SpotIQ change analysis, you can compare two data points for change and identify key change drivers from the underlying attribute columns
+:jira: SCAL-175535, SCAL-175265, SCAL-172513, SCAL-141936, SCAL-147558, SCAL-176265, SCAL-178860, SCAL-201036
+
+With SpotIQ change analysis, you can compare any two data points in a visualization for change and identify key change drivers from the underlying attribute columns.
+
+SpotIQ change analysis compares data points of simple or complex measures using these aggregates:
+
+* _Sum_
+* _Count_
+* _Sum over sum_, which generates 'what-if' percentage insights
+* _Average_, which generates 'what-if' percentage insights
+* Other functions which use a 'versus' analysis to show the absolute change grouped by different drill attributes
+
+////
+[#basic-change-analysis]
+== Basic change analysis in SpotIQ
+
+=== Change analysis for chart visualizations
+
+ThoughtSpot supports change analysis for area, line, column, bar, line-column, donut, and KPI charts.
+To perform this analysis, follow these steps:
+
+. On an area, line, column, bar, line-column, pie, or KPI chart, hold down the command key (MacOS) or control key (Linux or Windows).
+. Select the two columns or data points you plan to compare.
+Here, we are comparing the results for the _San Francisco_ and _Atlanta_ stores. +
+Note that if you are analyzing a KPI chart, you must either click the percent change label or select two points from the sparkline visualization. You cannot run change analysis on a KPI chart with no sparkline visualization.
+. Select either of the columns or data points to see the dropdown menu, and select *SpotIQ analyze*.
++
+image:comparative-analysis-1.png[Click and select SpotIQ Analyze]
+. The SpotIQ window modal appears. Make sure that you select *Change analysis*.
+. Select *Continue*.
+. Select the columns for SpotIQ to compare.
+By default, SpotIQ picks the most relevant columns, based on what it learned from your past activity.
+. Optionally, <<advanced-change-analysis,customize the analysis parameters>>.
+. Select *Analyze*.
+////
+
+[#change-analysis-contextual]
+== Contextual change analysis
+
+ThoughtSpot supports contextual change analysis for area, line, column, bar, line-column, donut, and KPI charts. You do not need SpotIQ privileges to run contextual change analysis.
+
+To perform this analysis, follow these steps:
+
+. On an area, line, column, bar, line-column, pie, or KPI chart, hold down the command key (MacOS) or control key (Linux or Windows).
+. Select the two columns or data points you plan to compare. +
+Note that if you are analyzing a KPI chart, you must either click the percent change label or select two points from the sparkline visualization. You cannot run change analysis on a KPI chart with no sparkline visualization.
+
+. Right-click to see the dropdown menu, and select *Run change analysis*.
+
+. The SpotIQ window modal appears with the results of your analysis.
+By default, SpotIQ picks the top 5 most relevant columns, based on what it learned from your past activity.
++
+image:contextual-change.png[Contextual change analysis window]
++
+To select other columns to analyze, click *Customize attributes* in the lower left corner of the window and select the desired column from the window that appears.
++
+NOTE: Each colored section of a SpotIQ insight represents a statistically significant outlier among the values of your chosen columns. For more information on how statistically significant outliers are calculated, see <<z-score,Z-scores>>.
+
+
+. You can now examine each visualization of the analysis for details of comparison.
++
+NOTE: In some instances, ThoughtSpot may point out that certain attribute values account for more than 100% of the total change. This is generally for cases where attribute values contribute to a trend that is opposite to the total change (positive change when the overall trend is negative, for example). You may see cases, for example, where two attribute values account for a 300% increase in sales, while the remaining attribute values indicated account for 200% of the total decrease.
+
+. You can add the specific visualization to an existing Liveboard, or create a new Liveboard and add it there.
+
+. You can run another round of SpotIQ analysis, download the data as a CSV file, edit this visualization, or make a copy of the visualization.
+
+[#additional]
+When you run SpotIQ change analysis, ThoughtSpot detects additional insights and displays them below the change analysis visualizations. These insights display values that underwent the highest percentage change between the data points defined in your analysis, and values whose share of the total changed the most. Note that insights do not appear for measures of type `unique counts` and `ratios`.
+
+image::additional-insight.png[SpotIQ additional insights]
+
+[#remember-personalized]
+=== Remember personalized columns [.badge.badge-early-access]#Early Access#
+
+Admin users with edit permissions on a Liveboard can set their preferred attribute columns through the change analysis window and select to keep those selections for any subsequent change analysis calculations on that Liveboard.
+
+To set personalized attribute columns that will persist on the Liveboard, follow these steps:
+
+. . On an area, line, column, bar, line-column, pie, or KPI chart, hold down the command key (MacOS) or control key (Linux or Windows).
+. Select the two columns or data points you plan to compare. +
+Note that if you are analyzing a KPI chart, you must either click the percent change label or select two points from the sparkline visualization. You cannot run change analysis on a KPI chart with no sparkline visualization.
+
+. Right-click to see the dropdown menu, and select *Run change analysis*.
+
+. The SpotIQ window modal appears with the results of your analysis.
+By default, SpotIQ picks the top 5 most relevant columns, based on what it learned from your past activity.
+
+. In the lower left corner of the SpotIQ window, select *Customize attributes*. Select your desired columns from the list that appears.
+
+. In the lower right corner of the *Customize attributes* window, click *Apply to all users*.
+
++
+NOTE: Individual users can still override these preferred columns on their own SpotIQ analysis by running the calculation and selecting *Customize attributes*.
+
+[#iterative]
+=== Iterative change analysis [.badge.badge-beta]#Beta#
+
+You can now drill down on the results of change analysis to learn more about change drivers in your data.
+
+To run iterative change analysis, follow these steps:
+
+. Select two points on a chart and right-click to select *Run change analysis*.
+
+. Right-click on an attribute value in the resulting change analysis and select *Analyze  <attribute_value>*. For example, if you want to deep-dive to understand what’s driving change in "California" in "State" attribute, right click on "California" and click "Analyze California".
+
+. ThoughtSpot adds the specified attribute value as a filter and re-calculates change analysis for the original comparison points.
+
+NOTE: Iterative change analysis does not work on visualizations created with custom calendars.
+
+
+// actually Early Access
+[#natural]
+=== Natural language narratives [.badge.badge-early-access]#Early Access#
+
+ThoughtSpot generates insight narratives in natural language to summarize the data analyzed in SpotIQ. Admin users can enable natural language narratives by navigating to the Search and SpotIQ section of the Admin page and setting *Natural language narratives for SpotIQ change analysis* to *Enabled*. The narratives are generated by LLM, and appear above the charts created by SpotIQ.
+
+
+////
+[#advanced-change-analysis]
+== Advanced change analysis in SpotIQ
+
+ThoughtSpot ships with a number of comparative algorithms.
+Using the *Advanced* option of SpotIQ, you can adjust the parameters of the analysis, or choose a different comparative algorithm for your data.
+
+After selecting the relevant analysis columns, click *Customize parameters*.
+
+Under *Select Algorithms*, select the name of the algorithm.
+You may have several options available, or only a single one.
+In this example, the only valid option is *Change Analysis*.
+
+Under *Refine parameters for change*, adjust the options.
+In this example, the algorithm parameters are *Maximum Difference Elements*, *Max Fraction*, *Min Abs Change Ratio*, and *Min Change Ratio*.
+
+image::comparative-analysis-advanced-new.png[Comparative analysis advanced values]
+////
+
+=== How SpotIQ calculates outliers
+
+[#z-score]
+==== Z-Score
+
+
+A Z-score represents the number of standard deviations from the mean a data point is. Z-scores are a way to compare results from a test to a “normal” population. The basic Z-score formula for a sample is:  z = (x – μ) / σ where
+
+* σ is the standard deviation
+* μ is the mean
+* x is the data value.
+
+Currently, any value outside μ +/- N * σ (i.e. Z-score less than or greater than N) is an anomaly. N is determined based on the number of rows. It is chosen such that the max or min has < 0.1 probability of crossing the threshold. SpotIQ uses the following table to approximately choose the value of N, that is, how many standard deviations we want to be able to use as threshold:
+
+
+[options=”header”]
+|===
+| Cardinality | N (number of standard deviations from mean)
+
+
+| < 20 | 2
+| < 500 | 3
+| < 10000 | 4
+| >= 10000 | 5
+|===
+
+=== Identifying change drivers
+
+ThoughtSpot uses different methods to explain the difference between points selected for SpotIQ analysis, depending on the underlying aggregation of the measures.
+
+For SUM or COUNT or UNIQUE COUNT or SUM x SUM measures, ThoughtSpot uses the following change formula: `fx= “measure value for point 1” - “measure value for point 2”`. Next, we slice by attributes, and rank the attribute by what fraction of the total change is concentrated in the first few values for a given attribute. For example, in an analysis of a chart for revenue by month, the formula could be defined as `fx = “Total revenue in April” - “Total revenue in June”`. Then, we slice both April revenue and June revenue by region. If we find that all regions have similar revenue except China, then we can say that region is a useful attribute for explaining the difference in revenue across April and June.
+
+We identify the outlier change values using a Z-score distribution with a multiplier chosen based on the number of rows in the data. All values lesser than `mean - multiplier x std dev` or values greater than `mean + multiplier x std dev` are highlighted as outlier changes.
+
+For AVERAGE or SUM/SUM measures, change analysis generates insights with What-if percent change insights which present hypothetical scenarios for each explanation attribute. A What-if percent change insight for an attribute shows what the overall percent change in measure would have been had a particular attribute value not changed across the two points. A smaller What-if percent change for an attribute value implies that the value is a significant contributor towards explaining the overall change, since without that attribute changing, the overall change in the measure would have been smaller than it was.
+
+For example, if we do comparative analysis on average profit monthly for October 2016 and April 2017, one of the insights generated says that “If average profit for copiers (sub-category) had not changed, the decrease would have been only 29.81% instead of 94.45%”. This means that the overall average profit decreased by 94.45% from October 2016 to April 2017, but if we disregard the change in the average profit of copiers, the overall average profit would have decreased by just 29.81%.
+
+
+
+=== Limitations
+
+* Change analysis is not yet supported on measures that are created using group_* formulas.
+* Change analysis is not supported on queries based on the "growth of" keyword.
+* Change analysis is not supported on queries based on the "versus" keyword.
+
+'''
+> **Related information**
+>
+> * link:https://community.thoughtspot.com/customers/s/article/What-are-the-spotIQ-algorithms[What are the SpotIQ algorithms]
+> * xref:spotiq-best.adoc[Best practices]
+> * xref:spotiq-custom.adoc[Custom SpotIQ analysis]
+> * xref:spotiq-preferences.adoc[SpotIQ preferences]
+> * xref:spotiq-feedback.adoc[Insight feedback]

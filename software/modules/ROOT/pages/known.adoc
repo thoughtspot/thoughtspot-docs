@@ -1,0 +1,132 @@
+= Known issues
+:keywords: known issues
+:last_updated: 4/1/2024
+:experimental:
+:page-layout:
+:linkattrs:
+:description: These are the known issues in recent ThoughtSpot Software releases.
+:jira: SCAL-201268
+
+These are the known issues in this release of ThoughtSpot Software.
+
+[#releases-9-5-x]
+== 9.5.0.sw known issues
+
+[cols="17%,39%,38%"]
+|===
+|Issue ID |Description|Symptoms, conditions, and workaround
+
+|SCAL-172348
+|_User_admin_ granular privilege is not being followed when user is created by ThoughtSpot public v1 APIs.
+a|*Symptoms*:
+
+*_User_admin_* can’t create, read, update, or delete users by using ThoughtSpot public v1 user APIs.
+
+
+*Conditions*:
+
+Role-based access control (RBAC) is enabled and customer is using ThoughtSpot public v1 APIs.
+
+*Workaround*:
+
+Perform the required operations using the admin privilege or use ThoughtSpot Embedded (TSE) v2 APIs with the User_admin privilege.
+
+|SCAL-163806
+|Group aggregate and unique count in the same query do not work.
+a|*Symptoms*:
+
+Using a group aggregate grouping on a column with unique count in the same query does not work.
+
+
+*Conditions*:
+
+`enableGroupingByGroupAggregrates` feature enabled.
+
+*Workaround*:
+
+Disable the `enableGroupingByGroupAggregrates` feature.
+
+|SCAL-175970
+|`POST tspublic/v1/user` returns 500 if null is provided for the "groups" property`
+a|*Symptoms*:
+
+Returns 500 error
+
+*Conditions*:
+
+When null is passed on under group parameter for tspublic V1 user API
+
+*Workaround*:
+
+Instead of null, the blank parameter can be passed.
+
+|===
+
+[#releases-9-0-x]
+== 9.0.1.sw known issues
+
+[cols="17%,39%,38%"]
+|===
+|Issue ID |Description|Symptoms, conditions, and workaround
+
+|SCAL-154579
+|Clicking the *Utilities* tab in a Worksheet redirects the user to the Home page.
+a|*Symptoms*:
+
+User taken to the Home page of the ThoughtSpot application.
+
+*Conditions*:
+
+In a Worksheet, click the *Utilities* tab.
+
+*Workaround*:
+
+None
+
+|===
+
+
+== 9.0.0.sw known issues
+
+None.
+
+
+[#releases-8-7-x]
+== 8.8.0.sw known issues
+
+[cols="17%,39%,38%"]
+|===
+|Issue ID |Description|Symptoms, conditions, and workaround
+
+|SCAL-129737
+|Headline summary is truncated despite the number of decimals.
+a|*Symptoms*:
+
+Headline with decimal digits is rounded off, causing a loss of accuracy.
+
+*Conditions*:
+
+Headline value is `DOUBLE` type.
+
+*Workaround*:
+
+None
+
+|SCAL-129691
+|“UniqueCount is not supported for the current query” error on pinned-headline tiles in a Liveboard.
+a|*Symptoms*:
+
+- When editing a pinned visualization, the Edit page shows the entire answer that the pinned headline came from. If the headline summary in the answer page is showing **--**, the selected aggregation is not compatible with the column that it is summarizing.
+- Pinning the headline to a Liveboard is not a locked action from the UI. When attempting to retrieve the actual summary, the visualization tile displays the execution error message specified in the *Description* section for this issue instead.
+
+*Conditions*:
+
+- The headline is over a formula column that contains any of the following: `unique_count`, `unique_count_if`, `group_unique_count`, `approx_unique_count`.
+- The formula’s unique count portion uses columns that come from tables of a connection to a cloud data warehouse.
+- The selected headline aggregation for the formula (the headline visualization at the bottom of the main answer visualization) is Table Aggregate.
+
+*Workaround*:
+
+Set the selected headline aggregation to something other than Table Aggregate. Usually, **TOTAL** is a sufficient replacement for Table Aggregate and better matches customer use cases.
+
+|===
