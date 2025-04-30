@@ -1,35 +1,56 @@
-You can create tags to make it easier for people to find data sources and Liveboards. Tags are global in scope. This means that everyone can see the tags and use them to tag objects. They can also filter lists of objects by tag. Tags are often used to designate subject areas, such as sales, HR, and finance, but you can use them any way you like.
+You can create tags to make it easier for people to find
+ifndef::spotter[]
+data sources and Liveboards.
+endif::[]
+ifdef::spotter[]
+data sources.
+endif::[]
+Tags are global in scope. This means that everyone can see the tags and use them to tag objects. They can also filter lists of objects by tag. Tags are often used to designate subject areas, such as sales, HR, and finance, but you can use them any way you like.
 
 Keep in mind these permissions when working with tags:
 
 - Only administrators can create tags.
 - Anyone can apply a tag.
 - Anyone can filter by a tag.
-- You can only filter by one tag at a time from the UI.
+ifndef::spotter[]
 - Free Trial and Team Edition users do not have access to tags functionality.
+endif::[]
+
+IMPORTANT: The functionality to delete or modify tag properties is not available in the UI, but can be done via the https://developers.thoughtspot.com/docs/rest-apiv2-reference#_tags[REST API v2^].
 
 [#create-a-tag]
 == Create a tag
 
 Only administrator users can create tags. Anyone can apply the tags you create, or use them as filters when selecting from a list of sources or Liveboards.
 
+ifndef::spotter[]
 === Create a tag from the Answer or Liveboard page
 
 To create a tag from the Answer or Liveboard page, follow these steps:
 
 . Select *Answers* or *Liveboards* from the top navigation bar.
-. Click the currently selected tag, scroll to the bottom of the list, and click *+ Add*.
+. Hover over the object(s) you want to create a new tag for, and select the empty checkboxes that appear.
 +
-image:add_tag.png[Add a tag]
+[.bordered]
+image:edit-tag.png[Add a tag]
 
-. Type the name for the new tag.
-. You can change the name of a tag by selecting the edit icon next to its name.
+
+. Click on the button *Edit tags*.
+. Type the name of the tag you would like to create.
 +
-image:edit_tag.png[Edit a tag]
+[.bordered]
+image:add-tag.png[Add a tag]
++
+. If you would like to create the tag without adding it to the object(s), select Cancel in the Edit tags modal. If you would like to create the tag and add it to the object, select Save in the Edit tags modal.
++
+
+////
 
 . You can change the color of a tag by selecting the color circle next to its name.
 +
 image:edit_color.png[Edit a tag color]
+////
+endif::[]
 
 [#data-workspace-create]
 === Create a tag from the Data workspace
@@ -45,7 +66,8 @@ To create a tag from the Data workspace, follow these steps. Note that you must 
 
 . Select *+ Add tag \`<tag name>`*.
 +
-image::add-tag-data-workspace.png[Click + add tag]
+[.bordered]
+image::add-tag.png[Click + add tag]
 
 . Type the names of any additional tags you would like to create, and select *+ Add tag \`<tag name>`*.
 
@@ -56,6 +78,7 @@ image::add-tag-data-workspace.png[Click + add tag]
 
 Only administrators create tags, but anyone with edit privileges can tag an object with a tag. The workflow for applying a tag is different depending on the type of object, and depending on where in the product you apply the tag from:
 
+ifndef::spotter[]
 * <<answers-liveboards,Liveboards and Answers>>
 * <<apply-tag-from-home, Apply tags to Answers and Liveboards from the Home page>>
 * <<data-workspace,Tables, Worksheets, views, or SQL views>>
@@ -65,11 +88,14 @@ Only administrators create tags, but anyone with edit privileges can tag an obje
 === Apply tags to Answers or Liveboards
 To tag an Answer or Liveboard with a tag, follow these steps:
 
-. From the top menu, choose *Answers* or *Liveboards*.
-. Find the item(s) you want to tag in the list, and check the box next to its name.
-. Select the apply tag icon and choose one from the list. You can apply as many tags as you like to an object.
-+
-image:apply_tag.png[Choose a tag to apply]
+. Go to *Answers* or *Liveboards*.
+. Select the empty checkbox next to an object(s) that you would like to tag.
+
+. Select *Edit tags* from the options at the top of the object list.
+
+. The *Edit tags* modal appears. You can apply as many tags as you like to an object(s).
+. Select Save in the Edit tags modal to add it to the object(s).
+
 
 [#apply-tag-from-home]
 === Apply tags to Answers and Liveboards from the Home page
@@ -85,13 +111,23 @@ image::home-object-tag.png[Select Apply tag and choose a tag from the dropdown]
 . In the *Edit tags* pop-up window, enter the name(s) of the tag(s) you would like to apply, or select the *x* icon to remove a tag.
 
 . Select *Save*.
+endif::[]
 
-
+ifndef::spotter[]
 [#data-workspace-apply]
 === Apply tags to tables, Worksheets, views, or SQL views
+
 To apply a tag to a table, Worksheet, view, or SQL view, follow these steps:
 
-. From the top navigation bar, select *Data*.
+. Go to *Data*.
+endif::[]
+
+ifdef::spotter[]
+[#data-workspace-apply]
+=== Apply tags to tables and Worksheets
+To apply a tag to a table or Worksheet, follow these steps:
+. From the {form-factor} page, select *Manage data > Manage data sources*.
+endif::[]
 
 . Select the checkbox next to the names of the object(s).
 
@@ -105,6 +141,7 @@ To apply a tag to a table, Worksheet, view, or SQL view, follow these steps:
 
 . Select *Save*.
 
+ifndef::spotter[]
 [#apply-from-home]
 === Apply tags from the Home page
 
@@ -119,24 +156,43 @@ image:home-object-tag.png[Apply tags from Home page]
 . In the *Edit tags* pop-up window, enter the name(s) of the tag(s) you would like to apply, or select the *x* icon to remove a tag.
 
 . Select *Save*.
+endif::[]
 
 [#filter-by-tags]
 == Filter by tags
 
-Whenever you are selecting objects from a list, you can filter by tag to find what you’re looking for. Anyone can use tags to filter lists of Liveboards or data sources. You can also filter by a tag when selecting data sources.
+Whenever you are selecting objects from a list, you can filter by tag to find what you’re looking for. Anyone can use tags to filter lists of
+ifndef::spotter[]
+Liveboards or
+endif::[]
+data sources. You can also filter by a tag when selecting data sources.
 
-Note that you can only filter by one tag at a time in the UI. To get a list of ThoughtSpot objects or object headers that is filtered by multiple tag, use the https://developers.thoughtspot.com/docs/?pageid=metadata-api[Metadata API^]. The `list` and `listobjectheaders` endpoints allow you to filter by multiple tags.
+To get a list of ThoughtSpot objects or object headers that is filtered by multiple tag, use the https://developers.thoughtspot.com/docs/?pageid=metadata-api[Metadata API^]. The `list` and `listobjectheaders` endpoints allow you to filter by multiple tags.
 
 To filter by tag:
 
-. From the top menu, choose *Answers*, *Liveboards*, or *Data*.
+ifndef::spotter[]
+. From the menu, choose *Answers*, *Liveboards*, or *Data*.
 
-. On the *Answers* or *Liveboards* page, click *Select tag*, and choose the name of the tag you want to filter by.
+. On the *Answers* or *Liveboards* page, click the *Tags* column header.
+endif::[]
+ifdef::spotter[]
+. Click the *Tags* column header.
+endif::[]
+ifndef::spotter[]
 +
-image:filter_by_tag.png[Filter by a tag]
+[.bordered]
+image:filter-tag.png[Filter by a tag]
 +
-On the Data workspace home page, click the *All tags* dropdown menu, and select the name of the tag you want to filter by.
+endif::[]
+. Choose the name of the tag you want to filter by.
 +
+[.bordered]
+image::tag-filter.png[Filter by a tag]
+
+On the Data workspace page, click the *All tags* dropdown menu, and select the name of the tag you want to filter by.
+
+[.bordered]
 image::select-tag-data-workspace.png[Select all tags and select a tag]
 
 [#unfilter-tags]
@@ -145,17 +201,24 @@ image::select-tag-data-workspace.png[Select all tags and select a tag]
 To remove a tag filter and see all objects again, select the tag you filtered on in the tag list.
 
 == Remove a tag
-You can remove a tag from an object from the object list page, for Answers and Liveboards, or the Data Workspace home page, for tables, Worksheets, views, and SQL views.
+You can remove a tag from an object from the object list page
+ifndef::spotter[]
+for Answers and Liveboards, or the Data Workspace page, for tables, Worksheets, views, and SQL views.
+endif::[]
+ifdef::spotter[]
+for the Data Workspace page, for tables and Worksheets.
+endif::[]
+// To remove a tag for an Answer or Liveboard, follow these steps:
+//
+// . Navigate to the *Answers* or *Liveboards* page.
+//
+// . Select the *x* that appears when you hover over the tag name for the object.
 
-To remove a tag for an Answer or Liveboard, follow these steps:
+To remove a tag for a an object, follow these steps:
 
-. Navigate to the *Answers* or *Liveboards* page, from the top navigation bar.
-
-. Select the *x* that appears when you hover over the tag name for the object.
-
-To remove a tag for a table, Worksheet, view, or SQL view, follow these steps:
-
-. Navigate to the *Data workspace* by selecting *Data* from the top navigation bar.
+ifndef::spotter[]
+. Navigate to the *Answers*, *Liveboards* or *Data*.
+endif::[]
 
 . Select the checkbox next to the names of the object(s).
 
