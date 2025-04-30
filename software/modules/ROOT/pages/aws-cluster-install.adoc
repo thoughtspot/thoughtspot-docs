@@ -1,0 +1,306 @@
+= Install ThoughtSpot clusters in AWS
+:last_updated: 04/30/2021
+:experimental:
+:linkattrs:
+
+Learn how to install ThoughtSpot clusters in AWS.
+
+'''
+> **ThoughtSpot Training**
+>
+> * For best results in setting up ThoughtSpot on AWS, we recommend that you take the following ThoughtSpot U course: https://training.thoughtspot.com/create-upgrade-patch-a-thoughtspot-cluster/430642[Create a Cluster^].
+> * See other training resources at https://training.thoughtspot.com/[ThoughtSpot U^].
+
+'''
+
+== Prerequisites
+
+Before you install your ThoughtSpot clusters in AWS, complete these prerequisites.
+
+[cols="5,~",grid=none,frame=none]
+|===
+| &#10063; | xref:aws-configuration-options.adoc[1. Review AWS configuration options] for detailed instance specifications.
+| &#10063; | xref:aws-launch-instance.adoc[2. Create and launch an AWS instance].
+| &#10063; | xref:ports.adoc[3. Review required network ports] for successful operation of ThoughtSpot.
+| &#10063; | xref:aws-installing.adoc[4. Configure ThoughtSpot nodes in AWS] to configure your nodes.
+|===
+
+[#cluster-install]
+== Install ThoughtSpot Software
+
+Install the cluster using the ThoughtSpot software release bundle.
+The estimated installation time is one hour.
+
+Follow the steps in this checklist.
+
+[cols="5,~",grid=none,frame=none]
+|===
+| &#10063; | <<cluster-step-1,Step 1: Run the installer>>
+| &#10063; | <<cluster-step-2,Step 2: Check cluster health>>
+| &#10063; | <<cluster-step-3,Step 3: Finalize installation>>
+|===
+
+Refer to your welcome letter from ThoughtSpot to find the link to download the release bundle.
+If you do not have a link, open a support ticket with https://community.thoughtspot.com/customers/s/contactsupport[ThoughtSpot Support^] to request access to the release bundle.
+
+[#cluster-step-1]
+=== Step 1: Run the installer
+
+. Copy the downloaded release bundle to `/export/xvdb1/TS_TASKS/install` using the following command:
++
+[source,bash]
+----
+$ scp -i key.pem <release-number>.tar.gz admin@<hostname>:
+       /export/xvdb1/TS_TASKS/install/<file-name>
+----
++
+Note the following parameters:
+
+`release-number`::
+  is the release number of your ThoughtSpot instance, such as 5.3, 6.0, and so on.
+`hostname`::
+  is your specific hostname.
+`file-name`::
+  is the name of the tarball file on your local computer.
+
++
+NOTE: You can use another secure copy method, if you prefer a method other than the `scp` command.
+
+. Alternatively, use `tscli fileserver download-release` to download the release bundle.
++
+You must xref:tscli-command-ref.adoc#tscli-fileserver[configure the fileserver] by running `tscli fileserver configure` before you can download the release.
++
+[source,bash]
+----
+ $ tscli fileserver download-release <release-number>
+         --user <username> --out <release-location>
+----
++
+Note the following parameters:
+
+`release-number`::
+  is the release number of your ThoughtSpot instance, such as 5.3, 5.3.1, 6.0, and so on.
+`username`::
+  is the username for the fileserver that you set up earlier, when configuring the fileserver.
+`release-location`::
+  is the location path of the release bundle on your local machine. For example, `/export/xvdb1/TS_TASKS/install/6.0.tar.gz`.
+
+. Verify the checksum to ensure you have the correct release. Run:
++
+[source,bash]
+----
+$ md5sum -c <release-number>.tar.gz.MD5checksum
+----
++
+Your output says `ok` if you have the correct release.
+
+. Launch a https://linux.die.net/man/1/screen[screen^] session.
+Use screen to ensure that your installation does not stop if you lose network connectivity.
++
+[source,bash]
+----
+$ screen -S DEPLOYMENT
+----
+
+. Take a machine snapshot prior to the release deployment, as a best practice.
+
+. Create the cluster by running the `tscli cluster create` command.
++
+If you are using an s3 bucket for object storage, include the flag `--enable_cloud_storage=s3a`.
++
+[source,bash]
+----
+$ tscli cluster create <release-number>.tar.gz --enable_cloud_storage=s3a
+----
+
+. Edit the output with your specific cluster information.
++
+For more information on this process, refer xref:cluster-create.adoc[Using the tscli cluster create command] and xref:parameters-cluster-create.adoc[Parameters of the `cluster create` command].
++
+The cluster installer automatically reboots all the nodes after a successful install.
+The `firewalld` service automatically turns on.
+At this time, the system is rebooting, which may take approximately 15 minutes.
+Log in to any node to check the current cluster status:
++
+[source,bash]
+----
+$ tscli cluster status
+----
+
+[#cluster-step-2]
+=== Step 2: Check cluster health
+
+After the cluster installs, check its status using the `tscli cluster status` command.
+
+Your output may look similar to the following:
+
+[source,bash]
+----
+$ tscli cluster status
+Cluster: RUNNING
+Cluster name    : thoughtspot
+Cluster id      : 1234X11111
+Number of nodes : 3
+Release         : 6.0
+Last update     = Wed Oct 16 02:24:18 2019
+Heterogeneous Cluster : False
+Storage Type    : HDFS
+
+Database: READY
+Number of tables in READY state: 2185
+Number of tables in OFFLINE state: 0
+Number of tables in INPROGRESS state: 0
+Number of tables in STALE state: 0
+Number of tables in ERROR state: 0
+
+Search Engine: READY
+Has pending tables. Pending time = 1601679ms
+Number of tables in KNOWN_TABLES state: 1934
+Number of tables in READY state: 1928
+Number of tables in WILL_REMOVE state: 0
+Number of tables in BUILDING_AND_NOT_SERVING state: 0
+Number of tables in BUILDING_AND_SERVING state: 128
+Number of tables in WILL_NOT_INDEX state: 0
+----
+
+Ensure that the cluster is `RUNNING` and that the Database and Search Engine are `READY`.
+
+Your output may look like the following listing.
+Ensure that all diagnostics show `SUCCESS`.
+
+[source,bash]
+----
+ $ tscli cluster check
+ Connecting to hosts...
+ [Wed Jan  8 23:15:47 2020] START Diagnosing ssh
+ [Wed Jan  8 23:15:47 2020] SUCCESS
+ ################################################################################
+ [Wed Jan  8 23:15:47 2020] START Diagnosing connection
+ [Wed Jan  8 23:15:47 2020] SUCCESS
+ ################################################################################
+ [Wed Jan  8 23:15:47 2020] START Diagnosing zookeeper
+ [Wed Jan  8 23:15:47 2020] SUCCESS
+ ################################################################################
+ [Wed Jan  8 23:15:47 2020] START Diagnosing sage
+ [Wed Jan  8 23:15:48 2020] SUCCESS
+ ################################################################################
+ [Wed Jan  8 23:15:48 2020] START Diagnosing timezone
+ [Wed Jan  8 23:15:48 2020] SUCCESS
+ ################################################################################
+ [Wed Jan  8 23:15:48 2020] START Diagnosing disk
+ [Wed Jan  8 23:15:48 2020] SUCCESS
+ ################################################################################
+ [Wed Jan  8 23:15:48 2020] START Diagnosing cassandra
+ [Wed Jan  8 23:15:48 2020] SUCCESS
+ ################################################################################
+ [Wed Jan  8 23:15:48 2020] START Diagnosing hdfs
+ [Wed Jan  8 23:16:02 2020] SUCCESS
+ ################################################################################
+ [Wed Jan  8 23:16:02 2020] START Diagnosing orion-oreo
+ [Wed Jan  8 23:16:02 2020] SUCCESS
+ ################################################################################
+ [Wed Jan  8 23:16:02 2020] START Diagnosing memcheck
+ [Wed Jan  8 23:16:02 2020] SUCCESS
+ ################################################################################
+ [Wed Jan  8 23:16:02 2020] START Diagnosing ntp
+ [Wed Jan  8 23:16:08 2020] SUCCESS
+ ################################################################################
+ [Wed Jan  8 23:16:08 2020] START Diagnosing trace_vault
+ [Wed Jan  8 23:16:09 2020] SUCCESS
+ ################################################################################
+ [Wed Jan  8 23:16:09 2020] START Diagnosing postgres
+ [Wed Jan  8 23:16:11 2020] SUCCESS
+ ################################################################################
+ [Wed Jan  8 23:16:11 2020] START Diagnosing disk-health
+ [Wed Jan  8 23:16:11 2020] SUCCESS
+ ################################################################################
+ [Wed Jan  8 23:16:11 2020] START Diagnosing falcon
+ [Wed Jan  8 23:16:12 2020] SUCCESS
+ ################################################################################
+ [Wed Jan  8 23:16:12 2020] START Diagnosing orion-cgroups
+ [Wed Jan  8 23:16:12 2020] SUCCESS
+ ################################################################################
+ [Wed Jan  8 23:16:12 2020] START Diagnosing callosum
+ /usr/lib/python2.7/site-packages/urllib3/connectionpool.py:852: InsecureRequestWarning: Unverified HTTPS request is being made. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+   InsecureRequestWarning)
+ [Wed Jan  8 23:16:12 2020] SUCCESS
+ ################################################################################
+----
+
+CAUTION: If `tscli cluster check` returns an error, it may suggest you run `tscli storage gc` to resolve the issue.
+If you run `tscli storage gc`, note that it restarts your cluster.
+
+[#cluster-step-3]
+=== Step 3: Finalize installation
+
+After the cluster status changes to `READY`, sign in to ThoughtSpot on your browser.
+Follow these steps:
+
+. Start a browser from your computer.
+. Enter your secure IP information on the address line.
++
+[source,bash]
+----
+https://<VM-IP>
+----
+
+. If you don't have a security certificate for ThoughtSpot, you must bypass the security warning:
++
+Click *Advanced*.
++
+Click *Proceed*.
+. The ThoughtSpot sign-in page appears.
+. In the <<ts-login,ThoughtSpot sign-in window>>, enter admin credentials, and click *Sign in*.
++
+ThoughtSpot recommends changing the default admin password.
++
+[#ts-login]
+image:ts-login-page.png[ThoughtSpot's sign-in window]
+
+[#lean-configuration]
+== Lean configuration
+
+*For use with thin provisioning only:* If you have a xref:deploying-cloud.adoc#small-medium[small or medium instance type], with less than 100GB of data, you must use advanced lean configuration before loading any data into ThoughtSpot.
+After installing the cluster, configure advanced lean mode.
+
+To configure advanced lean mode, do the following:
+
+. SSH as admin into your ThoughtSpot cluster, using the following syntax:
++
+[source,bash]
+----
+ssh admin@<cluster-ip-address or hostname>
+----
+. Run the advanced lean mode configuration using the following syntax:
++
+[source,bash]
+----
+tscli config-mode lean [-h] --type {small,medium,default}
+----
++
+Examples:
+
+ ** To configure your instance with the "small" data size, run:
++
+[source,bash]
+----
+tscli config-mode lean [-h] --type small
+----
+** To configure your instance with the "medium" data size, run:
++
+[source,bash]
+----
+tscli config-mode lean [-h] --type medium
+----
+
++
+NOTE: If you decide later you want to disable advanced lean mode, use `default`.
+
+'''
+> **Related information**
+>
+> * xref:nodesconfig-example.adoc[The nodes.config file]
+> * xref:parameters-nodesconfig.adoc[Parameters of the nodes.config file]
+> * xref:cluster-create.adoc[Using the tscli cluster create command]
+> * xref:parameters-cluster-create.adoc[Parameters of the cluster create command]
+> * Contact https://community.thoughtspot.com/customers/s/contactsupport[ThoughtSpot Support^]
