@@ -1,0 +1,171 @@
+= How to change a schema
+:last_updated: 08/26/2020
+
+After you've created a schema and loaded data, you may find yourself wishing you'd set things up a little differently. You can make changes, such as changing the primary key, relationships to other tables, and sharding.
+
+Making changes to a schema after data has been loaded and users have created Worksheets or Pinboards on the tables requires care, so that you don't lose the relationship between the objects created in ThoughtSpot and the underlying tables.
+If you follow the procedures here, your tables will retain their relationships to the objects created on top of them.
+
+TIP: Always take a snapshot of your database before making any schema changes.
+This snapshot allows you to revert back to the prior state if you make an error, or something doesn't work as you expected after the schema change.
+
+== Change the primary key for a table
+
+Use this procedure to change the primary key for a table.
+But use it with caution, particularly if you are changing to a primary key for which values are not unique.
+
+You can change the primary key of a table without having to `TRUNCATE` it first and reload the data.
+However, changing the primary key could result in data deletion.
+This is because of the upsert behavior which is applied when multiple rows have the same primary key.
+This is very important to understand ahead of time, if you are considering changing to a primary key for which values are not unique.
+
+To change the primary key, first remove any existing primary key, and then define the new key.
+If you no longer want the table to have a primary key, just remove the existing key.
+Any dependent objects, like Pinboards or Worksheets, remain intact.
+
+To change the primary key of a table:
+
+. xref:overview-snapshot.adoc[Create a manual snapshot].
+. xref:prep-schema-for-load.adoc#connect-with-tql[Connect to the database with the ThoughtSpot SQL Command Line (TQL)].
+. Drop the existing primary key (if any), by issuing a command like this example:
++
+----
+ TQL> ALTER TABLE "cart"
+      DROP CONSTRAINT
+      PRIMARY KEY;
+----
++
+Dropping a primary key can impact existing Worksheets, Answers, and Pinboards.
+The system warns you if dropping a primary key impacts other objects.
+
+. Add a new primary key, if desired:
++
+----
+ TQL> ALTER TABLE "cart"
+      ADD CONSTRAINT
+      PRIMARY KEY ("owner_id");
+----
+
+. Test that any dependent objects (Pinboards, Worksheets, and so on) are still working correctly.
+. Delete the snapshot you created earlier:
++
+----
+ tscli snapshot delete <name>
+----
+
+== Change a relationship between tables
+
+Use this procedure to remove a relationship between tables or define a new one.
+This operation works for both kinds of relationships: foreign key or generic relationship.
+
+To change a relationship between two tables, first remove any existing relationship, and then define the new relationship (if any).
+You do not have to truncate the tables to do this operation.
+Any dependent objects (Pinboards or Worksheets) will remain intact.
+
+To change the relationship between tables:
+
+. xref:overview-snapshot.adoc[Create a manual snapshot].
+. xref:prep-schema-for-load.adoc#connect-with-tql[Connect to the database with the ThoughtSpot SQL Command Line (TQL)].
+. Issue the command to drop the existing relationship
++
+Before dropping a relationship TQL checks for and then warns of any dependent objects.
++
+The following examples illustrate several different types of drop operations.
++
+Drop a foreign key by name, if it was given a name when it was defined:
++
+----
+ TQL> ALTER TABLE
+      "sales_fact"
+      DROP CONSTRAINT
+      "FK_PO_number";
+----
++
+Drop a relationship by name, if it was given a name when it was defined:
++
+----
+
+ TQL> ALTER TABLE "fruit_dim"
+      DROP RELATIONSHIP "REL_dates";
+----
++
+Drop the foreign key relationship explicitly, if it doesn't have a name, by referencing the two tables that are joined.
+This drops all foreign keys between the two tables:
++
+----
+ TQL> ALTER TABLE "shipments"
+      DROP CONSTRAINT
+      FOREIGN KEY "orders";
+----
++
+Drop all generic relationships between two tables:
++
+----
+ TQL> ALTER TABLE "wholesale_buys"
+      DROP RELATIONSHIP
+      WITH "retail_sales";
+----
+
+. Define a new relationship, if you want to, using `+ALTER TABLE...ADD CONSTRAINT...+`
+. Test that any dependent objects (Pinboards, Worksheets, etc.) are still working correctly.
+. Delete the snapshot you created earlier using the command:
++
+----
+ tscli snapshot delete <name>
+----
+
+[#change-sharding-on-a-table]
+== Change sharding on a table
+
+You can change the sharding on a table or remove it altogether (creating a replicated table) using this procedure.
+This procedure preserves the data within the table.
+
+This procedure reshards a table.
+This is also called redistributing or repartitioning.
+You can use this method to reshard a table without losing its data or metadata.
+This means that Worksheets and Pinboards built on top of the table will continue to work.
+
+You can use these steps to do any of these operations:
+
+* shard a table that was previously replicated.
+* change a replicated table to a sharded table.
+* change the number of shards to use for a sharded table.
+This is useful if the size of your cluster has increased.
+
+To change the sharding on a table:
+
+. xref:overview-snapshot.adoc[Create a manual snapshot].
+. xref:prep-schema-for-load.adoc#connect-with-tql[Connect to the database with the ThoughtSpot SQL Command Line (TQL)].
+. Issue the command to change the sharding using this syntax:
++
+----
+TQL> ALTER TABLE <table>
+     [SET DIMENSION | SET FACT
+     [PARTITION BY HASH
+     [(<shards>)]
+     [KEY(<column>)]]]
+----
++
+For example:
+
+ ** To make a sharded table into a dimension table (replicated on every node), use:
++
+----
+ALTER TABLE "products"
+   SET DIMENSION;
+----
+
+ ** To make a dimension table into a sharded (fact) table or change the number of shards, use:
++
+----
+ALTER TABLE "sales"
+   SET FACT PARTITION BY HASH (96)
+   KEY ("productID");
+----
+
+. Test that any dependent objects (Pinboards, Worksheets, etc.) are still working correctly.
+. Delete the snapshot you created earlier using the command:
++
+----
+ tscli snapshot delete <name>
+----

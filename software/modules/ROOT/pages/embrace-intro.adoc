@@ -1,0 +1,234 @@
+= Embrace overview
+:last_updated: 10/21/2019
+
+
+Using Embrace, you can perform live queries on external databases.
+
+If your company stores source data externally in data warehouses, you can use ThoughtSpot Embrace to directly query that data and use ThoughtSpot's analysis and visualization features, without moving the data into ThoughtSpot.
+
+Embrace supports the following external databases:
+
+* Snowflake
+* Amazon Redshift
+* Google BigQuery
+* Microsoft Azure Synapse
+
+To enable Embrace, contact ThoughtSpot support.
+
+== How it works
+
+You create a connection to the external database, choosing the columns from each table that you want to explore in your live query.
+Primary key and foreign key relationships are imported along with the primary and foreign key tables.
+If there are any joins in the tables of your connection, they are also imported.
+After your connection is complete, it becomes a *linked* data source in ThoughtSpot that allows you to query the external database directly.
+It's easy to apply transformations and filter the data also.
+
+== Key benefits
+
+* Set up and deploy ThoughtSpot faster by connecting directly to the external database.
+* Eliminate the need to move data into ThoughtSpot for analysis.
+* Centralize data management and governance in the external database.
+* Save significant time and money by avoiding ETL pipelines.
+* Connect to multiple external databases.
+
+== New features in 6.0
+
++++<script src="https://fast.wistia.com/embed/medias/1n7ei0tqr4.jsonp" async>++++++</script>+++
++++<script src="https://fast.wistia.com/assets/external/E-v1.js" async>++++++</script>+++
++++<span class="wistia_embed wistia_async_1n7ei0tqr4 popover=true popoverAnimateThumbnail=true popoverBorderColor=4E55FD popoverBorderWidth=2" style="display:inline-block;height:252px;position:relative;width:450px">++++++&nbsp;++++++</span>+++
+
+== Limitations
+
+=== Feature availability in Embrace
+
+The following matrix compares the features that are available in our internal high-performance database, Falcon, and the ones available in Embrace:
+[cols="80%,10%,10%,options="header"]
+|===
+| Feature Name | Falcon | Embrace
+
+| Simple Search and Complex searches: +
+Versus, Inline Subquerying, Growth
+| &check;
+| &check;
+
+| Search Suggestions for column names and values
+| &check;
+| &check;
+
+| Headlines that summarize tables
+| &check;
+| &check;
+
+| All chart types and configurations
+| &check;
+| &check;
+
+| Spot IQ: Instant insights, Did you know?, +
+Pinboard insights, Analyze
+| &check;
+| &cross;
+
+| SpotIQ Monitor Headlines
+| &check;
+| &cross;
+
+| Table and Column remapping through Scriptability
+| &cross;
+| &check;
+
+| Custom calendar
+| &check;
+| &cross;
+
+| Materialized View
+| &check;
+| &cross;
+|===
+
+=== Function availability in Embrace
+
+The following matrix compares the specific function support across the different databases of Embrace.
+Functions not listed here have full support.
+
+|===
+| Function | Snowflake | Amazon +
+ Redshift | Google +
+ BigQuery | Azure +
+ Synapse
+
+| `SOUNDS_LIKE`
+| &cross;
+| &cross;
+| &cross;
+| &cross;
+
+| `STRING_ MATCH_SCORE`
+| &cross;
+| &cross;
+| &cross;
+| &cross;
+
+| `EDIT_DISTANCE_WITH_CAP`
+| &cross;
+| &cross;
+| &cross;
+| &cross;
+
+| `APPROX_SET_CARDINALITY`
+| &cross;
+| &cross;
+| &cross;
+| &cross;
+
+| `COUNT_NOT_NULL`
+| &cross;
+| &cross;
+| &cross;
+| &cross;
+
+| `SPELLS_LIKE`
+| &check;
+| &cross;
+| &cross;
+| &cross;
+
+| `EDIT_DISTANCE`
+| &check;
+| &cross;
+| &cross;
+| &cross;
+
+| `MEDIAN`
+| &check;
+| &check;
+| &cross;
+| &check;
+
+| `PERCENTILE`
+| &check;
+| &check;
+| &cross;
+| &check;
+|===
+
+=== Data type availability in Embrace
+
+The following matrix captures the specific data type support limitations across the different databases of Embrace.
+Data types not listed here have full support.
+
+|===
+| Data Type | Snowflake | Amazon +
+ Redshift | Google +
+ BigQuery | Azure +
+ Synapse
+
+| `BINARY`
+| &cross;
+| &check;
+| &check;
+| &cross;
+
+| `VARBINARY`
+| &cross;
+| &check;
+| &check;
+| &cross;
+
+| `TIMESTAMPTZ`
+| &check;
+| &cross;
+| &check;
+| &check;
+
+| `GEOMETRY`
+| &check;
+| &cross;
+| &check;
+| &check;
+
+| `BYTES`
+| &check;
+| &check;
+| &cross;
+| &check;
+
+| `DATETIMEOFFSET`
+| &check;
+| &check;
+| &check;
+| &cross;
+|===
+
+=== Additional specific exceptions
+
+The following list captures the specific limitations across the different databases of Embrace.
+Databases not listed here have full support.
+
+General: all databases::
+Sample values;;
+Embrace does not internationalize sample values in tables.
+Delayed UI rendering;;
+For connections with a very large number of tables (on the order of 1000's of tables), UI rendering may take a very long time. These connections may time out.
+Deleting columns;;
+After specifying a connection, columns cannot be deleted from the table. Editing a connection makes it possible to add additional columns, but not to remove them.
+
+Google BigQuery::
+Join support;;
+Google BigQuery does not support PK-FK joins. Therefore, when using Embrace, you must create joins explicitly in ThoughtSpot.
+Partitioned tables;;
+When running a query on a partitioned table with the *Require partition filter option* enabled, you must specify the `WHERE` clause. Omitting the `WHERE` clause throws an error. +
+To ensure that the query on such tables honors the partition condition, you must create a worksheet filter in ThoughtSpot.
+
+Azure Synapse::
+Azure Synapse supports up to 10 `IF THEN ELSE` statements in a single query.
+
+== Next steps
+
+* *xref:embrace-snowflake-add.adoc[Add a Snowflake connection]* +
+Create the connection between ThoughtSpot and tables in an external Snowflake database.
+* *xref:embrace-redshift-add.adoc[Add a Redshift connection]* +
+Create the connection between ThoughtSpot and tables in an external Amazon RedShift database.
+* *xref:embrace-gbq-add.adoc[Add a BigQuery connection]* +
+ Create the connection between ThoughtSpot and tables in an external Google BigQuery database.
+* *xref:embrace-synapse-add.adoc[Add a Synapse connection]* +
+Create the connection between ThoughtSpot and tables in an external Azure Synapse database.

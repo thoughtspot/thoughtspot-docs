@@ -1,0 +1,102 @@
+= Cloud overview
+:last_updated: 1/9/2019
+:linkattrs:
+
+You can deploy ThoughtSpot on several cloud providers.
+
+ThoughtSpot can currently be deployed in the following cloud provider environments:
+
+* xref:configuration-options-aws.adoc[Amazon Web Services (AWS) EC2]
+* xref:configuration-options-azure.adoc[Microsoft Azure]
+* xref:configuration-options-gcp.adoc[Google Cloud Platform (GCP)]
+
+The ThoughtSpot cloud deployment consists of cloud compute (VM) instances and an underlying persistent storage layer.
+The number of instances required for a cloud deployment is based on the size of the data that needs to be analyzed in ThoughtSpot.
+The instances act as a distributed cluster of nodes to serve query responses.
+
+|===
+|  | AWS | Azure | GCP
+
+| *Compute*****
+| Virtual machines deployed in your +
+ AWS VPC
+| Virtual machines in your +
+ Azure VNET
+| Virtual machines in your +
+ GCP VPC
+
+| *Persistent +
+ storage*****
+| Deployment options: +
+ 1.
+Elastic Block Storage +
+ 2.
+S3 +
+ Elastic Block Storage
+| Premium SSD Managed Disks
+| Zonal SSD persistent disk
+|===
+
+image::cloud-vm-storage.svg[]
+
+To determine the number of instances and the persistent storage requirements to provision your cluster, please refer to the available instance types for your cloud service provider in the next section.
+
+== ThoughtSpot cloud instance types
+
+Refer to the following guidelines for how to set up ThoughtSpot on each cloud service:
+
+* xref:configuration-options-aws.adoc#ts-aws-instance-types[AWS instance types]
+* xref:configuration-options-azure.adoc#thoughtspot-azure-instance-types[Azure instance types]
+* xref:configuration-options-gcp.adoc#thoughtspot-gcp-instance-types[GCP instance types]
+
+== Reducing your cloud infrastructure costs
+
+ThoughtSpot recommends following these guidelines to help reduce the cost of your cloud deployment.
+
+[#use-small-and-medium-instance-types-when-applicable]
+=== Use small and medium instance types when applicable
+
+ThoughtSpot has various instance types to suit your needs.
+For ThoughtSpot customers who are deploying their instance with lower data sizes (\<=100 GB), ThoughtSpot supports "`small`" (20 GB data) and "`medium`" (100 GB data) instance types, as provided at the links above, to help reduce the costs of cloud infrastructure.
+These are instances with lower CPU/RAM sizes (16/32 vCPU and 128 GB/256 RAM).
+Advanced lean configuration is required before any data can be loaded onto these instances.
+
+Please contact ThoughtSpot support for assistance with this configuration.
+
+=== Shut down and restart your cluster
+
+If you do not need your ThoughtSpot cluster to be up and running 24/7, you can shut down your cluster and restart it during normal usage hours to save on the infrastructure costs of running ThoughtSpot instances in cloud provider environments.
+
+To shut down and restart your cluster, do the following in the tscli:
+
+. Ensure there are no issues with the cluster by running: `$ tscli cluster check`
++
+The above command should return no failure messages.
+
+. Stop the cluster by running: `$ tscli cluster stop`
++
+Wait until you see the message: "`Done stopping cluster`"
+
+. Go to your cloud provider's console and shut down all of the ThoughtSpot VMs in your cluster.
+. When you are ready to use ThoughtSpot again, start up your node VMs.
+. Restart your cluster by running:  `$ tscli cluster start`
++
+You should see the message: "`Started pre-existing cluster`"
++
+Depending on the size of your cluster, you may need to wait several minutes before the system is fully usable again.
+For massive clusters with hundreds of GBs of data, this time to readiness may be several hours.
+Assess time to readiness on a per-cluster basis.
+Make sure you budget for this startup time to ensure that the system is fully operational before advertising it as ready and usable.
+
+. Ensure that your cluster is ready for use by running:  `$ tscli cluster status`
++
+The following messages are displayed to indicate your cluster is up and running: +
+ `+...+`   `Cluster: RUNNING` +
+`Database: READY` +
+`Search Engine: READY`
+
+== Automating your cloud deployment
+
+You can automate your deployment, using the free tools in the https://github.com/thoughtspot/community-tools/tree/master/ThoughtSpot_Cloud_deployments[ThoughtSpot Cloud Deployment GitHub repository,window=_blank].
+
+For more information about automating your cloud deployment, read https://www.thoughtspot.com/thoughtspot-blog/deploying-thoughtspot-cloud-using-terraform-and-ansible[Deploying ThoughtSpot in the Cloud Using Terraform and Ansible,window=_blank].
