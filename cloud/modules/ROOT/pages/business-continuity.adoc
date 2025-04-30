@@ -1,9 +1,10 @@
-= Data Protection and Disaster Recovery
-:last_updated: 2/23/2023
+= Data protection and disaster recovery
+:last_updated: 3/26/2025
 :linkattrs:
 :experimental:
 :page-layout: default-cloud
 :description: Learn how ThoughtSpot protects your data and ensures business continuity. This article describes ThoughtSpot's disaster recovery strategy.
+:jira: SCAL-248217
 
 ++++
 <style>
@@ -27,7 +28,7 @@
 </style>
 ++++
 
-This article describes ThoughtSpot's Data Protection and Disaster Recovery strategy for ThoughtSpot Cloud.
+This article describes ThoughtSpot's data protection and disaster recovery strategy for ThoughtSpot Cloud.
 
 There are several methods ThoughtSpot employs to protect your ThoughtSpot data and ensure business continuity in the event of a hardware or software failure or a catastrophic event.
 
@@ -43,7 +44,7 @@ A snapshot is a point-in-time image of your running instance. Snapshots are take
 
 [#backups]
 ==== Backups
-A backup is a procedure that stores a snapshot outside a ThoughtSpot instance. ThoughtSpot takes data-less backups of your instance once a day, at midnight local instance time, and stores them for 30 days in cloud object storage. ThoughtSpot can use a backup to restore an instance to a prior state. ThoughtSpot can restore the instance in either the same or, if you enable <<disaster-recovery,Cross-Region Disaster Recovery>>, a different region from the original instance. If you enable Cross Region Disaster Recovery, ThoughtSpot replicates the backups in a different cloud region.
+A backup is a procedure that stores a snapshot outside a ThoughtSpot instance. ThoughtSpot takes dataless backups of your instance once a day at midnight local instance time, and stores them in cloud object storage. ThoughtSpot can use a backup to restore your instance to a prior state. ThoughtSpot can restore your instance to any of the daily backups up to the last 7 days, and beyond that, at a weekly boundary of up to the last 30 days, in either the same or, if you enable <<disaster-recovery,cross-region disaster recovery>>, a different region from the original instance. If you enable cross-region disaster recovery, ThoughtSpot replicates the backups in a different cloud region.
 
 Backups contain the following information:
 
@@ -68,29 +69,29 @@ Backups DO NOT include the following information:
 * Usage information
 * Traces
 
-=== RPO and RTO for Data Protection
+=== RPO and RTO for data protection
 A Recovery Point Objective (RPO) is the frequency of which you take a backup of a system. ThoughtSpot's RPO for Data Protection is 24 hours. Every 24 hours, ThoughtSpot automatically takes a backup and stores it in cloud object storage, in the same cloud region that your instance is in.
 
 A Recovery Time Objective (RTO) is the targeted duration of time between an event of failure and the return to operation. ThoughtSpot's RTO for data protection is 2 hours.
 
-=== Automation of Data Protection
+=== Automation of data protection
 ThoughtSpot's Data Protection procedure is fully automated. You do not need to file an issue with ThoughtSpot to request recovery. {support-url} receives an alert after 15 minutes of ThoughtSpot service unavailability, and immediately investigates it. However, if you have an issue with service availability, and ThoughtSpot does not recover automatically, you also have the option to open a support request with {support-url}. ThoughtSpot automatically takes <<snapshots,snapshots>> of your instance once an hour and stores them on EBS disks attached to your VM instance. ThoughtSpot automatically takes <<backups,backups>> of your instance once a day and stores them in cloud object storage.
 
 If an instance is not available, {support-url} receives an alert after 15 minutes of unavailability. Then, ThoughtSpot Support investigates the instance to determine the problem and tries to fix it. If necessary, ThoughtSpot Support restores the instance from a snapshot or backup.
 
 [#disaster-recovery]
-== Cross-Region Disaster Recovery [.badge.badge-aws]#AWS-only#
-Cross-Region Disaster Recovery allows ThoughtSpot to recover your ThoughtSpot instance in a secondary cloud region in the case of a failure of the primary cloud region where the ThoughtSpot service is running. ThoughtSpot takes automated <<backups,backups>> of your instance once a day, and replicates those backups in a different cloud region from the region your ThoughtSpot primary instance is in. This ensures that if one cloud region fails, ThoughtSpot can start in another region, guaranteeing minimal downtime.
+== Cross-region disaster recovery [.badge.badge-aws]#AWS-only#
+Cross-region disaster recovery allows ThoughtSpot to recover your ThoughtSpot instance in a secondary cloud region in the case of a failure of the primary cloud region where the ThoughtSpot service is running. ThoughtSpot takes automated <<backups,backups>> of your instance once a day, and replicates those backups in a different cloud region from the region your ThoughtSpot primary instance is in. This ensures that if one cloud region fails, ThoughtSpot can start in another region, guaranteeing minimal downtime.
 
-=== RPO and RTO for Cross-Region Disaster Recovery
+=== RPO and RTO for cross-region disaster recovery
 ThoughtSpot's RPO for Cross-Region Disaster Recovery is 24 hours. Every 24 hours, ThoughtSpot automatically takes a backup and replicates it in cloud object storage, in a different cloud region than the one your instance is in.
  ThoughtSpot's RTO for Cross-Region Disaster Recovery is 2 hours.
 
-=== Enabling Cross-Region Disaster Recovery
-Enabling Cross-Region Disaster Recovery requires the purchase of a new SKU. Contact your ThoughtSpot sales representative for information on how to purchase the DR SKU. After you purchase the DR SKU, contact {support-url} to enable Disaster Recovery in your environment.
+=== Enabling cross-region disaster recovery
+Enabling cross-region disaster recovery requires the purchase of a new SKU. Contact your ThoughtSpot sales representative for information on how to purchase the DR SKU. After you purchase the DR SKU, contact {support-url} to enable disaster recovery in your environment.
 
 [#high-availability]
 == High Availability
-High Availability (HA) ensures that the ThoughtSpot Cloud instance experiences near-zero downtime in the case of Availability Zone (AZ) failures. ThoughtSpot provides HA through deployment spanning multiple AZs. This ensures that, in the case of an Availability Zone failure, ThoughtSpot continues to function.
+High Availability (HA) ensures that your ThoughtSpot Cloud instance experiences near-zero downtime in the case of Availability Zone (AZ) failures. ThoughtSpot provides HA through deployment spanning multiple AZs. This ensures that, in the case of an AZ failure, ThoughtSpot continues to function.
 
 For more information, see xref:high-availability.adoc[High Availability and resilience].

@@ -1,19 +1,18 @@
 = Query sets
-:last_updated: 6/4/24
+:last_updated: 4/25/25
 :author: Naomi
 :linkattrs:
 :page-layout: default-cloud-early-access
 :page-aliases: /admin/query-sets.adoc
 :experimental:
 :description: You can now create query sets, which can be used to classify values in a list you can then reuse across multiple analyses.
-:jira: SCAL-229666
+:jira: SCAL-229666, SCAL-238614, SCAL-247618
 
 You can create sets, which can be used to classify values in a list that you can then reuse across multiple analyses. Answer, formulas and parameters are generally available only when in use in an Answer, and must be remade if you navigate away from the Answer without saving. Sets are reusable across many answers with a single point of definition. A set is built from a Worksheet however it does not belong to the Worksheet. When a set is initially created it is only available to the creator. When a set is used in an Answer or Liveboard, and this Answer or Liveboard is shared with specific users or groups of users, the set is then available for use as a community object.
 
 ThoughtSpot now supports query sets.
 
 NOTE: Query sets are in early access and off by default. To enable this feature, contact your ThoughtSpot administrator.
-
 
 To create a query set, first define the business question you wish to answer.
 
@@ -23,10 +22,7 @@ For example, you may want to create a set to show the first sale date per custom
 
 To create a column showcasing this defined list of values, follow these steps:
 
-. Navigate to the *Search Data* page by clicking the *Search data* button.
-+
-[.bordered]
-image::search-data-button.png[Search Data button]
+. Navigate to the *Search Data* page by clicking the *Search Data* button.
 
 . Click *Add* and select *Query set*.
 +
@@ -51,15 +47,21 @@ image::query-set-name.png[Query set name]
 . Under *Select a base column*, select a *Base column*. Select the column you are using as the base of your list of values.
 +
 NOTE: It is important that for each base column value there is only a single return column value. If this is not true, then the query generation will result in a many-to-many join. This may be desired. This should be reviewed as this will likely lead to incorrect values as result of overcounting.
+. Select either *Conditions*, *Bins* or *Column* under *Define groups for included query values*.
++
+*Conditions* allow you to create groups using operators.
++
+*Bins* allow you to create groups based on bins of specified sizes for aggregate results.
++
+*Column* allows you to select a column with output groups. Each row in the base column will be assigned to an output group based on its value from this column.
 
-. Under *Define groups for included query values*:
-.. Select *Column* and *Select a column with output groups* from the drop-down menu. Each row in the base column will be assigned to an output group based on its value from this column.
-.. Select *Conditions* to create groups using operators. Enter your desired values for the conditions.
-.. To add multiple conditions click *Add condition*.
+. Enter your desired values for the conditions, bins or column.
++
+.. For conditions, you can choose to add multiple conditions by clicking *Add condition*.
 +
 NOTE: Multiple conditions can be combined with so that all conditions should be true or alternatively only a single condition as true.
 +
-.. To add multiple groups click *Add group*.
+.. For conditions, you can choose to add multiple groups by clicking *Add group*.
 +
 NOTE: If multiple group conditions return true for an anchor column value then the order of the groups takes precedence. That is for each value only one condition will return true.
 +
@@ -71,6 +73,33 @@ image::query-sets-example.png[Query sets esample]
 
 . Under *Define groups for excluded query values*, select either *Hide excluded values* or *Group excluded values*. If you group excluded values, you can give the group a custom name.
 . Click *Save*.
+
+[#passthrough]
+== Passthrough filters for sets
+
+You can now pass filters from a query into a set definition without needing to remake the set to include the filter.
+
+For example, if you create a query set defined as a list of SKUs that are ranked based on sales, where 1 through 10 are defined as Gold, 11 through 50 are defined as Silver, and the remainder are defined as Bronze, you can now add a filter such as Region. Rather than having to define a static set for each region (North, South, East, West), the filter can be passed into the set. Therefore, the gold clients are calculated based on aggregate sales for the East region, for example.
+
+You can also ensure that the set accepts a date filter, for example, rather than all sales, the set definition could be updated to reflect sales for the last twelve months.
+
++++
+<video autoplay loop muted controls width="100%" controlsList="nodownload">
+<source src="https://docs.thoughtspot.com/cloud/10.5.0.cl/_images/sets-passthrough.mp4" type="video/mp4">
+</video>
++++
+
+To edit a set's behavior regarding filters, follow these steps:
+
+. Open the Answer containing the set and scroll through the list of sets in the side menu until you find the name of the set.
+
+. Click the more options icon next to the set name and select *Edit TML*.
+
+. Scroll to the bottom of the TML file until you reach the `pass_thru_filter` property. Set `accept_all` to true to allow filters to pass through to the set. Set the property to false to keep the default behavior.
+
+. Click *Publish* in the top right corner. Confirm your selection by clicking *Publish* in the pop-up window.
+
+. Click *Close* and close the TML window.
 
 === Limitations
 

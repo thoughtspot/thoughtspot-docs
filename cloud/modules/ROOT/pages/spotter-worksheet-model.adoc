@@ -1,11 +1,11 @@
 = Spotter Worksheet/Model readiness
-:last_updated: 11/18/2024
-:author: Naomi
+:last_updated: 2/14/2025
+:author: Naomi, Mark
 :linkattrs:
 :experimental:
 :page-layout: default-cloud
 :description:
-:jira: SCAL-228500, SCAL-243503
+:jira: SCAL-228500, SCAL-232768, SCAL-243503
 
 
 ThoughtSpot’s AI tools achieve accuracy through four primary channels: our AI model training, system post-processing, customer data preparation, and coaching of the AI tool. By taking the time to prepare your data for use with our AI systems, you not only achieve greater accuracy, but increase the intuitiveness and satisfaction your users have with its experience.
@@ -152,5 +152,55 @@ Ensure indexing of low cardinality columns::
 Proactively identify and address low cardinality columns lacking indexing to optimize data accessibility and analysis accuracy.
 xref:worksheet-formula.adoc[Create formulas] or xref:column-sets.adoc[sets] for high cardinality columns::
 This helps in mitigating potential indexing issues and enhancing Spotter’s accuracy.
+
+[#optimize-spotter]
+=== Using Optimize for Spotter to index attribute columns
+
+To improve search accuracy it's important to index Worksheet and Model attribute columns properly, so ThoughtSpot can effectively retrieve and provide sample values associated with those columns. These sample values, combined with the column name, are passed to the LLM, which enables it to do the following:
+
+* Understand the column properties better
+* Map the requested value in the query to the correct column value when generating an answer
+
+*Optimize for Spotter* makes this a lot easier because it tells you columns which are not configured to index values and allows you to easily configure indexing on the appropriate columns.
+
+IMPORTANT: You must have permission to edit tables in the Model or Worksheet to use _Optimize for Spotter_.
+
+To use Optimize for Spotter, do the following:
+
+. In the Data workspace, click the name of the Worksheet or Model you want to optimize for Spotter.
+. In the Model or Worksheet, click the *More* menu image:icon-more-10px.png[Chart configuration icon image], and select *Enable Spotter*.
+. Click the *Optimize for Spotter* button.
++
+The _Optimize for Spotter_ window appears listing the columns suggested for indexing.
++
+[.bordered]
+image::optimize_spotter.png[]
+. Do one of the following:
+* If you want to use the columns that are selected, click *Optimize*.
+* If you want select different columns, select only the checkboxes for the columns you want, and click *Optimize*.
++
+After all selected columns are indexed, the _Indexing successful_ message appears at the bottom of the page.
++
+image::optimize-spotter-success.png[]
+
+==== Troubleshooting
+
+If it is not possible to fully optimize the Worksheet or Model, or there are additional recommended steps before optimizing, one of the following messages appears:
+
+- If "Some columns were not updated" appears, it lists which columns could not be indexed. To index those columns, contact your ThoughtSpot administrator to get edit access to the underlying table.
+
+- The "Optimize for Spotter" guidance message appears when there are additional steps recommended for Spotter Optimization. In this case, refer to xref:worksheet-readiness.adoc[Worksheet readiness for Sage] for guidelines on how to prepare your Worksheet or Model to improve accuracy.
++
+[.bordered]
+image::optimize-spotter-readiness.png[]
+
+
+
+
+
+
+
+
+
 
 

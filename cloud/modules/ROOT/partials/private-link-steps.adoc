@@ -6,7 +6,7 @@ To deploy an AWS PrivateLink, you must work with {support-url} and follow the pr
 == Prerequisites
 
 * The {connection} data warehouse is running inside your AWS account.
-* The ThoughtSpot cluster must be in the same AWS region as your {connection} account.
+* The customer can obtain the Availability Zone ID (AZ ID) for the PrivateLink from {support-url}. The customer must then incorporate this AZ ID into both the endpoint service and Network Load Balancer (NLB) configuration.
 * You must obtain the ThoughtSpot AWS Account Amazon Resource Name (ARN) from {support-url}. This is required for step 7 of <<configure-aws,Configure the Endpoint Service>>. For example: `arn:aws:iam::999999999999:root`
 
 == Enable an AWS PrivateLink for {connection}
@@ -25,6 +25,7 @@ After completing the <<prerequisites,prerequisites>>, you must configure the End
 
 . Sign in to the AWS Console.
 . Create a Network Load Balancer (NLB) routing TCP traffic to your {connection} database.
+. If the NLB has an associated security group, the customer must ensure that the ThoughtSpot Virtual Private Cloud (VPC) Classless Inter-Domain Routing (CIDR) block is permitted within the security group. For assistance with obtaining the VPC CIDR, contact {support-url}.
 . Note the number of the port you used to route the TCP traffic. You must provide {support-url} with this information later.
 . Navigate to menu:AWS VPC Console[Endpoint Services > Create Endpoint Service].
 . Select the NLB you created in step 2.
@@ -36,7 +37,7 @@ Add the ThoughtSpot AWS Account Amazon Resource Name (ARN) that you obtained fro
 
 * *Service name*: for example, _com.amazonaws.vpce.us-west-2.vpce-svc-0123456789abcdef_
 * *Port number*: for example, _5439_
-* *Availability zones and availability zone IDs*: for example, _us-west-2a (usw2-az1)_
+* *Availability Zones IDs*: for example, _usw2-az1_, _usw2-az3_, _usw2-az2_
 +
 You must provide the service name, port number, availability zones, and availability zone IDs to {support-url}.
 
@@ -55,3 +56,6 @@ You must provide the service name, port number, availability zones, and availabi
 . Select the connection from the ThoughtSpot AWS Account.
 Its status should be _Pending Acceptance_.
 . Select menu:Actions[Accept endpoint connection request].
+. Whitelist the Load Balancer subnet CIDRs (Classless Inter-Domain Routing) in the Redshift Security Group.
+. Enable Cross-Zone Load Balancing on the Load Balancer.
+. Add the cluster CIDR to the NLB security group.
