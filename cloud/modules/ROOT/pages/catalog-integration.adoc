@@ -1,19 +1,46 @@
-= Catalog integration
-:last_updated: 7/25/23
+= Alation catalog integration
+:last_updated: 9/11/24
 :author: Naomi
 :page-layout: default-cloud
 :linkattrs:
 :experimental:
 :description: Use ThoughtSpot’s connection to Alation to import column- and table-level metadata and surface the data in the Search data knowledge cards.
-:jira: SCAL-205044
+:jira: SCAL-205044, SCAL-213222, SCAL-223848
 
 Use ThoughtSpot’s connection to Alation to import column- and table-level metadata, including column description, table description, column verification status and table verification status, and surface the data in the Search data knowledge cards. To set up or edit a connection to Alation, you must have *can manage catalog* permission. Once the metadata is imported, all users can see the metadata. Note, the user setting up the catalog connection can also configure which fields they want to display or hide on the column and table level knowledge cards. By default, all selected fields in the catalog connection process will be visible.
 
-NOTE: This catalog integration is only supported on AWS clusters.
 
 image::catalog-integration.png[Search Data page showing catalog information]
 
 NOTE: You can only create a connection to a single data catalog at a time. If you connect to Atlan, for example, you cannot simultaneously connect to Alation.
+
+== Prerequisites
+
+You can now connect to Alation using Service Account authentication or Token-based authentication. For each authentication type, you will need the following credentials:
+
+Service Account::
+* link:https://docs.alation.com/en/latest/welcome/CatalogBasics/RolesOverview.html[Catalog admins^] privilege
+* Username and password used to log in to your Alation instance
+* Instance URL
+
+Token-based authentication::
+* link:https://docs.alation.com/en/latest/welcome/CatalogBasics/RolesOverview.html[Catalog admins^] privilege
+* API token, also known as refresh token
+* Instance URL
+
+=== API token and user ID for token-based authentication
+
+To create an API token for token-based authentication, follow these steps:
+
+. Navigate to `+https://<alation_instance>/account/auth/+`.
+. Click on *Create Refresh Token*.
+. Give the token a recognizable name under *Refresh Token Name* and click *Create Refresh Token*.
+. Click the *Copy* button to copy the refresh token generated. Use this refresh token in the API token field within ThoughtSpot.
+
+To find your user ID, browse to your user profile in your Alation instance. Copy the user ID from the URL: `+https://<alation_instance>/user/7/+`. Here, 7 would be the user ID.
+
+
+
 
 == Connect to Alation
 
@@ -23,10 +50,18 @@ NOTE: You can only create a connection to a single data catalog at a time. If yo
 +
 image:alation-connect.png[Connection to Alation]
 
-. Enter the following credentials:
+. Under *Authentication type*, select *Service Account* or *Auth Token*.
+
+. For Service Account, enter the following credentials:
 
 * User name
 * Password
+* Instance URL (for example, `+https://connector.alationcatalog.com/+`)
+
+. For Auth Token, enter the following credentials:
+
+* API token
+* User ID
 * Instance URL (for example, `+https://connector.alationcatalog.com/+`)
 
 
