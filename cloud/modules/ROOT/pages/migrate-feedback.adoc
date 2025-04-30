@@ -1,0 +1,127 @@
+= Import and export feedback TML
+:last_updated: 3/14/25
+:author: Naomi
+:page-layout: default-cloud-beta
+:linkattrs:
+:experimental:
+:description: You can now migrate feedback between Models or Worksheets using the feedback TML file.
+:jira: SCAL-226681
+
+You can now migrate feedback from one Model to another across different Orgs and instances or clusters using the feedback TML file. This feature allows you to transfer coaching insights efficiently, eliminating the need to duplicate efforts in training Spotter for each Model or Worksheet separately. To export or import feedback, you must have edit access to the respective Model or Worksheet. To enable this feature, contact {support-url}.
+
+== Export feedback from ThoughtSpot
+
+You can export feedback TML files from the Model or Worksheet view in the Data workspace by following these steps:
+
+. Navigate to the Data workspace and select the Model or Worksheet containing the feedback you want to export.
+
+. Select the *more options* icon image:icon-more-10px.png[more options icon] and hover over the *TML* section.
++
+[.bordered]
+image::hover-tml.png[Hover over the TML section]
+
+
+. If you select *Export TML*:
+
+* Select *Export Model/worksheet* and *Export associated Spotter feedback* to download the Model/Worksheet TML file and feedback TML file. Click *Save*.
+* Alternatively, select *Export Model/worksheet & associated objects (tables etc.)* and *Export associated Spotter feedback* to download the TML files for the Model or Worksheet, all dependent objects, and the feedback. Click *Save*.
++
+[.bordered]
+image::export-tml.png[Choose what to export]
+
+
+
+.  If you select *Export feedback TML*:
+
+* Select *Export Spotter feedback only* to download only the TML file containing all feedback objects. Click *Save*.
+* Select *Export Spotter feedback & associated objects (models etc.)* to download the TML files for the Worksheet/Model, all dependent objects, and the feedback. Click *Save*.
++
+[.bordered]
+image::export-feedback-tml.png[Export feedback TML]
+
+
+NOTE: No feedback file is created if there are no feedback entries associated with the Model/Worksheet.
+
+
+== Export feedback using ThoughtSpot Embedded APIs
+
+You can download feedback TMLs from ThoughtSpot Embedded APIs as long as you are using v2. The specific API is `/api/rest/2.0/metadata/tml/export`.
+
+To export only the TML of feedback associated with an object, set the GUID of the object as `identifier` and set the `type` as `FEEDBACK` in the `metadata` array.
+
+To export the TML of an object along with the feedback associated with it, set the GUID of the object as `identifier`, set the `type` as `LOGICAL_TABLE` in the `metadata` array, and set `export_with_associated_feedbacks` in `export_options` to true.
+
+== Import feedback into ThoughtSpot
+
+=== Import into a Model or Worksheet
+
+To import a feedback TML file directly into a Model or Worksheet, follow these steps:
+
+. Navigate to the Data workspace and open the Model or Worksheet you want to import TML feedback into.
+
+. Select the *more options* icon image:icon-more-10px.png[more options icon] and hover over the *TML* section.
++
+[.bordered]
+image::hover-tml.png[Hover over the TML section]
+
+
+
+. Select *Import feedback TML*.
+
+. The *Import feedback* page appears. Click *Select .tml file to upload* to search your files and upload the TML file, or drag and drop it. Ensure that the file is in .tml format.
++
+[.bordered]
+image::feedback-import-ux.png[Select .tml file to upload]
++
+NOTE: Ensure that the GUID in the feedback TML matches the target Worksheet or Model GUID.
+
+
+. The *Import* screen appears, showing the object name, file name, status, and possible actions. You can select *Edit* to edit the TML file. When ready, select the checkbox next to the file or files and click *Import _n_ selected*.
++
+[.bordered]
+image::feedback-import.png[Import feedback]
+
+
+. Click *Exit*. The feedback will be appended to the Worksheet or Model’s feedback TML file.
+
+=== Import using Data workspace utilities
+
+To import a feedback TML file into ThoughtSpot using the Data workspace utilities, follow these steps:
+
+
+. Navigate to the Data workspace and select *Utilities* from the left menu. Click *Import TML* under *Import/Export TML*.
++
+[.bordered]
+image::data-workspace-utilities.png[Data workspace utilities]
+
+
+. The *Import feedback* page appears. Click *Select .tml file to upload* to search your files and upload the TML file, or drag and drop it. Ensure that the file is in .tml format. On uploading the feedback TML file here, the feedback entries will be validated and import against the Worksheet or Model whose GUID was present at the top of the TML file.
++
+[.bordered]
+image::feedback-import-ux.png[Select .tml file to upload]
++
+NOTE: Ensure that the GUID in the feedback TML matches the target Worksheet or Model GUID.
+
+
+. The *Import* screen appears, showing the object name, file name, status, and possible actions. You can select *Edit* to edit the TML file. When ready, select the checkbox next to the file or files and click *Import _n_ selected*.
++
+[.bordered]
+image::feedback-import.png[Import feedback]
+
+
+. Click *Exit*. The feedback will be appended to the Worksheet or Model’s feedback TML file.
+
+
+== Resolving errors
+
+To avoid errors with feedback TML files, check the following before uploading:
+
+* Check that the GUID present at the top of the file is a valid Worksheet or Model already present in the system. Note that we do not currently support importing a new Worksheet and its feedback in the same zip file.
+* Check the sanity of the TML file, making sure you don’t have missing fields, invalid entries for fields like `type`, `access`, `chart_type`, or `display_mode`, invalid `search_tokens` for the Worksheet or Model, or invalid formula expressions for the Worksheet or Model that feedback entries are being targeted for.
+* Check for conflicts within the file– no two feedback entries can have the same 'feedback_phrase'. If the target Worksheet or Model has existing feedback entries matching the feedback TML phrase, it will throw a warning and will override the existing feedback entry if import is still done. You always have the option to edit the feedback TML or modify the existing entries to avoid the conflict.
+* Do not modify the values for the following fields: `display_mode`, `chart_type`, and `axis_config`. Changes to these fields are not validated by the system during upload and may lead to unintended behavior.
+
+'''
+> **Related information**
+>
+> * xref:tml-feedback.adoc[]
