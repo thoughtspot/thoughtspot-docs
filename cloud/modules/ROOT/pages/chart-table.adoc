@@ -1,5 +1,5 @@
 = Results that are tables
-:last_updated: 11/5/2021
+:last_updated: 9/9/2022
 :linkattrs:
 :experimental:
 :page-layout: default-cloud
@@ -161,6 +161,7 @@ The *Edit table* panel appears, on the *Configure* menu.
 +
 image::table-config-footer.png[Enable or disable table footer]
 
+[#content-density]
 == Content density
 
 Content density is part of the xref:answer-experience-new.adoc[new answer experience].
@@ -174,6 +175,7 @@ The *Edit table* panel appears, on the *Configure* menu.
 +
 image::table-content-density.png[Table content density]
 
+[#table-theme]
 == Table theme
 
 Tables themes are part of the xref:answer-experience-new.adoc[new answer experience].
@@ -230,3 +232,8 @@ Here, that results in a table aggregate average profit of 3.61M.
 The `average` summary option, by comparison, sums the average revenue for all ship modes and divides it by the number of ship modes (8), providing a less accurate average.
 
 image::table-aggregate-summary.png[Table aggregate summary]
+
+[#non-constant-clause]
+When a user searches with a formula containing both a conditional clause and a group_aggregate expression, then ThoughtSpot detects the aggregation type on the first non-constant output clause and uses it in the Headline summary. In this context, a non-constant output clause means any base column reference (for example, `Revenue`), or formula (for example, `sum(revenue)`).
+
+For example, consider the formula `group_aggregate(sum(if (Color = 'blue') then 0 else group_unique_count(Discount)))`. In this case, the headline summary would use `COUNT_DISTINCT`. Of the two output clauses in this formula, `then 0` is a constant, while `else group_unique_count(Discount)` is non-constant and has an aggregation type of `COUNT_DISTINCT`.
