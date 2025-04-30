@@ -4,8 +4,6 @@
 :experimental:
 :description:
 
-// 6.2
-
 [%header,cols="1,1,1,4,3"]
 |===
 | Database Type | Connector | Encryption on by default? | Notes | Supported JDBC options
@@ -63,6 +61,9 @@ ENCRYPTION=TLS(FIPS=OFF;TRUSTED_CERTIFICATE=rsaroot.crt;ALLOW_EXPIRED_CERTS=ON;S
 | Amazon Aurora | JDBC | No | Can be configured through JDBC options a| ----
 sslMode=VERIFY_IDENTITY&trustCertificateKeyStoreUrl=file:///root/work/mysql-ssl/ca-cert.jks&trustCertificateKeyStorePassword=password123
 ----
+| Denodo | JDBC | No | No parameters available for passing truststore explicitly, certificate is expected in the java default cacerts a| `ssl=true`
+| Databricks Delta Lake | JDBC/DBFS CLI | Yes | No configuration is required, the default connection string provided by Databricks is with SSL enabled with its port on 443. The DBFS CLI internally uses REST with https endpoints |
+
 | Salesforce | JDBC | No | No additional configuration required from connection as long as the SSL Server certificate is present in the default java truststore.
 For example, use: `JAVA_HOME\lib\security\cacerts` store |
 |===

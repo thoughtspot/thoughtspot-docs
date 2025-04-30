@@ -1,0 +1,97 @@
+= Moving functions
+:last_updated: 06/15/2021
+:experimental:
+:linkattrs:
+:page-aliases: /complex-search/about-moving-formulas.adoc
+
+Moving formulas can be used to smooth out any irregularities in your data to
+easily recognize trends.
+
+The larger intervals smooth out a larger number of peaks and troughs in your data. When the intervals are smaller, the moving formulas are closer to the actual data points.
+
+== Syntax
+
+Each of the moving formulas accepts a *measure*, two integers to define the *window* or *interval*, and one or more optional *attributes*.
+
+[source]
+---
+formula (
+  measure,windowStart,windowFinish,
+  [attribute1,attribute2,...])
+---
+
+Moving formulas require only the measure and integer values. However, if you do not specify the attributes, the function reverts to a non-moving measure; in other words, a `moving_sum()` functions as a `sum()`. When you specify both required and optional values, the formula returns the aggregate of the *measure* over the provided *attributes* for the defined *window*.
+
+ThoughtSpot determines the *window* through the following formula:
+
+[source]
+----
+current row - integer1, current row + integer2
+----
+
+Therefore, a window of `(1,1)` contains 3 rows in total: one row before the current row, the current row, and one row after the current row.
+
+You can use moving functions to emulate "lag", by specifying negative values for the window values. For example, a window of `(1,-1)` contains only 1 row, the one that precedes the current row. In other words, the interval is `(current row - 1)` through `(current row -1)`.
+
+NOTE: When the windowing attribute is character-based, ThoughtSpot orders values alphanumerically to determine the row order for the window calculation.
+
+For more information on how the time windows work, see this chart:
+
+image::moving_formula_time_window_chart.png[Moving formula time window chart]
+
+ThoughtSpot has the following moving formulas:
+
+* <<moving_average,moving_average>>
+* <<moving_max,moving_max>>
+* <<moving_min,moving_min>>
+* <<moving_sum,moving_sum>>
+
+include::partial$functions/moving_average.adoc[]
+
+include::partial$functions/moving_max.adoc[]
+
+include::partial$functions/moving_min.adoc[]
+
+include::partial$functions/moving_sum.adoc[]
+
+== Calculate a moving average
+
+This example  demonstrates using the `moving_average` formula.
+To use the moving function in a search:
+
+. Start a new search.
++
+image::aggregation_answer.png[]
+
+. In the upper-right side of the table, click the *more options* menu icon image:icon-ellipses.png[more options menu icon] and select *Add formula*.
++
+image::create_formula_in_answer.png[]
+
+. Enter the `moving_average` formula, specifying a measure, the window, and one or more attributes.
++
+The example returns the average of revenue, within the commit date window size of 3.
+The window includes the previous, current, and next rows.
+ThoughtSpot uses the attributes are the ordering columns to compute the moving average.
+The window is `(current - Num1...Current + Num2)` with both end points being included in the window.
+For example, "`1,1`" has a window size of 3.
+To see periods in the past, use a negative number for the second endpoint, as in the example "`moving_average(sales, 1, -1, date)`".
++
+image::moving_average_formula.png[]
+
+. Name the formula by entering a title in the top field, and then click *Save*.
++
+The formula will appear in the search bar and in the table as its own column.
++
+image::moving_average_table.png[]
++
+A box that displays the moving average within the entire table appear at the bottom of the chart.
+
+. To use a different aggregation type, click the current aggregation type at the bottom of the box and select another type.
+
+'''
+> **Related information**
+>
+> * xref:formulas-cumulative.adoc[Cumulative functions]
+> * xref:formulas-aggregation-flexible.adoc[Flexible aggregation functions]
+> * xref:formulas-aggregation-group.adoc[Grouping functions]
+> * xref:formulas-aggregation-filtered.adoc[Filtered aggregation functions]

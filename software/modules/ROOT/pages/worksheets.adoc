@@ -1,47 +1,55 @@
-= System worksheets
-:last_updated: 11/18/2019
-:jira: SCAL-71323
+= Worksheets
+:last_updated: 02/02/2022
+:linkattrs:
+:experimental:
 
-Learn about the system worksheets that ThoughtSpot provides.
+ThoughtSpot uses worksheets, which are logical views of data, to model complex datasets. The worksheets simplify access to data for end-users and application services by incorporating these key features, and more:
 
-Most of the monitoring information in *System Health* comes from system worksheet which administrators can view, but not modify.
-The underlying tables are protected system tables that cannot be accessed directly.
-However, administrators can create new, custom monitoring reports from the worksheets.
+* *Table joins* supplement the primary data with information from various other data sources.
+* *Changing data types* ensures that you can handle mismatches gracefully, For example, conversions of date/time type formats, and processing of numeric codes (such as event IDs) correctly.
+* *Derived fields* support flexible expressions and formulas.
+* *Renamed fields* make charts and tables easily accessible.
+* *Selecting fields* allows you to focus only on the  fields that are necessary to the business use case.
+* *Hiding fields* lets you change the visibility of data by obscuring and securing sensitive information without affecting the calculations that depend on it.
+* *Changing the default aggregation* of fields in a worksheet prevents common mistakes when building visuals.
 
-== List the system worksheets
+After xref:data-modeling.adoc[modeling your data], create worksheets to make searching easier.
+For example, a sales executive might need to search for information about retail sales.
+This data might be contained in several tables (sales, customers, products, stores, and so on), with foreign key relationships between them.
+An administrator who is familiar with the data model can create a retail sales worksheet, that combines all of the related fact and dimension tables into a single, easy-to-use view, and share it with the sales executive.
+This provides access to the data without requiring an understanding of how it is structured.
 
-To list the system worksheets:
+== Guidelines for worksheets
 
-. Go to the *Data* tab.
-. Choose *All* and *Worksheets*.
-. Enter `TS: ` in the search field.
-+
-image::su-worksheets.png[]
+Users are often unfamiliar with tables and how they are related to one another.
+A worksheet groups multiple related tables together in a logical way.
+You might use a worksheet for these reasons:
 
-== Summary of the worksheets
-[width="100%",options="header",cols="40%,60%"]
-|====================
-| Worksheet | Description
-| xref:ts-bi-server.adoc[TS: BI Server] | Contains data related to the systems associated with underlying the ThoughtSpot BI server. This includes database latency, browser clients, size of responses, and more.
-| TS: Database | Contains information related to the database cache and queries run on the database. For example, you could use this worksheet to see data on the query errors returned by the database.
-| TS: Internal Capacity WS | Describes cluster memory capacity by node over time.
-| TS: Internal Table Wise Capacity WS | Describes memory capacity by node, table name, shard count, and CSV replication over time.
-| TS: Metrics | Contains metrics by cluster and host over time.
-| TS: Search | Contains data related to the number of searches (queries) run in the system. This contains information such as uptime, host, and timestamps.
-| TS: Service Resources | 	Contains data related to cluster nodes including page faults, memory usage, memory failures, and more.
-| TS: Table Info | Describes the named tables by timestamp, row count, row shards, and row size.
-| TS: Table Row Counts | Describes the named tables by timestamp and row count.
-| TS: Table Row Counts and Shards | Describes the named tables by timestamp, row count, row shards, and row size.
-| TS: Table Row Size | Describes the named tables by timestamp and row size.
-| TS: Table Shards | Describes the named tables by timestamp and shard count.
-|====================
+* To pre-join multiple tables together.
+* To give a user or group access to only part of the underlying data.
+* To include a derived column using a formula.
+* To rename columns to make the data easier to search.
+* To build in a specific filter or aggregation.
+* To give users a filtered set of data to search.
 
-'''
-> **Related information**
->
-> * xref:overview.adoc[Overview board]
-> * xref:data.adoc[Data board]
-> * xref:cluster-manager.adoc[Cluster manager board]
-> * xref:alerts-events.adoc[Alerts and events board]
-> * xref:monitor-pinboards.adoc[System pinboards]
-> * xref:falcon-monitor.adoc[Falcon monitoring pinboards]
+Typically, you create one worksheet for each set of fact and dimension tables.
+For example, you may have a sales fact table and an inventory fact table.
+Each of these fact tables shares common dimensions like date, region, and store.
+In this scenario, you would create two worksheets: sales and inventory.
+The following diagram depicts the workflow for creating the sales worksheet.
+
+image::workflow_create_worksheet.png[]
+
+The process for creating a worksheet is:
+
+. Decide which tables to use for the worksheet.
+. xref:worksheet-create.adoc[Create a worksheet].
+If the worksheet already exists in another cluster, you can migrate it xref:scriptability.adoc[using a flat `TML` file].
+. Add sources (tables) to the worksheet.
+. Choose the xref:worksheet-progressive-joins.adoc[worksheet join rule].
+. Select the columns to include.
+. Optionally xref:join-worksheet-edit.adoc[modify the join types] within the worksheet.
+. Optionally xref:worksheet-formula.adoc[].
+. Optionally xref:worksheet-filter.adoc[create worksheet filters].
+. Save the worksheet.
+. xref:share-worksheets.adoc[Share the worksheet with groups or users].

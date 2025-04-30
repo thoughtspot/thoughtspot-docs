@@ -1,8 +1,18 @@
 = Configure NAS file system
 :last_updated: 11/16/2020
+:experimental:
 :linkattrs:
+:page-aliases: /admin/setup/NAS-mount.adoc
 
 Some operations, like backup, restore, and data loading, require either reading or writing very large files. You can mount a network attached storage (NAS) file system to support these operations. Your NAS storage can be in the drive format you choose.
+
+'''
+> **ThoughtSpot Training**
+>
+> * For best results when mounting NAS, we recommend that you take the following ThoughtSpot U course: https://training.thoughtspot.com/nas-mount[NAS Mount^].
+> * See other training resources at https://training.thoughtspot.com/[ThoughtSpot U^].
+
+'''
 
 [#mount-nas]
 == About NAS mount
@@ -23,7 +33,7 @@ It is used internally by Hadoop Distributed File System (HDFS) and if this drive
 Do not allow backups or data files to accumulate on ThoughtSpot.
 If disk space becomes limited, the system will not function normally.
 
-You can mount NAS <<admin-portal,through the Admin Console>>, or <<mount-nas-tscli,using tscli>>.
+You can mount NAS through the xref:admin-portal.adoc[Admin Console], or xref:mount-nas-tscli[Mount NAS using tscli].
 
 include::partial$nas-mount-configure.adoc[]
 
@@ -34,9 +44,10 @@ To mount a NAS file system using the tscli, follow these steps:
 
 . Log in to the Linux shell using SSH.
 . Mount the directory to the file system by issuing the appropriate command:
- ** Example for an NFS (Network File System) directory:
 +
-[source]
+Example for an NFS (Network File System) directory::
++
+[source,bash]
 ----
 tscli nas mount-nfs --server storageservername.file.yourdomain.net
    --path_on_server <path>  /tsdev-backup --mount_point /export/BACKUPS/
@@ -45,10 +56,10 @@ tscli nas mount-nfs --server storageservername.file.yourdomain.net
 +
 NOTE: Other command-line options are available to forward to the command (default: `noexec`).
 
- ** Example for a CIFS (Common Internet File System) directory.
+Example for a CIFS (Common Internet File System) directory::
 Use `1001` for the `uid` and `gid`, as in the example:
 +
-[source]
+[source,bash]
 ----
 tscli nas mount-cifs --server storageservername.file.yourdomain.net
   --path_on_server /tsdev-backup --mount_point /export/BACKUPS/
@@ -59,17 +70,16 @@ NOTE: Other command-line options are available to forward to the `mount.cifs` co
 . Use the mounted file system by referring to its mount point.
 . When you are finished with it, you can optionally unmount the NAS file system:
 +
-[source]
+[source,bash]
 ----
- tscli nas unmount --dir <directory>
+tscli nas unmount --dir <directory>
 ----
 
-== Additional resources
-
-As you develop your expertise in NAS mounts, we recommend the following ThoughtSpot U course:
-
-* https://training.thoughtspot.com/nas-mount[NAS Mount,window=_blank]
-
-See other training resources at:
-
-image::ts-u.png[link="https://training.thoughtspot.com/", window=_blank]
+'''
+> **Related information**
+>
+> * xref:disk-failure.adoc[Disk failure]
+> * xref:node-failure.adoc[Node failure]
+> * xref:ha-resilience.adoc[HA and resilience]
+> * xref:cluster-replacement.adoc[Cluster replacement]
+> * xref:dr-config.adoc[Configure disaster recovery]

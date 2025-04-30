@@ -1,7 +1,7 @@
 = Sharding
-:last_updated: 10/8/2020
-:permalink: /:collection/:path.html
-:sidebar: mydoc_sidebar
+:last_updated: 02/02/2021
+:linkattrs:
+:experimental:
 
 Sharding partitions very large tables into smaller, faster, more easily managed parts called data shards.
 
@@ -11,7 +11,7 @@ Sharded tables consist of a single data set, divided into multiple tables, or _s
 The shards have identical schemas, but different sets of data.
 
 Note that sharding and loading tables into ThoughtSpot only apply to ThoughtSpot's in-memory database.
-If you use xref:embrace-intro.adoc[Embrace], and store your data in another data warehouse such as Snowflake or Amazon Redshift, your data modeling is done in that data warehouse, and not in ThoughtSpot.
+If you use xref:embrace.adoc[Embrace], and store your data in another data warehouse such as Snowflake or Amazon Redshift, your data modeling is done in that data warehouse, and not in ThoughtSpot.
 
 == When to shard your data
 
@@ -57,7 +57,7 @@ This applies even if 60% of your CPU is above 1000.
 If you feel that you need more than 1000 shards for a given table, consult with your ThoughtSpot contact.
 . *The number of shards should be a multiple of the number of nodes*: To ensure equal distribution of data across all nodes, so that none of your nodes sits idle, the number of shards should be a multiple of the number of nodes.
 So, for a 12-node cluster, for example, a table could have 12, 24, 36, or 48 shards, and so on.
-. *Minimum number of shards*: Because the number of shards should be a multiple of the number of nodes, the mininum number of shards is the number of nodes.
+. *Minimum number of shards*: Because the number of shards should be a multiple of the number of nodes, the minimum number of shards is the number of nodes.
 For a 12-node cluster, you should not have fewer than 12 shards.
 +
 This requirement may be difficult to achieve on large clusters with a high number of nodes.
@@ -116,18 +116,19 @@ It is sometimes called _Horizontal partitioning_.
 The term _sharding_ is particular to situations where data is distributed not only among tables, but also across nodes in the system.
 To create a sharded table, add the `PARTITION BY HASH ( )` clause to your `CREATE TABLE` statement.
 
+[source]
 ----
 TQL> CREATE TABLE
 ...
 PARTITION BY HASH (96) KEY ("customer_id");
 ----
 
-Note the following parameters, specified above as `96` and `"customer_id"`:
-+++<dlentry>+++HASH::::
-Determines the number of shards.
-In this case, `96`.+++</dlentry>++++++<dlentry>+++KEY::::
-Specifies how to assign data into the shards (shard key).
-In this case, `customer_id`.+++</dlentry>+++
+Note the following parameters, specified as `96` and `"customer_id"`:
+
+HASH::
+  Determines the number of shards. In this case, `96`.
+KEY::
+  Specifies how to assign data into the shards (shard key). In this case, `customer_id`.
 
 The recommended number of shards depends on various factors.
 See <<sharding-guidelines,Table sizes and sharding recommendations>>.
@@ -138,6 +139,7 @@ This increases memory usage, since you are storing multiple copies of the same t
 
 If you want to use a table's primary key as the shard key, specify that the table is to be partitioned by `HASH` on the primary key, as in this example:
 
+[source]
 ----
 TQL> CREATE TABLE "supplier" (
   "s_suppkey" BIGINT,
@@ -164,12 +166,14 @@ This shard key *_must_* be a subset of the primary key.
 
 *_DO_*
 
+[source]
 ----
 ...
 CONSTRAINT PRIMARY KEY("saleid,vendorid”))
 PARTITION BY HASH(n) KEY ("saleid");
 ----
 
+[source]
 ----
 ...
 CONSTRAINT PRIMARY KEY("saleid,vendorid”))
@@ -374,7 +378,7 @@ It checks for over- or under-sharded tables on your cluster.
 ----
 
  .. Adjust your sharding strategy appropriately.
-See xref:change-schema.adoc#change-sharding-on-a-table[Change sharding on a table].
+See xref:schema-change.adoc#sharding[Change sharding on a table].
 
 +
 Note that resharding automatically loads data into a new incarnation of the table you sharded.
@@ -383,7 +387,13 @@ You do not need to reload the table's data.
 . Check your `row count skew` ratio when you re-evaluate sharding.
 +
 You can view your `row count skew` from the ThoughtSpot application.
-Go to *admin*, then *System health*, then *data*.
-Choose the table you would like to view, and scroll to `row count skew`.
+Go to *Data > Usage > Data*. Find the correct table name, and scroll to `row count skew`.
 Use this number to calculate your row count skew ratio: row count skew / (total row count / number of partitions).
 A row count skew ratio higher than 1 may require changes to your data modeling.
+
+'''
+> **Related information**
+>
+> * xref:data-types.adoc[Data types]
+> * xref:constraints.adoc[Constraints]
+> * xref:chasm-trap.adoc[Chasm traps]

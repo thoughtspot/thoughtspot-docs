@@ -1,23 +1,22 @@
-You can view system and usage information for your ThoughtSpot cluster from the Admin Console.
-The *System Overview Pinboard* contains several charts and tables that track monthly active users, top Pinboards by number of views, today's users, and so on.
-To view this Pinboard, navigate to the Admin Console by clicking on the *Admin* tab from the top navigation bar.
-Select *Overview* from the side navigation bar that appears.
+You can view system and usage information for your ThoughtSpot cluster from the *TS Stats: System Information and Usage Pinboard*.
+This Pinboard contains several charts and tables that track monthly active users, top Pinboards by number of views, today's users, and so on.
+To view this Pinboard, search for it in the *Pinboards* tab.
 
-image::admin-portal-overview-pinboard.png[Admin Console - Overview Pinboard]
+image::system-info-usage-pinboard.png[TS Stats: System Information and Usage Pinboard]
 
-== Understand the System Overview Pinbaord
+== Understand the TS Stats: System Information and Usage Pinboard
 
-The *System Overview Pinboard* page consists of standard ThoughtSpot Answers that update in real time and rely on internal system data.
+The *TS Stats: System Information and Usage Pinboard* page consists of standard ThoughtSpot Answers that update in real time and rely on internal system data.
 The Answers rely on underlying system worksheets, which are available to ThoughtSpot administrators.
 The information in these worksheets updates hourly from internal tables that collect monitoring statistics.
 
 The *more options menu* image:icon-more-10px.png[] for the Answers in this Pinboard contains fewer options than the traditional menu.
 You can *SpotIQ analyst*, *download*, *edit,* or *present* the Answer.
 When you *edit* the Answer, you see the query that ThoughtSpot built the Answer on.
-You can also copy the Answer's embed link, use xref:answer-explorer.adoc[Answer Explorer] on the Answer, or interact with the Answer by xref:drill-down.adoc[drilling down].
+You can also copy the Answer's embed link, use xref:answer-explorer.adoc[Answer Explorer] on the Answer, or interact with the Answer by xref:search-drill-down.adoc[drilling down].
 While you can interact with and change a copied version of the Answer, you cannot save changes to the underlying query.
 
-The following charts, tables, and panels are available on the *System Overview Pinboard*: <<cluster-summary,cluster summary>>, <<relational-data-cache,relational data cache>>, <<relational-search-engine,relational search engine>>, <<critical-alerts,critical alerts>>, <<space-utilization,space utilization>>, <<mau,monthly active users>>, <<monthly-searches,monthly ad-hoc searches>>, <<monthly-pb-views,monthly Pinboard views,>>, <<top-users,top users last month>>, <<top-pinboards,top Pinboards last month>>, <<search-users,ad-hoc search by user>>, and <<users-today,today's users>>.
+The following charts, tables, and panels are available on the *TS Stats: System Information and Usage Pinboard*: xref:cluster-summary[cluster summary], xref:critical-alerts[critical alerts], xref:mau[monthly active users], xref:monthly-searches[monthly ad-hoc searches], xref:monthly-pb-views[monthly Pinboard views], xref:top-users[top users last month], xref:top-pinboards[top Pinboards last month], xref:search-users[ad-hoc search by user], xref:users-today[today's users], and xref:configuration-events[configuration events].
 
 [#cluster-summary]
 == Cluster Summary
@@ -29,11 +28,8 @@ This doesn't reflect the active nodes which may be more or less.
 This summary includes the *LAST SNAPSHOT TIME* it reflects whether regular snapshots of your cluster are collected.
 This value should update regularly in real time.
 If you do not see it change or empty, you should check your cluster snapshot policy using the `tscli` command:
-[source,console]
-----
-$ tscli snapshot-policy show
-----
-----
+
+ $ tscli snapshot-policy show
  schedule {
    period {
      number: 1
@@ -58,7 +54,6 @@ $ tscli snapshot-policy show
    offset_minutes_from_sunday_midnight: 0
  }
  enabled: false
-----
 
 You can see this policy is disabled, which is a problem.
 Production clusters should enable the default snapshot policy.
@@ -69,11 +64,8 @@ When you show or enable the snapshot policy, you can see your `tscli` command re
 . Log in to the ThoughtSpot cluster as the `admin` user.
 . Use the `tscli feature` subcommand to display your current configuration.
 +
-[source,console]
 ----
-$ tscli feature get-all-config
-----
-----
+ $ tscli feature get-all-config
  +---------------------------------+----------+---------------+
  |              NAME               |  STATUS  | CONFIGURATION |
  +---------------------------------+----------+---------------+
@@ -96,40 +88,31 @@ $ tscli feature get-all-config
 This section reports real-time information about tables in your cluster.
 Worksheet data is not included.
 
-|===
-| Value | Description
+*TABLES LOADED*::
+ Number of currently loaded tables.
 
-| *TABLES LOADED*
-| Number of currently loaded tables.
+*TABLES BEING UPDATED*:: Number of table loads in-progress.
 
-| *TABLES BEING UPDATED*
-| Number of table loads in-progress.
+*NEW TABLES BEING LOADED*::
+ Number of tables being loaded for the first time.
 
-| *NEW TABLES BEING LOADED*
-| Number of tables being loaded for the first time.
-
-| *ROWS*
-| Number of rows combined across all tables in ThoughtSpot.
-|===
+*ROWS*::
+  Number of rows combined across all tables in ThoughtSpot.
 
 [#relational-search-engine]
 == Relational Search Engine
 
-|===
-| Value | Description
+*TABLES SEARCHABLE*::
+  Tables that are indexed and can be searched.
 
-| *TABLES SEARCHABLE*
-| Tables that are indexed and can be searched.
+*TABLES BEING INDEXED*::
+  Total of in-progress table indexing.
 
-| *TABLES BEING INDEXED*
-| Total of in-progress table indexing.
+*NEW TABLES BEING INDEXED*::
+  Total of first-time, in-progress table indexing.
 
-| *NEW TABLES BEING INDEXED*
-| Total of first-time, in-progress table indexing.
-
-| *TOKENS SEARCHABLE*
-| Number of tokens of all table (combined) indexed in ThoughtSpot.
-|===
+*TOKENS SEARCHABLE*::
+Number of tokens of all table (combined) indexed in ThoughtSpot.
 
 [#critical-alerts]
 == Critical Alerts
@@ -137,7 +120,7 @@ Worksheet data is not included.
 Displays critical and warning alerts.
 This includes when an alert was generated and from which service and machine.
 Administrators can get a custom report by issuing a `tscli alert list` on the appliance:
-[source]
+
 ----
 tscli alert list --since 4w
 ----
@@ -326,17 +309,19 @@ today
 
 The query uses the xref:ts-bi-server.adoc[`TS: BI Server`] data source.
 
+[#configuration-events]
 == Configuration Events
 
 This system answer displays recent events that changed the configuration of the system.
-This panel displays configuration events related to:+++<table>++++++<colgroup>++++++<col width="25%">++++++</col>+++
-    +++<col width="60%">++++++</col>++++++</colgroup>+++
-      +++<tbody>++++++<tr>++++++<th>+++Cluster Configuration+++</th>+++
-        +++<td>+++Reports configuration actions from the +++<code>+++tscli+++</code>+++ and +++<code>+++tql+++</code>+++ commands.+++</td>++++++</tr>+++
-       +++<tr>++++++<th>+++Metadata Management+++</th>+++
-        +++<td>+++Events related to metadata such as column names, column visibility, column and data definition, column rank and so forth.+++</td>++++++</tr>+++
-       +++<tr>++++++<th>+++User Management+++</th>+++
-        +++<td>+++Events related to creating, updating, or adding new users and groups.+++</td>++++++</tr>++++++</tbody>++++++</table>+++
+This panel displays possible configuration events:
+
+Cluster Configuration:: Reports configuration actions from the `tscli` and `tql` commands.
+
+Metadata Management::
+  Events related to metadata such as column names, column visibility, column and data definition, column rank and so forth.
+
+User Management::
+  Events related to creating, updating, or adding new users and groups.
 
 For a more detailed list, including the user that issued a command, you can use the `tscli event list` command.
 Administrators can `ssh` into the cluster and specify a time period or even a type of command to include.

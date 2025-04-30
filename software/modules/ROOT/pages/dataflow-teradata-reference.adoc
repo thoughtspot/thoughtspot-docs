@@ -1,5 +1,8 @@
-= Teradata DataFlow connection reference
-:last_updated: 07/7/2020
+= Teradata connection reference for DataFlow
+:last_updated: 02/17/2022
+:experimental:
+:linkattrs:
+:page-aliases: /data-integrate/dataflow/dataflow-teradata-reference.adoc
 
 Learn about the fields used to create a Teradata connection with ThoughtSpot DataFlow.
 
@@ -13,209 +16,94 @@ Connection name:: Name your connection.
 +
 Mandatory field.
 +
-*Example:*
-+
-TeradataConnection
-
+Example:;; TeradataConnection
 [#dataflow-teradata-conn-connection-type]
 Connection type:: Choose the Teradata connection type.
 +
 Mandatory field.
 +
-*Example:*
-+
-Teradata
-
+Example:;; Teradata
 [#dataflow-teradata-conn-host]
 Host:: Specify the hostname or the IP address of the Teradata system.
 +
 Mandatory field.
 +
-*Example:*
-+
-www.example.com
-
+Example:;; www.example.com
 [#dataflow-teradata-conn-port]
 Port:: Specify the port associated to the Teradata system.
 +
 Mandatory field.
 +
-*Example:*
+Example:;; 1234
+[#dataflow-teradata-conn-authentication-type]
+Authentication type:: Specify the type of security protocol to connect to the instance. Based on the type of security, select the authentication type and provide details.
 +
-1234
-
+Mandatory field.
++
+Valid Values:;; LDAP, Simple
+Default:;; LDAP
 [#dataflow-teradata-conn-user]
-User:: Specify the user id that will be used to connect to the Teradata system. This user should have necessary privileges to access the data in the databases.
+User::
+Specify the user id that will be used to connect to the Teradata system.
+This user should have necessary privileges to access the data in the databases.
 +
 Mandatory field.
 +
-*Example:*
-+
-userdi
-
+Example:;; userdi
 [#dataflow-teradata-conn-password]
-Password:: Specify the password for the user.
-+
-Mandatory field.
-+
-*Example:*
-+
-pswrd234%!
-
+include::partial$dataflow/password.adoc[]
+[#dataflow-teradata-conn-database]
+Database:: Collection of information that is organized so that it can be easily accessed, managed and updated. Optional field.
+Example:;; Test
+[#dataflow-teradata-conn-jdbc-options]
+include::partial$dataflow/jdbc-options.adoc[]
 [#dataflow-teradata-conn-version]
 Version:: Specify the version of Teradata you are using.
 +
 Optional field.
 +
-*Example:*
-+
-14.2
-+
-*Other notes:*
-+
-Advanced configuration
-
-[#dataflow-teradata-conn-jdbc-options]
-JDBC options:: Specify the options associated with the JDBC URL.
-+
-Optional field.
-+
-*Example:*
-+
-`jdbc:sqlserver://[serverName[\instanceName][:portNumber]]`
-+
-*Other notes:*
-+
-Advanced configuration
+Example:;; 14.2
+Other notes:;; Advanced configuration.
 
 [#sync-properties]
 == Sync properties
 [#dataflow-teradata-sync-data-extraction-mode]
-Data extraction mode:: Specify the extraction type.
-+
-Mandatory field.
-+
-*Example:*
-+
-JDBC
-+
-*Valid Values:*
-+
-JDBC, TPT
-+
-*Default:*
-+
-JDBC
-
+Data extraction mode:: Specify the extraction type. Mandatory field.
+xample:;; JDBC
+Valid Values:;; JDBC, TPT
+Default:;; JDBC
 [#dataflow-teradata-sync-column-delimiter]
-Column delimiter:: Specify the column delimiter character.
-+
-Mandatory field.
-+
-*Example:*
-+
-1
-+
-*Valid Values:*
-+
-Any printable ASCII character or decimal value for ASCII character
-+
-*Default:*
-+
-1
-
+Column delimiter:: Specify the column delimiter character. Mandatory field.
+Example:;; 1
+Valid Values:;; Any printable ASCII character or decimal value for ASCII character
+Default:;; 1
 [#dataflow-teradata-sync-null-value]
-Null value:: Specifies the string literal that indicates the null value in the extracted data. During the data load, the column value matching this string loads as null in the target.
-+
-Optional field.
-+
-*Example:*
-+
-NULL
-+
-*Valid Values:*
-+
-Any string literal
-+
-*Default:*
-+
-NULL
-
+Null value::
+Specifies the string literal that indicates the null value in the extracted data.
+During the data load, the column value matching this string loads as null in the target. Optional field.
+Example:;; NULL
+Valid Values:;; Any string literal
+Default:;; NULL
 [#dataflow-teradata-sync-enclosing-character]
-Enclosing character:: Specify if the text columns in the source data needs to be enclosed in quotes.
-+
-Optional field.
-+
-*Example:*
-+
-DOUBLE
-+
-*Valid Values:*
-+
-SINGLE, DOUBLE
-+
-*Default:*
-+
-DOUBLE
-+
-*Other notes:*
-+
-This is required if the text data has newline character or delimiter character.
-
+Enclosing character:: Specify if the text columns in the source data needs to be enclosed in quotes. Optional field.
+Example:;; DOUBLE
+Valid Values:;; SINGLE, DOUBLE
+Default:;; DOUBLE
+Other notes:;; This is required if the text data has newline character or delimiter character.
 [#dataflow-teradata-sync-escape-character]
-Escape character:: Specify the escape character if using a text qualifier in the source data.
-+
-Optional field.
-+
-*Example:*
-+
-\"
-+
-*Valid Values:*
-+
-Any ASCII character
-+
-*Default:*
-+
-\"
-
+Escape character:: Specify the escape character if using a text qualifier in the source data. Optional field.
+Example:;; \"
+Valid Values:;; Any ASCII character
+Default:;; \"
 [#dataflow-teradata-sync-fetch-size]
-Fetch size:: Specify the number of rows at a time to fetch and process in memory. If you specify zero, the system extracts all rows at once.
-+
-Mandatory field.
-+
-*Example:*
-+
-1000
-+
-*Valid Values:*
-+
-Any numeric value
-+
-*Default:*
-+
-1000
-
+Fetch size::
+Specify the number of rows at a time to fetch and process in memory.
+If you specify zero, the system extracts all rows at once. Mandatory field.
+Example:;; 1000
+Valid Values:;; Any numeric value
+Default:;; 1000
 [#dataflow-teradata-sync-ts-load-options]
-TS load options:: Specifies the parameters passed with the `tsload` command, in addition to the commands already included by the application. The format for these parameters is:
-+
-`--<param_1_name> <optional_param_1_value>`
-+
-`--<param_2_name> <optional_param_2_value>`
-+
-Optional field.
-+
-*Example:*
-+
---max_ignored_rows 0
-+
-*Valid Values:*
-+
---user "dbuser" --password "$DIWD" --target_database "ditest" --target_schema "falcon_schema"
-+
-*Default:*
-+
---max_ignored_rows 0
+include::partial$dataflow/ts-load-options.adoc[]
 
 '''
 > **Related information**

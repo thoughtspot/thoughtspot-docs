@@ -30,14 +30,19 @@ NOTE: ThoughtSpot adds external users, or users that authenticate through SAML o
 
 === Configure the IDP
 
-To enable the IdP to recognize your host application and ThoughtSpot as a valid service provider, you must configure the IdP with required attributes and metadata. This includes the `spring_saml_metadata.xml` file that you downloaded in step 7 of <<admin-portal,Configure SAML using the Admin Console>>.
+To enable the IDP to recognize your host application and ThoughtSpot as a valid service provider, you must configure the IDP with required attributes and metadata. This includes the `spring_saml_metadata.xml` file that you downloaded in step 7 of <<admin-portal,Configure SAML using the Admin Console>>.
 
-ThoughtSpot supports SAML authentication with several identity and access management providers, such as https://developer.okta.com/docs/guides/build-sso-integration/saml2/before-you-begin/[Okta^], https://docs.microsoft.com/en-us/powerapps/maker/portals/configure/configure-saml2-settings-azure-ad[Azure Active Directory^], https://docs.pingidentity.com/bundle/pingfederate-102/page/ikb1564003000542.html[PingFederate^], https://docs.microsoft.com/en-us/powerapps/maker/portals/configure/configure-saml2-settings[Microsoft AD FS^], https://developers.onelogin.com/saml[Onelogin^] and so on. If you want to use one of these providers as your IdP, make sure you read the SAML configuration steps described in the Identity provider’s documentation site.
+ThoughtSpot supports SAML authentication with several identity and access management providers, such as https://developer.okta.com/docs/guides/build-sso-integration/saml2/before-you-begin/[Okta^], https://docs.microsoft.com/en-us/powerapps/maker/portals/configure/configure-saml2-settings-azure-ad[Azure Active Directory^], https://docs.pingidentity.com/bundle/pingfederate-102/page/ikb1564003000542.html[PingFederate^], https://docs.microsoft.com/en-us/powerapps/maker/portals/configure/configure-saml2-settings[Microsoft AD FS^], https://developers.onelogin.com/saml[Onelogin^] and so on. If you want to use one of these providers as your IDP, make sure you read the SAML configuration steps described in the Identity provider’s documentation site.
 
-To determine if ThoughtSpot supports your preferred IdP, xref:contact.adoc[contact ThoughtSpot support].
+To determine if ThoughtSpot supports your preferred IDP, xref:support-contact.adoc[contact ThoughtSpot support].
 
-Complete your configuration of the IdP using the IdP's SAML documentation. Upload or copy the contents of the `spring_saml_metadata.xml` to your IdP server. If you did not download the `spring_saml_metadata.xml` file, navigate to `https://<your_ThoughtSpot_hostname-or-IP>/callosum/v1/saml/metadata`. The file automatically downloads.
+Complete your configuration of the IDP using the IDP's SAML documentation. Upload or copy the contents of the `spring_saml_metadata.xml` to your IDP server. If you did not download the `spring_saml_metadata.xml` file, navigate to `https://<your_ThoughtSpot_hostname-or-IP>/callosum/v1/saml/metadata`. The file automatically downloads.
 
-NOTE: When configuring SAML 2.0, make sure you map the SAML user attributes to appropriate fields. For example, you must map the SAML user’s username to the NameId attribute in OneLogin. Similarly, in Okta, you must map the username to userPrincipalName. You must also map the email address of the user to the mail attribute. Starting in ThoughtSpot version 6.3.1, it is mandatory to fill out the mail field. If your company cannot meet this requirement, xref:contact.adoc[contact ThoughtSpot support]. If your IdP does not allow you to import the IdP metadata XML file, you must map these values manually.
+NOTE: When configuring SAML 2.0, make sure you map the SAML user attributes to appropriate fields. This allows the ThoughtSpot system to automatically pick up certain attributes, such as a user's email address and username. For example, you must map the SAML user’s username to the NameId attribute in OneLogin. Similarly, in Okta, you must map the username to userPrincipalName. You must also map the email address of the user to the mail attribute. Starting in ThoughtSpot version 6.3.1, it is mandatory to fill out the mail field. If your company cannot meet this requirement, xref:support-contact.adoc[contact ThoughtSpot support]. If your IDP does not allow you to import the IDP metadata XML file, you must map these values manually.
 
-After you configure the IdP, open a Web browser and go to the ThoughtSpot login page. It should now show the Single Sign On option.
+After you configure the IDP, open a Web browser and go to the ThoughtSpot login page. It should now show the Single Sign On option.
+
+== Use SSO login by default
+After you configure SAML authentication, a new option appears on the login page that allows users to log in using SSO, while still allowing local users to log in.
+
+To only allow SSO login by default, contact {support-url}. Note that if you change the default login experience to SSO, local users cannot authenticate.
