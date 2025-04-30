@@ -13,12 +13,12 @@ Before you build the ThoughtSpot cluster and install the ThoughtSpot application
 
 - Ansible installs the required packages: YAML, Python, and R packages; see xref:rhel-packages.adoc[Packages installed with ThoughtSpot for RHEL and OEL].
 - It creates and configures local user accounts for ThoughtSpot:
-   - `admin` user has full administrative functionality
-   - `thoughtspot` user can load data in the application
+** `admin` user has full administrative functionality
+** `thoughtspot` user can load data in the application
 - It installs the ThoughtSpot CLI, `tscli`.
 - It configures the ThoughtSpot host nodes:
-   - checks that customization scripts can execute on the nodes
-   - checks that the partitions meet minimum size requirements
+** checks that customization scripts can execute on the nodes
+** checks that the partitions meet minimum size requirements
 
 These are the general steps for installing ThoughtSpot on RHEL clussters:
 
@@ -34,11 +34,10 @@ These are the general steps for installing ThoughtSpot on RHEL clussters:
 
 To set up the Ansible, follow these steps:
 
-. Obtain the Ansible tarball from xref:support-contact.adoc[ThoughtSpot Support].
-. Download it to your local machine.
+. Download the Ansible tarball you obtained from {support-url} to your local machine.
 . Unzip the Ansible tarball, to see the following files and directories on your local machine:
 
-`customize.sh`:: This script runs as the last step in the preparation process. You can use it to inject deployment-specific customizations, such as enabling or disabling a corporate proxy, configuring extra SSH keys, installing extra services, and so on.
+`ts-customize.yml`:: This runs as the last step in the preparation process. You can use it to inject deployment-specific customizations, such as enabling or disabling a corporate proxy, configuring extra SSH keys, installing extra services, and so on. By default, this script does nothing.
 
 `hosts.sample`::
 Ansible inventory file for host configuration.
@@ -68,29 +67,8 @@ Ansible inventory file for host configuration.
 
 . Copy the Ansible inventory file `hosts.sample` to `hosts.yaml`, and then use a text editor of your choice to update the file to include your host configuration:
 
-`is_user_wheel_group`::
-Specifies if the administrator user should be added to the wheel group. The default is `true`. If you specify `false`, the administrator user is not added to the wheel group.
-
-`minimal_sudo_install`::
-When this is defined, TS disables certain functionality to avoid making additional sudo calls.  This functionality includes the email notification management system, some cluster statistics reporting, and logging of connectivity status between nodes. The default is undefined.
-
-`external_sudo_manager`::
-When this is configured, ThoughtSpot does not make any changes to the sudoers file, such as adding the administrator user. The user is then responsible for ensuring that the administrator user has the ability to run certain elevated privilege commands. The default is undefined.
-
-`skip_sshd_config`::
-When this is configured, ThoughtSpot does not make any changes to the sshd configuration of the node.  The user must ensure that the MaxSessions value for the administrator user is at least 10. The default is undefined.
-
-`skip_yum_update`::
-When this is defined, the ansible playbook does not attempt to run a blanket yum update to pull the latest packages. The default is undefined.
-
-`no_mail_packages`::
-When this is defined, ThoughtSpot does not install the mail packages `mutt` and `postfix`.  This only applies for online installations. The default is undefined.
-
-`skip_time_sync_setup`::
-When this is defined, ThoughtSpot does not configure time synchronization between nodes using `ntp`. The user must configure time synchronization using either `ntp` or `chronyd` themselves. The default is undefined.
-
 `hosts`::
-    Add the IP addresses or hostnames of all hosts in the ThoughtSpot cluster.
+Add the IP addresses or hostnames of all hosts in the ThoughtSpot cluster.
 
 `user_uid`::
 Specify the user ID for the user who will set up the node. The default is `1081`.
@@ -113,6 +91,8 @@ cat /etc/passwd | cut -d ":" -f3-4| sort
 ----
 `username`::
 Specify the username for the user who will set up the node. The default is `admin`.
+`groupname`::
+Specify the group name for the group who will set up the node. The default is `admin`.
 [#ldap_admin_user]
 `ldap_admin_user`::
 *[optional]* One of three parameters required to enable users to use their OpenLDAP admin user to SSH as an admin, instead of using the local ThoughtSpot admin user, which has sudo privileges. Specify the OpenLDAP admin user, in the form _example@company.com_. You must include all 3 of the LDAP parameters (`ldap_admin_user`, `ldap_server_uri`, `ldap_server_base`), or none of them. If you include 1 or 2, the playbook fails.
@@ -121,16 +101,16 @@ Specify the username for the user who will set up the node. The default is `admi
 `ldap_server_base`::
 *[optional]* One of three parameters required to enable users to use their OpenLDAP admin user to SSH as an admin, instead of using the local ThoughtSpot admin user, which has sudo privileges. Specify the LDAP server base distinguished name, in the form _dc=<optional_subdomain>_,_dc=<domain>_,_dc=<top-level-domain>_, such as _dc=thoughtspot_,_dc=com_. You must include all 3 of the LDAP parameters (`ldap_admin_user`, `ldap_server_uri`, `ldap_server_base`), or none of them. If you include 1 or 2, the playbook fails.
 `ssh_user`::
-  The `ssh_user` must exist on the ThoughtSpot host, and it must have `sudo` privileges.
-  On-premise deployments;;
-    The `ssh_user` is the user who runs the playbook, and who is connected to the hosts.
-  AWS;;
-    The same as `ec2_user`.
-  GCP;;
-    The `ssh_user` is the user who runs the playbook, and who is connected to the hosts.
+The `ssh_user` must exist on the ThoughtSpot host, and it must have `sudo` privileges.
+On-premise deployments;;
+The `ssh_user` is the user who runs the playbook, and who is connected to the hosts.
+AWS;;
+The same as `ec2_user`.
+GCP;;
+The `ssh_user` is the user who runs the playbook, and who is connected to the hosts.
 
 `ssh_private_key`::
-  Add the private key for `ssh` access to the `hosts.yaml` file. You can use an existing key pair, or generate a new key pair in the Ansible Control server.
+Add the private key for `ssh` access to the `hosts.yaml` file. You can use an existing key pair, or generate a new key pair in the Ansible Control server.
 +
 Run the following command to verify that the Ansible Control Server can connect to the hosts over `ssh`:
 +
@@ -139,8 +119,11 @@ Run the following command to verify that the Ansible Control Server can connect 
 ansible -m ping -i hosts.yaml all
 ----
 
+`is_user_wheel_group`::
+Specifies if the administrator user should be added to the wheel group. The default is `true`. If you specify `false`, the administrator user is not added to the wheel group.
+
 `ssh_public_key`::
-  Add the public key to the `ssh authorized_keys` file for each host, and add the private key to the `hosts.yaml` file. You can use an existing key pair, or generate a new key pair in the Ansible Control server.
+Add the public key to the `ssh authorized_keys` file for each host, and add the private key to the `hosts.yaml` file. You can use an existing key pair, or generate a new key pair in the Ansible Control server.
 +
 Run the following command to verify that the Ansible Control Server can connect to the hosts over `ssh`:
 +
@@ -150,15 +133,36 @@ ansible -m ping -i hosts.yaml all
 ----
 
 `extra_admin_ssh_key`::
-  (Optional) An additional or extra key may be required by your security application, such as Qualys, to connect to the hosts.
+(Optional) An additional or extra key may be required by your security application, such as Qualys, to connect to the hosts.
 
 `http(s)_proxy`::
-  If the hosts must access public repositories through an internal proxy service, provide the proxy information.
+If the hosts must access public repositories through an internal proxy service, provide the proxy information.
 +
 This release of ThoughtSpot does not support proxy credentials to authenticate to the proxy service.
 
+`minimal_sudo_install`::
+When this is defined, TS disables certain functionality to avoid making additional sudo calls.  This functionality includes the email notification management system, some cluster statistics reporting, and logging of connectivity status between nodes. The default is undefined.
+
+`external_sudo_manager`::
+When this is configured, ThoughtSpot does not make any changes to the sudoers file, such as adding the administrator user. The user is then responsible for ensuring that the administrator user has the ability to run certain elevated privilege commands. The default is undefined.
+
+`skip_sshd_config`::
+When this is configured, ThoughtSpot does not make any changes to the sshd configuration of the node.  The user must ensure that the MaxSessions value for the administrator user is at least 10. The default is undefined.
+
+`offline`::
+When this is set, the Ansible playbook continues an offline installation.
+
+`skip_yum_update`::
+When this is defined, the ansible playbook does not attempt to run a blanket yum update to pull the latest packages. The default is undefined.
+
+`no_mail_packages`::
+When this is defined, ThoughtSpot does not install the mail packages `mutt` and `postfix`.  This only applies for online installations. The default is undefined.
+
+`skip_time_sync_setup`::
+When this is defined, ThoughtSpot does not configure time synchronization between nodes using `ntp`. The user must configure time synchronization using either `ntp` or `chronyd` themselves. The default is undefined.
+
 `ts_partition_name`::
-  The extended name of the ThoughtSpot export partition, such as `/dev/sdb1`.
+The extended name of the ThoughtSpot export partition, such as `/dev/sdb1`.
 
 [#run-ansible]
 == Run the Ansible Playbook
@@ -214,5 +218,15 @@ Follow these general steps to install ThoughtSpot on the prepared hosts:
 . Download the release artifact from the ThoughtSpot file sharing system.
 . Upload the release artifact to the first host.
 . Run the `tscli cluster create` command. This script prompts for user input.
-. *[Optional - RHEL only, 7.2.1 and later]* Upgrade Python version. ThoughtSpot's default Python version for RHEL is 3.6; you can upgrade RHEL clusters to 3.9. Refer to xref:python-upgrade.adoc[].
+. *[Optional - RHEL only]* Upgrade Python version. ThoughtSpot's default Python version for RHEL is 3.6; you can upgrade RHEL clusters to 3.9. Refer to xref:python-upgrade.adoc[].
 . Check the cluster health by running health checks and logging into the application.
+
+'''
+> **Related information**
+>
+> * xref:rhel-prerequisites.adoc[RHEL and OEL prerequisites]
+> * xref:rhel-ts-artifacts.adoc[ThoughtSpot deployment artifacts for RHEL and OEL]
+> * xref:rhel-install-offline.adoc[Offline RHEL and OEL install]
+> * xref:rhel-upgrade.adoc[RHEL and OEL upgrade]
+> * xref:rhel-add-node.adoc[Add new nodes to clusters on RHEL or OEL]
+> * xref:rhel-packages.adoc[Packages installed with RHEL and OEL]

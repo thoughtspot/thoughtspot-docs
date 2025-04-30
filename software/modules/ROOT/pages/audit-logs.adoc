@@ -1,174 +1,8 @@
-= Collect security logs
-:last-updated: 10/11/2021
-:linkattrs:
-:experimental:
-:page-aliases: /admin/data-security/audit-logs.adoc
-
-Collect security audit logs to monitor user activity in ThoughtSpot and increase your system security.
-
-ThoughtSpot Software provides security audit events related to account activities and user actions within ThoughtSpot. These events can help your SOC team detect potential security threats or compromised user accounts in your organization. These human-readable and comprehensive events can be shipped to your SIEM application in near real-time. Security events remain within the system for 30 days. To integrate with your SIEM or view these logs, xref:support-contact.adoc[contact ThoughtSpot Support].
-
-ThoughtSpot security events include the following information:
-
-- An event ID
-- A unique description of the event (e.g. “A user account was created”)
-- Timestamp (in UTC) yyyy/mm/dd:hh:mm:ss
-- User ID of the person initiating the event
-- IP of the user
-- Fields specific to the event (e.g. name of the new account)
-
-[#security-events]
-== Security events
-
-The possible events are:
-
-- <<logout-successful,Account logout>>
-- <<create-answer,Answer creation>>
-- <<delete-answers,Answer deletion>>
-- <<update-answers,Answer update>>
-- <<login-failed,Failed login>>
-- <<logout-failed,Failed logout>>
-- <<user-groups-created,Group creation>>
-- <<user-groups-deleted,Group deletion>>
-- <<user-group-modified,Group modification>>
-- <<principals-in-group-update,Group principals update>>
-- <<account-locked,Locked account>>
-- <<share-objects,Object sharing>>
-- <<update-password,Password update>>
-- <<create-pinboard,Pinboard creation>>
-- <<delete-pinboards,Pinboard deletion>>
-- <<update-pinboards,Pinboard update>>
-- <<privilege-changes,Privilege changes>>
-- <<users-modified,Profile change>>
-- <<create-rls-rule,Row level security (RLS) rule creation>>
-- <<delete-rls-rules,RLS rule deletion>>
-- <<update-rls-rule,RLS rule modification>>
-- <<login-successful,Successful login>>
-- <<create-tables,Table creation>>
-- <<users-created,User account creation>>
-- <<users-deleted,User account deletion>>
-//- <<user-group-change,User group change>>
-
-== Event descriptions
-
-ThoughtSpot defines these events as follows:
-
-[#logout-successful]
-Account logout::
-A user logs out from ThoughtSpot.
-
-[#create-answer]
-Answer creation::
-A user attempts to create a new answer.
-
-[#delete-answers]
-Answer deletion::
-A user attempts to delete an answer.
-
-[#update-answers]
-Answer update::
-A user attempts to modify an existing answer.
-
-
-[#login-failed]
-Failed login::
-A user fails to log in due to an incorrect password, or IDP/ADP deny the authentication request.
-
-// 7.2 release
-
-[#logout-failed]
-Failed logout::
-User logout failed.
-
-
-[#user-groups-created]
-Group creation::
-A user creates a new group, either manually through the Admin Portal, or through the internal API.
-
-[#user-groups-deleted]
-Group deletion::
-A user deletes a group, either manually through the Admin Portal, or through the internal API.
-
-[#user-group-modified]
-Group modification::
-A user modifies the properties of a group, either in Admin Portal or over internal API. (Properties include group name, display name, and sharing visibility.)
-
-[#principals-in-group-update]
-Group principals update::
-A user successfully or unsuccessfully attempts to add or remove users or groups from a group.
-
-[#account-locked]
-Locked account::
-A local user fails to authenticate _x_ times in a row, locking the account. Administrators can configure the number of authentication attempts before lockout within ThoughtSpot.
-
-[#share-objects]
-Object sharing::
-A user successfully or unsuccessfully attempts to share an object (pinboard, worksheet, answer) with another user or group.
-
-[#update-password]
-Password update::
-A user successfully or unsuccessfully attempts to change their password.
-
-[#create-pinboard]
-Pinboard creation::
-A user attempts to create a new Pinboard.
-
-[#delete-pinboards]
-Pinboard deletion::
-A user attempts to delete a Pinboard.
-
-[#update-pinboards]
-Pinboard update::
-A user attempts to modify an existing Pinboard.
-
-[#privilege-changes]
-Privilege changes::
-A user adds or removes one or several privileges from a group.
-
-[#users-modified]
-Profile change::
-A user profile changes, either manually in the Admin Portal or over SAML sync.
-
-[#create-rls-rule]
-Row level security (RLS) rule creation::
-A user creates an RLS rule on a table.
-
-[#delete-rls-rules]
-RLS rule deletion::
-A user deletes an RLS rule on a table.
-
-[#update-rls-rule]
- RLS rule modification::
- A user attempts to modify an RLS rule on a table.
-
-[#login-successful]
-Successful login::
-A local, IDP or AD user logs in to ThoughtSpot.
-
-[#create-tables]
-Table creation::
-A user attempts to create a new table.
-
-[#users-created]
-User account creation::
- A new user creates an account, either manually in the Admin Portal or through the internal API.
-
-[#users-deleted]
-User account deletion::
- A user account is deleted, either manually in the Admin Portal or through the internal API.
-
-////
-[#user-group-change]
-User group change::
- A successful or unsuccessful attempt to change the user list to a group by adding or removing members.
-////
-
-
-////
 = System security tools and processes
-:last_updated: 04/30/2021
+:last_updated: 08/15/2022 
 :linkattrs:
 :experimental:
+:description: System security refers to audit logs and security policies.
 
 System security refers to audit logs and security policies.
 
@@ -181,7 +15,7 @@ There are several ways you can view audit log information in ThoughtSpot.
 You can see recent events in the Control Center or view more detailed audit logs using tscli.
 Administrators can view audit logs of configuration changes users have made to ThoughtSpot in these ways:
 
-* Monitor events from the xref:system-liveboards.adoc[Control Center].
+* Monitor events from the xref:system-pinboards.adoc[Control Center].
 * Generate audit log reports through the `tscli` command.
 
 You can access an audit log of cluster events through tscli.
@@ -260,7 +94,7 @@ To get audit logs:
 . Log in to the Linux shell using SSH.
 . Issue the `tscli event list` command, with the desired parameters, for example:
 +
-[source,console]
+[source]
 ----
  $ tscli event list
     --include config
@@ -283,4 +117,3 @@ You can view installed Linux packages at any time, along with the version number
 == Third-party security software for security, governance, and monitoring of ThoughtSpot
 
 You can install supported xref:secure-monitor-sw.adoc[third-party security and monitoring software] on a ThoughtSpot cluster.
-////

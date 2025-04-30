@@ -10,7 +10,7 @@ include::partial$group-aggregate-prerequisite.adoc[]
 
 == Aggregating across multiple levels of detail
 
-In the xref:group-aggregation-basic.adoc[basic aggregation examples], we described basic usage for group_aggregate functions and how to specify a level of detail. When using group_aggregate(), the first argument specifies the type of aggregation that should be performed, and the second argument specifies the level of detail at which it should be performed. Your group_aggregate function should be enclosed in an outer aggregation function that specifies the secondary aggregation that should be used when aggregating to a search level of detail that is coarser than the level of detail specified within the group_aggregate function.
+In the xref:group-aggregation-basic.adoc[basic aggregation examples], we describe basic usage for group_aggregate functions and how to specify a level of detail. When using group_aggregate(), the first argument specifies the type of aggregation that should be performed, and the second argument specifies the level of detail at which it should be performed. Your group_aggregate function should be enclosed in an outer aggregation function that specifies the secondary aggregation that should be used when aggregating to a search level of detail that is coarser than the level of detail specified within the group_aggregate function.
 
 Performing a secondary level of aggregation across disjoint levels of detail may give nonsensical results. For example, consider aggregating to the _activity classification_ level and then "aggregating up" to the _account_ level.
 
@@ -71,7 +71,7 @@ One way to understand this result is to create a chart without the formula, usin
 
 1. Search for: `account`  `hours`  `activity classification`  `sort by account`  `sort by activity classification`.
 
-2. This creates the table shown below:
+2. This creates the following table:
 +
 [#example-2-1-2]
 .Example  2.1.2
@@ -103,7 +103,7 @@ group_aggregate(
 	{}
 	)
 ----
-This is comparable to what is shown in <<example-2-1-2,Table 2.1.2>> above.
+This is comparable to what is shown in <<example-2-1-2,Table 2.1.2>>.
 +
 The second level of aggregation specified by the average surrounding the group_aggregate averages the values associated with each account.:
 +
@@ -115,6 +115,7 @@ average(
 		query_groups() + {activity classification},
 		{}
 		)
+    )
 ----
 +
 In this case, the function performs the following calculations:
@@ -127,7 +128,7 @@ Oracle: 18/1 = 18
 +
 Amazon: 11/1 = 11
 
-This results in the values computed by the hours per activity classification averaged formula shown in <<example-2-1-1,Table 2.1.1>> above.
+This results in the values computed by the hours per activity classification averaged formula shown in <<example-2-1-1,Table 2.1.1>>.
 
 == Using "query_groups() -"
 
@@ -194,7 +195,7 @@ NOTE: In this example, the search bar specifies the "account" and "activity date
 | Snowflake | 04/15/2020 | 1.75
 |===
 +
-Note that in the table above, the Hours value for each row of an account is the same. For example, the four rows for Snowflake all show an Hours value of 1.75.  Similarly, the Hours value for Amazon (2.75) is the same in each of the Amazon rows. This is because Activity Date is being ignored and Hours ignoring activity date is computed at the Account level of detail.
+Note that in the preceding table, the Hours value for each row of an account is the same. For example, the four rows for Snowflake all show an Hours value of 1.75.  Similarly, the Hours value for Amazon (2.75) is the same in each of the Amazon rows. This is because Activity Date is being ignored and Hours ignoring activity date is computed at the Account level of detail.
 
 === Aggregate hours ignoring activity date
 
@@ -241,7 +242,7 @@ In Example 3.1, our search bar contained `account` and `activity date`. Here we 
 | Snowflake | call | 04/15/2020 | 1.67
 |===
 +
-In the table above, note that the three rows for Snowflake where the Activity Classification is "call" have an Hours value of 1.67, while the line for Snowflake where the activity classification is "meeting" has an Hours value of 2.
+In the preceding table, note that the three rows for Snowflake where the Activity Classification is "call" have an Hours value of 1.67, while the line for Snowflake where the activity classification is "meeting" has an Hours value of 2.
 
 > Related information:
 >

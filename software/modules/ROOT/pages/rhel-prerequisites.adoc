@@ -13,7 +13,7 @@ Prepare the system and ThoughtSpot clusters for installation:
 | &#10063; | xref:install-rhel[3. Install RHEL version 7.8, 7.9, 8.1, 8.2, 8.3, 8.4, or 8.5 or OEL version 7.9 on all hosts]
 | &#10063; | xref:linux-kernel-version[4. Ensure that your Linux kernel is correct]
 | &#10063; | xref:enable-hosts[5. Enable the hosts to download RHEL or OEL packages]
-| &#10063; | xref:tmp-permission[6. Ensure tmp has permission 777]
+| &#10063; | xref:tmp-permission[6. Ensure tmp has permission 777 or 1777]
 | &#10063; | xref:cgroups[7. Ensure that you are using Linux cgroupsV1]
 | &#10063; | xref:proc[8. Ensure /proc mount point flags are compatible]
 | &#10063; | xref:etc-sudoers[9. Remove Defaults requiretty from /etc/sudoers]
@@ -69,7 +69,7 @@ ThoughtSpot is certified with OEL version 7.9. Install RHEL version 7.8, 7.9, 8.
 
 On RHEL version 7.8, ensure that your <<#linux-kernel-version,linux kernel version>> is 3.10.0-1127.19.1 or higher. On all other supported RHEL versions, use the default linux kernel. On OEL version 7.9, ensure that you are using the Red Hat Compatible Kernel (RHCK), not the default Unbreakable Enterprise Kernel (UEK). If you are using the UEK, xref:support-contact.adoc[contact ThoughtSpot Support] to switch to the RHCK.
 
-NOTE: For RHEL deployments on online clusters, if you are on RHEL 7.8, the Ansible playbook upgrades the OS to RHEL 7.9. The Ansible playbook does *not* upgrade the OS when installing offline.
+NOTE: For RHEL deployments on online clusters, the Ansible playbook upgrades the OS to the latest supported version of RHEL. The Ansible playbook does *not* upgrade the OS when installing offline.
 
 [#linux-kernel-version]
 === Linux kernel version
@@ -126,9 +126,9 @@ You can then proceed to download xref:yum-repository[Yum], xref:python-repositor
 If the hosts of your ThoughtSpot cluster have access to an internal repository that mirrors the public repositories, copy the xref:yum-repository[Yum], xref:python-repository[Python], and xref:r-repository[R] package repositories to your hosts.
 
 [#tmp-permission]
-== Ensure tmp has permission 777
+== Ensure tmp has permission 777 or 1777
 
-The `/tmp` directory must have the `777` permission. If you mount the `/tmp` directory as a separate partition, it must NOT have the `noexec` flag set.
+The `/tmp` directory must have either the `777` or `1777` permission. `1777` is the `777` permission but with the sticky bit set. If you mount the `/tmp` directory as a separate partition, it must NOT have the `noexec` flag set.
 
 [#cgroups]
 == Ensure that you are using Linux cgroupsV1
@@ -161,3 +161,13 @@ semanage permissive -a rsync_t
 
 Optionally configure an Ansible Control Server, on a separate host, to run the Ansible playbook that ThoughtSpot supplies.
 You must install both `rsync` and Ansible on the Ansible Control Server host.
+
+'''
+> **Related information**
+>
+> * xref:rhel-ts-artifacts.adoc[ThoughtSpot deployment artifacts for RHEL and OEL]
+> * xref:rhel-install-online.adoc[Online RHEL and OEL install]
+> * xref:rhel-install-offline.adoc[Offline RHEL and OEL install]
+> * xref:rhel-upgrade.adoc[RHEL and OEL upgrade]
+> * xref:rhel-add-node.adoc[Add new nodes to clusters on RHEL or OEL]
+> * xref:rhel-packages.adoc[Packages installed with RHEL and OEL]
