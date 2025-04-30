@@ -1,5 +1,5 @@
 = Configure OAuth for a {connection} connection
-:last_updated: 6/7/2022
+:last_updated: 6/17/2022
 :linkattrs:
 :page-aliases:
 :experimental:
@@ -25,7 +25,7 @@ This is where the call is redirected upon successful login to AAD when creating 
 +
 image::databricks-oauth-config-2.png[]
 
-. After you register your application, make a note of the *Application (client) ID* in the Essentials section of the app’s overview page. Also, make a note of the OAuth 2.0 authorization and token endpoints. These are required later when configuring the {connection} connection in ThoughtSpot.
+. After you register your application, make a note of the *Application (client) ID* in the Essentials section of the app’s overview page. Also, make a note of the OAuth 2.0 authorization and administrative information token endpoints. You must use them later in the workflow, when configuring the {connection} connection in ThoughtSpot.
 +
 image::databricks-oauth-config-3.png[]
 
@@ -65,11 +65,10 @@ image::databricks-oauth-config-6.png[]
 
 == Part 4: Connect the client using the OAuth token
 
-The JDBC connection URL which uses the access token from AAD must use the following format:
+The JDBC connection URL, which uses the access token from AAD, must have the following format:
 [source]
 ----
 `"jdbc:spark://adb-111222444555.13.azuredatabricks.net:443/samples;transportMode=http;" +
 "ssl=1;httpPath=/sql/1.0/endpoints/c53335555f2222e999;" +
 "AuthMech=11;Auth_Flow=0;" +"Auth_AccessToken=<access_token>"`
 ----
-

@@ -1,5 +1,5 @@
 = OpenID Connect authentication
-:last_updated: 1/25/2022
+:last_updated: 6/18/2022
 :linkattrs:
 :experimental:
 :page-layout: default-cloud
@@ -19,13 +19,13 @@ Relying party::
 Refers to a client application that supports OAuth 2.0 and relies on an OpenID provider to verify the identity of a user. In this article, the relying party refers to a ThoughtSpot application instance.
 
 OpenID provider::
-The IDP that supports the OAuth2.0 and OIDC protocols. The OpenID provider is an OAuth 2.0 authorization server that authenticates and verifies a user's identity. When a relying party sends an authentication request, the OpenID provider returns the authorization code and provides user information through identity (ID) tokens.
+The IDP that supports the OAuth2.0 and OIDC protocols. The OpenID provider is an OAuth 2.0 authorization server that authenticates and verifies a user's identity. When a relying party sends an authentication request, the OpenID provider returns the authorization code and provides user information through administrative information, in this case identity (ID) tokens.
 
 End user::
 The application user who requests access to a resource.
 
 Tokens::
-In OIDC authentication, ID and access tokens are used to verify a user's identity before providing access to an application resource.
+In OIDC authentication, the system uses ID and access tokens to verify a user's identity before providing access to an application resource.
 
 ID token;;
 The ID token, also known as a JSON web token (JWT), is a security token that allows the client to verify the identity of the user. An ID token consists of claims that provide user information. The OpenID provider issues an ID token when ThoughtSpot sends the authorization code received from the OpenID authorization endpoint.
@@ -46,10 +46,10 @@ Authorization endpoint::
 The OpenID provider endpoint that authenticates a user and grants an authorization code to the relying party.
 
 Token endpoint::
-The OpenID provider endpoint that returns an ID and access token in exchange for an authorization code. ThoughtSpot sends the authorization code obtained from the authorization server to the token endpoint to obtain an ID and access token.
+The OpenID provider endpoint that returns administrative information (ID and access token) in exchange for an authorization code. ThoughtSpot sends the authorization code obtained from the authorization server to the token endpoint to obtain an ID and access token.
 
 Userinfo endpoint::
-The OpenID provider endpoint that returns claims or user information to a client application with a valid access token.
+The OpenID provider endpoint that returns claims or user information to a client application with valid administrative information (access token).
 
 Issuer URL::
 The Issuer URL allows a client application to discover details such as the OpenID endpoints, supported scopes and claims, and public-keys used in the tokens. ThoughtSpot can retrieve these details dynamically from the issuer URL using the `/.well-known/openid-configuration` suffix.
@@ -192,7 +192,7 @@ The OIDC authentication workflow involves the following steps:
 . The OpenID authorization server returns an authorization code.
 . ThoughtSpot sends the authorization code with the ThoughtSpot client credentials in a `POST` request to the OpenID token endpoint.
 . The token endpoint returns an ID and access token in exchange for the authorization code.
-. ThoughtSPot validates the ID token and authenticates the user.
+. ThoughtSpot validates the ID token and authenticates the user.
 . If the authentication is successful, the web browser redirects the user to the requested page.
 
 == Additional resources

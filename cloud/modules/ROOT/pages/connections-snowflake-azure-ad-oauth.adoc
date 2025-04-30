@@ -1,5 +1,5 @@
 = Configure Azure AD external OAuth for a {connection} connection
-:last_updated: 11/1/2021
+:last_updated: 6/17/2022
 :linkattrs:
 :experimental:
 :page-layout: default-cloud
@@ -144,8 +144,8 @@ image:snow_oauth_user_res_2.png[]
 In this part you must do the following:
 
 * Create a security integration in {connection} to ensure that {connection} can  securely communicate with Microsoft Azure AD.
-* Validate the tokens from Azure AD.
-* Provide the appropriate {connection} data access to users based on the user role associated with the OAuth token.
+* Validate the administrative information (tokens) from Azure AD.
+* Provide the appropriate {connection} data access to users based on their associated user role, based on the received administrative data (the OAuth token).
 
 IMPORTANT: If you use _SESSION:ROLE-ANY_ in scope, you must configure the following flag in the security integration: `external_oauth_any_role_mode = ‘ENABLE’`. This is shown in the optional line of the security integration format below.
 
@@ -173,15 +173,15 @@ NOTE: When you create the {connection} OAuth Resource Application in Azure AD, i
 
 ==== {connection} commands
 
-===== Create user as Azure AD user
+===== Create user as an Azure AD user
 
 `CREATE USER testuser PASSWORD = '' LOGIN_NAME = '\testuser@thoughtspot.com' DISPLAY_NAME = 'AD_TEST_USER';`
 
-===== Validate access token
+===== Validate the administrative datea (access token)
 
 `select system$verify_external_oauth_token('<ACCESS_TOKEN>');`
 
-===== Grant sysadmin role to TESTUSER
+===== Grant the sysadmin role to TESTUSER
 
 `GRANT ROLE sysadmin TO USER TESTUSER;`
 
@@ -203,8 +203,8 @@ You can use either of the following methods to generate your access token:
 To validate your configuration using Postman, do the following:
 
 . Sign in to Postman.
-. Go to the *Authorization* tab.
-. For Token Name, enter a token name.
+. Click the *Authorization* tab.
+. For Token Name, enter the token name.
 . For Grant Type, select *Authorization Code* from the menu.
 . For Callback URL, select *Authorize using browser*.
 +
@@ -220,7 +220,7 @@ Example: `+https://login.microsoftonline.com/<tenant_id>/oauth2/v2.0/authorize+`
 Example: `+https://login.microsoftonline.com/<tenant_id>/oauth2/v2.0/token/+`
 
 . For Scope, you must provide "`offline_access`" as the scope, along with the actual scope.
-The refresh token is only provided if the offline_access scope was requested.
+You get the refresh token only if you requested the `offline_access` scope.
 +
 image::postman_get_token.png[]
 +
@@ -233,7 +233,7 @@ IMPORTANT: When you create the scope in the Azure AD application setup, it must 
 +
 image::ms_sign_in.png[]
 
-. On the Token Details page, click *Use Token*.
+. On the *Token Details page*, click *Use Token*.
 +
 image:token_det_1.png[]
 +
@@ -243,7 +243,7 @@ image:token_det_2.png[]
 
 To validate your configuration using cURL, do the following:
 
-. Execute below command to get access token with password grant_type:
+. Execute the following command to get the administrative data (access token) with password `grant_type`:
 +
 ----
  curl -X POST -H "Content-Type: application/x-www-form-urlencoded;charset=UTF-8" \
@@ -271,7 +271,7 @@ Example:
 +
 image::curl_1.png[]
 
-. Execute below command for getting access token with refresh_token as grant_type:
+. Execute the following command for getting administrative information (access token) with `refresh_token` as `grant_type`:
 +
 ----
  curl -X POST -H "Content-Type: application/x-www-form-urlencoded;charset=UTF-8" \
@@ -291,4 +291,4 @@ image::curl_2.png[]
 * https://community.snowflake.com/s/article/Create-External-OAuth-Token-Using-Azure-AD-For-The-OAuth-Client-Itself[{connection} docs: create external OAuth token using Azure AD for the OAuth client itself^]
 * https://community.snowflake.com/s/article/External-oAuth-Token-Generation-using-Azure-AD[{connection} docs: create external OAuth token using Azure AD on behalf of the user^]
 * https://community.snowflake.com/s/article/Create-Security-Integration-User-To-Use-With-OAuth-Client-Token-With-Azure-AD[{connection} docs: create security integration & user to use with OAuth client token with Azure AD^]
-* https://jwt.io/[JSON web token debugger]
+* https://jwt.io/[JSON web token debugger^]
