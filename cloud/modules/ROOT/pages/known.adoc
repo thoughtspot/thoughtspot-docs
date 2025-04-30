@@ -1,160 +1,123 @@
 = Known issues
 :keywords: known issues
-:last_updated: 12/12/2023
+:last_updated: 1/16/2024
 :author: Mark Plummer
 :experimental:
 :page-layout: default-cloud
 :linkattrs:
-:jira: SCAL-177532, SCAL-185857
+:jira: SCAL-183017
 
 These are the known issues in this release of ThoughtSpot Cloud.
 
-[#releases-9-6-x]
-== 9.7.0.cl known issues
+[#releases-9-8-x]
+== 9.8.0.cl known issues
 
 [cols="17%,39%,38%"]
 |===
 |Issue ID |Description|Symptoms, conditions, and workaround
 
-|SCAL-182743
-|Updates to runtime filters in a Liveboard do not appear in the downloaded Liveboard.
+|SCAL-176744
+|The Org admin can't see the count of Answers and Liveboards under the System Activities tab. However, the same information can be seen by primary Org admin.
 a|*Symptoms*:
 
-When you update a runtime filter, and then download a Liveboard, the PDF artifact doesn't reflect the pre-applied filters.
+Total count of Answers and Liveboard under the *Admin* > *System activities* tab is displayed as 0 for the non-primary Org admin.
 
 *Conditions*:
 
-Update a runtime filter in a Liveboard and then download it.
+9.8.0.cl release.
 
-ThoughtSpot version 9.3.0.cl
+*Workaround*:
+
+The values are shown correctly for the primary Org admin.
+
+|SCAL-186976
+|Including the "Worksheet Name" and/or "Worksheet Description" when searching in the Product Usage worksheet causes bloated and incorrect results.
+a|*Symptoms*:
+
+- Bloated and/or incorrect results while analysing worksheets from Product Usage data
+- Incorrect mapping of the table sub-type to the table name. Any such incorrect mapping of data can happen if the worksheet name/worksheet description columns are used.
+
+*Conditions*:
+
+Including the "Worksheet Name" and/or "Worksheet Description" when searching in the Product Usage worksheet. 9.8.0.cl release.
+
+*Workaround*:
+
+Do not use "Worksheet Name" and/or "Worksheet Description" columns in the Product Usage worksheet.
+Instead use "Table Sub Type = 'worksheet' " filter if working with worksheets and "Table Name" to fetch the worksheet's name.
+
+|SCAL-186191
+|Including the "Worksheet Name" and/or "Worksheet Description" when searching in the Product Usage worksheet causes bloated and incorrect results.
+a|*Symptoms*:
+
+System becomes unresponsive due to running out of memory in the tomcat service.
+
+*Conditions*:
+
+Downloading a large CSV file. 9.8.0.cl release.
+
+*Workaround*:
+
+Workaround is to reduce the maxNumExportRows size to less value(default 1M), so that memory utilisation will be less. For assistance with this, contact {support-url}.
+
+|SCAL-185567
+|Liveboard is not available for a non-admin user, but it is available in a URL using the pinboard GUID.
+a|*Symptoms*:
+
+Liveboard is not available on the list page for the non-admin user, but it is accessible via URL using pinboard GUID.
+
+*Conditions*:
+
+Strict column-level security (CLS) enabled on the cluster. Non-admin user trying to view a Liveboard having a Liveboard filter on a column which the user does not have access to. 9.8.0.cl release.
 
 *Workaround*:
 
 None.
 
-|SCAL-177835
-|The group_aggregate function works differently with null values between ThoughtSpot Cloud and Software versions.
+|SCAL-184586
+|Cannot search a table associated with a problematic connection.
 a|*Symptoms*:
 
-Using an `if` statement in a formula to determine if a number is `NULL` generates a different result with ThoughtSpot Software compared to ThoughtSpot Cloud.
+User sees a 'connection not available' error, when searching on any table associated with a problematic connection due to connection leak.
 
 *Conditions*:
 
-ThoughtSpot version 9.5.0.cl
+Sync schedule exists and one the scheduled syncs failed. 9.8.0.cl release.
 
 *Workaround*:
 
-None.
+Remove the sync schedules.
 
-|SCAL-173808
-|A filter created for the max date function does not apply to the result set, based on the underlying SQL query.
+|SCAL-180968
+|Incorrect y-axis is plotted for a line chart when it is resized.
 a|*Symptoms*:
-A filter created in an Answer for the max date function does not apply to the result set, even when applied in the Answer's search bar.
+
+- Some horizontal/vertical lines are visible for the line charts.
+- The plotted min and max y-axis values don't align with the visible min and max data points.
+- Line chart seems distorted/broken.
 
 *Conditions*:
 
-The underlying sql query.
-
-ThoughtSpot version 9.5.0.cl.
+An answer with line-chart visualization.
 
 *Workaround*:
 
-None.
+- If the issue is observed in a Liveboard tile, modifying the tile size should help. Try modifying the tile size until the visualization looks as expected, and save the affected tile in that size.
+- If the issue is observed on the Answers page and the browser window is either zoomed-in or zoomed-out, try changing it back to 100% zoom. If the browser window is resized, try resizing it to a more normal size.
 
-|SCAL-172622
-|Requesting access to a filter in an Answer does not work.
+|SCAL-187638
+|Filters in Explore mode do not work
 a|*Symptoms*:
 
-Clicking *Request Access* in the filter of an Answer does not work.
+Applying a new filter to a column that already has filters, removes the existing filters.
 
 *Conditions*:
 
-. User creates an Answer with a filter applied to any column.
-. They save the answer and share it with another user who doesn't have access to the underlying data.
-. The other user clicks the filter chip in the Answer and clicks the *Request Access* button.
-+
-ThoughtSpot version 9.7.0.cl.
-
+An answer with line-chart visualization.
 
 *Workaround*:
 
-None.
+Change filters using filter chips in the visualization's UI instead of using Explore.
 
-|SCAL-172617
-|Worksheet name not properly displayed in warning message when requesting access to a filter in a Worksheet.
-a|*Symptoms*:
-
-Worksheet name not properly displayed in warning message when user does not have access to a filter in a Worksheet.
-
-*Conditions*:
-
-. User creates an Answer with a filter applied to any column.
-. They save the answer and share it with another user who doesn't have access to the underlying data.
-. The other user clicks the filter chip in the Worksheet.
-+
-ThoughtSpot version 9.7.0.cl.
-
-*Workaround*:
-
-None.
-
-|SCAL-172356
-|User can edit an existing or create a new Atlan connection in ThoughtSpot using deleted API tokens.
-a|*Symptoms*:
-
-Deleting the token in Atlan for an Atlan connection in ThoughtSpot does not make the token invalid. User is able to modify existing connection and also create a new connection with deleted token.
-
-*Conditions*:
-
-. Open the *Data* tab and navigate to *Data governance*.
-. In the Atlan tile, click *Connect*.
-. Enter the credentials and click *Next*.
-. Set the sync schedule and click *Next*.
-. Select the metadata fields to import, and click *Save & Sync*.
-. On the Atlan side, delete the generated token for the Atlan connection established in ThoughtSpot.
-. In ThoughtSpot, edit the Atlan connection and modify the sync / metadata checks.
-+
-ThoughtSpot version 9.7.0.cl.
-
-*Workaround*:
-
-None.
-
-|SCAL-171431
-|GraphQL v2 cannot be disabled in ThoughtSpot.
-a|*Symptoms*:
-
-No way to disable GraphQL v2 in the product or by ThoughtSpot support.
-
-*Conditions*:
-
-QraphQL v2 is running.
-
-ThoughtSpot version 9.4.0.cl.
-
-*Workaround*:
-
-None.
-
-|SCAL-167159
-|Passthrough functions cannot be executed on an object in ThoughtSpot's in-memory database.
-a|*Symptoms*:
-
-Error appears: `Error Details [11022]
-Passthrough functions not supported for current query. Trace Id for this incident is ff025b55-9f46-470e-95f4-c4766533e5cf
-Additional Details
-Passthrough functions cannot be executed on Falcon objects`
-
-*Conditions*:
-
-Open query visualizer.
-
-ThoughtSpot version 9.4.0.cl.
-
-*Workaround*:
-
-None.
 
 |===
-
-
