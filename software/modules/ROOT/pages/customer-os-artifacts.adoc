@@ -1,0 +1,50 @@
+= Download ThoughtSpot artifacts for deploying on your own OS
+:last_updated: 4/19/2023
+:linkattrs:
+:author: Teresa Killmond
+:page-aliases: /appliance/amazon-linux-2/al2-ts-artifacts.adoc
+:experimental:
+:description: Get the two primary tarball artifacts for configuring ThoughtSpot using Amazon Linux 2, OEL, or RHEL.
+
+include::partial$ts-artifacts-customer-os.adoc[]
+
+[#download]
+== Download and verify the required artifacts
+
+. Download the ansible tarball you obtained from {support-url} to your local machine.
++
+You can download it by running the cp command. For example, if the tarball is in your S3 bucket, run `aws s3 cp s3://bucket_name/path/to/the/tarball ./`.
++
+As a best practice, copy the tarball to every node.
+. Download the release tarball you obtained from {support-url} to your local machine. Move the release files to a directory with sufficient space in your ThoughtSpot node. Use `winscp` or a similar secure copy method to copy the downloaded release tarball from your Downloads folder to any path in the `/export` folder of your ThoughtSpot node that has enough space, at least 20 GB.
++
+WARNING: Do not put the release files in the `/home/admin` or `/home/thoughtspot` directories. You should put the release files in one of the bigger hard disks/volumes on one node in the cluster. Typically, this is `/export/sdb1/` for hardware appliances, VMware, and GCP, `/export/sdc1/` for Azure, and `/export/xvdb1/` for AWS.
+
+. Verify the checksum to ensure you have the correct release. Run:
++
+[source,console]
+----
+$ md5sum -c <release-number>.tar.gz.MD5checksum
+----
++
+Your output says `ok` if you have the correct release.
+
+
+== Next steps
+
+Next, untar the ansible tarball:
+
+* xref:customer-os-untar.adoc[]
+
+'''
+> **Related information**
+>
+> * xref:customer-os.adoc[]
+> * xref:customer-os-prerequisites.adoc[]
+> * xref:customer-os-untar.adoc[]
+> * xref:customer-os-offline-script.adoc[]
+> * xref:customer-os-ansible-configure.adoc[]
+> * xref:customer-os-install.adoc[]
+> * xref:customer-os-upgrade.adoc[Upgrading ThoughtSpot on your own OS to a new release]
+> * xref:customer-os-add-node.adoc[]
+> * xref:customer-os-packages.adoc[Packages installed with ThoughtSpot running on your own OS]
