@@ -1,16 +1,16 @@
-= Install the ThoughtSpot application on offline clusters that use RHEL
-:last_updated: 8/18/2020
+= Install the ThoughtSpot application on offline clusters that use RHEL or OEL
+:last_updated: 3/22/2021
 :linkattrs:
 
-Install ThoughtSpot on RHEL offline clusters
----
+Learn how to install ThoughtSpot on RHEL or OEL offline clusters.
+
 Before starting the install, make sure that you completed the xref:rhel-prerequisites.adoc[pre-installation steps].
 
 In an offline cluster, the hosts cannot connect to the public repositories to download the required packages. Instead, you must download the packages from your organization’s mirror repository to each host. Otherwise, the steps for installing on offline clusters are practically the same as the steps for installing on online cluster.
 
 Before you build the ThoughtSpot cluster and install the ThoughtSpot application on the hosts, you must run the Ansible playbook. The TS Ansible playbook prepares your clusters in the following manner:
 
-- Ansible installs the required packages: YAML, Python, and R packages; see xref:rhel-packages.adoc[Packages installed with ThoughtSpot for RHEL].
+- Ansible installs the required packages: YAML, Python, and R packages; see xref:rhel-packages.adoc[Packages installed with ThoughtSpot for RHEL and OEL].
 - It creates and configures local user accounts for ThoughtSpot:
    - `admin` user has full administrative functionality
    - `thoughtspot` user can load data in the application
@@ -30,32 +30,6 @@ Before you build the ThoughtSpot cluster and install the ThoughtSpot application
 == Configure the Ansible Playbook
 
 To set up the Ansible, follow these steps:
-
-. Obtain the Ansible tarball by joining our RHEL Early Access program, and email us your Ansible request. Download it to your local machine.
-. Unzip the Ansible tarball, to see the following files and directories on your local machine:
-customize.sh:: This script runs as the last step in the preparation process. You can use it to inject deployment-specific customizations, such as enabling or disabling a corporate proxy, configuring extra SSH keys, installing extra services, and so on. Additionally, you can include the `prepare_disks` script here. Add the following line to the `customize.sh` file: `sudo /usr/local/scaligent/bin/prepare_disks.sh`.
-hosts.sample::
-prod_image:: This directory contains the ThoughtSpot tools and tscli, the ThoughtSpot CLI binary.
-README.md:: Basic information for the unzipped file
-rpm_gpg:: This directory contains the https://access.redhat.com/documentation/en-us/red_hat_network/5.0.0/html/client_configuration_guide/ch-gpg-keys[GPG keys,window="_blank"] that authenticate the public repository.
-toolchain:: The tools that are necessary to compile the instructions you define in the Ansible Playbook, the source code, into executables that can run on your device. The toolchain includes a compiler, a linker, and run-time libraries.
-ts-new.yaml:: The Ansible Playbook for new installations.
-ts-update.yaml:: The Ansible Playbook for updates.
-ts.yaml::
-yum.repos.d:: This directory contains information about the yum repo used by the cluster.
-. Copy the Ansible inventory file hosts.sample to hosts.yaml, and using a text editor of your choice, update the file to include your host configuration:
-+
-hosts:: Add the IP addresses or hostnames of all hosts in the ThoughtSpot cluster.
-admin_uid:: The admin user ID parameter.
-On-premise deployments::
-+
-Use the default values.
-AWS:: Use the default values.
-GCP:: Add values that are not currently in use. To determine what values your system uses already, run the following command:
-+
-```
-cat /etc/passwd | cut -d ":" -f3-4| sort
-```
 
 . Obtain the Ansible tarball from https://community.thoughtspot.com/customers/s/contactsupport[ThoughtSpot Support,window="_blank"].
 . Download it to your local machine.
@@ -147,7 +121,8 @@ ansible -m ping -i hosts.yaml all
 +
 Run the following command to verify that the Ansible Control Server can connect to the hosts over `ssh`:
 +
-```ansible -m ping -i hosts.yaml all
+```
+ansible -m ping -i hosts.yaml all
 ```
 
 `extra_admin_ssh_key`::
@@ -205,9 +180,9 @@ Your hosts are ready for installing the ThoughtSpot application.
 
 Refer to the ThoughtSpot documentation for the detailed steps to install the ThoughtSpot cluster for each deployment platform:
 
-- xref:inthebox.adoc[Hardware appliance]
+- [*_RHEL only_*] xref:inthebox.adoc[Hardware appliance]
 - xref:aws-configuration-options.adoc[Amazon Web Services (AWS) EC2]
-- xref:azure-configuration-options.adoc[Microsoft Azure]
+- [*_RHEL only_*] xref:azure-configuration-options.adoc[Microsoft Azure]
 - xref:gcp-configuration-options.adoc[Google Cloud Platform (GCP)]
 - xref:vmware-intro.adoc[VMware]
 
