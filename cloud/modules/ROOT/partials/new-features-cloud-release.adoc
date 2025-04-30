@@ -1,89 +1,87 @@
 The latest release of ThoughtSpot Cloud contains several new and enhanced features.
 
-* <<9-6-0-cl-first,For the First User>>
-* <<9-6-0-cl-analyst,For the Analyst>>
-* <<9-6-0-cl-business-user,For the Business User>>
-* <<9-6-0-cl-data-engineer,For the Data Engineer>>
-* <<9-6-0-cl-it-ops-engineer,For the IT Ops Engineer>>
-* <<9-6-0-cl-developer,For the Developer>>
+* <<9-7-0-cl-first,For the First User>>
+* <<9-7-0-cl-analyst,For the Analyst>>
+* <<9-7-0-cl-business-user,For the Business User>>
+* <<9-7-0-cl-data-engineer,For the Data Engineer>>
+* <<9-7-0-cl-developer,For the Developer>>
 
-[#9-6-0-cl-first]
+[#9-7-0-cl-first]
 === For the First User
 
 Getting started with ThoughtSpot Cloud::
 The first user on the account has to complete a series of steps before other people can start using ThoughtSpot with your organization's data.
 For these instructions, see xref:ts-cloud-getting-started.adoc[Getting Started with ThoughtSpot Cloud].
 
-[#9-6-0-cl-analyst]
+[#9-7-0-cl-analyst]
 === For the Analyst
 
-Embedding in note tiles [.badge.badge-early-access-relnotes]#Early Access#::
-You can now embed interactive content such as videos, pdfs, or Figma files into Liveboards using the note tile format. To try it out, enter a Liveboard, select the edit icon, and select Add note from the top bar. You can then click the embed icon and enter the URL or iFrame code for your content. You can interact with the content embedded in a Liveboard like you would with a website. To enable this feature, contact {support-url}. For more information, see xref:liveboard-notes.adoc#embed[Embedding content with an iFrame].
 
-// SCAL-174031
-Multi-date bucketing:: Previously, when adding multiple date keywords to a Search, ThoughtSpot accepted the last entered date keyword as the bucket. For example, if you searched for `revenue` `monthly` `yearly`, ThoughtSpot would interpret `monthly` as `month of year`, rather than using the `monthly` bucket. Now, when you add multiple date keywords to a Search, ThoughtSpot preserves the date bucketing implied by the first date keyword. If you would like to change the default date bucket, you can use the *more options* menu for the column and select *Time Bucket* for more options.
+//scal-66335
+Personalized Liveboard views [.badge.badge-early-access-relnotes]#Early Access#:: Personalized views allow you to save your own set of values for filters and parameters in a Liveboard without editing the original Liveboard. You can change the values of the already present filters and parameters in a Liveboard to create a view, and save it for future use. The new Liveboard is a view of the master Liveboard, so any changes made to the master Liveboard flow  automatically to the filtered Liveboard view but not vice-versa. This includes changes made to pinned visualizations, tabs, filter chips, and re-ordering.
 
-[#9-6-0-cl-business-user]
+//scal-165262
+Embedding in note tiles:: Embedding in note tiles is now available to all users and is on by default. You can now embed interactive content such as videos, pdfs, or Figma files into Liveboards using the note tile format. To try it out, enter a Liveboard, select the edit icon, and select *Add note* from the top bar. You can then click the embed icon and enter the URL or iFrame code for your content. You can interact with the content embedded in a Liveboard like you would with a website. For more information, see xref:liveboard-notes.adoc#embed[Embedding content with iFrames].
+
+//scal-139891
+System Variables in Answer and Worksheet formulas:: Previously, ThoughtSpot supported the `ts_username` variable for use in row-level security formulas alone. Now, users can access the following string variables:
++
+--
+* `ts_orgname`
+* `ts_email_domain`
+--
++
+`ts_orgname`, `ts_username`, and `ts_email_domain` variables are available to use in Answer and Worksheet formulas. These variables are helpful for data masking.
+
+//scal-140692
+Request access to data source from filter:: When creating a filter on a Liveboard or Answer, you must have access to the underlying data source. Users can now request access to the underlying Worksheet through the filter modal on a Liveboard or Answer. For more information, see
+xref:liveboard-filters.adoc#filter-request[Liveboard filters].
+
+
+//scal-161459
+[#9-7-0-cl-business-user]
 === For the Business User
 
-Change analysis: More insights [.badge.badge-beta-relnotes]#Beta#::
-When running change analysis, you can now see additional insights. For example, ThoughtSpot will detect values that underwent the highest percentage change between the two data points defined in your analysis, and values whose share of the total changed the most. The additional insights appear below the main analysis in the change analysis pop-up window.
-
-Query performance visibility [.badge.badge-beta-relnotes]#Beta#::
-You can now see the state of query execution for any Liveboard visualization while it loads. If a visualization takes longer than three seconds to load, ThoughtSpot displays the current query execution status (executing query, waiting for connection, or processing query) to help users identify the reason for the delay.
-
-Hidden columns in tables::
-You can now hide a column from your table without removing it from your current Search. If you hide the column you’re using to sort results, the sorting order is unchanged. To try it out, create an Answer, open the chart configuration menu gear icon, and drag the selected column to *Hidden Columns*. For more information, see xref:chart-table.adoc#hidden-column[Hidden columns].
-
-Commenting on Liveboards [.badge.badge-early-access-relnotes]#Early Access#::
-You can now add or reply to comments, tag other users, or subscribe to comment threads directly on a Liveboard. Users can point out insights or reach out for clarification without leaving ThoughtSpot. To try it out, click the comment icon to the right of the edit icon, and select the data point you would like to comment on. This feature must be enabled by your administrator. For more information, see xref:liveboard-comment.adoc[Comment on a Liveboard].
-
-Natural language narratives [.badge.badge-early-access-relnotes]#Early Access#:: Beginning in 9.6.0.cl, ThoughtSpot generates insight narratives in natural language to summarize the data analyzed in SpotIQ. The narratives are generated by LLM, and appear above the charts created by SpotIQ. This feature must be enabled by your administrator. For more information, see xref:spotiq-change.adoc#natural[Natural language narratives].
-
-Alation metadata::
-Alation catalog integration is now available to all users and on by default. Users can now see metadata information on tables and columns imported from Alation. This information appears when you click on the corresponding table or column in *Search data*. Once connected, metadata information is visible to all users. For more information, see xref:catalog-integration.adoc[Catalog integration].
-
-Verified Liveboards::
-We made the following enhancements to verified Liveboards:
-
-- When you request verification, you can now see the underlying data sources that will be shared with the verifier.
-- The name of the Liveboard now appears in verification request emails.
-- When editing an Answer on or pinning an Answer to a verified Liveboard, a warning banner appears indicating it may need to be verified again.
+New data panel with tag-based filtering::
+The new data panel experience is available for all customers in this release, and is enabled by default. In this release, you can now filter data sources by how they are tagged.
 +
-For more information, see xref:liveboard-verify.adoc[Verify Liveboards].
+For more information, see xref:search-start.adoc[Start a new search].
 
-[#9-6-0-cl-slides]
-ThoughtSpot for Google Slides add-on::
+//scal-158463
+Atlan [.badge.badge-beta-relnotes]#Beta#:: You can now see verification status and descriptions on tables and columns imported from Atlan. This information appears when you click on the corresponding table or column in *Search data*. Once connected, this information is visible to all users. This feature is in beta and off by default. To enable it, contact {support-url}. +
+For more information, see
+xref:catalog-integration-atlan.adoc[Atlan catalog integration].
 
-ThoughtSpot Connected Slides is an add-on that allows you to insert charts and live data visualizations right into your Google Slides™ presentation. Just connect to ThoughtSpot, find a chart or visualization, and add it to your slide presentation. For details, see xref:thoughtspot-slides.adoc[ThoughtSpot Connected Slides].
+//scal-159581, scal-95381, scal-158204
+Mobile enhancements:: We made the following improvements to ThoughtSpot mobile:
 
-[#9-6-0-cl-data-engineer]
+* We simplified the log in process for the ThoughtSpot mobile app. You can now enter your company email to receive an email with a magic link login, rather than entering the server URL.
+* You can now change your ThoughtSpot locale through the Mobile app. When your locale is updated, ThoughtSpot translates labels, date formats and number formats to match the default for your country and language.
+* You can now use SpotIQ analysis to directly identify the key drivers for recent change in your KPIs in ThoughtSpot Mobile. KPI change analysis allows you to drill down into the causes of change in your KPIs and customize the insights generated by SpotIQ.
+
+
+[#9-7-0-cl-data-engineer]
 === For the Data Engineer
 
-Amazon Athena connection::
-You can now create connections from ThoughtSpot to Amazon Athena. For more information, see xref:connections-amazon-athena.adoc[Amazon Athena].
-
-Improved error messaging for Liveboard visualizations:: Previously, ThoughtSpot displayed generic error messages for connection errors on Liveboards. Now, you can see the error message received from the underlying Cloud data warehouse.
-
-[#9-6-0-cl-it-ops-engineer]
-=== For the IT/Ops Engineer
-
-Alation catalog integration::
-Alation catalog integration is now available to all users and on by default. You can now import metadata information related to your tables and columns from Alation into ThoughtSpot. From the Data tab, you can set up a connection to Alation to import column descriptions, column verification status, table descriptions, and table verification status. For more information, see xref:catalog-integration.adoc[].
-
-Index Statistics Liveboard::
-Admin users can now see indexing statistics for their cluster using the Index Statistics Liveboard. You can filter the results by connection, table, and column, and see the breakdown of indexed search tokens in the visualizations. This Liveboard helps you see how many search tokens you are using, and can help you diagnose indexing issues and errors.
+//scal-158463
+Atlan data catalog [.badge.badge-beta-relnotes]#Beta#:: You can now import metadata information related to your tables and columns from Atlan into ThoughtSpot. From the *Data* tab, you can set up a connection to Atlan to import column descriptions, column verification status, table descriptions, and table verification status. This information appears when you click on the corresponding table or column in *Search data*. Once connected, metadata information is visible to all users.
++
 For more information, see
-xref:index-statistics-liveboard.adoc[Index Statistics Liveboard].
+xref:catalog-integration-atlan.adoc[Atlan catalog integration].
 
-dbt sync::
-In the past, ThoughtSpot generated a new Worksheet every time a user edited an existing dbt data model. Now, ThoughtSpot maintains a persistent connection with dbt and provides realtime updates. Users can update an object, update an object and create a new object, or simply create a new object.
-For more information, see xref:dbt-integration.adoc[].
+//scal-158490
+SAP Hana Calculation view input parameters [.badge.badge-beta-relnotes]#Beta#:: Now, you can define a parameter to link to the parameter in SAP Hana using TML at the table level, and create a linked_parameter clause to ensure the parameter is displayed in all Answers created from the table. For more information, see
+xref:tml-tables.adoc[TML for tables] and xref:tml-worksheets.adoc[TML for Worksheets].
 
-dbt Worksheet join rule::
-Previously, when a Worksheet was created from a dbt model, the default worksheet join rule was "apply all joins". Now, "apply joins progressively" is the default. This means that when a Search is done on the Worksheet, joins are applied as each search term is added, rather than applying all joins to every Search.
 
-[#9-6-0-cl-developer]
+//scal-91104
+Key Pair authentication for Snowflake:: We now support xref:connections-snowflake-add.adoc[Key Pair authentication for Snowflake].
+
+//scal-136661
+OAuth for Databricks using Proof Key for Code Exchange (PKCE):: We now support xref:connections-databricks-add.adoc[OAuth with PKCE for Databricks].
+
+
+[#9-7-0-cl-developer]
 === For the Developer
 
 ThoughtSpot Everywhere:: For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation^].

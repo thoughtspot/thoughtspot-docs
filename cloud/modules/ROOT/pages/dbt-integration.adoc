@@ -4,13 +4,13 @@
 :experimental:
 :page-layout: default-cloud
 :author: Teresa Killmond
-:jira: SCAL-182271, SCAL-182987
+:jira: SCAL-157885, SCAL-157886, SCAL-157887, SCAL-157890, SCAL-157889, SCAL-182271, SCAL-182987, SCAL-186187, SCAL-208784
 :description: ThoughtSpot's dbt sync allows you to provide your existing dbt models and create ThoughtSpot Worksheets, which you can use to search your data.
-:jira: SCAL-186817
+
 
 ThoughtSpot's dbt sync allows you to easily provide your existing dbt models and automatically create ThoughtSpot xref:worksheets.adoc[Worksheets], which you can use to xref:search-data.adoc[search your data].
 
-dbt takes your raw data in your data warehouse and transforms and validates it. ThoughtSpot's dbt sync connects users to their cloud data warehouse, integrates with your dbt models using an API key or zip file, and generates the relationships between the tables defined in the dbt model that you select. It also brings any logical tables into ThoughtSpot. Then, ThoughtSpot creates new Worksheets, based on the relationships between the tables. If a table does not have any relationships, ThoughtSpot creates a Worksheet based only on that table. These Worksheets provide user-friendly logical views of your complex datasets. Users can use these Worksheets to easily search their complex data. This process may replace existing dbt tables you imported into ThoughtSpot, but it will not replace existing Worksheets.
+dbt takes your raw data in your data warehouse and transforms and validates it. ThoughtSpot's dbt sync  connects users to their cloud data warehouse, integrates with your dbt models using an API key or zip file, and generates the relationships between the tables defined in the dbt model that you select. It also brings any logical tables into ThoughtSpot. Then, ThoughtSpot creates new Worksheets, based on the relationships between the tables. If a table does not have any relationships, ThoughtSpot creates a Worksheet based only on that table. These Worksheets provide user-friendly logical views of your complex datasets. Users can use these Worksheets to easily search their complex data. This process may replace existing dbt tables you imported into ThoughtSpot, but it will not replace existing Worksheets.
 
 NOTE: Integration with dbt is certified only for Amazon Redshift, Databricks, Google BigQuery, and Snowflake connections.
 
@@ -93,6 +93,8 @@ image::dbt-error.png[Error message saying "Unable to fetch dbt models"]
 To increase the maximum number of dbt folders you can import at a time, contact {support-url}.
 +
 image::dbt-integration-folder-multiple.png[dbt integration step 2]
++
+NOTE: You can now filter models and folders on this page, as well as sort by column header.
 
 . Select *Next*.
 
@@ -107,20 +109,22 @@ image::dbt-integration-tables.png[dbt integration step 3]
 The *Synced* column says *No* if this is the first time you are importing this Worksheet. The *Synced* column says *Yes* if you are importing the same Worksheet again. If the *Synced* column says *Yes*, ThoughtSpot will update the existing Worksheet, instead of creating a new one.
 +
 image::dbt-integration-worksheets-create.png[Select Worksheets for ThoughtSpot to create]
++
+NOTE: There is no minimum number of Worksheets to select in this step.
 
 . Select *Finish*.
 
-. The *Generated Tables, Worksheets and Liveboards* page appears. ThoughtSpot generates several tables, Worksheets, and Liveboards from your dbt models.
+. The *Generated Tables and Worksheetss* page appears. ThoughtSpot generates several tables and Worksheets from your dbt models.
 +
 image::dbt-integration-worksheets.png[dbt integration step 4]
 +
-To inspect the table, Worksheet, and Liveboard details, select any of the table, Worksheet, or Liveboard names. You can view the joins created between the related tables in the Worksheets from the *Joins* tab for the Worksheet.
+To inspect the table, Worksheet, details, select any of the table or Worksheet names. You can view the joins created between the related tables in the Worksheets from the *Joins* tab for the Worksheet.
 +
 To xref:search-data.adoc[search the data] on the Worksheets, select *Search worksheet* next to any Worksheet.
 
 . Select *Exit*.
 
-. To see the objects that you just created from dbt, navigate to the *Data > Home* or *Liveboards* pages.
+. To see the objects that you just created from dbt, navigate to the *Data > Home* page.
 +
 image::dbt-integration-home-page.png[dbt integration view Worksheets and tables]
 +
@@ -129,7 +133,7 @@ NOTE: This process may replace existing dbt tables you imported into ThoughtSpot
 . If you select any of the tables or Worksheets you created, and then click *Joins*, you can see the joins ThoughtSpot created, based on the relationships in dbt.
 
 
-== How the dbt sync works
+== How the dbt integration works
 
 To integrate with dbt, ThoughtSpot reads information from the latest versions of the `manifest.json` and `catalog.json` files. In the <<prerequisites,prerequisites>>, you ensured that ThoughtSpot could find these files, either by enabling the *generate docs on run* setting in dbt cloud, or by creating a zip file with your `manifest.json` and `catalog.json` files for dbt core.
 
