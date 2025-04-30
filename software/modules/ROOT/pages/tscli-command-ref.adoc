@@ -1,5 +1,5 @@
 = tscli command reference
-:last_updated: 00/29/2021
+:last_updated: 04/22/2021
 :linkattrs:
 :page-aliases: /reference/tscli-command-ref.adoc
 :experimental:
@@ -31,7 +31,7 @@ tscli [-h]
       [--cluster ]
       [--zoo ]
       {access,alert,ansible,backup,backup-policy,calendar,callhome,cassandra,
-       cluster,command,config-mode,dataflow,dr-mirror,event,feature,fileserver,
+       cluster,command,config-mode,csp,dataflow,dr-mirror,event,feature,fileserver,
        firewall,hdfs,ipsec,ldap,logs,map-tiles,monitoring,nas,nitro-switch,
        node,notification,onboarding,patch,rpackage,saml,scheduled-pinboards,
        set,smtp,snapshot,snapshot-policy,socialproof,ssl,sssd,storage,support,
@@ -165,6 +165,7 @@ This section lists each subcommand of the tscli command, and its syntax:
 * xref:tscli-cluster[cluster]
 * xref:tscli-command[command]
 * xref:tscli-config-mode[config-mode]
+* xref:tscli-csp[csp]
 * xref:tscli-dataflow[dataflow]
 * xref:tscli-dr-mirror[dr-mirror]
 * xref:tscli-event[event]
@@ -564,15 +565,41 @@ tscli command run COMMAND::
 [#tscli-config-mode]
 === config-mode
 
----
+----
 tscli config-mode [-h] {lean}
----
+----
 
 This subcommand has the following option:
 
 tscli config-mode lean::
   Applies lean configuration for a particular instance type, with the following parameter:
   --type {small,medium,default};; Specifies the type of configuration to apply.
+
+[#tscli-csp]
+=== csp
+
+----
+tscli csp [-h] {add-override,clear-override,remove-override,reset-override}
+----
+
+This subcommand has the following options:
+
+tscli csp add-override::
+Adds one override to the content security policy, with the following parameters:
+  --source __SOURCE__;; Specifies the type of source.
+  --url __URL__;; Specifies the new URL to add.
+tscli csp clear-override::
+Removes all overrides for a specified source, with the following parameter:
+  --source __SOURCE__;; Specifies the type of source.
+tscli csp remove-override::
+Removes a specified override from the content security policy, with the following parameters:
+--source __SOURCE__;; Specifies the type of source.
+--url __URL__;; Specifies the new URL to remove.
+tscli csp reset-override::
+Resets a specified override with a new value, with the following parameters:
+--source __SOURCE__;; Specifies the type of source.
+--value __VALUE__;; Specifies the new value of the specified type of source.
+
 
 [#tscli-dataflow]
 === dataflow
@@ -803,20 +830,17 @@ tscli map-tiles [-h] {disable,enable,status}
 
 This subcommand has the following options:
 
-tscli map-tiles enable [-h] [--online] [--offline] [--tar TAR] [--md5 MD5]::
+tscli map-tiles enable [-h] [--offline] [--tar TAR] [--md5 MD5]::
   Enables ThoughtSpot's map tiles. Used when constructing geo map charts.
 +
-If you don't have internet access, you must download the map tiles tar and md5 files, and append the clause `--offline --tar __TAR__ --md5 __MD5__` to the `tscli map-tiles enable` command:
+If you don't have internet access, you must download the map tiles tar and md5 files, and append the clause `--offline --tar _TAR_ --md5 _MD5_` to the `tscli map-tiles enable` command:
 +
 ----
-tscli map-tiles enable --offline --tar __TAR__ --md5 __MD5__
+tscli map-tiles enable --offline --tar TAR --md5 MD5
 ----
 +
 This command has the following parameters:
 +
-  --online;; Downloads `maptiles` from the internet. +
-  The default setting is `True`. +
-  This subcommand is *_not_* available in ThoughtSpot versions 6.3.1 and later.
   --offline;; Specifies that you are using `maptiles` tarball from a local disk, rather than downloading from the internet. Use during offline enablement of map-tiles. You must specify the location of the `--tar` and `--md5` on your machine.
   You must download the https://tsengg-geodata.s3.amazonaws.com/raster-osm-jpg.tar.gz[tarball^] and https://tsengg-geodata.s3.amazonaws.com/md5[md5^] before you run this command.
   The default setting is `False`.
@@ -1356,7 +1380,7 @@ This subcommand has the following parameters:
   Specify the LDAP server uniform resource identifier, in the form  ldap://<ldap_server_IP>`.
 
 [#tscli-sssd-set-sudo-group]
-tscli sssd set-sudo-group sudo_group::
+tscli sssd set-sudo-group _SUDO_GROUP_::
   Allows `sudo` permissions for the specified user `sudo_group`. For more about setting up Active Directory access, see xref:active-directory.adoc[Enable Active Directory based access].
 
 [#tscli-storage]

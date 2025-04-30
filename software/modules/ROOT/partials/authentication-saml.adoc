@@ -24,7 +24,7 @@ NOTE: If you configure authentication through SAML, you cannot also configure au
 
 6. Fill in the parameters with the information you collected in the xref:prerequisites[Configuration prerequisites].
 
-7. When the configuration is complete, download ThoughtSpot's metadata file, `spring_saml_metadata.xml`. This file contains the public key you need if you want to encrypt your SAML assertions. To download this file, navigate to `https://<hostname-or-IP>/callosum/v1/saml/metadata`. The file automatically downloads.
+7. When the configuration is complete, download ThoughtSpot's metadata file, `spring_saml_metadata.xml`. This file contains the public key you need if you want to encrypt your SAML assertions. To download this file, navigate to `\https://<hostname-or-IP>/callosum/v1/saml/metadata`. The file automatically downloads.
 
 NOTE: ThoughtSpot adds external users, or users that authenticate through SAML or Active Directory, to the *all* group by default. This group has no privileges. You must manually assign users to ThoughtSpot groups to give them privileges, such as *can upload user data*, or *can manage data*.
 
@@ -36,11 +36,32 @@ ThoughtSpot supports SAML authentication with several identity and access manage
 
 To determine if ThoughtSpot supports your preferred IDP, xref:support-contact.adoc[contact ThoughtSpot support].
 
-Complete your configuration of the IDP using the IDP's SAML documentation. Upload or copy the contents of the `spring_saml_metadata.xml` to your IDP server. If you did not download the `spring_saml_metadata.xml` file, navigate to `https://<your_ThoughtSpot_hostname-or-IP>/callosum/v1/saml/metadata`. The file automatically downloads.
+Complete your configuration of the IDP using the IDP's SAML documentation. Upload or copy the contents of the `spring_saml_metadata.xml` to your IDP server. If you did not download the `spring_saml_metadata.xml` file, navigate to `\https://<your_ThoughtSpot_hostname-or-IP>/callosum/v1/saml/metadata`. The file automatically downloads.
 
-NOTE: When configuring SAML 2.0, make sure you map the SAML user attributes to appropriate fields. This allows the ThoughtSpot system to automatically pick up certain attributes, such as a user's email address and username. For example, you must map the SAML user’s username to the NameId attribute in OneLogin. Similarly, in Okta, you must map the username to userPrincipalName. You must also map the email address of the user to the mail attribute. Starting in ThoughtSpot version 6.3.1, it is mandatory to fill out the mail field. If your company cannot meet this requirement, xref:support-contact.adoc[contact ThoughtSpot support]. If your IDP does not allow you to import the IDP metadata XML file, you must map these values manually.
+Refer to <<saml-configure-2,Configure SAML 2.0>> for details on correct field mapping.
 
 After you configure the IDP, open a Web browser and go to the ThoughtSpot login page. It should now show the Single Sign On option.
+
+[#saml-configure-2]
+=== Configure SAML 2.0
+
+When configuring SAML 2.0, ensure that you map the SAML user attributes to appropriate fields. This allows the ThoughtSpot system to automatically pick up certain attributes, such as a user's email address and username.
+
+For example,
+
+Onelogin::
+You must map the SAML user’s _username_ to the _NameId_ attribute.
+Okta::
+You must map the `username` to `userPrincipalName`.
+
+You must also map the `email` address of the user to the `mail` attribute.
+
+WARNING: Starting in ThoughtSpot version 6.3.1, the mail field is mandatory, and cannot be empty. If your organization cannot meet this requirement, contact xref:support-contact.adoc[ThoughtSpot Support] for help.
+
+If your IDP does not allow you to import the IDP metadata XML file, you must map these values manually.
+
+== SAML group mapping
+You can map your SAML groups from your IDP to your ThoughtSpot groups. This means that you do not have to manually recreate your groups in ThoughtSpot, if they are already present in your IDP. Refer to xref:saml-group-mapping.adoc[].
 
 == Use SSO login by default
 After you configure SAML authentication, a new option appears on the login page that allows users to log in using SSO, while still allowing local users to log in.

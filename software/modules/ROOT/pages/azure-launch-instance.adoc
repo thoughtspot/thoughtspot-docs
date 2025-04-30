@@ -1,5 +1,5 @@
 = Set up ThoughtSpot in Azure
-:last_updated: 01/07/2021
+:last_updated: 8/6/2021
 :linkattrs:
 :experimental:
 
@@ -27,8 +27,8 @@ Due to security restrictions, the ThoughtSpot Virtual Machine does not have defa
 When you are ready to obtain the password, contact xref:support-contact.adoc[ThoughtSpot Support].
 
 This guide explains how to deploy ThoughtSpot on Microsoft Azure, using ThoughtSpot's CentOS-based image.
-You can also deploy ThoughtSpot on Azure using Red Hat Enterprise Linux (RHEL), allowing you to run ThoughtSpot on an RHEL 7.7 or 7.8 image that your organization manages internally.
-To install ThoughtSpot using RHEL, refer to the xref:rhel.adoc[RHEL deployment guide].
+You can also deploy ThoughtSpot on Azure using Red Hat Enterprise Linux (RHEL), allowing you to run ThoughtSpot on an RHEL 7.8 or 7.9 image that your organization manages internally.
+To install ThoughtSpot using RHEL, refer to the xref:rhel.adoc[RHEL and OEL deployment guide] after you launch your virtual machines.
 
 == Set up ThoughtSpot in Azure
 
@@ -46,6 +46,7 @@ Complete these steps before launching your ThoughtSpot Virtual Machine:
 
 You can also choose to create resource groups when creating your virtual machines.)
 | &#10063; a| Download and fill out the ThoughtSpot link:{attachmentsdir}/site-survey.pdf[site survey] to have a quick reference for any networking information you may need to fill out. Ask your network administrator if you need help filling out the site survey.
+| &#10063; | A ThoughtSpot cluster requires 10 Gb/s bandwidth (or better) between any two nodes. You must ensure this _before_ creating a new cluster.
 |===
 
 [#create-instance]
@@ -59,44 +60,43 @@ In a browser, go to https://portal.azure.com/#home[Azure home^], and log in to y
 
 . On the Azure portal homepage, hover over *Virtual machines*, and click *Create*.
 +
-image::azure-createvm.png[Create a virtual machine]
+//image::azure-createvm.png[Create a virtual machine]
 
 . Specify information under *Basics*.
 +
-image::azure-basicsettings.png[Specify information under Basics]
+//image::azure-basicsettings.png[Specify information under Basics]
 +
-[horizontal]
-1.:: Choose a subscription type from the dropdown menu.
-2.:: If your company already has a resource group, _select existing_. If not, _create new_.
-3.:: Specify a name for your virtual machine.
-4.:: Specify the region in which you are creating the VM.
-5.:: Click *Browse all public and private images*, and search for the ThoughtSpot image. Choose the https://azuremarketplace.microsoft.com/en-us/marketplace/apps/thoughtspot-inc.thoughtspotvirtualmachine?tab=Overview[ThoughtSpot Search & AI-driven Analytics (BYOL)^] image.
-6.:: xref:azure-configuration-options.adoc[Choose Azure configuration options] for your VM that work for your cluster needs.
-7.:: Select *SSH public key* and specify a username.
+Subscription:: Choose a subscription type from the dropdown menu.
+Resource group:: If your company already has a resource group, _select existing_. If not, _create new_.
+Virtual machine name:: Specify a name for your virtual machine.
+Region:: Specify the region in which you are creating the VM.
+Image:: Click *Browse all public and private images*, and search for the ThoughtSpot image. Choose the https://azuremarketplace.microsoft.com/en-us/marketplace/apps/thoughtspot-inc.thoughtspotvirtualmachine?tab=Overview[ThoughtSpot Search & AI-driven Analytics (BYOL)^] image.
+Size:: xref:azure-configuration-options.adoc[Specify the size] for your VM that works for your cluster needs.
+Authentication type:: Select *SSH public key*.
+Username:: Specify a username.
 +
 NOTE: This user is necessary for Azure VM creation, but does not exist in ThoughtSpot. You cannot log in to ThoughtSpot, or `ssh` into the command line, with this user.
 
-8.:: Enter an SSH public key.
+SSH public key:: Enter an SSH public key.
 +
 You can choose *use existing public key* or *generate new key pair*, or xref:support-contact.adoc[ThoughtSpot Support^] to obtain a public key.
 +
 NOTE: This SSH public key is different from the SSH private key you use later, to ssh into your VM from the command line. This public key is necessary for Azure VM creation, but is not necessary at any later point.
 
-9.:: Choose *allow selected ports*.
+Public inbound ports:: Choose *allow selected ports*.
 
-10.:: Open the necessary Inbound and Outbound ports to ensure that the ThoughtSpot processes do not get blocked.
+Select inbound ports:: Open the necessary Inbound and Outbound ports to ensure that the ThoughtSpot processes do not get blocked.
 +
 See xref:port-requirements[minimum port requirements].
 
 . Specify information under *Disks*.
 +
-image::azure-disks.png[Specify disk information]
+//image::azure-disks.png[Specify disk information]
 +
-[horizontal]
-1.:: Choose a disk type from the dropdown menu.
+OS disk type:: Choose a disk type from the dropdown menu.
 ThoughtSpot recommends the Premium SSD disks.
-2.:: Click *Create and attach a new disk*. Add two data disks. Refer to xref:azure-configuration-options.adoc[Azure configuration options] to see what size they should be.
-3.:: Under *Advanced*, click *yes* to *use managed disks*.
+Data disks:: Click *Create and attach a new disk*. Add two data disks. Refer to xref:azure-configuration-options.adoc[Azure configuration options] to see what size they should be.
+Advanced:: Under *Advanced*, click *yes* to *use managed disks*.
 +
 TIP: The new Standard SSD disk types are only available for particular regions.
 Make sure this disk type is supported in the region you chose for your VM before selecting it.
@@ -106,16 +106,15 @@ ThoughtSpot recommends the Premium SSD disks.
 
 . Specify information under *Networking*.
 +
-image::azure-networking.png[Specify networking information]
+//image::azure-networking.png[Specify networking information]
 +
-[horizontal]
-1.:: Find your company's virtual network and select it, or *create new*.
+Virtual network:: Find your company's virtual network and select it, or *create new*.
 
-2.:: Find your company's public IP, or *create new*.
+Public IP:: Find your company's public IP, or *create new*.
 
-3.::  Select *Advanced* for _NIC network security group_.
+NIC network security group::  Select *Advanced* for _NIC network security group_.
 
-4.:: After you select *Advanced*, the *Configure network security group* option appears. Find your company's security group, or *create new*. When creating your security group, ensure that the required ports are open.
+Configure network security group:: After you select *Advanced*, the *Configure network security group* option appears. Find your company's security group, or *create new*. When creating your security group, ensure that the required ports are open.
 Refer to the xref:ports.adoc[] article.
 
 . Under *Management*, configure your monitoring and management preferences.

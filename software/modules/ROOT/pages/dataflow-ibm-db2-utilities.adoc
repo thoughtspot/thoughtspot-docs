@@ -1,0 +1,75 @@
+= Using IBM Db2 utilities
+:page_aliases: /data-integrate/dataflow/dataflow-ibm-db2-utilities.adoc
+:experimental:
+:linkattrs:
+
+You can use the IBM Db2 client to customize connections in DataFlow.
+
+Follow these steps to install the IBM Db2 client:
+
+. To download the IBM Db2 client packages, Users need to have proper credentials. using the following link.
+* Open IBM Download center using below link.
++
+[source]
+----
+https://www.ibm.com/support/fixcentral
+----
+* Fill the information like below:
+
+** Product Selector: IBM Data Server Client Packages
+
+** Installed Version: Mention installed DB2 version. We are using 10.1 in this document.
+
+** Platform: Linux 64Bit-x86_64
+
+. Select "Browse for Fixes" option and click on Continue.
+. Select the required package and click on it.
+. On the next screen it asks for Credentials, Please provide IBM portal credentials.
+. Next Screen shows the options to download the package. If IBM Db2 downloaded on different server or workstation, then copy downloaded package to server where dataflow is running.
+. Extract the `v10.1fp6_linuxx64_rtcl.tar.gzfile`.
++
+[source]
+----
+#tar –xvf v10.1fp6_linuxx64_rtcl.tar.gz
+----
+. It creates rtcl folder. Go to that folder and execute `db2_install` command.
++
+[source]
+----
+#cd rtcl
+#sudo ./db2_install
+----
+* It asks for installation path to extract files for eg:   `/opt/ibm/db2/v10.1/`
+. After executing the command, add one user to access db2 instance.
++
+[source]
+----
+#useradd db2inst1
+----
+* You need user to create db2profile file and to access db2 instance after logging into this user.
+. After adding the user, Go to the path which you gave for installation.
++
+[source]
+----
+#cd /opt/ibm/db2/v10.1/instance#cd instance
+#sudo ./db2icrt -a server -s client db2inst1
+----
+. Add below line in user's bash_profile from which you want to execute db2 functions.
++
+[source]
+----
+#vim ~/.bash_profile . /home/db2inst1/sqllib/db2profile
+----
+* Here `db2inst1` is a db2 user which you defined during installation.
+. Verify the installation by running `db2` command
++
+[source]
+----
+#db2
+----
+. Restart the DataFlow service.
++
+[source]
+----
+#tscli --adv service restart dataflow
+----
