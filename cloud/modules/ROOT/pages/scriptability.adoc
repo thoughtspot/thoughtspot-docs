@@ -89,7 +89,90 @@ The zip file contains a document called the `Manifest` file, which defines the o
 
 The zip file also contains the `Alerts.tml` file, which only appears when you export an Answer or Liveboard and its associated objects. The `Alerts.tml` file defines the KPI Monitor alerts associated with the object. If you have administrator privileges, you see every alert for the object. Otherwise, you see only the alerts you created.
 
-To export custom collections of related TML files, refer to xref:tml-import-export-multiple.adoc#export-multiple[Migrate multiple TML files].
+=== Rules to sort TML
+ThoughtSpot introduces a consistent sort order when exporting the TML of an object (table, SQL view, Liveboard, etc.). This ensures that unnecessary differences don’t show up between TML files when the objects haven’t really changed, and makes it easier to compare TML files.
+
+The following sections list the sort order for various TML objects:
+
+////
+Columns are exported in the order in which they appear in the table's landing page by default. For worksheets and models, columns are sorted in the order in which they appear on the columns tab of the model editor.
+
+Other objects like formulas, filters, parameters, joins are sorted in lexicographical order for models.
+////
+
+
+
+[width="100%" cols="2,6"]
+[options='header']
+|=====
+|Table Objects|Sort order while exporting TML
+
+|Columns |In the order they were added to the object or in the order they appeared in the imported TML file during creation.
+|Joins|Lexicographical order.
+|=====
+
+[width="100%" cols="2,6"]
+[options='header']
+|=====
+|Model Objects|Sort order while exporting TML
+
+|Columns|In the order they were added to the object or in the order they appeared in the imported TML file during creation.
+|Table schemas|In the order in which they appear in the import.
+|Filters|Lexicographical order.
+|Formulas|Lexicographical order.
+|Parameters|Lexicographical order.
+|=====
+
+[width="100%" cols="2,6"]
+[options='header']
+|=====
+|View Objects|Sort order while exporting TML
+
+|Columns|In the order in which they appear in the import.
+|Joins|Lexicographical order.
+|Joins with|Lexicographical order.
+|Tables|Lexicographical order.
+|Table paths|Lexicographical order.
+|Formulas|Lexicographical order.
+
+|=====
+
+
+[width="100%" cols="2,6"]
+[options='header']
+|=====
+|SQL View Objects|Sort order while exporting TML
+
+|Columns |In the order in which they appear in the import.
+|Joins with|Lexicographical order.
+|=====
+
+[width="100%" cols="2,6"]
+[options='header']
+|=====
+|Answer Objects|Sort order while exporting TML
+
+|Tables|Lexicographical order.
+|Joins|Lexicographical order.
+|Table paths|Lexicographical order.
+|Answer Columns|Lexicographical order. If there is a conflict, guid will be used for the next level sorting.
+|Formulas|Lexicographical order.
+|Table columns|Lexicographical order.
+|Chart columns|In the order in which they appear in the import.
+|Parameters|Lexicographical order.
+|Parameters values|Lexicographical order of the parameter name.
+|Action object associations|Lexicographical order.
+|=====
+
+[width="100%" cols="2,6"]
+[options='header']
+|=====
+|Liveboard Objects|Sort order while exporting TML
+
+|Tables|Lexicographical order.
+|Formulas|In the order in which they appear in the import.
+|Parameter overrides|In the order in which they appear in the import.
+|=====
 
 ////
 {: id="export-one"}
@@ -111,20 +194,24 @@ To export custom collections of related TML files, refer to xref:tml-import-expo
 
 . Navigate to the *Data* page from the top navigation bar.
 +
+[.bordered]
 image::nav-bar-no-spotiq.png[The top navigation bar]
 
 . Go to *Utilities*, and click the *Export TML* button.
 +
+[.bordered]
 image::utilities.png[The top navigation bar]
 
 . Select the object(s) you want to export - Worksheet, Answer, Liveboard, View, or a Table. Hover over the object(s) you want to export, and select the empty checkboxes that appear.
 . Select the *Export n objects* button.
 +
+[.bordered]
 image::export-tml.png[Export multiple objects]
 
 . Choose whether to export only the objects, or the objects and their underlying data sources (worksheets, tables, and views). To download any KPI Monitor alerts for the object, you must export the associated objects. The `Alerts.tml` file in the zip file that downloads defines any KPI Monitor alerts associated with the objects. If you have administrator privileges, you see every alert for the objects. Otherwise, you see only the alerts you created. Choose whether to export the table and connection FQNs. If you select this option, the TML file contains FQNs for the underlying tables and connections.
 If you export a table, you do not see the *Choose what to export* modal, since tables do not have any dependents.
 +
+[.bordered]
 image::tml-export-with-fqn.png[Choose what to export]
 
 . Select *Export*.
@@ -159,9 +246,10 @@ For Answers and Liveboards::
 // Click the name of the object you want to edit, or
 +
 Select the object for which you want to the edit the TML.
-. From the (...) menu, select the *TML* > *Edit*  button.
+. From the *More* menu image:icon-more-10px.png[More menu], select *TML* > *Edit*  button.
 // From the object itself, select the ellipsis ![more options menu]({{ site.baseurl }}/images/icon-more-10px.png){: .inline} (more options) menu in the upper-right side of the screen, and select **Edit TML**.
 +
+[.bordered]
 image::edit-tml.png[Edit TML - object list page]
 +
 // [Edit TML from object]({{ site.baseurl }}/images/scriptability-edit-tml-object.png "Edit TML from object")
@@ -171,6 +259,7 @@ For Worksheets, Tables and Views::
 . Select the object for which you want to the edit the TML, and select the empty checkboxes that appear.
 . Select the *Edit TML*  button.
 +
+[.bordered]
 image::edit-worksheet.png[Edit TML - object list page]
 +
 

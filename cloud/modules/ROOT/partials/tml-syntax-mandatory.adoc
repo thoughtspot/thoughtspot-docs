@@ -1,0 +1,87 @@
+[#mandatory]
+== Mandatory {object} date column filters
+
+You can annotate the maximum permissible date range on a date column in the {object} TML file. When defined, users will not be able to search dates outside of the mandatory constraint. This constraint is applied before the query is dispatched to the underlying data warehouse, improving performance.
+
+The following are TML examples for different constraint definitions:
+
+.Single table with single date
+[subs=+macros]
+....
+<<constraints,constraints>>:
+   <<constraint,constraint>>:
+   - <<table,table>>: DM_ORDER_DETAIL
+     <<condition,condition>>:
+     - <<date_range_condition,date_range_condition>>:
+         <<column,column>>: date
+         <<duration,duration>>: 1
+         <<bucket,bucket>>: YEAR
+....
+
+.Multi-fact and with shared dimensional date table
+[subs=+macros]
+....
+/*
+Note repeating table section
+*/
+
+<<constraints,constraints>>:
+   <<constraint,constraint>>:
+   - <<table,table>>: sales
+     <<condition,condition>>:
+     - <<date_range_condition,date_range_condition>>:
+         <<column,column>>: date
+         <<duration,duration>>: 1
+         <<bucket,bucket>>: YEAR
+    - <<table,table>>: inventory
+     <<condition,condition>>:
+     - <<date_range_condition,date_range_condition>>:
+         <<column,column>>: date
+         <<duration,duration>>: 1
+         <<bucket,bucket>>: YEAR
+....
+
+.AND constraint
+[subs=+macros]
+....
+/*
+Note repeating table section for the same table
+*/
+
+<<constraints,constraints>>:
+   <<constraint,constraint>>:
+   - <<table,table>>: sales
+     <<condition,condition>>:
+     - <<date_range_condition,date_range_condition>>:
+         <<column,column>>: ship date
+         <<duration,duration>>: 1
+         <<bucket,bucket>>: YEAR
+   - <<table,table>>: sales
+     <<condition,condition>>:
+     - <<date_range_condition,date_range_condition>>:
+         <<column,column>>: order date
+         <<duration,duration>>: 1
+         <<bucket,bucket>>: YEAR
+....
+
+
+.OR constraints
+[subs=+macros]
+....
+/*
+Note repeating date_range_condition section
+*/
+
+<<constraints,constraints>>:
+   <<constraint,constraint>>:
+   - <<table,table>>: sales
+     <<condition,condition>>:
+     - <<date_range_condition,date_range_condition>>:
+         <<column,column>>: ship date
+         <<duration,duration>>: 1
+         <<bucket,bucket>>: YEAR
+     - <<date_range_condition,date_range_condition>>:
+         <<column,column>>: order date
+         <<duration,duration>>: 1
+         <<bucket,bucket>>: YEAR
+....

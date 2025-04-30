@@ -33,17 +33,19 @@ image::liveboard-schedule-email.png[Liveboard schedule email]
 
 == Scheduling a Liveboard
 
+NOTE: You can use the new faster and more intuitive Liveboard scheduling experience. To enable this new experience, contact your ThoughtSpot administrator.
+
 To schedule a Liveboard, follow these steps:
 
 . Navigate to the Liveboard you want to create a schedule for.
-. Select the *Schedule* button to the left of the *more options* icon to create a new schedule. To modify an existing schedule, select the *more options* menu image:icon-more-10px.png[more options menu icon] and select *Manage schedules*.
+. Select the *Create schedule* from the *More* menu image:icon-more-10px.png[more options menu icon] to create a new schedule. To modify an existing schedule, select *Manage schedule* from the *More* menu image:icon-more-10px.png[more options menu icon].
 
 . In the *Create schedule* window, set the values for your schedule.
 +
 Name::
 Provide a short name for this schedule. This name should be descriptive and unique. This section does not appear in the Liveboard schedule email.
-Description::
-Enter a description to remind yourself and to inform others. If this is an important schedule for a meeting or a report, you should mention that. This section appears as *Description: <your content>* in the Liveboard schedule email.
+Add comment::
+Select *Add comment* to add a description that will appear as *Description: <your content>* in the Liveboard schedule email. Enter a description to remind yourself and to inform others. If this is an important schedule for a meeting or a report, you should mention that.
 [#frequency]
 Frequency::
 You can rebuild a Liveboard every _n_ minutes, hourly, daily, weekly, or monthly. For some of these, you can also choose specific times of the day or days of the week.
@@ -61,6 +63,15 @@ Type::
 * *XLSX files* provide all data for tables, with an Excel attachment for each table. If your Liveboard has 3 tables and 4 charts, the Liveboard schedule email contains 3 XLSX files, one for each table, and no content on the charts in the Liveboard. Use XLSX files to share information and perform further analysis offline in Excel.
 ** Refer to xref:schedule-liveboards.adoc#format[Format of scheduled Liveboards] for more information about the differences between CSV, XLSX, and PDF attachments in a scheduled Liveboard email.
 
+[NOTE]
+====
+Liveboard schedule pdf/csv/xlsx sent via emails is stored in the cluster until either of the following conditions are met:
+
+* The cluster is restarted.
+* When there is another scheduled run for a Liveboard, all pdfs older than 24 hrs for that Liveboard are cleared.
+====
+
+
 Gating condition::
 Write a statement that returns a single boolean value (`true` or `false`). For example, `sum (revenue) > 100` is a valid condition, but `is_weekend (commit_date)` is not, since it returns a result per row of data. Use any data source (table, Worksheet, or view) that you have access to for the gating condition. However, note that for reports sent to ThoughtSpot users, ThoughtSpot executes the query as that specific user so that it respects row-level security (RLS) and ensures data security. If you schedule the Liveboard for 3 users, and 1 user does not have access to the data source in the gating condition, the gating condition fails and ThoughtSpot does not send the Liveboard to that 1 user. It does send the Liveboard to the 2 users who do have data access. For reports sent to people who are not ThoughtSpot users, ThoughtSpot executes the query as the author of the Liveboard schedule. The gating condition will still work if you are using passthrough security for your external data warehouse connection. The gating condition formula and any tables you use in it do not need to be related to the Liveboard the gating condition is for. You can use any valid formula in your statement. ThoughtSpot checks the formula syntax, but does not validate if the formula returns a valid single boolean.
 +
@@ -74,10 +85,17 @@ You are limited to 1000 recipients for each job. You can add *Users* or *groups*
 +
 If you experience problems with sending email, your cluster may not have SMTP enabled. Contact your system administrator to resolve this issue.
 +
+To disable sending emails to recipients outside ThoughtSpot, contact {support-url}.
++
 NOTE: You must have *can schedule for others* privileges to add other recipients to your Liveboard schedule.
-. Select *Save* to schedule your Liveboard.
+
+Views::
+You can select a view to be scheduled instead of the standard Liveboard. When selected, the filters and parameters are updated to reflect the values set in the view.
 
 include::partial$date-column-download.adoc[]
+
+[start=4]
+. Select *Save* to schedule your Liveboard.
 
 [#pdf-width]
 == Change scheduled PDF width
