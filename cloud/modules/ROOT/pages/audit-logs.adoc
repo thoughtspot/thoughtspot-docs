@@ -1,5 +1,5 @@
 = Collect security logs
-:last_updated: 11/01/2022
+:last_updated: 11/04/2021
 :linkattrs:
 :experimental:
 :page-layout: default-cloud
@@ -8,42 +8,20 @@
 
 ThoughtSpot Cloud provides security audit events related to account activities and user actions within ThoughtSpot.
 These events can help your SOC team detect potential security threats or compromised user accounts in your organization.
-
-== How to fetch security events
-
-To fetch security events from ThoughtSpot, you can push the logs to your SIEM server, or pull the logs using the Audit Logs API.
-
-=== Push to your SIEM server
-
-ThoughtSpot’s human-readable and comprehensive events can be shipped to your SIEM application in near real-time. Security events remain within the system for 30 days.
+These human-readable and comprehensive events can be shipped to your SIEM application in near real-time.
+Security events remain within the system for 30 days.
 To integrate with your SIEM or view these logs, https://community.thoughtspot.com/customers/s/contactsupport[contact ThoughtSpot Support].
-
-ThoughtSpot also supports log ingestion to the customer SIEM system. We support multiple output plugins which can be configured to push the security audit events to the configured destination SIEM server at an interval of every 5 seconds.
-
-ThoughtSpot supports the following output plugin options:
-
-- HTTP
-- Splunk
-- Azure Log Analytics
-- Datadog
-
-=== Pull via Audit Logs API
-
-The ThoughtSpot log API service allows you to programmatically get security audit events from the ThoughtSpot system. To use this API, make sure you have admin user privileges.
-
-For more information, see link:https://developers.thoughtspot.com/docs/?pageid=logs-api[Audit logs API].
-
-== ThoughtSpot security events
 
 ThoughtSpot security events include the following information:
 
-
 * An event ID
-* A unique description of the event (for example, "`A user account was created`")
+* A unique description of the event (e.g.
+"`A user account was created`")
 * Timestamp (in UTC) yyyy/mm/dd:hh:mm:ss
 * User ID of the person initiating the event
-* public IP of the system from which the request originates
-* Fields specific to the event (for example, name of the new account)
+* IP of the user
+* Fields specific to the event (e.g.
+name of the new account)
 
 [#security-events]
 == Security events
@@ -54,12 +32,7 @@ The possible events are:
 * <<create-answer,answer-creation>>
 * <<delete-answers,answer-deletion>>
 * <<update-answers,answer-update>>
-* <<failed-to-create-auth-token,auth-token-creation-failure>>
-* <<auth-token-created-successfully,auth-token-creation-successful>>
-* <<csv-upload-finished,csv-upload-finished>>
-* <<csv-upload-started,csv-upload-started>>
 * <<create-rls-rule,create-rls-rule>>
-* <<data-upload-configured,data-upload-configured>>
 * <<delete-rls-rules,delete-rls-rules>>
 * <<login-failed,failed-login>>
 * <<logout-failed,failed-logout>>
@@ -70,7 +43,6 @@ The possible events are:
 * <<account-locked,locked-account>>
 * <<share-objects,object-sharing>>
 * <<update-password,password-change>>
-* <<update-password-failed,update-password-failure>>
 * <<create-pinboard,pinboard-creation>>
 * <<delete-pinboards,pinboard-deletion>>
 * <<update-pinboards,pinboard-update>>
@@ -82,7 +54,7 @@ The possible events are:
 * <<users-created,user-account-creation>>
 * <<users-deleted,user-account-deletion>>
 // - [user-group-change](#user-group-change)
-
+* <<user-invited,user-invitation>>
 
 == Event descriptions
 
@@ -91,23 +63,13 @@ ThoughtSpot defines these events as follows:
 [#logout-successful]
 Account logout::  A user logs out from ThoughtSpot.
 [#create-answer]
-Answer creation::  A user attempts to create a new Answer.
+Answer creation::  A user attempts to create a new answer.
 [#delete-answers]
-Answer deletion::  A user attempts to delete an Answer.
+Answer deletion::  A user attempts to delete an answer.
 [#update-answers]
-Answer update::  A user attempts to modify an existing Answer.
-[#failed-to-create-auth-token]
-Auth token creation failed:: Auth token creation fails.
-[#auth-token-created-successfully]
-Successful auth token creation:: Auth token creation succeeds.
-[#csv-upload-finished]
-CSV upload finished:: CSV upload finishes.
-[#csv-upload-started]
-CSV upload started:: CSV upload starts.
+Answer update::  A user attempts to modify an existing answer.
 [#create-rls-rule]
 Row-level security (RLS) rule creation::  A user creates an RLS rule on a table.
-[#data-upload-configured]
-Data upload configured:: Data upload configured for a connection.
 [#delete-rls-rules]
 RLS rule deletion::  A user deletes an RLS rule on a table.
 [#login-failed]
@@ -130,25 +92,24 @@ A local user fails to authenticate _x_ times in a row, locking the account.
 Administrators can configure the number of authentication attempts before lockout within ThoughtSpot.
 
 ////
-[#object-creation]
-Object creation::
-A user creates a new object (pinboard, worksheet, answer, etc.) in ThoughtSpot.
-
-[#object-deletion]
-Object deletion::
-A user successfully or unsuccessfully attempts to delete an object (pinboard, worksheet, answer).
-
-[#object-modification]
-Object modification::
-A user successfully or unsuccessfully attempts to change the properties of an object.</dd>
+<dlentry id="object-creation">
+ <dt>Object creation</dt>
+ <dd>A user creates a new object (pinboard, worksheet, answer, etc.) in ThoughtSpot.</dd>
+</dlentry>
+<dlentry id="object-deletion">
+ <dt>Object deletion</dt>
+ <dd>A user successfully or unsuccessfully attempts to delete an object (pinboard, worksheet, answer).</dd>
+</dlentry>
+<dlentry id="object-modification">
+ <dt>Object modification</dt>
+ <dd>A user successfully or unsuccessfully attempts to change the properties of an object.</dd>
+</dlentry>
 ////
 
 [#share-objects]
-Object sharing::  A user successfully or unsuccessfully attempts to share an object (Liveboard, Worksheet, Answer) with another user or group. The "discoverability" field indicates whether a shared object is discoverable to users of the same user group as the author who have access to the underlying data source.
+Object sharing::  A user successfully or unsuccessfully attempts to share an object (Pinboard, Worksheet, Answer) with another user or group.
 [#update-password]
 Password change::  A user successfully or unsuccessfully attempts to change their password.
-[#update-password-failed]
-Password update failure:: A user fails to update their password.
 [#create-pinboard]
 Pinboard creation::  A user attempts to create a new Pinboard.
 [#delete-pinboards]
@@ -171,55 +132,19 @@ User account creation::  A new user creates an account, either manually in the A
 User account deletion::  A user account is deleted, either manually in the Admin Portal or through the internal API.
 
 ////
-[#user-group-change]
-User group change::
-A successful or unsuccessful attempt to change the user list to a group by adding or removing members.
+<dlentry id="user-group-change">
+  <dt>User group change</dt>
+  <dd>A successful or unsuccessful attempt to change the user list to a group by adding or removing members.</dd>
+  </dlentry>
 ////
 
-== Team Edition events
-
-The possible Team Edition events are:
-
-* <<team-change-subscription,team-subscription-change>>
-* <<teams-edition-user-delete,team-edition-user-delete>>
-* <<teams-edition-user-expire,team-edition-user-expire>>
-
-== Event descriptions
-
-[#team-change-subscription]
-Team subscription change:: The team subscription changes.
-[#teams-edition-user-delete]
-Team edition user deletion:: A Team Edition user successfully or unsuccessfully attempts to delete an account.
-[#teams-edition-user-expire]
-Team edition user expiration:: A Team Edition user account expires.
-
-
-
-== Free Trial events
-
-The possible Free Trial events are:
-
-* <<trial-user-create,trial-account-creation>>
-* <<trial-user-delete,trial-account-deletion>>
-* <<trial-user-expire,trial-account-expiration>>
-* <<user-invited,user-invitation>>
-
-== Event descriptions
-
-[#trial-user-create]
-Trial account creation:: A user successfully or unsuccessfully attempts to create a Free Trial account.
-[#trial-user-delete]
-Trial account deletion:: A user successfully or unsuccessfully attempts to delete a Free Trial account.
-[#trial-user-expire]
-Trial account expiration:: A Free Trial account expires.
 [#user-invited]
 User invitation::  A user is invited to ThoughtSpot for a free trial.
-
 
 ////
 ThoughtSpot includes a number of management tools, monitoring applications, and automated processes to support system security. System security includes managing access and privileges, audit logs, security policies, and Linux OS installed package updates.
 
-== Audit logs
+## Audit logs
 
 There are several ways you can view audit log information in ThoughtSpot. You can see recent events in the Control Center or view more detailed audit logs using tscli. Administrators can view audit logs of configuration changes users have made to ThoughtSpot in these ways:
 
@@ -259,7 +184,7 @@ Optional parameters are:
 
 And a time window made up of either:
 
-- `--since <hours,minutes,days>` is a time in the past for where the event audit begins, ending at the present time. Specify a human readable duration string, for example 4h (4 hours), 30m (30 minutes), 1d (1 day).
+- `--since <hours,minutes,days>` is a time in the past for where the event audit begins, ending at the present time. Specify a human readable duration string, e.g. 4h (4 hours), 30m (30 minutes), 1d (1 day).
 
 Or both:
 
@@ -268,7 +193,7 @@ Or both:
 
 To get audit logs:
 
-1. Sign in to the Linux shell using SSH.
+1. Log in to the Linux shell using SSH.
 2. Issue the `tscli event list` command, with the desired parameters, for example:
 
     ```
@@ -278,7 +203,7 @@ To get audit logs:
     ```
 
 
-== Security policies
+## Security policies
 
 Security policies are the principles and processes ThoughtSpot uses in development to ensure a product that conforms to security standards. Security policies ensure a secure product with each release. When a release is in development, each build is tested using Qualys Network Security and Vulnerability Management Suite. Issues and vulnerabilities are fixed proactively, based on the results.
 

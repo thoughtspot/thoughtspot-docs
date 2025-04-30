@@ -4,7 +4,6 @@
 :linkattrs:
 :page-layout: default-cloud
 :connection: Redshift
-:description: ThoughtSpot supports OAuth for an Amazon Redshift connection.
 
 ThoughtSpot supports OAuth for an Amazon {connection} connection.
 {connection} supports federated authentication, enabling users from an identity provider (IDP) like Okta to authenticate to the database.
@@ -30,16 +29,16 @@ The high level steps are as follows.
 To create the OIDC application, do the following:
 
 . Sign in to Okta.
-. From the Okta dashboard, navigate to *Applications* and select *Create App Integration*.
+. From the Okta dashboard, navigate to *Applications* and click *Create App Integration*.
 +
-image::redshift-oauth-okta-app.png[Select Create App Integration]
+image::redshift-oauth-okta-app.png[]
 
 . For sign-in method, choose *OIDC - OpenID Connect*.
 . For application type, choose *Web Application*.
 +
-image::redshift-oauth-okta-app-int.png[Select OIDC - OpenID Connect and select Web Application]
+image::redshift-oauth-okta-app-int.png[]
 
-. Select *Next*.
+. Click *Next*.
 . Complete the rest of the steps by following the on-screen instructions.
  ** *Grant type*: Authorization code is the default.
 In addition *Refresh Token* is required to request a new access token without interactive login to IDP when the token expires.
@@ -53,16 +52,16 @@ These are required by the ThoughtSpot connection to perform the OAuth authorizat
 To set up the authorization server, do the following:
 
 . Sign in to Okta (if needed).
-. From the Okta dashboard, navigate to the menu:Security[API] section.
+. From the Okta dashboard, navigate to menu:Security[API] section.
 +
-image::redshift-oauth-okta-api.png[Navigate to Security > API]
+image::redshift-oauth-okta-api.png[]
 
 . If you already have an authorization server you want to use, you can edit it.
-Otherwise, add a new one by selecting *Add Authorization Server*.
+Otherwise, add a new one by clicking *Add Authorization Server*.
 . Add a custom claim with the Name *DbUser* and enter the Value *user.login*.
-The {connection} driver requires this claim in the JWT token presented to it.
+The Redshift driver requires this claim in the JWT token presented to it.
 +
-image::redshift-oauth-add-claim.png[Add Claim modal]
+image::redshift-oauth-add-claim.png[]
 
 [#part-3]
 === Part 3: Add Okta as the IDP in AWS
@@ -75,7 +74,7 @@ To add Okta as the IDP, do the following:
 . For Provider URL, enter the Issuer URI of the Okta authorization server.
 . For Audience, enter the Client ID of the OIDC application created in Okta.
 +
-image::redshift-oauth-add-idp.png[Specify Okta IDP details]
+image::redshift-oauth-add-idp.png[]
 
 [#part-4]
 === Part 4: Create an IAM role with IDP trust
@@ -87,7 +86,7 @@ To create an IAM role with IDP trust, do the following:
 +
 Example policy:
 +
-[source,Redshift]
+[source,{connection}]
 ----
 {
     "Version": "2012-10-17",
@@ -121,7 +120,7 @@ Example policy:
 
 . Add the IDP resource as a trusted entity for assuming this role.
 +
-[source,{connection}]
+[source,Redshift]
 ----
  {
  "Version": "2012-10-17",
@@ -144,12 +143,12 @@ Example policy:
 +
 The role/policy requirement is same as that for SAML integration documented in  https://aws.amazon.com/blogs/big-data/federate-amazon-redshift-access-with-okta-as-an-identity-provider/[Amazon's {connection} documentation^].
 
-. Obtain the following connection properties:
+. Obtain the following connection properties from above configurations:
 
 * *Client ID*: Client ID of the application registered with the OAuth provider (IDP).
 This is an alphanumeric string.
 * *Client Secret*: Client Secret of the application registered with the OAuth provider (IDP).
-An alphanumeric string that should be picked from the IDP console (for example,
+An alphanumeric string that should be picked from the IDP console (e.g.
 Okta dashboard).
 * *Role ARN*: Amazon Resource Name (ARN) of the role.
 ARN of the role defined with a policy allowing the usage of token based authentication and permissions on {connection}.
@@ -160,17 +159,12 @@ It is usually available in the IDP's console.
 It is usually available in the IDP's console.
 * *DbGroups*: A comma-separated list of existing database group names that user joins for the current session.
 
-'''
-> **Related information**
->
-> * xref:connections-redshift-add.adoc[Add a {connection} connection]
-> * xref:connections-redshift-edit.adoc[Edit a {connection} connection]
-> * xref:connections-redshift-remap.adoc[Remap a {connection} connection]
-> * xref:connections-redshift-external-tables.adoc[Query external tables from your {connection} connection]
-> * xref:connections-redshift-delete-table.adoc[Delete a table from a {connection} connection]
-> * xref:connections-redshift-delete-table-dependencies.adoc[Delete a table with dependent objects]
-> * xref:connections-redshift-delete.adoc[Delete a {connection} connection]
-> * xref:connections-redshift-best.adoc[Best Practices for {connection} connections]
-> * xref:connections-redshift-private-link.adoc[]
-> * xref:connections-redshift-reference.adoc[Connection reference for {connection}]
-> * xref:connections-query-tags.adoc#tag-redshift[ThoughtSpot query tags in Redshift]
+== Related links
+
+* xref:connections-redshift-add.adoc[Add a {connection} connection]
+* xref:connections-redshift-edit.adoc[Edit a {connection} connection]
+* xref:connections-redshift-remap.adoc[Remap a {connection} connection]
+* xref:connections-redshift-delete-table.adoc[Delete a table from a {connection} connection]
+* xref:connections-redshift-delete-table-dependencies.adoc[Delete a table with dependent objects]
+* xref:connections-redshift-delete.adoc[Delete a {connection} connection]
+* xref:connections-redshift-reference.adoc[Connection reference for {connection}]

@@ -7,21 +7,13 @@
 :description: Learn how to deploy an AWS PrivateLink between your Snowflake data warehouse and the ThoughtSpot Cloud tenant.
 :connection: Snowflake
 
-include::partial$private-link-intro.adoc[]
+Your data's security is important.
+To ensure a secure two-way data exchange between your cloud data warehouse and the ThoughtSpot Cloud tenant, you can use an AWS PrivateLink.
+This option is currently available for your {connection} or Redshift data warehouse connections.
+This article details how to enable a PrivateLink for {connection};
+you can also enable it for xref:connections-redshift-private-link.adoc[Redshift].
 
-This article details how to enable a PrivateLink for *{connection}*;
-to enable it for other data warehouses, refer to:
-
-* xref:connections-redshift-private-link.adoc[Amazon Redshift PrivateLink]
-* xref:connections-databricks-private-link.adoc[Databricks PrivateLink]
-* xref:connections-denodo-private-link.adoc[Denodo PrivateLink]
-* xref:connections-dremio-private-link.adoc[Dremio PrivateLink]
-* xref:connections-adw-private-link.adoc[Oracle PrivateLink]
-* xref:connections-hana-private-link.adoc[SAP HANA PrivateLink]
-* xref:connections-starburst-private-link.adoc[Starburst PrivateLink]
-* xref:connections-teradata-private-link.adoc[Teradata PrivateLink]
-
-NOTE: You can enable a maximum of five PrivateLinks in your environment.
+NOTE: You can only enable one PrivateLink for each cluster.
 
 To deploy an AWS PrivateLink, you must work with https://community.thoughtspot.com/customers/s/contactsupport[ThoughtSpot Support] and follow the procedure in this article.
 
@@ -30,9 +22,10 @@ To deploy an AWS PrivateLink, you must work with https://community.thoughtspot.c
 
 * You must have a {connection} account
 * The ThoughtSpot cluster must be in the same AWS region as your {connection} account
-* You must obtain the ThoughtSpot AWS Account ID from https://community.thoughtspot.com/customers/s/contactsupport[ThoughtSpot Support]. This is required for step 1 of <<request-configuration,Request Snowflake PrivateLink configuration>>. For example: `999999999999`
+* You must obtain the ThoughtSpot AWS Account ID from https://community.thoughtspot.com/customers/s/contactsupport[ThoughtSpot Support].
+You may need a separate Account ID for staging or dev environments. This is required for step 1 of <<request-configuration,Request Snowflake PrivateLink configuration>>. For example: `999999999999`
 
-== Enable an AWS PrivateLink for {connection}
+== Enable an AWS PrivateLink for v
 
 To deploy an AWS PrivateLink between your {connection} data warehouse and the ThoughtSpot Cloud tenant, follow these steps.
 
@@ -45,48 +38,22 @@ To deploy an AWS PrivateLink between your {connection} data warehouse and the Th
 
 . Send a support request to {connection}, asking them to configure an AWS PrivateLink.
 You must provide the following information:
-+
---
-* {connection} account URL
-* ThoughtSpot AWS Account ID.
+ ** {connection} account URL
+ ** ThoughtSpot AWS Account ID.
 You obtained ThoughtSpot's AWS Account ID from https://community.thoughtspot.com/customers/s/contactsupport[ThoughtSpot Support] in the <<prerequisites,prerequisites>>.
---
-+
-NOTE: Snowflake support must configure the AWS PrivateLink. Snowflake's self-service PrivateLink feature does not support third-party PrivateLink integrations, including the integration with ThoughtSpot.
-
-. After {connection} completes the PrivateLink configuration on the {connection} side, run the following command in your Snowflake environment. This command retrieves the *VPC Endpoint Service Name* and *Private DNS records required for {connection} clients* that you must send to {support-url}.
-+
-[source,bash]
-----
-select system$get_privatelink_config();
-----
-+
-Refer to the Snowflake documentation for additional information on the specific URLs you need: https://docs.snowflake.com/en/user-guide/admin-security-privatelink.html#creating-additional-cname-records[AWS PrivateLink & Snowflake^].
+You may need a separate Account ID for staging or dev environments.
+. {connection} provides the following details with their response:
+ ** VPC Endpoint Service Name
+ ** Private DNS records required for {connection} clients
 
 [#exchange-information]
 === Exchange AWS and ThoughtSpot information with ThoughtSpot Support
 
-. Send the *account name* from the DNS records and the *Service name* to {support-url}.
+. Send the *account name* from the DNS records and the *Service name* to ThoughtSpot Support.
 You gathered this information from {connection} in step 2 of <<request-configuration,Request {connection} PrivateLink configuration>>.
 . After ThoughtSpot Support configures the AWS PrivateLink in ThoughtSpot, ask them to send you the PrivateLink {connection} account name.
 
 [#embrace]
 === Configure Connections
 
-xref:connections-snowflake.adoc[Configure Connections for {connection}], using the PrivateLink {connection} account name from {support-url} for the *Account name* field. For example, `xyz99999.us-west-2.privatelink`.
-
-'''
-> **Related information**
->
-> * xref:connections-snowflake-add.adoc[Add a {connection} connection]
-> * xref:connections-snowflake-edit.adoc[Edit a {connection} connection]
-> * xref:connections-snowflake-remap.adoc[Remap a {connection} connection]
-> * xref:connections-snowflake-external-tables.adoc[Query external tables from your {connection} connection]
-> * xref:connections-snowflake-delete-table.adoc[Delete a table from a {connection} connection]
-> * xref:connections-snowflake-delete-table-dependencies.adoc[Delete a table with dependent objects]
-> * xref:connections-snowflake-delete.adoc[Delete a {connection} connection]
-> * xref:connections-snowflake-oauth.adoc[Configure OAuth]
-> * xref:connections-snowflake-azure-ad-oauth.adoc[Configure Azure AD OAuth]
-> * xref:connections-snowflake-best.adoc[Best Practices for {connection} connections]
-> * xref:connections-snowflake-reference.adoc[Connection reference for {connection}]
-> * xref:connections-query-tags.adoc#tag-snowflake[ThoughtSpot query tags in Snowflake]
+xref:connections-snowflake.adoc[Configure Connections for {connection}], using the PrivateLink {connection} account name from ThoughtSpot Support for the *Account name* field. For example, `xyz99999.us-west-2.privatelink`.
