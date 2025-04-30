@@ -1,0 +1,108 @@
+= Migrate or restore Pinboards
+:last_updated: 7/20/2020
+
+You can export an entire ThoughtSpot Pinboard in a flat-file format. After optional modification, you can migrate it to a different cluster, or restore it to the same cluster.
+
+Scriptability for Answers and Pinboards is in [.label.label-beta]#Beta#.
+To enable Scriptable Answers and Pinboards, contact ThoughtSpot Support.
+
+In ThoughtSpot, you can download Pinboards to a flat file in `TSL`, xref:tsl-pinboard.adoc[ThoughtSpot's Scripting Language], modify the file, and subsequently upload this file either to the same cluster, or to a different cluster.
+
+This mechanism supports several scenarios that you may encounter:
+
+* *Migrating from a development environment to a production environment* by downloading the file from the development cluster and uploading the same file to the production cluster
+* *Implementing metadata changes outside ThoughtSpot UI*, such as replacing the underlying data source for the entire Pinboard, or replacing a single column from one data source with a column in another data source
+* *Reusing existing objects to build new objects*, such as building two very similar objects based on a similar, pre-existing object.
+
+== Prerequisites
+
+|===
+| Export with dependents | Export without dependents | Import with dependents | Import without dependents
+
+| *View* permission for the Pinboard.
+*View* permission on all underlying tables and Worksheets.
+For example, if a Pinboard is built on top of a Worksheet that is built on top of a View, you must have *view* permission for all of these objects.
+| *View* permission for the Pinboard.
+| If you are not overwriting the existing dependents, you must have the *can manage data* permission.
+If you are overwriting the existing dependents, you must have the *can manage data* permission, and *edit* permission on the dependents.
+| You must have *view* permission for the dependents that the Pinboard directly depends on.
+For example, if a Pinboard is built on top of a Worksheet that is built on top of a View, you must have view permission for the Worksheet, not the View.
+|===
+
+[#pinboard-export]
+== Export Pinboard
+
+You can export <<export-one,one Pinboard at a time>>, or export <<export-zip-file,more than one Pinboard as a zip file>>.
+The zip file contains a document called the `Manifest` file, which defines the objects you exported, and their underlying data sources.
+
+To export one Pinboard:
+
+. Navigate to the Pinboard you want to export.
+. Click the three-dot icon, and select *Export as .tsl*.
++
+image::scriptability-cloud-pinboard-export.png[Export a Pinboard]
+
+To export multiple Pinboards at a time, follow these steps:
+
+. Navigate to the *Pinboards* page from the top navigation bar.
++
+image::scriptability-cloud-nav.png[The top navigation bar]
+
+. Hover over the Pinboards you want to export, and click the empty checkboxes that appear.
+. Select the *Export* button.
++
+image::scriptability-pinboard-export.png[Export multiple Pinboards]
+
+. Choose whether to export only the Pinboards, or the Pinboards and their underlying data sources:
++
+image::scriptability-choose-export.png[Choose what to export]
+
+. Click *Export*.
++
+image::scriptability-click-export.png[Click Export]
+
+. Open the downloaded `.tsl` zip file:
++
+image::scriptability-pinboard-zip-file.png[Zip file]
+
+== Edit the Pinboard `.tsl` file
+
+You can edit the Pinboard `.tsl` file before you import it.
+  Refer to xref:tsl-pinboard.adoc[Pinboard TSL specification] for the full syntax of the TSL file.
+
+[#pinboard-update]
+== Update a Pinboard
+
+To update an existing Pinboard, you must export the `.tsl` file, make any necessary changes, and then upload it as a new Pinboard.
+You cannot overwrite an existing Pinboard.
+Instead, you must create a new Pinboard.
+
+[#pinboard-migrate]
+== Migrate a Pinboard
+
+To migrate a Pinboard from one cluster to another, follow these steps:
+
+. <<pinboard-export,Export the Pinboard>> you want to move, as in steps 1 to 5 of the *Export Pinboard* section above.
++
+The Pinboard remains on the original cluster as well, unless you delete it.
+
+. Navigate to the cluster you want to add the Pinboard to.
+. Select *Pinboards* on the top navigation bar.
+. Select the *Import* button in the upper-right side of the screen.
++
+image::scriptability-cloud-import.png[Import a Pinboard]
+
+. In the *Import* interface, click *Select .tsl file to upload*.
++
+image::scriptability-pinboard-import.png[Select a file]
+
+. In your file system, find and select the `.tsl` file.
+The file uploads automatically.
+. If you constructed the file correctly, the *Import* interface displays an _Upload successful_ message.
+. To examine the new Pinboard, click *Done*.
++
+image::scriptability-pinboard-successful.png[Upload successful]
+
+== Related Information
+
+* xref:tsl-pinboard.adoc[Pinboard TSL specification]

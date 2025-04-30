@@ -1,0 +1,326 @@
+= Azure Blob Storage connection reference
+:last_updated: 06/19/2020
+
+Learn about the fields used to create an Azure Blob Storage connection with ThoughtSpot DataFlow.
+
+Here is a list of the fields for an Azure Blob Storage connection in ThoughtSpot DataFlow.
+You need specific information to establish a seamless and secure connection.
+
+== Connection properties
+
+Connection name:: Name your connection.
++
+Mandatory field.
++
+*Example:*
++
+AzureBlobAStorageConnection
+
+Connection type:: Choose the Azure Blob Storage connection type.
++
+Mandatory field.
++
+*Example:*
++
+Azure Blob Storage
+
+Account:: Azure Storage has an address that includes our unique account name which is a combination of the account name and the Azure Storage blob endpoint forms the base address for the objects in your storage account.
++
+Mandatory field.
++
+*Example:*
++
+userdi
+
+Authentication type:: This supports two types of authentication methods: Azure account key: Choose to authenticate based on access keys and other parameters to produce an encrypted signature stringthat is passed on the request in the Authorization header. Shared access signatures (SAS): Choose to grant fine-grained access to resources in your storage account with specified permissions and over a specified time interval.
++
+Mandatory field.
++
+*Example:*
++
+Azure account key
++
+*Valid Values:*
++
+Azure account key Shared acess signature
+
+Key:: The 512-bit access key generated while creating storage account.
++
+Mandatory field.
++
+*Example:*
++
+ABCDEFGH245HIJK
+
+Container:: Give container details that organizes a set of blobs, like a directory in a file system.
++
+Mandatory field.
++
+*Example:*
++
+container
+
+== Sync properties
+
+File name:: Specify name of the file.
++
+Mandatory field.
++
+*Example:*
++
+testfile.csv
++
+*Valid Values:*
++
+Any string literal
++
+*Default:*
++
+The name of the file used to create sync
++
+*Other notes:*
++
+To specify wildcard pattern use '*' character in the file name
+
+Column delimiter:: Specifies the delimiter between the columns in the source file.
++
+Mandatory field.
++
+*Example:*
++
+,
++
+*Valid Values:*
++
+Any printable ASCII character or decimal value for ASCII character
++
+*Default:*
++
+The delimiter specified in sync
+
+Enable archive on success:: Specify if file needs to be archived once it is succeeded.
++
+Optional field.
++
+*Example:*
++
+No
++
+*Valid Values:*
++
+Yes, No
++
+*Default:*
++
+No
+
+Delete on success:: Specify if file needs to be deleted after execution is successful.
++
+Optional field.
++
+*Example:*
++
+No
++
+*Valid Values:*
++
+Yes, No
++
+*Default:*
++
+No
+
+Compression:: Specify this if the file is compressed and what kind of compressed file it is.
++
+Mandatory field.
++
+*Example:*
++
+gzip
++
+*Valid Values:*
++
+None, gzip
++
+*Default:*
++
+None
+
+Enclosing character:: Specify if the text columns in the source data is enclosed in quotes.
++
+Mandatory field.
++
+*Example:*
++
+Single
++
+*Valid Values:*
++
+Single, Double, Empty
++
+*Default:*
++
+Empty
+
+Escape character:: Specify the escape character if using a text qualifier in the source data.
++
+Optional field.
++
+*Example:*
++
+\\
++
+*Valid Values:*
++
+Any ASCII character
++
+*Default:*
++
+Empty
+
+Null value:: Specifies the string literal indicates the null value for a column. During the data load, the column value matching this string will be loaded as null in the target.
++
+Optional field.
++
+*Example:*
++
+NULL
++
+*Valid Values:*
++
+Any string literal
++
+*Default:*
++
+NULL
+
+Date style:: Specifies how to interpret the date format.
++
+Optional field.
++
+*Example:*
++
+YMD *Valid Values:*
++
+`YMD`, `MDY`, `DMY`, `DMONY`, `MONDY`, `Y2MD`, `MDY2`, `DMY2`, `DMONY2`, and `MONDY2`
++
+*Default:*
++
+`YMD`
++
+*Other notes:*
++
+`MDY`: 2-digit month, 2-digit day, 4-digit year
++
+`DMY`: 2-digit month, 2-digit day, 4-digit year
++
+`DMONY`: 2-digit day, 3-character month name, 4-digit year
++
+`MONDY`: 3-character month name, 2-digit day, 4-digit year
++
+`Y2MD`: 2-digit year, 2-digit month, 2-digit day
++
+`MDY2`: 2-digit month, 2-digit day, 2-digit year
++
+`DMY2`: 2-digit day, 2-digit month, 2-digit year
++
+`DMONY2`: 2-digit day, 3-character month name, 2-digit year
++
+`MONDY2`: 3-character month name, 2-digit day, 2-digit year
+
+Date delimiter:: Specifies the separator used in the date format.
++
+Optional field.
++
+*Example:*
++
+- *Valid Values:*
++
+Any printable ASCII character +
+*Default:*
++
+-
+
+Time style:: Specifies the format of the time portion in the data.
++
+Optional field.
++
+*Example:*
++
+24HOUR
++
+*Valid Values:*
++
+12HOUR, 24 HOUR
++
+*Default:*
++
+24HOUR
+
+Time delimiter:: Specifies the character used as separate the time components.
++
+Optional field.
+*Example:*
++
+:
++
+*Valid Values:*
++
+Any printable ASCII character
++
+*Default:*
++
+:
+
+Skip trailer rows:: Skip the number of trailer rows specified while loading the data.
++
+Optional field.
++
+*Example:*
++
+5
++
+*Valid Values:*
++
+Any numeric value
++
+*Default:*
++
+0
+
+TS load options:: Specify additional parameters passed with the `tsload` command. The format for these parameters is:
++
+`--<param_1_name> <optional_param_1_value>`
++
+Optional field.
++
+*Example:*
++
+`--max_ignored_rows 0`
++
+*Valid Values:*
++
+` --null_value ""`
++
+` --escape_character ""`
++
+` --max_ignored_rows 0` +
+*Default:*
++
+` --max_ignored_rows 0`
+
+Boolean representation:: Specifies the representation of data in the boolean field.
++
+Optional field.
++
+*Example:*
++
+true_false
++
+*Valid Values:*
++
+true_false, T_F, 1_0, T_NULL
++
+*Default:*
++
+true_false

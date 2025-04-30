@@ -1,0 +1,122 @@
+= AWS configuration options
+:last_updated: 3/17/2020
+:linkattrs:
+
+Your instances require specific configurations of memory, CPU, storage, and networking capacity.
+
+ThoughtSpot can be deployed in your AWS environment by deploying compute (VM) instances in your Amazon VPC as well as an underlying persistent storage infrastructure.
+Currently two configuration modes are supported by ThoughtSpot:
+
+* Mode 1: Compute VMs + EBS-only persistent storage
+* Mode 2: Compute VMs + EBS and S3 persistent storage
+
+The cost of infrastructure for deploying ThoughtSpot is cheaper when using S3.
+However, there are differences in where data is loaded, as well as in the backup and restore procedures.
+For assistance in choosing the best mode for your organization, contact your ThoughtSpot representative.
+For more information on purchasing ThoughtSpot in AWS, see: https://www.thoughtspot.com/pricing[ThoughtSpot Pricing,window=_blank].
+
+All AWS VMs in a ThoughtSpot cluster must be in the same availability zone (and therefore, also in the same region).
+ThoughtSpot does not support deploying VMs in the same cluster across availability zones.
+For more information, see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RegionsAndAvailabilityZones.adoc[Regions and Availability Zones,window=_blank] in Amazon's AWS documentation.
+
+[#ts-aws-instance-types]
+== ThoughtSpot AWS instance types
+
+The following sections contain the supported and recommended instance types for a ThoughtSpot AWS deployment.
+When setting up your cluster in AWS, use the information here to select an instance type, configure the number of instances required for the storage you need, and add data volumes to your cluster.
+
+When choosing an instance type, ensure that it uses Intel CPUs.
+
+For example: If you were deploying a total cluster data size of 1 TB using the standard r5.16xlarge instance type, you would need 4 VM instances, because the instance type supports data capacity of 250 GB.
+The data volumes on the EBS would need to be provision with 2x1 TB volumes per VM.
+
+[#vm-ebs-only-persistent-storage]
+=== VMs with EBS-only persistent storage
+
+image::persistent-storage-ebs.svg[]
+
+|===
+| Per VM user data capacity | Instance type | CPU/RAM | Recommended per-VM EBS volume | Required boot volume capacity
+
+| 20 GB
+| r4.4xlarge, r5.4xlarge
+| 16/122, 16/128
+| 2X 400 GB
+| 200 GB for each node
+
+| 100 GB
+| r4.8xlarge, r5.8xlarge
+| 32/244, 32/256
+| 2X 400 GB
+| 200 GB for each node
+
+| 192 GB
+| m5.24xlarge
+| 96/384
+| 2X 1 TB
+| 200 GB for each node
+
+| 250 GB
+| r4.16xlarge, r5.16xlarge
+| 64/488, 64/512
+| 2x 1 TB
+| 200 GB for each node
+
+| 384 GB
+| r5.24xlarge
+| 96/768
+| 2X 1.5 TB
+| 200 GB for each node
+|===
+
+[#vm-ebs-s3-persistent-storage]
+=== VMs with EBS and S3 persistent storage
+
+image::persistent-storage-ebs-s3.svg[]
+
+|===
+| Per VM user data capacity | Instance type | CPU/RAM | Recommended per-VM EBS volume | Required boot volume capacity
+
+| 20 GB
+| r4.4xlarge, r5.4xlarge
+| 16/122, 16/128
+| 1x 500 GB
+| 200 GB for each node
+
+| 100 GB
+| r4.8xlarge, r5.8xlarge
+| 32/244, 32/256
+| 1x 500 GB
+| 200 GB for each node
+
+| 192 GB
+| m5.24xlarge
+| 96/384
+| 1x 500 GB
+| 200 GB for each node
+
+| 250 GB
+| r4.16xlarge, r5.16xlarge
+| 64/488, 64/512
+| 1x 500 GB
+| 200 GB for each node
+
+| 384 GB
+| r5.24xlarge
+| 96/768
+| 1x 500 GB
+| 200 GB for each node
+|===
+
+NOTE: The S3 bucket size is approximately equal to the size of the user data.
+
+For most instances, the per VM recommended user data capacity is set at 50% of the available RAM on the instance.
+However, in the case of our 16CPU/128GB RAM and 32CPU/256GB RAM instances, we support user data sizes below those numbers to budget for application overhead.
+
+[#related]
+== Related information
+
+* https://aws.amazon.com/ec2/instance-types/[EC2 instance types,window=_blank]
+* https://aws.amazon.com/ec2/pricing/[EC2 pricing,window=_blank]
+* https://aws.amazon.com/ebs/pricing/[EBS pricing,window=_blank]
+* http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-groups.adoc[Placement groups,window=_blank]

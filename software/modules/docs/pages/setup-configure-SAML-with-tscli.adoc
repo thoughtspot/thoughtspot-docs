@@ -1,0 +1,107 @@
+= Configure SAML
+:last_updated: 5/6/2020
+:permalink: /:collection/:path.html
+:sidebar: mydoc_sidebar
+:summary: You can use the Security Assertion Markup Language (SAML) to authenticate users.
+
+ThoughtSpot enables you to use the Security Assertion Markup Language (SAML) to authenticate user.
+You can set up SAML through the shell on ThoughtSpot <<saml-configure-tscli,using a `tscli`-based configurator>>, or <<admin-portal,through the Admin Console>>.
+It is configured to work using service provided by an Identity Provider (IDP).
+
+[#prerequisites]
+== Configuration prerequisites
+
+Before you configure SAML, collect the following information:
+
+[cols=2*]
+|===
+| &#10063;
+| <<ts-service-address,ThoughtSpot service address>>
+
+| &#10063;
+| <<ts-service-port,Service port>>
+
+| &#10063;
+| <<ts-service-name,Unique service name>>
+
+| &#10063;
+| <<skew-time,Skew time in seconds>>
+
+| &#10063;
+| <<metadata-xml-file,IDP Metadata XML File>>
+
+| &#10063;
+| <<auto-add,Automatically add SAML users to Thoughtspot>>
+
+| &#10063;
+| <<ts-auth,Also use ThoughtSpot internal authentication>>
+|===
+
+[#ts-service-address]
+=== ThoughtSpot service address
+
+DNS name of the load balancer _front-end_ for multi-node ThoughtSpot clusters, or of the ThoughtSpot _server_ for a single-node ThoughtSpot cluster.
+If you do not have the DNS name, you can use the front-end IP address.
+Using the DNS name instead of the IP address is a best practice.
+
+[#ts-service-port]
+=== Service port
+
+Service port for ThoughtSpot instance, typically TCP/443.
+
+[#ts-service-name]
+=== Unique service name
+
+The unique key ThoughtSpot uses to identify IDP service.
+Set by the ThoughtSpot Support Team.
+
+The key has the following format: `urn:thoughtspot:callosum:saml`.
+
+[#skew-time]
+=== Skew time in seconds
+
+Allowed skew time for authentication, or the duration after authentication response is rejected and sent back from the IDP.
+
+Usually set to `3600` seconds.
+
+[#metadata-xml-file]
+=== IDP Metadata XML File
+
+This file is provided by the IDP.
+The absolute path to the `idp-meta.xml` file is needed for one-time configuration.
+
+[#auto-add]
+=== Automatically add SAML users to Thoughtspot: (yes/no)
+
+If you choose 'yes', then new users will be automatically created in ThoughtSpot upon first successful SSO login.
+
+If you choose 'no', then SAML users will not be added in ThoughtSpot upon first successful SSO login.
+Instead, you must link:{{ site.baseurl }}/admin/users-groups/add-user.html#add-user[add users manually] or through link:{{ site.baseurl }}/admin/setup/LDAP-config-AD.html[Active Directory].
+
+[#ts-auth]
+=== Also use ThoughtSpot internal authentication: (y/n)
+
+If 'y', then ThoughtSpot local/internal users (including local administrative users) will still be authenticated outside the scope of SSO.
+
+[#saml-configure-tscli]
+== Configure SAML using tscli
+
+NOTE: The configuration persists across updates to newer releases of ThoughtSpot.
+
+To set up SAML on ThoughtSpot for user authentication, follow these steps:
+
+. Log in to the Linux shell using SSH.
+. Run the `saml configure` command to launch the interactive SAML configuration:
++
+----
+ tscli saml configure
+----
+
+. Complete the configurator prompts with the information you collected in <<prerequisites,Configuration prerequisites>>.
+. When the configuration completes, open a browser and navigate to the ThoughtSpot login page.
+It should show the SSO option.
+
+[#admin-portal]
+== Configure SAML using the Admin Console
+
+include::partial$authentication-saml.adoc[]

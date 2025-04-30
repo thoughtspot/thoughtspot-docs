@@ -1,0 +1,307 @@
+= Snowflake connection reference for DataFlow
+:last_updated: 06/20/2020
+
+Learn about the fields used to create a Snowflake connection with ThoughtSpot DataFlow.
+
+Here is a list of the fields for a Snowflake connection in ThoughtSpot DataFlow.
+You need specific information to establish a seamless and secure connection.
+
+== Connection properties
+
+Connection Properties:: Name your connection.
++
+Mandatory field.
++
+*Example:*
++
+SnowflakeConnection
+
+Connection type:: Choose the Snowflake connection type.
++
+Mandatory field. +
+*Example:*
++
+Snowflake
+
+User:: Specify the user to connect to Snowflake. This user must have data access privileges to the databases.
++
+Mandatory field.
++
+*Example:*
++
+user1
+
+Password:: Specify the password.
++
+Mandatory field.
++
+*Example:*
++
+pswrd234%!
+
+Account:: Specify the account to connect to the Snowflake database.
++
+Mandatory field.
++
+*Example:*
++
+example_account
+
+Role:: Specify the role that defines the set of privelleges assigned to a user or a user group.
++
+Mandatory field.
++
+*Example:*
++
+Developer
++
+*Valid Values:*
++
+Developer, Operator, Business Analyst,Public,Scheduler Read,Scheduler Write,Scheduler Execute
++
++
+*Default:*
++
+Public
+
+JDBC options:: Specify the options associated with the JDBC URL.
++
+Optional field.
++
+*Example:*
++
+`jdbc:sqlserver://[serverName[\instanceName][:portNumber]]`
++
+*Other notes:*
++
+Advanced configuration
+
+Warehouse:: Choose the warehouse of databases.
++
+Mandatory field.
++
+*Example:*
++
+demo_wh
+
+Keep connection alive:: Specify if system must force the user to log in again after a period of inactivity.
++
+When `TRUE`, Snowflake keeps the session active indefinitely, even if there is no user activity.
++
+When set to `FALSE` user must log in after four hours of inactivity.
++
+Optional field. +
+*Example:*
++
+TRUE
++
+*Valid Values:*
++
+TRUE, FALSE
++
+*Default:*
++
+TRUE
++
+*Other notes:*
++
+Advanced configuration
+
+== Sync properties
+
+Data extraction mode:: Specify the extraction type.
++
+Mandatory field.
++
+*Example:*
++
+JDBC +
+*Valid Values:*
++
+JDBC, Bulk export
++
+*Default:*
++
+Bulk export
++
+Column delimiter:: Specify the column delimiter character.
++
+Mandatory field.
++
+*Example:*
++
+1
++
+*Valid Values:*
++
+Any printable ASCII character or decimal value for ASCII character
++
+*Default:*
++
+1
+
+Enclosing character:: Specify if text column data is in quotes, and if.
++
+Optional field.
++
+*Example:*
++
+DOUBLE
++
+*Valid Values:*
++
+SINGLE, DOUBLE +
+*Default:*
++
+DOUBLE
++
+*Other notes:*
++
+Required when text data contains a newline character or delimiter character.
+
+Escape character:: Specify the escape character if using a text qualifier in the source data.
++
+Optional field.
++
+*Example:*
++ \"
++
+*Valid Values:*
++
+Any ASCII character
++
+*Default:*
++
+\"
+
+Escape unclosed field:: Specify this if the text qualifier is mentioned. This should be the character which escapes the text qualifier character in the source data.
++
+Optional field.
++
+*Example:*
++
+NONE
++
+*Valid Values:*
++
+NONE
++
+*Default:*
++
+NONE
+
+Field optionally enclosed by:: Specify if the text columns in the source data needs to be enclosed in quotes.
++
+Optional field.
++
+*Example:*
++
+DOUBLE
++
+*Valid Values:*
++
+None, Double +
+*Default:*
++
+DOUBLE
+
+Null If:: Specify the string literal that indicates NULL value in the extracted data. During data loading, column values that match this string loaded as NULL in the target.
++
+Optional field.
++
+*Example:*
++
+NULL
++
+*Valid Values:*
++
+NULL
++
+*Default:*
++
+NULL
+
+Stage location:: Specify a temporary staging server Snowflake has to use while DataFlow extracts data.
++
+Mandatory field.
++
+*Example:*
++
+/tmp
++
+*Valid Values:*
++
+/tmp
++
+*Default:*
++
+/tmp
+
+Max file size:: Specify the maximum size of each file in the stage location, in bytes.
++
+Mandatory field.
++
+*Example:*
++
+16000000
++
+*Valid Values:*
++
+Any numeric value
++
+*Default:*
++ 16000000
+
+Parallel threads:: Specify the number of parallel threads to unload data.
++
+Mandatory field.
++
+*Example:*
++
+4 *Valid Values:*
++
+Any numeric value
++
+*Default:*
++
+4
+
+Fetch size:: Specify the number of rows fetched into memory at the same time. If the value is 0, system fetches all rows at the same time.
++
+Mandatory field.
++
+*Example:*
++
+1000
++
+*Valid Values:*
++
+Any numeric value
++
+*Default:*
++
+1000
+
+TS load options:: Specify additional parameters passed with the `tsload` command. The format for these parameters is:
++
+`--<param_1_name> <optional_param_1_value>`
++
+Optional field.
++
+*Example:*
++
+`--max_ignored_rows 0`
++
+*Valid Values:*
++
+`--user "dbuser"`
++
+`--password "$DIWD"`
++
+`--target_database "ditest"`
++
+`--target_schema "falcon_schema"`
++
+*Default:*
++
+`--max_ignored_rows 0`

@@ -1,0 +1,226 @@
+= Install Cluster
+:last_updated: 3/3/2020
+:linkattrs:
+
+Install your ThoughtSpot cluster(s) on your Dell appliance.
+
+Install the cluster using the ThoughtSpot software release bundle.
+Installation takes approximately one hour.
+Make sure you can connect to ThoughtSpot remotely.
+If you can, you can run the installer on your local computer.
+
+Refer to your welcome letter from ThoughtSpot to find the link to download the release bundle.
+If you do not have a link to download the release bundle, open a support ticket at xref:contact.html[ThoughtSpot Support] to access the release bundle.
+
+Follow the steps in this checklist to install your cluster.
+
+[cols="5%,95%"]
+|===
+| &#10063;
+| <<install-step-1,Step 1: Run the installer>>
+
+| &#10063;
+| <<install-step-2,Step 2: Check cluster health>>
+
+| &#10063;
+| <<install-step-3,Step 3: Finalize installation>>
+|===
+
+[#install-step-1]
+== Step 1: Run the installer
+
+. Copy the downloaded release bundle to `/export/sdb1/TS_TASKS/install`: +   Run `scp <release-number> admin@<hostname>:/export/sdb1/TS_TASKS/install/<file-name>`.
+Note the following parameters:
+ ** `release-number` is the release number of your ThoughtSpot installation, such as `6.0`, `5.3`, `5.3.1`, and so on.
+ ** `hostname` is your network hostname.
+Ask your network administrator if you do not know your hostname.
+ ** `file-name` is the name of the tarball file on your local computer.
+
+ $ scp <release-number>.tar.gz admin@<hostname>:/export/sdb1/TS_TASKS/install/<file-name>
+
++
+NOTE: You can use another secure copy method, if you prefer a method other than the `scp` command.
+. Alternatively, use `tscli fileserver download-release` to download the release bundle.
++ You must xref:tscli-command-ref.html#tscli-fileserver[configure the fileserver] by running `tscli fileserver configure` before you can download the release.
++
++
+----
+ $ tscli fileserver download-release <release-number> --user <username> --out <release-location>
+----
++
+Note the following parameters:
+
+ ** `release-number` is the release number of your ThoughtSpot instance, such as 5.3, 5.3.1, 6.0, and so on.
+ ** `username` is the username for the fileserver that you set up earlier, when configuring the fileserver.
+ ** `release-location` is the location path of the release bundle on your local machine.
+For example, `/export/sdb1/TS_TASKS/install/6.0.tar.gz`.
+
+. Verify the checksum to ensure you have the correct release.
++ Run `md5sum -c <release-number>.tar.gz.MD5checksum`.
++
+----
+ $ md5sum -c <release-number>.tar.gz.MD5checksum
+----
++
+Your output says `ok` if you have the correct release.
+
+. Launch a https://linux.die.net/man/1/screen[screen,window=_blank] session.
+Use screen to ensure that your installation does not stop if you lose network connectivity.
++
+----
+ $ screen -S DEPLOYMENT
+----
+
+. Create the cluster using `tscli cluster create <release-number>`.
++
+----
+ $ tscli cluster create <release.number>.tar.gz
+----
+
+. Edit the output using your specific cluster information.
+For more information on this process, refer to xref:cluster-create.html[Using the tscli cluster create command] and xref:parameters-cluster-create.html[Parameters of the `cluster create` command].
+
+The cluster installer automatically reboots all the nodes after the install.
+Wait at least 15 minutes for the installation process to complete.
+The system is rebooting, which takes a few minutes.
+Log in to any node to check the current cluster status, using the command `tscli cluster status`.
+
+[#install-step-2]
+== Step 2: Check cluster health
+
+After you install the cluster, check its status using the `tscli cluster status` command.
+
+Your output may look something like the following:
+
+[source,console]
+----
+$ tscli cluster status
+Cluster: RUNNING
+Cluster name    : thoughtspot
+Cluster id      : 1234X11111
+Number of nodes : 3
+Release         : 6.0
+Last update     = Wed Oct 16 02:24:18 2019
+Heterogeneous Cluster : False
+Storage Type    : HDFS
+
+Database: READY
+Number of tables in READY state: 2185
+Number of tables in OFFLINE state: 0
+Number of tables in INPROGRESS state: 0
+Number of tables in STALE state: 0
+Number of tables in ERROR state: 0
+
+Search Engine: READY
+Has pending tables. Pending time = 1601679ms
+Number of tables in KNOWN_TABLES state: 1934
+Number of tables in READY state: 1928
+Number of tables in WILL_REMOVE state: 0
+Number of tables in BUILDING_AND_NOT_SERVING state: 0
+Number of tables in BUILDING_AND_SERVING state: 128
+Number of tables in WILL_NOT_INDEX state: 0
+----
+
+Ensure that the cluster is `RUNNING` and that the Database and Search Engine are `READY`.
+
+ $ tscli cluster check
+ Connecting to hosts...
+ [Wed Jan  8 23:15:47 2020] START Diagnosing ssh
+ [Wed Jan  8 23:15:47 2020] SUCCESS
+ ################################################################################
+ [Wed Jan  8 23:15:47 2020] START Diagnosing connection
+ [Wed Jan  8 23:15:47 2020] SUCCESS
+ ################################################################################
+ [Wed Jan  8 23:15:47 2020] START Diagnosing zookeeper
+ [Wed Jan  8 23:15:47 2020] SUCCESS
+ ################################################################################
+ [Wed Jan  8 23:15:47 2020] START Diagnosing sage
+ [Wed Jan  8 23:15:48 2020] SUCCESS
+ ################################################################################
+ [Wed Jan  8 23:15:48 2020] START Diagnosing timezone
+ [Wed Jan  8 23:15:48 2020] SUCCESS
+ ################################################################################
+ [Wed Jan  8 23:15:48 2020] START Diagnosing disk
+ [Wed Jan  8 23:15:48 2020] SUCCESS
+ ################################################################################
+ [Wed Jan  8 23:15:48 2020] START Diagnosing cassandra
+ [Wed Jan  8 23:15:48 2020] SUCCESS
+ ################################################################################
+ [Wed Jan  8 23:15:48 2020] START Diagnosing hdfs
+ [Wed Jan  8 23:16:02 2020] SUCCESS
+ ################################################################################
+ [Wed Jan  8 23:16:02 2020] START Diagnosing orion-oreo
+ [Wed Jan  8 23:16:02 2020] SUCCESS
+ ################################################################################
+ [Wed Jan  8 23:16:02 2020] START Diagnosing memcheck
+ [Wed Jan  8 23:16:02 2020] SUCCESS
+ ################################################################################
+ [Wed Jan  8 23:16:02 2020] START Diagnosing ntp
+ [Wed Jan  8 23:16:08 2020] SUCCESS
+ ################################################################################
+ [Wed Jan  8 23:16:08 2020] START Diagnosing trace_vault
+ [Wed Jan  8 23:16:09 2020] SUCCESS
+ ################################################################################
+ [Wed Jan  8 23:16:09 2020] START Diagnosing postgres
+ [Wed Jan  8 23:16:11 2020] SUCCESS
+ ################################################################################
+ [Wed Jan  8 23:16:11 2020] START Diagnosing disk-health
+ [Wed Jan  8 23:16:11 2020] SUCCESS
+ ################################################################################
+ [Wed Jan  8 23:16:11 2020] START Diagnosing falcon
+ [Wed Jan  8 23:16:12 2020] SUCCESS
+ ################################################################################
+ [Wed Jan  8 23:16:12 2020] START Diagnosing orion-cgroups
+ [Wed Jan  8 23:16:12 2020] SUCCESS
+ ################################################################################
+ [Wed Jan  8 23:16:12 2020] START Diagnosing callosum
+ /usr/lib/python2.7/site-packages/urllib3/connectionpool.py:852: InsecureRequestWarning: Unverified HTTPS request is being made. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+   InsecureRequestWarning)
+ [Wed Jan  8 23:16:12 2020] SUCCESS
+ ################################################################################
+
+Your output may look something like the above.
+Ensure that all diagnostics show `SUCCESS`.
+
+WARNING: If `tscli cluster check` returns an error, it may suggest you run `tscli storage gc` to resolve the issue.
+If you run `tscli storage gc`, note that it restarts your cluster.
+
+[#install-step-3]
+== Step 3: Finalize installation
+
+After the cluster status changes to `READY`, sign in to the ThoughtSpot application on your browser.
++ Follow these steps:
+
+. Start a browser from your computer.
+. Enter your secure IP information on the address line.
++
+----
+ https://<IP-address>
+----
+
+. If you don't have a security certificate for ThoughtSpot, you must bypass the security warning to proceed:
+ ** Click *Advanced*
+ ** Click *Proceed*
+. The ThoughtSpot login page appears.
+. In the xref:install-cluster-dell.html#ts-login[ThoughtSpot sign-in window], enter admin credentials, and click *Sign in*.
+ThoughtSpot recommends changing the default admin password.
+
+image:ts-login-page.png[ThoughtSpot's sign-in window]
+// {% include image.html file="ts-login-page.png" title="ThoughtSpot's sign-in window" alt="Log in to ThoughtSpot. Enter Username, Password, and click Sign in. You may select Remember me option." caption="ThoughtSpot's sign-in window" %}
+
+== Lean configuration
+
+*(For use with thin provisioning only)* If you have a xref:cloud.html#use-small-and-medium-instance-types-when-applicable[small or medium instance type], with less than 100GB of data, advanced lean configuration is required before loading any data into ThoughtSpot.
+After installing the cluster, contact xref:contact.html[ThoughtSpot Support] for assistance with this configuration.
+
+include::partial$install-cluster-error-recovery.adoc[]
+
+== Additional resources
+
+As you develop your expertise in Dell cluster installation, we recommend the following ThoughtSpot U course:
+
+* https://training.thoughtspot.com/create-upgrade-patch-a-thoughtspot-cluster/430642[Create a Cluster,window=_blank]
+
+See other training resources at:
+
+image::ts-u.png[link="https://training.thoughtspot.com/", window=_blank]
