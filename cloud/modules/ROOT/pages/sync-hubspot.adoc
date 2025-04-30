@@ -1,12 +1,11 @@
 = Sync data from ThoughtSpot to HubSpot
-:last_updated: 12/16/2022
+:last_updated: 2/8/2023
 :author: Naomi
 :linkattrs:
 :experimental:
-:page-noindex:
 :page-layout: default-cloud
 :connection: HubSpot
-:description: You can connect ThoughtSpot to your Google account and push CSV tables to HubSpot.
+:description: You can connect ThoughtSpot to your Google account and push data to HubSpot.
 
 
 
@@ -20,7 +19,7 @@ To create a sync to {connection} from an Answer, follow these steps:
 +
 NOTE: You cannot create a sync from an unsaved Answer. If the *Sync to other apps* option appears grayed-out in the menu, first save the Answer before trying again.
 
-. If this is the first sync you have created for {connection}, a pop-up authorization window appears. To give ThoughtSpot permission to send data to your {connection} account, select your account from the pop-up window.
+. If this is the first sync you have created for {connection}, a pop-up authorization window appears. To give ThoughtSpot permission to send data to your {connection} account, sign in to your account in the pop-up window and click *Connect app*.
 +
 image:hubspot-login.png[HubSpot sign-in pop-up]
 +
@@ -35,12 +34,19 @@ image:hubspot-permission.png[List of HubSpot permissions for ThoughtSpot]
 
 * Map the *Source* and *Destination* columns from the dropdown menus provided. Note that the Source column refers to the column in ThoughtSpot, while the Destination column refers to the column in {connection}.
 +
-image:sync-hubspot-param.png[HubSpot Sync window]
+image:ts-sync-hubspot-param.png[HubSpot Sync window]
 
 
 . By default, “Save and sync” is selected. Select *Save* to send your data to {connection}. Your data immediately appears in {connection}.
 
+. [Optional] To set up a repeated sync, select *Schedule your sync* and select your timezone. From the options provided, choose whether the sync will occur every:
 
+* _n_ hours.
+* _n_ days at a selected time. Note that you can choose not to send an update on weekends.
+* week at a selected time and day.
+* _n_ months at a selected time and date.
+
+NOTE: Any sync over 50,000 rows may result in an execution timeout. For optimal performance, keep your sync to below 50,000 rows. If you're syncing a large number of rows and the sync fails, try applying filters like date filters to make your dataset smaller and then sync.
 
 == Sync to {connection} from a Custom SQL View
 
@@ -50,7 +56,7 @@ To sync to {connection} from a custom SQL view, follow these steps:
 
 . In the upper-right corner, click the *more options* menu icon image:icon-more-10px.png[more options menu icon] and select *Sync to {connection}*.
 
-.  If this is the first sync you have created for the selected app, an authorization page appears. To give ThoughtSpot permission to send data to your {connection} account, click *Sign in with {connection}*, select your account, and click *Allow*.
+.  If this is the first sync you have created for the selected app, an authorization page appears. To give ThoughtSpot permission to send data to your {connection} account, sign in to your account in the pop-up window and click *Connect app*.
 
 . Fill in the following parameters:
 
@@ -64,8 +70,14 @@ To sync to {connection} from a custom SQL view, follow these steps:
 
 . By default, “Sync and save” is selected. Select *Save* to send your data to {connection}. Your data immediately appears in {connection}.
 
+. [Optional] To set up a repeated sync, select *Schedule your sync* and select your timezone. From the options provided, choose whether the sync will occur every:
 
+* _n_ hours.
+* _n_ days at a selected time. Note that you can choose not to send an update on weekends.
+* week at a selected time and day.
+* _n_ months at a selected time and date.
 
+NOTE: Any sync over 50,000 rows may result in an execution timeout. For optimal performance, keep your sync to below 50,000 rows. If you're syncing a large number of rows and the sync fails, try applying filters like date filters to make your dataset smaller and then sync.
 
 == Sync to {connection} from the Data Workspace
 
@@ -92,7 +104,16 @@ To create a sync to {connection} from the Data Workspace, follow these steps:
 
 .  By default, *Save and sync* is selected. Select *Save* to send your data to {connection}. Your data immediately appears in {connection}.
 
-== Updating and deleting records in {connection}
+. [Optional] To set up a repeated sync, select *Schedule your sync* and select your timezone. From the options provided, choose whether the sync will occur every:
+
+* _n_ hours.
+* _n_ days at a selected time. Note that you can choose not to send an update on weekends.
+* week at a selected time and day.
+* _n_ months at a selected time and date.
+
+NOTE: Any sync over 50,000 rows may result in an execution timeout. For optimal performance, keep your sync to below 50,000 rows. If you're syncing a large number of rows and the sync fails, try applying filters like date filters to make your dataset smaller and then sync.
+
+== Update and delete records in {connection}
 
 To update and delete records in HubSpot,the Record Id field must be used as the mapping field. The following table shows the mapping needed for each object to update or delete records in {connection}.
 
@@ -119,7 +140,7 @@ A sync to {connection} can fail due to multiple reasons. If you experience a syn
 
 * The underlying ThoughtSpot object was deleted.
 * The underlying {connection} object was deleted.
-* The column name was changed in either ThoughtSpot or {connection}, making it different to the column name set up in the mapping.
+* The column name was changed in either ThoughtSpot or {connection}, making it different to the column name setup in the mapping.
 * There are data validation rules in {connection} which only allow data with a certain data type to be populated in the {connection} fields, but the columns being mapped onto {connection} from ThoughtSpot do not have the same or allowable data type.
 
 ** NOTE: In this case, only the rows in ThoughtSpot that meet the data validation criteria of the column in {connection} will be inserted or updated. All others will be ignored.

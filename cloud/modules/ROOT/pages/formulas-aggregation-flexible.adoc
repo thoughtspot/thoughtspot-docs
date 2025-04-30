@@ -1,5 +1,5 @@
 = Flexible aggregation functions
-:last_updated: 08/30/2021
+:last_updated: 01/23/2023
 :linkattrs:
 :experimental:
 :page-layout: default-cloud
@@ -53,12 +53,14 @@ include::partial$flexible-aggregation-best-practices.adoc[]
 
 For a search on `revenue monthly ship mode`, you can add a formula to calculate yearly revenue by ship mode:
 
+[source]
 ----
 group_aggregate(sum(revenue), {ship mode, year(commit date)}, {})
 ----
 
 The same formula can also be written using `query_groups()` and `query_filters()` as following:
 
+[source]
 ----
 group_aggregate(sum(revenue), query_groups() - {commit date} + {year(commit date)}, {})
 ----
@@ -83,6 +85,7 @@ For example, in this search we've added the keyword *min* just before our formul
 +
 where, the `monthly_sales` formula is written as:
 +
+[source]
 ----
    group_aggregate(sum(revenue), {start_of_month(date)}, {})
 ----
@@ -93,11 +96,12 @@ where, the `monthly_sales` formula is written as:
 +
 where, the `min_monthly_sales` formula is written as:
 +
+[source]
 ----
 min(monthly_sales)
 ----
 
-If no aggregation is specified, then the search query  aggregates to the level of detailed defined in the search bar. In the following search:
+If no aggregation is specified, then the search query aggregates to the level of detailed defined in the search bar. In the following search:
 
 *sum revenue yearly monthly_sales*
 
@@ -118,6 +122,7 @@ An example of this is this search:
 
 where the formula `monthly_sales` is written as:
 
+[source]
 ----
 group_aggregate(sum(revenue), query_groups() + {start_of_month(date)}, {})
 ----
@@ -138,6 +143,7 @@ Filter condition: `Ship Mode='car'`
 
 For a search on `Category Customer ID sales by customer id and category Ship Mode='car’`, you can add a formula to calculate sales by category for each customer as:
 
+[source]
 ----
 sales by Customer ID and Category= group_aggregate (sum(Sales), {Category, Customer ID }, query_filters()+{Ship Mode='air'})
 ----
@@ -150,12 +156,26 @@ Filter condition: `Ship Mode='car'`
 
 For a search on `Customer ID sales by customer id and category Ship Mode='car'`, you can add a formula to calculate sales for each customer while ignoring the filter on a column as:
 
+[source]
 ----
 sales by Customer ID and Category= group_aggregate (sum(Sales), {Customer ID, Category }, query_filters()-{Ship Mode})
 ----
 
 In this case, the results will be aggregated based on the dimensions in the search;
 Customer ID and any filter related to Ship Mode will not be considered while aggregating the results.
+
+.Group aggregation filters enhancement [.badge.badge-beta]#Beta#
+****
+Beginning in the 9.0.0.cl release, you can specify a column in the third argument of a group_aggregate function in order to include all filters defined in the search that pertain to that column, and ignore unrelated filters. This enhancement allows the analyst to specify which fields to accept filters from, improving readability of formulas, and reducing operational change and related errors. The group aggregation filters enhancement feature is in beta and off by default. To enable this feature, contact {support-url}.
+
+For example, say that you would like to determine how many stores a certain product was sold in during a given time period, expressed as a ratio of total available stores. In order to calculate the total available stores you require a group_aggregate function that will accept the filters associated with transaction date (for example, this year, last six months, august), and ignore filters from other fields.
+
+Before 9.0.0.cl, this formula would look like: `group_aggregate(count(storid),query_groups(),query_filters-{field1,field2,fieldN})`, where users would have to use `query_filters - {}` to manually remove every field in the search bar that did not relate to transaction date. When adding a new unrelated filter to the search bar, users would then have to edit all existing formulas to ignore the filter.
+
+With this feature enabled, users can simply specify the formula as `group_aggregate(count(storied),query_groups, {date}), and the formula will automatically ignore all unrelated filters in the search bar.
+
+This feature is in Beta and off by default. To enable it, contact {support-url}. For more about Beta features, see xref:release-lifecycle.adoc#beta[ThoughtSpot Cloud release life cycle].
+****
 
 '''
 > **Related information**

@@ -21,13 +21,13 @@ The following steps detail the configuration of IdP with Okta as an example. You
 
 To configure the IdP with Okta, do the following:
 
-. Log in to the Okta console with a user having administrator privileges. Navigate to the *Applications* page in the console and click *Create App Integration*.
+. Sign in to the Okta console with a user having administrator privileges. Navigate to the *Applications* page in the console and select *Create App Integration*.
 +
 image::dremio-oauth1.png[Click Create App Integration]
 +
 . For sign-in method, choose *OIDC - OpenID Connect*.
 . For application type, choose *Web Application*
-. Click *Next*.
+. Select *Next*.
 . Under Grant type, make sure *Authorization Code* and *Refresh Token* are selected.
 +
 image::sf-oauth2.png[Select both Authorization Code and Refresh Token]
@@ -69,7 +69,7 @@ To create scopes in Okta that correspond to your {connection} database, do the f
 +
 image::sf-okta-api-1.png[Select Security > API]
 +
-. Click the authorization server used by the client application created in the previous steps to add scopes.
+. Select the authorization server used by the client application created in the previous steps to add scopes.
 . Add snowflake roles in the format: *_session:role:<snowflake_db_role>_*.
 +
 image::sf-okta-add-scopes.png[Add Snowflake roles]
@@ -97,15 +97,35 @@ create security integration external_oauth_okta_2
 
 TIP: If you want to ensure your Okta OAuth configuration is correct for use with ThoughtSpot, you can validate it following procedures similar to those in xref:connections-snowflake-azure-ad-oauth.adoc#validate-config[Validating your Azure configuration].
 
+== Logging in to a connection created by another user using OAuth
+
+As an admin user, you may run into an issue logging in to connections created using OAuth. To resolve this issue, complete the following steps:
+
+. Search on a table belonging to the connection you are trying to edit. The following error appears:
++
+image:oauth-error.png[Error reading “Error in loading data. Connection to Snowflake could not be established. OAuth login required. Login”]
+
+. Click *Login*. You will be directed to the IDP login page.
+
+. Enter your login credentials.
+
+. You will now have access to edit the connection.
+
+
 '''
 > **Related information**
 >
 > * xref:connections-snowflake-add.adoc[Add a {connection} connection]
 > * xref:connections-snowflake-edit.adoc[Edit a {connection} connection]
 > * xref:connections-snowflake-remap.adoc[Remap a {connection} connection]
+> * xref:connections-snowflake-external-tables.adoc[Query external tables from your {connection} connection]
 > * xref:connections-snowflake-delete-table.adoc[Delete a table from a {connection} connection]
 > * xref:connections-snowflake-delete-table-dependencies.adoc[Delete a table with dependent objects]
 > * xref:connections-snowflake-delete.adoc[Delete a {connection} connection]
-> * xref:connections-snowflake-oauth.adoc[Configure internal OAuth for a {connection} connection]
-> * xref:connections-snowflake-azure-ad-oauth.adoc[Configure Azure AD OAuth for a {connection} connection]
+> * xref:connections-snowflake-oauth.adoc[Configure OAuth]
+> * xref:connections-snowflake-azure-ad-oauth.adoc[Configure Azure AD OAuth]
+> * xref:connections-snowflake-best.adoc[Best practices for {connection} connections]
+> * xref:connections-snowflake-private-link.adoc[]
 > * xref:connections-snowflake-reference.adoc[Connection reference for {connection}]
+> * xref:connections-query-tags.adoc#tag-snowflake[ThoughtSpot query tags in Snowflake]
+> * xref:connections-snowflake-passthrough.adoc[]
