@@ -1,0 +1,75 @@
+= Python [deprecated, desupported]
+:last_updated: 7/25/2022
+:author: Naomi
+:linkattrs:
+:experimental:
+:page-layout: default-seekwell
+
+
+// More
+
+You can schedule Python scripts to run on a schedule or use them to return DataFrame's which can then be queried by you or your team with SQL.
+
+. To begin, link:https://app.seekwell.io/[open the app] and select kbd:[`command`] / kbd:[`control`] + kbd:[`k`], and entering "python".
+
+. [Optional] Add a `dict` named `seekwell` to the end of your script with the DataFrames you want to return. This will make them available using SQL.
+
+. [Optional] Set your schedule.
++
+image:python-schedule.png[Schedule your SQL]
+
+If your script returns DataFrames, you can access them with SQL by changing the Source to "Block".
+
+image::python-source-block.png[Change source to Sheets/CSV/Block]
+
+== Example
+
+Create a new block named "SuperBowl" and add the script below. Select kbd:[`command`] / kbd:[`control`] + kbd:[`k`], enter "Python", and run the block.
+
+[source]
+----
+import pandas as pd
+dfs = pd.read_html('https://en.wikipedia.org/wiki/Super_Bowl')
+df = dfs[2]
+df
+seekwell = {'winRates': df}
+----
+
+The results appear in the app. Next, create a new block, change the Source to "Block", and paste in the query below:
+
+[source]
+----
+select sum("Wins") as total_wins
+from {{SuperBowl}}
+----
+
+
+In the Parameters section, change the type to "Block", select "SuperBowl" as the block and "winRates" as the DataFrame.
+
+image::python-block-superbowl.png[Select SuperBowl block]
+
+Run the query and SQL sums the Wins. You can now send the results to any destination (e.g. Google Sheets) as you normally would.
+
+image::python-superbowl-wins.png[Sum of SuperBowl wins]
+
+== Injecting a SQL result / using Parameters
+
+You can add the result of an existing SQL block to your Python script using xref:parameters.adoc[⚙ Parameters]. First select "Add parameter" in the right sidebar and choose "Block" as the type. Name the parameter (e.g. df) and select the SQL block you want to use.
+
+image::python-add-parameter.png[Add parameter]
+
+image::python-parameter-df.png[Select Block for parameter]
+
+
+You can now reference `df` in your Python code:
+
+[source,python]
+----
+df['added_with_python'] = 'yes'
+seekwell = {'df': df}
+----
+
+
+When you run this code, you see the results of your existing block appear along with your new `added_with_python` column.
+
+NOTE: {seekwell} is not meant for ad-hoc Python analysis and thus is not intended to debug your script. Be sure to test your scripts locally or in another cloud environment like Colab before scheduling the script on {seekwell}.

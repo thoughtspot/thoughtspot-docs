@@ -1,0 +1,120 @@
+= Blocks as a destination
+:last_updated: 6/29/2022
+:author: Naomi
+:linkattrs:
+:experimental:
+:page-layout: default-seekwell
+:description: You can use a table created by a Block as your destination.
+
+// destination
+
+You can use a table created by a Block as your destination. When using the block as a destination, the primary or "Action" block will loop through the results of the destination, or "List", block. The query will then substitute parameters in the Action block with values from the List block. This function can be useful for tasks like sending data to dynamically-created Sheets or files.
+
+NOTE: We use the term "*List Block*" to refer to the block you use to get your list, and the term "*Action Block*" for the one that's going to "do something", or write data to a Sheet.
+
+== Demo
+
+video::FjS2Ok_Np48[youtube]
+
+[#create-block]
+== Sheets
+
+. Within your Block, select the field under *Destination* and select *Block* as the type.
++
+image:destination-blocks.png[Select Block as destination type]
+
+. Below *Type*, select *Block* and select the desired list block from the drop-down. You can filter the list by the block name. Your *List Block* must have the xref:blocks-as-a-destination.adoc#required-fields[required fields] for the destination type (see below).
+
+. Add xref:parameters.adoc[⚙ Parameters] from the *List Block* into the *Action Block* using the same name as the column name in the *List Block*. Keep the parameter type as the default "value". Make sure there are no spaces in the column name, for example, `some_column`.
++
+.Parameters example
+[source]
+----
+select '{{email}}' as assigned_to, u.channel, u.plan, u.email as user_email
+from dummy.users as u
+where 1=1
+and u.channel = '{{channel}}'
+----
+
+. Run the block. Once complete, check your email for the reports.
+
+NOTE: There is a 500 row limit on Destination Lists. If you need that limit removed, please contact us at link:mailto:contact@seekwell.io[contact@seekwell.io].
+
+
+[#required-fields]
+== Required fields
+
+* *Sheets* +
+You can use link:https://docs.google.com/spreadsheets/d/1nSYzQISbGrGfAKg6mKSOincTJVC_Ffxaest5pCu5mxs/edit?usp=sharing[this sheet,window=_blank] as a base, by creating a copy: +
+image:destination-blocks-sheet.png[Use Sheet example]
+
+** type = sheets
+** ss_id (long UUID from within the URL of a Sheet) +
+image:destination-blocks-uuid.png[Select UUID from Sheet URL]
+** sheet
+** append
+*** TRUE
+*** FALSE (default)
+** cell (A1)
+
+* *Slack*
+** channel
+
+* xref:email-lists.adoc[Email lists]
+
+== Using a SQLite query as the block
+
+You can define the List block with a SQLite query. Select "Blocks" as the source to use SQLite. For example, to create a new Sheet for everyday use:
+
+[source]
+----
+SELECT
+date('now') as dt,
+'sheets' as type,
+'REPLACE_WITH_YOUR_ID' as ss_id,
+date('now') as sheet,
+'FALSE' as append
+----
+
+== Using `INSERT`, `UPDATE`, `DELETE` statements
+
+You can send rows from one query to a block that performs, for example, `INSERT`. This can helpful if you need to move data from one database to another. You can also use this to grab data from a Sheet and insert it into a database.
+
+. Create a block with "value" xref:parameters.adoc[⚙ Parameters]. For example:
++
+[source]
+----
+INSERT INTO your.users (channel, country, created_on, email)
+VALUES ('{{channel}}', '{{country}}', '{{created_on}}', '{{email}}');
+----
++
+NOTE: Be sure to properly quote text / string columns. Make sure the "name" you give the parameter is the same as the name in your `SELECT` block.
+
+. Create your `SELECT` block. You may want to include a `LIMIT` while testing.
++
+[source]
+----
+select s.channel, s.country, s.created_on, s.email
+from my.some_other_table as s
+limit 2
+----
+
+. Select *Block* as the destination, *Loop thru rows* as the type, and the block you created <<create-block,above>> as the block.
++
+image:destination-block.png[Select Block as destination]
+
+. Run the block and verify the results in your destination database.
+
+== Case study
+
+An apparel company wants to add a sample of customers who abandoned their cart to three different Sheets daily. Each PM is responsible for a separate channel and should only see customers from their channel.
+
+. Create a List Block with channels.
+
+. Create an action Block.
+
+.. Select Block as the destination.
+
+.. Add the channel parameters to the query in the action block.
+
+. Run the block.
