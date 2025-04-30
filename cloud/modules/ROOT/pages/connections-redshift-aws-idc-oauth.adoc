@@ -1,0 +1,68 @@
+= Configure AWS IDC OAuth for a {connection} connection
+:last_updated: 4/25/2024
+:author: Naomi
+:linkattrs:
+:experimental:
+:page-layout: default-cloud
+:page-aliases:
+:connection: Redshift
+:description: ThoughtSpot supports OAuth for a Redshift connection.
+:jira: SCAL-203353, SCAL-203459
+
+
+ThoughtSpot supports AWS IDC OAuth for a {connection} connection. Depending on the identity provider, you need to complete different steps to configure the integration. This is a high-level overview. We recommend following the AWS documentation for how to configure AWS or the link:https://docs.aws.amazon.com/redshift/latest/mgmt/redshift-iam-access-control-native-idp.html[IDP^]. See: link:https://docs.aws.amazon.com/redshift/latest/mgmt/redshift-iam-access-control-idp-connect.html[Connect Redshift with IAM Identity Center to give users a single sign-on experience^].
+
+[#part-1]
+== Prerequisites
+
+To set up OAuth for {connection}, you must have the following:
+
+* An AWS account.
+* An Amazon Redshift cluster.
+
+== Configure the IdP
+
+Refer to the link:https://docs.aws.amazon.com/singlesignon/latest/userguide/tutorials.html[AWS documentation^].
+
+Note that your redirect URL will be in the format: `https://<your_instance_name>/callosum/v1/connection/generateTokens`.
+
+== Set up OAuth
+
+The OAuth application is used to authenticate the user and provide a login token.
+
+Follow the steps in the link:https://aws.amazon.com/blogs/big-data/integrate-identity-provideridp-with-amazon-redshift-query-editor-v2-using-aws-iam-identity-center-for-seamless-single-sign-on/[AWS documentation^].
+
+== Connect to Redshift
+
+Refer to xref:connections-redshift-add.adoc[Create a Redshift connection].
+
+== Okta
+
+See link:https://aws.amazon.com/blogs/big-data/integrate-identity-provideridp-with-amazon-redshift-query-editor-v2-using-aws-iam-identity-center-for-seamless-single-sign-on/[Integrate Identity Provider with Amazon Query Editor V2 using AWS IAM Identity Center for Seamless Sign-on^].
+
+
+== OAuth connection improvements
+
+If you do not have a valid OAuth access token, you can now directly navigate to the OAuth authorization screen when performing one of the following actions on a connection shared with you:
+
+** View sample data
+** Create a custom SQL view
+** Edit the connection
+
+'''
+> **Related information**
+>
+> * xref:connections-redshift-add.adoc[Add a {connection} connection]
+> * xref:connections-redshift-edit.adoc[Edit a {connection} connection]
+> * xref:connections-redshift-remap.adoc[Remap a {connection} connection]
+> * xref:connections-redshift-external-tables.adoc[Query external tables from your {connection} connection]
+> * xref:connections-redshift-delete-table.adoc[Delete a table from a {connection} connection]
+> * xref:connections-redshift-delete-table-dependencies.adoc[Delete a table with dependent objects]
+> * xref:connections-redshift-delete.adoc[Delete a {connection} connection]
+> * xref:connections-redshift-azure-ad-oauth.adoc[Configure Azure AD OAuth]
+> * xref:connections-redshift-best.adoc[Best practices for {connection} connections]
+> * xref:connections-redshift-private-link.adoc[]
+> * xref:connections-redshift-reference.adoc[Connection reference for {connection}]
+> * xref:connections-query-tags.adoc#tag-redshift[ThoughtSpot query tags in Redshift]
+> * xref:connections-redshift-passthrough.adoc[]
+> * xref:connections-column-indexing-oauth.adoc[]

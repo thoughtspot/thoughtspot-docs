@@ -26,7 +26,7 @@ The following example API is for all databases:
 partner:"ThoughtSpot"
 {
 "user_id","<SHA1 Hashed ThoughtSpot User Id>", // Optional
-"dashboard_id"":”<NUMERIC or ALPHANUMERIC>”, // Required
+"dashboard_id":"<NUMERIC or ALPHANUMERIC>", // Required
 "chart_id":"<NUMERIC or ALPHANUMERIC>", // Required
 }
 */
@@ -54,7 +54,7 @@ requestId: ec01d055-0af4-42ec-94f5-95dba326e8b7 */
 
 ==== Check query tagging on Redshift
 
-You can use the query tag indicating a query originates from ThoughtSpot to filter out recently executed queries via the Redshift query editor or console. Users will need access to the “STL_CONNECTION_LOG” table and the “STL_QUERY” table. STL_CONNECTION_LOG logs authentication attempts, connections, and disconnections. STL_QUERY stores query-related information, such as query text, type, start and end time. To debug the latest queries from ThoughtSpot, users need to join STL_CONNECTION_LOG and STL_QUERY on the PID field, and filter by application_name.
+You can use the query tag indicating a query originates from ThoughtSpot to filter out recently executed queries via the Redshift query editor or console. Users will need access to the "STL_CONNECTION_LOG" table and the "STL_QUERY" table. STL_CONNECTION_LOG logs authentication attempts, connections, and disconnections. STL_QUERY stores query-related information, such as query text, type, start and end time. To debug the latest queries from ThoughtSpot, users need to join STL_CONNECTION_LOG and STL_QUERY on the PID field, and filter by application_name.
 
 Reference the following example query run on the Redshift console:
 
@@ -70,7 +70,7 @@ To manage disk space, the STL log views retain approximately two to five days of
 [#tag-synapse]
 === Azure Synapse
 
-For queries sent to Synapse, we add “application name” = “ThoughtSpot” in the connection property for the JDBC driver. Users can check the following system tables:
+For queries sent to Synapse, we add "application name" = "ThoughtSpot" in the connection property for the JDBC driver. Users can check the following system tables:
 
 dm_pdw_exec_sessions:: Holds information about all sessions currently or recently open on the appliance (ex: session_id, client_id, app_name). This table lists one row per session.
 dm_pdw_exec_requests:: Holds information about all requests currently or recently active in Azure Synapse Analytics (ex: command, start_time, status). This table lists one row per request or query.
@@ -108,7 +108,7 @@ We use `applicationNamePrefix` to set the source name for Presto queries. If nei
 [#tag-saphana]
 === SAP HANA
 
-For all indexing, system, and user-generated queries sent to SAP HANA, we tag the queries with the JDBC parameter, “APPLICATION=thoughtspot” and “APPLICATIONUSER=SHA Hashed ThoughtSpot User Id”.
+For all indexing, system, and user-generated queries sent to SAP HANA, we tag the queries with the JDBC parameter, "APPLICATION=thoughtspot" and "APPLICATIONUSER=SHA Hashed ThoughtSpot User Id".
 
 Reference the following example:
 [source]
@@ -119,4 +119,4 @@ jdbc:sap://ykfl00540545a:30115/?autocommit=false&sessionVariable:APPLICATION=mya
 [#tag-snowflake]
 === Snowflake
 
-For all indexing, system, and user-generated queries sent to Snowflake, we tag the query with the JDBC parameter, “application=thoughtspot”.
+For all indexing, system, and user-generated queries sent to Snowflake, we tag the query with the JDBC parameter, "application=thoughtspot".

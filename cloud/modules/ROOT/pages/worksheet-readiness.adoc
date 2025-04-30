@@ -1,4 +1,4 @@
-= Worksheet readiness
+= Worksheet readiness for Sage
 :last_updated: 06/05/2024
 :linkattrs:
 :experimental:
@@ -23,6 +23,8 @@ For instance, for the query ‘Show the number of policies created last month’
 * Avoid mismatch between column names and data types
 ** If column names do not align with their respective data types, it can impact accuracy. +
 For instance, if a column named ‘weeks’ is marked as an attribute column with values such as ‘Week 1’ and ‘Week 2’, it makes it difficult for Sage to respond correctly to date related queries. If you want to keep the data as is, then we suggest renaming the column to ‘Week number’ to make it less confusing for Sage.
++
+Note that you should also ensure that column values and data type match. If a column `order_date` has values like "01 Jan 20", but data type `text`, you should change the data type to `date`. You can change the data type of a column by editing the underlying Worksheet from the Data tab.
 
 * Use underscores or spaces as delimiters in column names
 ** Avoid using other types of delimiters such as brackets and emojis as they may interfere with Sage functionalities.
@@ -54,14 +56,17 @@ See the following guidelines for setting up Worksheet date columns to get the be
 ** We advise keeping the number of date columns to a minimum, adding only those that are necessary. Keywords such as 'growth' often rely on date columns, making it challenging for the system to select the appropriate column to generate a response.
 
 * Specify the correct date column in Answers and Liveboards
-** If your worksheet has more than two date columns, we suggest building content such as Answers and Liveboards containing the specific date columns. This helps Sage understand the relationship between the columns in the Worksheet, and can significantly improve Sage's ability to accurately select the correct date columns when generating a response.
+** If your worksheet has more than two date columns, we suggest building content such as Answers and Liveboards containing the specific date columns. When you use specific date columns with corresponding measure and attribute columns in an Answer, ThoughtSpot learns the correlation between the columns. The correlation leads to ThoughtSpot ranking associated columns higher when prompted by the Sage query. This can significantly improve Sage's ability to accurately select the correct date columns when generating a response.
++
+For example, if you create Answers linking the `close date` and `booked acv` columns, ThoughtSpot will associate those terms in Sage.
 
-== Guidelines for indexing columns
+
+== Guidelines for indexing attribute columns
 
 See the following guidelines for setting up Worksheet indexing columns to get the best accuracy for Sage:
 
-* Ensure the columns being queried upon in Sage are indexed
-** Indexing is essential for enabling access to relevant data values and accurately identifying specific column values in queries. +
+* Ensure the columns you want to filter on in Sage are indexed
+** xref:data-modeling-index.adoc[Indexing] is essential for enabling access to relevant data values and accurately identifying specific column values in queries. +
 For instance, consider a query such as ‘Show sales for Metformin’. Without indexing, it becomes difficult for Sage to discern whether to look for the value ‘Metformin’ in the column named ‘Area’ or ‘Vendor Name’ or ‘Drug Name’. +
 If you don't see value suggestions in the Search Data page, then Sage will have trouble picking those values correctly.
 +
