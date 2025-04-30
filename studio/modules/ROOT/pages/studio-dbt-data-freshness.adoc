@@ -1,0 +1,145 @@
+= dbt data freshness
+:categories: ["Integrations"]
+:categories_weight: 1
+:date: 2021-04-13
+:description: Analyst Studio's dbt integration allows users to view metadata about data freshness from dbt directly in Analyst Studio reports.
+:ogdescription: Analyst Studio's dbt integration allows users to view metadata about data freshness from dbt directly in Analyst Studio. reports
+:path: /articles/dbt-data-freshness
+:versions: ["business"]
+:product: Analyst Studio
+
+== Overview
+
+{product}'s dbt integration allows users to view metadata about data freshness from dbt directly in {product} Reports.
+The integration allows {product} users to present information about when source data was last refreshed for a Report, by mapping the tables used in the Report to dbt models.
+
+== Connect {product} to dbt
+
+=== dbt Cloud requirements
+
+* Be on a paid plan (Team or Enterprise) of dbt Cloud.
+* Have link:https://docs.getdbt.com/reference/resource-properties/freshness/[freshness,window=_blank] configured for relevant sources.
+* Add a `dbt source snapshot-freshness` step to the job you want to get metadata for in {product}.
+link:https://docs.getdbt.com/docs/dbt-cloud/using-dbt-cloud/cloud-snapshotting-source-freshness/[See dbt documentation for more detail,window=_blank].
+* Update to at least link:https://docs.getdbt.com/docs/dbt-cloud/cloud-configuring-dbt-cloud/cloud-choosing-a-dbt-version/[v.0.18.1,window=_blank] of dbt Core.
+
+In order to set up dbt data freshness in {product}, you will need to have:
+
+* The *Job ID* for the dbt Job that updates your production data.
+* A *Service Account Token* generated from dbt's Metadata API.
+
+=== Get dbt job ID
+
+A job in dbt represents the deployment of a dbt project on a schedule.
+It is common for organizations to have multiple dbt Cloud jobs, so you should choose the job that serves as the primary mechanism for updating your production data.
+This job must also have freshness checks configured for relevant sources to surface data freshness in {product}.
+
+NOTE: You will not be able to surface dbt data freshness in {product} if freshness is configured in a job separate from your production job.
+
+To get the Job ID, open up your dbt Cloud account and navigate to the Jobs tab.
+From there, you can copy the ID from the URL.
+
+==== Generate a Metadata-only Service Account Token
+
+{product} uses dbt's Metadata API to pull data freshness information from dbt jobs into {product} Reports.
+In order to authorize the API, you will need to generate a token in dbt.
+
+To generate a Metadata-only Service Account Token, go to the Account Settings view of dbt Cloud.
+From there, click on the Service Account tokens page.
+Create a new Metadata-only token and save.
+
+You will also need to enable the Metadata API to allow querying with the Metadata-only token.
+Navigate to the Metadata page in Account Settings to enable access to the API.
+
+For more information on how to generate a Service Account Token, link:https://docs.getdbt.com/docs/dbt-cloud/dbt-cloud-api/service-tokens#metadata-only-service-account-tokens[see the dbt Cloud documentation,window=_blank].
+
+==== Set up in {product} connection settings
+
+Once you have a job ID and signature, go to your Workspace's *Settings* and navigate to the *Manage Connections* tab.
+Select the Connection you want to enable dbt for and navigate to the *dbt Integration* tab.
+
+[.bordered]
+image::dbt2.png[dbt2]
+
+Only admins or users with permission to manage the Connection will be able to enable the dbt integration.
+If you have multiple Connections, the integration must be set up for each Connection separately.
+
+== Viewing dbt data freshness in {product} Reports
+
+Freshness information from dbt is surfaced on Reports in two places:
+
+* Main Report view
+* Report Details
+
+From a Report, you can find when the source data from dbt was last refreshed by clicking on the info icon.
+In addition to seeing the *Source data last refreshed* time from dbt, you'll find additional information about the Report, such as when it was last successfully run and last edited.
+
+TIP: Compare the dbt **Source data last refreshed** time to the Report's **Last successful run** time to see if the Report you're viewing is up-to-date. If the source data was last refreshed more recently than the Report was run, you may see fresher data in the Report by clicking the **Run Now** button.
+
+[.bordered]
+image::dbt3.png[dbt3]
+
+To view the *Source data last refreshed* time for each table included in the Report, go to Report Details.
+A particular table can have multiple parent source models in dbt.
+The timestamp shown is the last updated time for the oldest dbt source model.
+Hover over the timestamp to see the dbt source name.
+
+If a Report's queries reference Connections that don't have dbt enabled, the table will not be shown in this list.
+
+[.bordered]
+image::dbt4.png[dbt4]
+
+[#faqs]
+== FAQs
+
+[discrete]
+=== *Q: If I have multiple dbt jobs, which job ID should I add to {product}?*
+
+A job in dbt represents the deployment of a dbt project on a schedule.
+It is common for organizations to have multiple dbt Cloud jobs, so they should choose the job that serves as the primary mechanism for updating production data.
+This job must also have freshness checks configured for relevant sources to surface data freshness in {product}.
+
+[discrete]
+=== *Q: Where does "`source data last refreshed`" timestamp come from?*
+
+The timestamp considers all tables in the Report from a Connection that has dbt enabled.
+Those tables are mapped to dbt models, for which we get the time at which the oldest source model's last loaded.
+
+[discrete]
+=== *Q: What if I create a Report using one dbt-enabled Connection and another Connection that does not have dbt enabled?*
+
+The freshness timestamp will simply ignore the tables from that Connection.
+The tables from the Connection without dbt enabled will not be shown in Report Details.
+No errors will be displayed.
+
+[discrete]
+=== *Q: Why is the Source data last refreshed value slightly different in the Report header than in View Details?*
+
+This sometimes happens if you have left a Report open.
+Refreshing the Report will surface the most up-to-date timestamp for data freshness from dbt.
+
+[#troubleshooting]
+== Troubleshooting
+
+If {product} is unable to connect to dbt or unable to map any tables in the Report to corresponding dbt models, an error will be shown.
+
+If some tables do not have a freshness timestamp, they will be surfaced in Report Details, with the message `No models found in dbt`.
+This may happen if the table contains only historical data and none of its sources has freshness checks configured, or if the table is not modeled in dbt (that is, raw data).
+
+[discrete]
+=== *1. What does "`no models found in dbt`" mean?*
+
+Timestamps may not be shown if we can't map a {product} table back to a dbt model.
+This usually happens if the table is not modeled in dbt (that is, raw data).
+
+The tables with "`data unavailable`" messaging will *_not_* be shown if the Connection does not have dbt enabled.
+Only tables from Connections that have dbt enabled will be shown in the list or count toward error messaging.
+
+[discrete]
+=== *2. What does "`Data unavailable`" mean?*
+
+This error will only be shown if no timestamp can be shown in Report Activity.
+This may be due to:
+
+* An issue connecting with dbt's API (that is, bad credentials).
+* Tables not having corresponding dbt models.

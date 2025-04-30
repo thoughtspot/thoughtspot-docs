@@ -1,0 +1,617 @@
+= Querying data
+:categories: ["Query and analyze data"]
+:categories_weight: 1
+:date: 2022-12-19
+:description: How to query data in Analyst Studio.
+:ogdescription: How to query data in Analyst Studio.
+:path: /articles/querying-data
+:product: Analyst Studio
+
+== Overview
+
+The Report is where analysis happens in {product}.
+Click the app switcher icon in the top navigation bar and select *{product}*, then click the *New* image:modal-add.svg[new] button in the upper right corner of the window to create a new Report and get started.
+All new Reports are automatically added to your xref:studio-spaces.adoc#personal-space[personal Collection].
+
+After creating a Report, you will be taken to the editor to write your first query.
+
+[.bordered]
+image::SQL_editor.png[Workflow Basics]
+
+The query editor contains a number of re-sizable sections that should be familiar to you if you have worked with other SQL clients before:
+
+. *Report navigation panel* - Use the navigation panel to quickly navigate between the Report Builder, a xref:studio-notebook.adoc#using-the-notebook[Python/R Notebook], and the data section.
+Within the data section, which you can drag to resize, you will see:
+
+ ** Every query in the Report.
+Click on a query to select it and edit its code.
+Use the context menu to rename, duplicate, delete, and more.
+To add a new query, click on the plus button to the right of the data header.
+ ** Each visualization that you build using a query's data.
+Use the overflow menu to add or remove your chart from the Report Builder, duplicate, xref:studio-explorations.adoc#view-saved-explorations[explore], and more.
+Or, click the plus button below your chart to add a new one.
++
+TIP: To tell which charts you've added to the Report Builder, look for a blue checkmark symbol within each chart's icon.
+
+. *Code editor*: Compose your SQL code here.
+The code editor is powered by Ace and supports most Ace <<sql-keyboard-shortcuts,keyboard shortcuts>> and context-aware autocomplete for database objects (for example, column and table names), SQL keywords, and xref:studio-definitions.adoc[Definitions].
+Across the top of the query editor are a number of controls:
+
+** *Run:* Executes all code in the editor.
+Select a portion of your code before clicking *Run* to execute only that portion.
+** *Limit 100:* Checked by default.
+Automatically appends `LIMIT 100` to your query so no more than 100 rows are returned in the result set.
+This speeds up exploratory querying but should be unchecked once you want to see a complete result set.
+** *Format SQL:* Automatically indents and formats your SQL code for you.
+If you don't like how it formats your code, click it again to revert.
+** *View History:* The running history of each query execution, including the raw code (as written), rendered code (SQL sent to the database after processing all <<extending-sql-with-liquid,Liquid code>>), and any data that was returned.
+Select a historical query run and click *Open* to replace the code currently in the query editor with the code from that run.
+** *Editor Settings:* Toggle on/off settings for the code editor.
+These options allow you to personalize the editor to fit your preferences.
+Choose between light and dark modes, side-by-side or stacked panels, Limit 100 on/off by default, and other helpful autocomplete settings.
+To turn autocomplete on or off, you can toggle the switch in the Autocomplete Settings or you can disable (and re-enable) it by hitting  `Command + Option + A` ( `Control + ALT + A` on a PC) in the editor.
+. *Data view*: After you successfully execute a SQL query, the tabular results, fields, and syntax are displayed here, which you can drag to resize.
+
+** Use the Data tab to consume your results, share the URL to that specific query, export the raw query data as a CSV, or copy the data to the clipboard.
++
+[.bordered]
+image::dataview-data.png[Data tab]
+** Use the Fields tab to view metadata about your fields, add new calculated fields, and edit, rename, or remove existing calculated fields.
++
+[.bordered]
+image::dataview-fields.png[Field tab]
+** Use the Source tab to toggle between the raw and rendered SQL that was executed at the time of the run, and copy the syntax to the clipboard.
++
+[.bordered]
+image::dataview-source.png[Source tab]
++
+TIP: Quickly expand or collapse the Data View by double-clicking its header.
+
+. *Database dropdown*: Tells {product} which connection to query and which database's schemas and tables to display in the <<schema-browser,schema browser>>.
+. {blank}<<schema-browser,**Schema Browser**>>: A visual representation of the schemas, tables and columns that are available in the selected database, which you can drag to resize.
+
+// The query editor accepts any valid SQL code for the selected database and valid <<extending-sql-with-liquid,Liquid template code>>. Use Liquid to extend the functionality of your SQL code or add xref:studio-parameters.adoc[parameter input forms] to your report to make it more interactive and extensible.
+
+[#schema-browser]
+== Schema browser
+
+The schema browser lets you explore the schemas, tables and columns in the selected database.
+Drag to resize to fit longer table names.
+
+
+image::schema_browser.png[Schema Browser]
+
+. *Show/hide:* Click to hide or reveal the schema browser.
+. *Selected data connection:* Click to reveal and select from a list of data connections.
+The schema browser will show tables for the database displayed here.
+The query will also execute against this connection.
+. *Search:* Type to search for table names in the selected database.
+. *Pinned:* Tables you "pin" are shown at the top of the schema browser so you can easily find them.
+Tables are automatically pinned as you query them.
+To pin a table, hover over its name and click the *pin* image:pin.svg[pin] icon on the right.
+. *Tables:* All the tables that you have access to for a given data connection are listed here, organized by schema.
+Click the *play* button next to any table name to quickly return a sampling of 100 rows from that table.
+. *Columns:* A list of all the columns in a selected table.
+The symbol next to the column name refers to the type of data in that column (for example, varchar, float, date, etc.).
+
+NOTE: The **play** button is not available for certain database types, including those that charge on a per-query basis (for example, Google BigQuery, Amazon Athena, etc.).
+
+== Querying multiple data sources
+
+{product} Reports can contain multiple queries, and each individual query can retrieve data from any one connected database.
+Different visualizations, each with data from different databases, can exist side-by-side within the same Report.
+
+You cannot `JOIN` data sets between different connections in a single query.
+However, you can combine result sets from multiple databases and visualize the combined data using xref:studio-notebook.adoc#accessing-query-results[Python or R in the Notebook], or using JavaScript in the HTML editor.
+
+== Complex and multi-statement queries
+
+{product} performs very little translation or manipulation of your code before sending it to your database for execution.
+This means that {product} will be able to execute any code that's valid for your database.
+Given the right database permissions, you aren't limited to `SELECT` statements;
+you can do anything your database lets you do, including:
+
+* Creating, dropping, and altering tables and views.
+* `INSERT`, `DELETE`, and `UPDATE` operations.
+* Creating, modifying, or employing user-defined functions.
+
+{product} will execute code containing multiple SQL statements, separated by semicolons.
+For example, the following code is valid in {product}:
+
+[source,sql]
+----
+SET TIME ZONE 'UTC';
+
+SET search_path TO schema_name;
+
+CREATE TEMP TABLE temp1 AS
+(
+  SELECT email, company, LOCALTIME AS date FROM customers
+);
+
+SELECT * FROM temp1;
+----
+
+[#extending-sql-with-liquid]
+== Extending SQL with Liquid
+
+=== Overview
+
+You can extend the power of your SQL queries in many interesting ways by using the open source link:http://liquidmarkup.org/[Liquid template language,window=_blank].
+Using Liquid, the SQL behind your {product} Reports can be manipulated at Report run time using loops, if/then statements, and other advanced structures that might be difficult or impossible to do in SQL alone.
+Several examples of these methods are shown below.
+
+Whenever a query is executed in an {product} Report, Liquid code (if present) is evaluated first before the code is sent to your database for execution as SQL.
+Liquid code is composed of:
+
+*link:https://help.shopify.com/themes/liquid/objects[Objects,window=_blank]* which contain attributes that are used to render dynamic content into your SQL query at run time.
+Objects are wrapped in double curly brackets `+{{...}}+`.
+
+*link:https://help.shopify.com/themes/liquid/filters[Filters,window=_blank]* which are simple methods that modify the output of numbers, strings, variables and objects.
+They are placed inside Object tags `{{ }}` and denoted with a `|` character.
+
+*link:https://help.shopify.com/themes/liquid/tags[Tags,window=_blank]* which make up the programming logic (for example, if/else, for, etc.) that tells your code what to do.
+They are wrapped in a single curly bracket and a percent sign `+{%...%}+`.
+Tags don't themselves produce output that gets rendered into your query, but they may instruct {product} to render, ignore, repeat, or otherwise modify specific lines of SQL code.
+
+Full documentation on what's possible with Liquid is available on the link:https://help.shopify.com/themes/liquid[Shopify help site,window=_blank] and link:https://shopify.github.io/liquid/[documentation for the Liquid GitHub repo,window=_blank].
+
+=== Common techniques
+
+[#variables]
+==== Variables
+
+Use variables in Liquid to make your code more extensible and maintainable.
+Declare a variable using the link:https://help.shopify.com/themes/liquid/tags/variable-tags#assign[`assign`,window=_blank] method.
+For example:
+
+[source,sql]
+----
+SELECT * FROM employee_table WHERE favorite_food = '{{ fav_food }}'
+
+{% assign fav_food = 'peaches' %}
+----
+
+The above code would render into the following code for execution against the database:
+
+[source,sql]
+----
+SELECT * FROM employee_table WHERE favorite_food = 'peaches'
+----
+
+NOTE: Variables are scoped only to the query in which they are declared using `assign`. They cannot be referenced across Reports or across queries within the same Report.
+
+==== If/else
+
+Use if/else statements and other link:https://help.shopify.com/themes/liquid/tags/control-flow-tags[control flow tags,window=_blank] to change your SQL code dynamically in response to inputs from things like <<variables,variables>> or xref:studio-parameters.adoc[parameters].
+In the following example, the query that is executed against the database will be different depending on the value of the `car_type` variable:
+
+[source,sql]
+----
+{% assign car_type = 'trucks' %}
+
+SELECT *
+{% if car_type == 'trucks' %}
+  FROM truck_table
+{% elsif car_type == 'cars' %}
+  FROM car_table
+{% endif %}
+----
+
+If `car_type = 'trucks'`, the following code is executed:
+
+[source,sql]
+----
+SELECT * FROM truck_table
+----
+
+If `car_type = 'cars'`, the following code is executed:
+
+[source,sql]
+----
+SELECT * FROM car_table
+----
+
+==== Loops
+
+Loops and other Liquid link:https://help.shopify.com/themes/liquid/tags/iteration-tags[iteration tags,window=_blank] can be used to programmatically generate lists of variables, join statements, columns to select, unions, and other things.
+The query below shows a simple example of a For loop:
+
+[source,sql]
+----
+SELECT *
+  FROM sports_teams
+
+{% for i in (1..4) %}
+  LEFT JOIN draft_picks d{{i}}
+    ON d{{i}}.team_name = sports_teams.team_name
+  AND d{{i}}.round = {{i}}
+{% endfor %}
+----
+
+The above code joins the `draft_picks` table to the teams table four times.
+Each join is assigned a distinct alias (`d1` through `d4`) and a different condition (the round number of the draft pick).
+The rendered code that is actually sent to the database for execution is:
+
+[source,sql]
+----
+SELECT *
+  FROM sports_teams
+  LEFT JOIN draft_picks d1 ON d1.team_name = sports_teams.team_name AND d1.round = 1
+  LEFT JOIN draft_picks d2 ON d2.team_name = sports_teams.team_name AND d2.round = 2
+  LEFT JOIN draft_picks d3 ON d3.team_name = sports_teams.team_name AND d3.round = 3
+  LEFT JOIN draft_picks d4 ON d4.team_name = sports_teams.team_name AND d4.round = 4
+----
+
+In some cases, you may want the last iteration of the loop to produce a different result than other iterations.
+For example, if you're creating a list of strings separated by commas, you might want a comma after every value except the last one.
+Liquid includes a `forloop.last` statement that makes this easy:
+
+[source,sql]
+----
+WHERE name IN (
+  {% for name in list_of_names %}
+    '{{name}}'
+    {% unless forloop.last %}
+      ,
+    {% endunless %}
+  {% endfor %}
+)
+----
+
+For every iteration of the loop except the last one, `forloop.last` returns false.
+Therefore, the value in the `unless` statement--a comma--gets added to your query after every name except the last one.
+
+This link:https://app.mode.com/benn/reports/a1a90160334c/runs/f98a3c7657cf/query[query,window=_blank] contains two examples of a loop.
+This link:https://app.mode.com/benn/reports/24f312e9c69a/runs/7e110a436792/query[query,window=_blank], which uses the `assign` method below, shows one example.
+
+==== Array variables
+
+Typically, `for` loops cycle through collections of values, such as link:https://docs.python.org/3/glossary.html#term-iterable[iterable objects,window=_blank] in Python or vectors in R.
+Liquid doesn't allow you to create arrays of values the same way you would in most languages (for example, `list = ['candy','beans']`).
+To create an array that you can iterate over in a `for` loop, you have to use the `split` filter on a delimited string and assign the result to a variable.
+For example:
+
+[source,sql]
+----
+{% assign food = 'candy,beans,pizza' | split: ","  %}
+
+{% for item in food %}
+  LEFT JOIN types_of_food {{ item }}
+    ON {{ item }}.type = '{{ item }}'
+{% endfor %}
+----
+
+The above code converts the comma-delimited string 'candy,beans,pizza' to an array and assigns that array to the variable `food`.
+The `for` loop then iterates over each value in the array variable `food`.
+
+==== Comments
+
+Use `{% comment %}` and `{% endcomment %}` tags to instruct {product} to ignore whatever text or code is written between them.
+
+==== Parameters
+//+++<flag-icon>++++++</flag-icon>+++
+
+xref:studio-parameters.adoc[Parameters] allow you to define forms that are configurable by viewers of your Report and which return Liquid objects in your Report's code.
+Parameters are a great way to make Reports more extensible, maintainable, and scalable.
+
+==== Query headers
+//+++<flag-icon>++++++</flag-icon>+++
+
+Liquid templates can be used when defining xref:studio-managing-database-connections.adoc#query-headers-and-footers[custom query headers] in data sources connected to your {product} Workspace.
+A custom query header is prepended to every query run against that data source and is a great way to increase logging fidelity in your database.
+
+[#sql-keyboard-shortcuts]
+== SQL keyboard shortcuts
+
+{product}'s SQL Editor runs using the Ace Editor library, and we have enabled most of the link:https://github.com/ajaxorg/ace/wiki/Default-Keyboard-Shortcuts[default keyboard shortcuts,window=_blank] for things like commenting or indenting blocks of text.
+We've also added some {product}-specific keyboard shortcuts:
+
+=== General
+
+|===
+| Action | Mac | PC
+
+| Run query
+|  `⌘` + `Return`
+|  `Ctrl` + `Enter`
+
+| Save query
+|  `⌘` + `S`
+|  `Ctrl` + `S`
+
+| Switch to Report Builder
+|  `Ctrl` + `I`
+|  `Alt` + `I`
+
+| Indent
+|  `Tab`
+|  `Tab`
+
+| Outdent
+|  `Shift` + `Tab`
+|  `Shift` + `Tab`
+
+| Add multi-cursor above
+|  `Ctrl` + `Option` + `↑`
+|  `Ctrl` + `Alt` + `↑`
+
+| Add multi-cursor below
+|  `Ctrl` + `Option` + `↓`
+|  `Ctrl` + `Alt` + `↓`
+
+| Undo
+|  `⌘` + `Z`
+|  `Ctrl` + `Z`
+
+| Redo
+|  `⌘` + `Y`
+|  `Ctrl` + `Y`
+
+| Toggle comment
+|  `⌘` + `/`
+|  `Ctrl` + `/`
+
+| Change to lower case
+|  `Ctrl` + `Shift` + `U`
+|  `Ctrl` + `Shift` + `U`
+
+| Change to upper case
+|  `Ctrl` + `U`
+|  `Ctrl` + `U`
+
+| Fold selection
+|  `⌘` + `F1`
+|  `Ctrl` + `F1`
+
+| Unfold
+|  `⌘` + `Shift` + `F1`
+|  `Ctrl` + `Shift` + `F1`
+
+| Find
+|  `⌘` + `F`
+|  `Ctrl` + `F`
+
+| Replace
+|  `⌘` + `Option` + `F`
+|  `Ctrl` + `H`
+
+| Find next
+|  `⌘` + `G`
+|  `Ctrl` + `K`
+
+| Find previous
+|  `⌘ + Shift + G`
+|  `Ctrl` + `Shift` + `K`
+
+| Open autocomplete
+|  `Ctrl` + `Space`
+|  `Ctrl` + `Space`
+|===
+
+=== Selection
+
+|===
+| Action | Mac | PC
+
+| Select All
+|  `⌘` + `A`
+|  `Ctrl` + `A`
+
+| Select left
+|  `Shift` + `←`
+|  `Shift` + `←`
+
+| Select right
+|  `Shift` + `→`
+|  `Shift` + `→`
+
+| Select word left
+|  `Option` + `Shift` + `←`
+|  `Ctrl` + `Shift` + `←`
+
+| Select word right
+|  `Option` + `Shift` + `→`
+|  `Ctrl` + `Shift` + `→`
+
+| Select to line start
+|  `⌘` + `Shift` + `←`
+|  `Alt` + `Shift` + `←`
+
+| Select to line end
+|  `⌘` + `Shift` + `→`
+|  `Alt` + `Shift` + `→`
+
+| Select up
+|  `Shift` + `↑`
+|  `Shift` + `↑`
+
+| Select down
+|  `Shift` + `↓`
+|  `Shift` + `↓`
+
+| Duplicate selection
+|  `⌘` + `Shift` + `D`
+|  `Ctrl` + `Shift` + `D`
+|===
+
+=== Go to
+
+|===
+| Action | Mac | PC
+
+| Go to word left
+|  `Option` + `←`
+|  `Ctrl` + `←`
+
+| Go to word right
+|  `Option` + `→`
+|  `Ctrl` + `→`
+
+| Go line up
+|  `Ctrl` + `P`
+|  `↑`
+
+| Go line down
+|  `Ctrl` + `N`
+|  `↓`
+
+| Go to line start
+|  `⌘` + `←`
+|  `Alt` + `←`
+
+| Go to line end
+|  `⌘` + `Shift` + `←`
+|  `Alt` + `→`
+
+| Go to start
+|  `⌘` + `↑`
+|  `Ctrl` + `Home`
+
+| Go to end
+|  `⌘` + `↓`
+|  `Ctrl` + `End`
+|===
+
+=== Line operations
+
+|===
+| Action | Mac | PC
+
+| Remove line
+|  `⌘` + `D`
+|  `Ctrl` + `D`
+
+| Copy lines down
+|  `Option` + `Shift` + `↓`
+|  `Alt` + `Shift` + `↓`
+
+| Copy lines up
+|  `Option` + `Shift` + `↑`
+|  `Alt` + `Shift` + `↑`
+
+| Move lines down
+|  `Option` + `↓`
+|  `Alt` + `↓`
+
+| Move lines up
+|  `Option` + `↑`
+|  `Alt` + `↑`
+
+| Remove to line end
+|  `Ctrl` + `K`
+|
+
+| Remove to line start
+|  `⌘` + `Backspace`
+|  `Alt` + `Backspace`
+
+| Remove word left
+|  `Option` + `Backspace`
+|  `Ctrl` + `Backspace`
+
+| Remove word right
+|  `Option` + `Delete`
+|  `Ctrl` + `Delete`
+|===
+
+[#faqs]
+== FAQs
+
+[discrete]
+=== *Q: The schema browser is empty or missing tables I know to be in the database.*
+
+The tables listed in {product}'s schema browser may differ from what you expect for a number of reasons:
+
+* *The database was recently connected or updated.*
++
+{product}'s schema browser updates once daily at 10:05am UTC / 2:05am PST / 5:05am EST.
+If you recently connected a new database, an automatic update is triggered and the schema browser may appear blank for 30 minutes or more until the refresh completes.
+If new tables were added to an existing database, you will need to manually trigger the schema refresh to see the updates.
+To instruct {product} to perform a schema browser refresh, click on the image:menu-dots-gray-press.svg[menu] button in the upper right corner of the schema browser and click *Refresh*.
++
+New tables and databases, however, may be queried immediately regardless of whether they appear in the schema browser.
+
+* *You don't have permission to see the missing tables.*
++
+{product} connects to your database as a database user.
+This user, which is defined by your database, may not have access to all of the tables in your database.
+If you think this might be the case, try querying one of the tables that's missing from the schema browser.
+If the query returns an error saying you don't have permission to access that table, this is likely the issue.
++
+Resolve this issue by granting the database user access to the missing tables.
+These configurations are defined by the database and typically managed by database admins.
+These permissions cannot be changed directly in {product}.
+
+[discrete]
+=== *Q: Does {product} time-out long-running queries or Reports?*
+
+{product} will cancel any incomplete queries or Report runs after a certain period of time to prevent long-running queries from degrading the performance of {product} or your database.
+Note that your database may be configured to time-out queries sooner than the times listed below:
+
+|===
+| Scenario | Time-out after
+
+| Manual query / report run
+| 12 hours
+
+| Scheduled run (daily / weekly / monthly)
+| 12 hours
+
+| Scheduled run (hourly)
+| 1 hour
+
+| Scheduled run (every 30 minutes)
+| 30 minutes
+
+| Scheduled run (every 15 minutes)
+| 15 minutes
+|===
+
+[discrete]
+=== *Q: In what order are queries executed during a report and scheduled run?*
+
+Queries are initiated simultaneously and the results are returned based on the processing time of your database.
+This allows for efficient and concurrent query processing, ensuring that your queries are executed as quickly as possible.
+By starting queries simultaneously, we can maximize the use of your database resources and minimize the overall time it takes to retrieve the results of your queries.
+
+[discrete]
+=== *Q: Does {product} support real-time data?*
+
+At this time, {product} does not maintain active connections to client databases for security and data cost purposes, and does not support real-time data.
+All Reports, whether scheduled or ad hoc, create new connections on demand.
+
+We suggest taking a look at our xref:studio-datasets.adoc#overview[Datasets] documentation.
+This allows multiple Reports to be created off of an initial query, which can be set to refresh on a schedule as well.
+
+[discrete]
+=== *Q: What type and version of SQL does {product} use for the Public Warehouse?*
+
+Our {product} Public Warehouse is a PostgreSQL data source using version 13.1.
+When connecting to a private database, {product} does not enforce any specific SQL syntax.
+Instead, we support any version of SQL that your connected database supports, allowing you to use the full capabilities of your database without any limitations.
+This allows you to use the most up-to-date SQL features and ensures that your queries are optimized for your specific database environment.
+
+[discrete]
+=== *Q: Is there a query limit for Reports?*
+
+Yes, currently the limit is 160 queries per Report.
+
+[#troubleshooting]
+== Troubleshooting
+
+////
+[#sorry-this-data-is-larger-than-your-limit]
+[discrete]
+=== *1. Sorry, this data is larger than your limit.*
+
+{product} limits the size of query results that you can access depending on whether you're using {product} Studio, or which paid plan you've chosen.
+
+For {product} Business and Enterprise customers, we offer different plans that support increased capacity up to 10 GB.
+////
+
+[discrete]
+=== *2. Query result is too large. Please try adding a `LIMIT` clause.*
+
+Query results over 10 GB cannot be returned to {product} from a database.
+If your results exceed this limit, add a LIMIT statement to your query to return a smaller set of results.

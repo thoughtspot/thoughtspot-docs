@@ -1,0 +1,554 @@
+= Datasets
+:categories: ["Query and analyze data"]
+:categories_weight: 10
+:date: 2022-12-05
+:description: Curate tables of data that can be reused across multiple reports
+:ogdescription: Curate tables of data that can be reused across multiple reports
+:path: /articles/datasets
+//can't find in modern stack
+:product: Analyst Studio
+
+[#overview]
+== Overview
+
+Datasets are curated tables of data that can be reused across multiple Reports.
+They are created by writing a SQL query and transforming the results of that query into a reusable asset.
+Datasets can then be shared across your organization.
+This allows multiple Reports to be created off of the initial query, which can be set to refresh on a schedule.
+Reports created from Datasets will be able to consume the fresh data when available to ensure accuracy of the reporting over time.
+
+The data in a Dataset is cached in Helix, which enables more efficient data usage and improved performance for Reports created from Datasets.
+Rather than each individual Report hitting the warehouse, only the single Dataset hits the warehouse when it refreshes.
+That data then cascades to all associated Reports.
+
+=== What are the benefits of using Datasets?
+
+Datasets can help make maintaining and scaling access to data efficient and cost-effective.
+They create a new layer between your data warehouse and Reports in {product}, which in practice allows for more control over governance, centralized logic, and data usage.
+
+Key benefits of Datasets:
+
+* *Centralize logic and data quality*: Datasets can power multiple Reports, allowing analysts to write or update one query that cascades down across multiple Reports.
+* *Manage data stack complexities*: Datasets introduces a new way data moves through {product}, creating a middle governance later that can centralize logic and make scaling easier.
+* *Improve efficiency and performance*: With data cached in Helix, this provides incremental performance gains for each Report refresh that doesn't have to hit the data warehouse.
+* *Cost savings*: Datasets are positioned between Reports and warehouses for more efficient data usage and controlled warehouse hits.
+* *Confident self-service access*: Datasets can be an approved source for teams within an organization to confidently build Reports without writing any code, knowing the Dataset has been published by the data team.
+* *Data accessibility*: Datasets can be organized in collections and browsed when creating Reports.
+Datasets are subject to permissions just like Reports.
+
+=== When should you use Datasets?
+
+Datasets are a great option for creating data assets that are reusable in nature.
+There are a couple of ways to think about reusability:
+
+* Creating Datasets with a single query on a specific topic.
+End users can explore the data in a Report, as well as add additional datasets to the Report to create a more cohesive story of the data.
+* A Report that will be referenced regularly, such as a finance Report, for example.
+This Report may contain multiple queries, which can all be combined into a Dataset with a single refresh schedule.
+* A Dataset with a more broad data view, such as a Dataset created to answer questions about product engagement.
+The Dataset would be the source of truth for asking ad-hoc questions on this topic.
+
+Check out our {product} University learning path, link:https://university.mode.com/path/self-serve-infrastructure-datasets[Building Self-Serve Infrastructure with Datasets,window=_blank], to learn more about developing a Datasets strategy.
+
+== Creating a Dataset
+
+To create a new Dataset, select the *Create* button in the top right corner of your {product} home screen and choose *Make a reusable Dataset*.
+
+[.bordered]
+image::make-dataset-plus.png[create dataset]
+
+Alternatively, go to *My Work* on the left nav and click the shortcut tile for *Make a reusable Dataset*.
+
+[.bordered]
+image::make-dataset-shortcut.png[create dataset]
+
+This will open up the Datasets editor where you can write a new SQL query or insert SQL snippets using xref:studio-definitions.adoc#overview[Definitions].
+
+[.bordered]
+image::create_dataset2.png[create dataset]
+
+=== Previewing your Dataset
+
+Once you run the query, you will be able to see the results below in the data view.
+This shows you the columns that were generated from the SQL query.
+
+[.bordered]
+image::data_view.png[data view]
+
+You can see a list of all of the available fields in the Dataset from the Fields tab.
+
+[.bordered]
+image::fields_tab_dataset.png[Datasets from the Fields tab]
+
+=== Describing the fields in your Dataset
+
+We recommend adding field descriptions to all Workspace Datasets to build shared understanding around business and logic definition.
+
+To add a new field description, edit any Dataset and navigate to its Fields tab.
+From here, *double-click* on the row you'd like to edit.
+Descriptions support up to 350 characters, and text formatting such as bolding, italicizing, emojis, line breaks, and hyperlinks.
+
+[.bordered]
+image::1-add-description.png[Adding descriptions to the dataset]
+
+[.bordered]
+image::2-fields-view-page.png[View field descriptions on the dataset view page]
+
+Once added, field descriptions will appear in the Fields tab of a Dataset, and when hovering over the fields list in the chart builder.
+
+[.bordered]
+image::3-hover-description.png[Hover over fields to see descriptions in chart builder]
+
+TIP: Field description tooltips have a 250px max width. To see how your description will appear when charting off the data, add your Dataset to a Report and navigate to the given field from within the chart builder.
+
+Here are some use cases to think about when adding field descriptions to Dataset fields:
+
+[options="header"]
+|===
+| Use case   | Sample field   |  Sample Description
+
+| ----------------------   | --------------------   | --------------------------
+
+| *Shared understanding* +
+Codify business definitions and logic, especially when using calculated fields. |  *Engagement rate*  | Calculates the % of users who are engaged, where engaged is defined as any user who has logged in and taken >1 action in the past 14 days.
+
+| *Expectation setting & data previews* +
+List out the possible values you'd expect the field to return.  | *Order status*      | Segments ordered by canceled, completed, or returned.
+
+| *Disambiguation* +
+Help colleagues quickly discern between fields with similar names or meaning, for example, Organization (business) vs Customer (user).  | Order amount    | Total amount of order supply placed per order, for example, 8 units of paper. +
+⭐️ Tip: if you're looking for Total price, use Order price.
+
+| *Education* +
+Provide best practice and how-tos when charting.
+Consider including links out to sample Reports or charts. | Total signups    | Shows the total number of signups by week for every single row. +
+⚠️ Note: be careful when using to not over-count total signups.
+Use this field only when you have the data aggregated by week.
+//+++<u>+++**See example chart here**+++</u>+++
+
+|===
+
+=== Adding calculated fields to the Dataset
+
+You can add new calculated fields to the Dataset from the Fields tab.
+Doing so will add the calculated field to the list of available fields, and also make it available in any reports created from the Dataset.
+
+To add a new calculated field, first select the *New field* button.
+
+[.bordered]
+image::add_calc_fields.png[Adding calculated fields to the dataset]
+
+Then enter the formula for your calculated field, along with adding a name.
+To save the calculated field, select the *Apply and Close* button.
+
+[.bordered]
+image::add_calc_fields2.png[Adding calculated fields to the dataset]
+
+=== Viewing the source syntax
+
+The source syntax of the query run can be accessed from the *Source* tab.
+
+[.bordered]
+image::view_sourceSyntax.png[Viewing the source syntax]
+
+=== Adding a name and description to the Dataset
+
+You can add a name and description to the Dataset.
+To do so, select the caret next to the placeholder name, "`Untitled Dataset.`" From the dropdown, select *Rename*.
+
+[.bordered]
+image::addingName_Description.png[Adding name and description]
+
+Enter the desired Dataset name and description.
+Then select *Save*.
+
+[.bordered]
+image::rename_dataset.png[Adding name and description]
+
+We recommend using consistent naming conventions and adding detailed descriptions to your Datasets.
+Doing so will help other team members find and understand how to use the Dataset.
+
+=== Scheduling a Dataset
+
+You can set a schedule for your Dataset to refresh.
+When a Dataset refreshes, all associated Reports built using that Dataset will receive a prompt to pull in the fresh data.
+
+To create a new schedule, select the caret next to the Dataset name and choose *Schedule*.
+
+[.bordered]
+image::schedule_ds.png[Schedule a dataset]
+
+Then, select *Create New Schedule* to open the scheduling options.
+From here, you can set the refresh frequency, as well as the specific time and timezone.
+
+[.bordered]
+image::create_new_schedule.png[Schedule a dataset]
+
+=== Moving a Dataset to a Collection
+
+The final step to create a Dataset is to move the Dataset into a Collection.
+You can think of this action as publishing the Dataset, as it makes the Dataset available for other team members to access and use it.
+
+To move the Dataset to a Collection, select the *Move to a Collection* button in the top right corner of the screen.
+
+This will open a modal displaying all of the available Collections.
+
+[.bordered]
+image::move_to.png[Moving a dataset]
+
+Select the Collection you want to add the Dataset to, then select *Move*.
+
+=== Viewing a created Dataset
+
+To view a Dataset you've just created, select the *View* button in the top right corner of the screen.
+
+[.bordered]
+image::view_dataset.png[View a dataset]
+
+You will be able to view the Data, Fields, and Source tabs, and Dataset details. You can also export or copy the data from this view.
+
+[.bordered]
+image::viewing_a_dataset.png[View a dataset]
+
+In the Details pane, you can see information about the Dataset, including the Collection it lives in, description, when it was last run, any schedules it runs on, and which Reports are built from the Dataset.
+To view a list of Reports created from the Dataset, select the *Used in* link to open a modal displaying all child Reports.
+
+[.bordered]
+image::dataset-used-in.gif[Details pane]
+
+NOTE: Reports you don't have access to will still appear in the count, but will be obfuscated/un-viewable.
+
+You can share the Dataset with others on your team by selecting the *Share* button.
+
+[.bordered]
+image::share_ds.png[Share a dataset]
+
+Or, if you're ready to create a new Report using this Dataset, select the *Use in new Report button*.
+
+[.bordered]
+image::newReport_ds.png[Share a dataset]
+
+This will create a new Report with a flat table visualization added by default.
+You can filter and sort the data on the table visualization or create additional visualizations using the data in the Dataset.
+
+[.bordered]
+image::viewing_a_dataset1.png[Share a dataset]
+
+=== Dataset permissions
+
+The following matrix explains how permissions and access to Connections and Collections effectively create permissions around Datasets.
+
+Dataset access for creation image:dataset-access-creation.png[Dataset access for creation]
+
+Dataset access for usage image:dataset-access-usage.png[Dataset access for usage]
+
+You can learn more about creating a Dataset access and permissions strategy in this {product} University course, link:https://university.mode.com/building-datasets-for-self-serve-analytics/1564645/scorm/18mar8c4v6a60[Dataset organization and permissions best practices,window=_blank].
+
+== Using Datasets in Reports
+
+You can add a Dataset to any Report for which you have edit access.
+This is true whether the Report was initially started with a SQL query, or another Dataset.
+To do so, open any Report in Edit mode and select the *Add Data* button from the left-side menu.
+
+[.bordered]
+image::add_ds_to_a_report.png[Using a dataset in reports]
+
+This will provide the options to add additional data via a new query, or using a Dataset.
+Select *Use a Dataset*.
+
+This will open up a modal that allows you to browse existing Datasets to add to your Report.
+
+[.bordered]
+image::use-a-ds.png[Using a dataset in reports]
+
+You can use the search bar to filter for a specific Dataset, then select the one you want to work with.
+Datasets from Workspace Collections you have access to will appear here.
+If you want to use a personal Dataset, you'll need to use the *By URL* option and paste the URL in the search bar.
+
+Once you select a Dataset, it will be added to your Report.
+You'll be able to view the data as well as begin building visualizations from it.
+
+[.bordered]
+image::use_ds1.png[Using a dataset in reports]
+
+=== Starting a new Report from a Dataset
+
+You can create a Report from a Dataset in one of two ways.
+
+. <<create-button,*Creating a new Report using the Create button in the top header or the shortcut tile in My Work*>> +
+Use this workflow when you know what data you want to analyze, and want to pull in the most relevant Dataset to use in your Report.
+. <<dataset-view,*Creating a new Report from the Dataset*>> +
+Use this workflow when you've found a Dataset that you'd like to explore and analyze further.
+
+[#create-button]
+=== Creating a Report from the Create button or shortcut tile
+
+To create a new report, select the *Create* button in the {product} header, and choose *Use existing data*.
+
+[.bordered]
+image::use-existing-data-plus.png[Creating a report from the create button]
+
+Alternatively, go to *My Work* on the left nav and click the shortcut tile for *Use existing data*.
+
+[.bordered]
+image::use-existing-data-shortcut.png[Creating a report from the shortcut tile]
+
+If you have more than one option besides SQL, you will be prompted to choose how you want to start your Report.
+Select *Dataset*.
+
+[.bordered]
+image::start-report.png[Creating a report from the create button]
+
+Otherwise, this will open up a modal that allows you to browse existing Datasets to use as the foundation of your Report.
+
+You can use the search bar to filter for a specific Dataset, then select the one you want to work with.
+
+image::use-a-ds.png[Use a dataset]
+
+Datasets from Workspace Collections you have access to will appear here.
+If you want to use a personal Dataset, you'll need to use the *By URL* option and paste the URL in the search bar.
+
+[.bordered]
+image::use_a_ds_byURL.png[Use a dataset]
+
+Selecting a Dataset will open it.
+
+[#dataset-view]
+=== Creating a Report from the Dataset view
+
+You can start a new Report while viewing a Dataset.
+From the Dataset view, select the green *Use in new Report* button from the top menu.
+
+[.bordered]
+image::newReport_ds.png[Use a dataset]
+
+This will create a new Report that you can start exploring and adding new visualizations to.
+
+=== Personalizing the Dataset
+
+From the Dataset, you can start to explore by browsing the fields and adding your own custom functions on the fly.
+
+To add a function, navigate to the Fields tab and click the *New Field* button.
+
+[.bordered]
+image::4-new-field.png[Add a function to a dataset]
+
+Enter the function for your calculated field, and give it a name.
+To save the field, select the *Apply and Close* button.
+The field will be saved locally to your Report, allowing you to personalize your view of the data without impacting the original Dataset.
+
+[.bordered]
+image::5-save-local-formula.png[Save a function for a dataset]
+
+To describe your own local fields, *double-click* on the row for a given field within the Fields tab.
+
+Field descriptions support up to 350 characters, and text formatting such as bolding, italicizing, emojis, line breaks, and hyperlinks.
+
+[.bordered]
+image::6-add-local.png[Add descriptions to local fields]
+
+Descriptions you add to your local fields will appear when hovering over the fields list in the chart builder, alongside any other field descriptions that were added directly to the source Dataset.
+
+[.bordered]
+image::7-see-local.png[See local field descriptions on hover]
+
+NOTE: You won't be able to edit or delete field descriptions that were added to the source Dataset while using its data within a Report. To add or change a source field's description, edit the original Dataset.
+
+=== Creating charts using Dataset data
+
+From the Dataset, you can start to explore by browsing the fields and adding custom functions on the fly.
+This allows you to personalize your view of the data without impacting the original Dataset.
+
+[.bordered]
+image::9-data-view.gif[Use a dataset]
+
+To explore the data visually, select the *New Chart* button from either the top menu or left-side menu.
+
+[.bordered]
+image::10-new-chart-ctas.png[New chart]
+
+Choose the chart type you want to create.
+Doing so will open the visualization builder.
+From here, you can drag and drop the fields you want to analyze to create your chart.
+
+[.bordered]
+image::11-make-chart.png[New chart]
+
+=== Move charts from queries to Datasets
+
+User can copy charts previously created off ad-hoc queries to a reusable Dataset using a simple copy-paste action.
+Only one chart can be copied at a time.
+
+. Copy chart to {product} clipboard: The copy to {product} clipboard option is accessible via the kebab menu, located on the left-hand side navigation panel within the chart designer.
+. Paste chart from {product} clipboard: The paste from {product} clipboard action is available in the kebab menu for each data source in the chart designer.
+The fields that are required for the copied charts but are missing from the Dataset will be displayed as red pills.
+The user can switch out the red pills with relevant fields from the Dataset.
+. Replace fields in the pasted chart: Users can drag fields directly on top of the field to be replaced in Visual Explorer and in Quick Chart dropzones that accept a single field.
+For Quick Chart dropzones that accept more than one field, the new field can be added to the shelf and the old field can be dragged out to be removed.
+The typeahead search in the dropzones can also be used to add the new fields.
+
+_Move a chart created off a query to a Report with the Dataset_  image:copy-paste-from-chart-designer.gif[Copy Paste from Chart editor]
+
+=== Adding charts to the Report Builder
+
+To add your charts to the Report Builder, select the chart's context menu from either the top menu or left-side menu.
+Then choose *Add to Report Builder*.
+
+[.bordered]
+image::12-add-to-builder.png[Add chart]
+
+You can access the report builder by selecting *Report Builder* from the left-side menu.
+Once in the Report Builder, you can configure the layout and customize the look and feel of your Report.
+
+[.bordered]
+image::13-report-builder.png[Add chart]
+
+You can add filters to your Report to allow viewers to slice the data in different views.
+
+To give your Report a name, hover over the Report title in the navigation panel and click on the pencil icon.
+This will open a modal where you can give the Report a name and description.
+
+[.bordered]
+image::14-rename-report.png[Add chart]
+
+By default, the Report will live in your personal Collection.
+To move it to a different Collection, select the dropdown menu next to Report, then choose *Move to*.
+
+A window will appear displaying an option to create a new Collection, or to select from any Collections you have access to.
+
+[.bordered]
+image::move_to.png[Add chart]
+
+Once you choose where to move the Report to, you will be able to find the Report in that Collection.
+Anyone else with access to the Collection will also be able to see and find the Report.
+
+Learn more about organizing and managing Reports in collections in this xref:studio-spaces.adoc[article].
+
+=== Refreshing data in a Dataset-based Report
+
+Datasets run independently of Reports.
+When you run your Report or refresh an individual Dataset, {product} will check to see if there's a newer Dataset run available, load it in, and snapshot its results within your Report's Run History.
+
+There is a badge in the Report edit view notifying you that a fresher run is available, so you know when to refresh the Report.
+
+[.bordered]
+image::5-refresh-dataset.gif[Dataset refresh]
+
+NOTE: Changes to a Dataset's calculated fields will be reflected immediately on page load, regardless of whether there's a newer run available.
+
+You can also compare how recently your entire Report ran relative to when the Datasets were last run by navigating to your Report's Activity popover.
+
+[.bordered]
+image::6-activity-popover.png[Dataset refresh]
+
+== Deleting Datasets
+
+=== How to delete Datasets
+
+To delete a Dataset, open up the Dataset in edit mode.
+Then, using the dropdown next to the Dataset name, select *Delete Dataset*.
+
+[.bordered]
+image::delete-dataset.png[Delete Dataset]
+
+Doing so will prompt a confirmation that you want to delete the Dataset.
+To confirm, select *Delete*.
+
+[.bordered]
+image::delete-dataset-confirmation.png[Delete Dataset confirmation]
+
+NOTE: If a Dataset is deleted, it will be permanently removed from your Workspace, and any dependent Reports, charts, or calculated fields will break.
+
+[.bordered]
+image::4-delete-dataset.png[Delete Dataset confirmation]
+
+[#faqs]
+== FAQs
+
+=== Dataset creation and management
+
+[discrete]
+==== *Q: Can I use Parameters in my Dataset?*
+
+No.
+Parameters are not supported within Datasets.
+You can use liquid templating in your SQL query code, but we don't recommend it.
+There is no affordance for interacting with Parameter inputs when viewing or scheduling a Dataset or when using its data within Reports.
+
+[discrete]
+==== *Q: What happens if my Dataset fails and it's being used in Reports?*
+
+If a Dataset run is canceled or fails, all Reports using its data will fall back to the last successful run until the issue is resolved.
+Within Reports, Datasets are badged to notify the user when there's an issue.
+
+NOTE: Even if a query run is successful, changing field names or removing fields can cause breaking changes to Reports.
+
+[discrete]
+==== *Q: What happens if I delete a Dataset?*
+
+The Dataset will be permanently removed from your Workspace, and any dependent Reports, charts, or calculated fields will break.
+
+[.bordered]
+image::4-delete-dataset.png[deleted dataset]
+
+[discrete]
+==== *Q: How are Datasets different from Definitions?*
+
+Definitions are SQL snippets that allow you to write logic in one place and reference that logic across multiple queries.
+Like Datasets, when run as a query, they produce a data table and refer to a specific schema within a particular connection.
+But to reference them in a Report, you must run a new query each time.
+
+Unlike Definitions, Datasets are refreshed and materialized independently.
+All Reports referencing a Dataset can accept newer runs, so you only need to run the data once.
+
+There's also no way to use a Definition without writing SQL.
+You need to have both permissions to query against the Connection a Definition is built on top of, and feel comfortable writing a query, to take advantage of its data.
+
+[discrete]
+==== *Q: When should I think about using Datasets vs {product}'s new dbt Semantic Layer Integration?*
+
+Datasets are reusable containers of curated data intended to cover much broader topics and subject areas.
+You might consider using a Dataset to return an entire table that you've modeled in dbt, whereas metrics are typically much more tightly scoped.
+Metrics are also aimed at allowing users to quickly find answers to very well-defined questions (for example, 'How much revenue did we make last week?'), whereas Datasets can be used for more open-ended, exploratory self-serve analysis (for example, 'Why is my revenue lower this quarter than last quarter?').
+
+While both features allow you to analyze data in a code-free environment, they can have different impacts on your warehouse/Helix usage.
+Datasets are refreshed independently and materialized into {product}'s data engine, Helix, allowing you to run a Dataset once and leverage its results across multiple Reports.
+
+Unlike Datasets, dbt metric logic is run directly through dbt's SQL proxy and server to ensure the data is aggregated correctly.
+This requires each individual metric chart to be run independently.
+However, we take advantage of Helix for all stylistic and formatting changes to avoid round trips to the database whenever possible.
+
+Learn more about dbt Semantic Layer Integration link:https://mode.com/get-dbt/[here,window=_blank].
+
+=== Dataset usage
+
+[discrete]
+==== *Q: Can I analyze Dataset data within the Notebook?*
+
+No.
+Only query data within a Report is accessible within the Notebooks.
+
+[discrete]
+==== *Q: Can I add custom HTML to Reports that are using Datasets?*
+
+You can customize the styling of your Report's layout using the HTML editor, but link:https://mode.com/example-gallery/[example gallery,window=_blank] code that uses link:https://github.com/mode/alamode[alamode,window=_blank] is unsupported for Reports using Datasets.
+
+[discrete]
+==== *Q: Can I explore a Dataset?*
+
+You can't explore Datasets directly, but you can explore Report visualizations that are built on a Dataset.
+Currently, saving these Explorations is unsupported.
+
+[discrete]
+==== *Q: Is there an automated way to copy charts and visualizations from SQL query-based reports to Dataset-powered reports?*
+
+No.
+This functionality is not available today.
+However, our Product team is considering multiple enhancements to aid in the facilitation of this workflow.
+
+[discrete]
+==== *Q: Is it possible to build a Dataset on top of an existing Dataset? Or join two or more Datasets together in a new Dataset?*
+
+No.
+It's not possible to reference Dataset results in SQL queries today.
+That means there isn't a way to leverage an existing Dataset within a new Dataset, or join the results of multiple Datasets together.

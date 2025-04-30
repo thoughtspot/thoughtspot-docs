@@ -1,0 +1,237 @@
+= GitHub sync
+:categories: ["Integrations"]
+:categories_weight: 2
+:date: 2019-03-13
+:description: An overview of Analyst Studio's GitHub sync.
+:ogdescription: An overview of Analyst Studio's GitHub sync.
+:path: /articles/github
+:versions: ["business"]
+:product: Analyst Studio
+:jira: SCAL-222766
+
+== Overview
+
+You can connect {product} to a GitHub repository of your choice.
+This will create a two-way sync between {product} and GitHub, where changes made in {product} can be pushed to the GitHub repository, and changes made in GitHub will be automatically pushed to {product}.
+
+== Requirements
+
+Before you begin, you must meet the following requirements in order to set up the {product} sync with GitHub:
+
+//* Your {product} Workspace must be on one of {product}'s paid plans.
+* You must be an admin of your {product} Workspace.
+* You must be authorized to install the link:https://github.com/apps/modeanalytics[{product} GitHub app,window=_blank] in your GitHub organization.
+* In GitHub, create a new repository or select an existing repository for {product}.
+* The default branch cannot be protected and must be titled either "`main`" or "`master`".
++
+NOTE: A branch must be created prior to starting the integration setup. {product} will not automatically create a branch as part of this process.
+
+== How it works
+
+[#mode-github]
+=== {product} → GitHub
+
+Edit Datasets, Reports, or Definitions in {product} as usual, and move Datasets and Reports to a Workspace collection.
+Datasets and Reports in users' personal Collections or the community Collection will not be synced.
+
+When you are ready to push changes for a Dataset to GitHub, edit the Dataset, and click on the downward caret ▼ next to the Dataset name, and select *Push to GitHub*.
+image:github_push_dataset.jpg[Merge GitHub changes]
+
+To push changes for a Report to GitHub, edit the Report, click *Report* in the menu, and select *Push to GitHub*.
+image:github_push_report.png[Merge GitHub changes]
+
+To push changes for a Definition to GitHub, edit the Definition, click *More* in the menu, and select *Push to GitHub*.
+image:github_push_definition.png[Merge GitHub changes]
+
+Enter a commit message to describe the changes, and your updates will be pushed to GitHub.
+
+=== Batch updates from {product} → GitHub
+
+{product} admins can push the latest version of all Datasets, Reports, Definitions, and themes from {product} to GitHub in a batch update.
+
+To push all updates:
+
+. Click the app switcher icon in the top navigation bar and select *{product}*, then click on your name in the upper left corner of the window.
+. Click *Workspace Settings*.
+. Under the *Features* section, click *GitHub*.
+. Under the *Unresolved Differences* tab, click *Push All*.
+
+This will resolve any differences between {product} and GitHub by overwriting what's in GitHub with what's in {product}.
+Please note that this may take a few minutes.
+
+=== GitHub → {product}
+
+Any commit to the default branch in your GitHub repository will automatically trigger a push to {product}.
+
+=== Uncommitted changes in {product}
+
+If you push changes for a given object (Dataset, Report, Definition, or theme) from GitHub to {product}, your push will only affect that object.
+In other words, you will not overwrite uncommitted changes to other objects in {product}.
+
+For example, say you have three reports in {product}:
+
+|===
+| In Analyst Studio | In GitHub
+
+| `A`
+| `A`
+
+| `B*`
+| `B`
+
+| `C`
+| `C*`
+|===
+
+* Report `A` is the same in both {product} and GitHub.
+* Report `B` has been updated in {product} (`B*`) but has not been synced to GitHub.
+* Report `C` has been updated in a branch on GitHub (`C*`) but that branch has not yet been merged with the default branch.
+Therefore, `C*` (the changes to report `C`) will not be visible in {product}.
+
+When the branch containing `C*` is merged with the default branch, Report `C` in {product} will be updated to `C*`.
+However, `B*` will not be overwritten by `B`.
+
+=== Pull requests
+
+Changes to a branch other than the default branch won't be reflected in {product}.
+You can create branches and open pull requests in GitHub as normal without affecting your reports in {product} until those branches are merged into the default branch.
+
+=== Merging changes to default branch
+
+Merge to the default branch in GitHub and changes will automatically sync to {product}.
+If your branch causes any issues, you can revert to the previous version in GitHub.
+
+[.bordered]
+image::github_sync.png[Merge GitHub changes]
+
+Note that the owner of your GitHub organization will need to install the link:https://github.com/apps/modeanalytics[{product} GitHub app,window=_blank] in order to use the {product} Github sync.
+
+=== Repository structure
+
+When you connect your {product} Workspace to your GitHub repository, the following assets will be synced:
+
+* Datasets and Reports in all open and private Collections (Datasets and Reports in users' personal Collections or the community Collection will not be synced.)
+* Custom themes
+* Definitions
+
+The repository will be structured as follows:
+
+[source,plaintext]
+----
+Mode/                // Each Mode Workspace  into "Mode" directory in the repo
+├── org-foo/         // Directory name is org username
+|  ├── definitions/
+|  |  ├── definition-1.sql
+|  |  └── definition-2.sql
+|  ├── spaces/
+|  |  └── space_foo/
+|  |      ├── dataset-1.dataset.token/
+|  |      |   ├── query-1.token.sql
+|  |      ├── report_foo.token/
+|  |      |   ├── dataset-1.dataset.token.sql
+|  |      |   ├── query-1.token.sql
+|  |      |   ├── query-2.token.sql
+|  |      |   ├── index.html
+|  |      |   ├── settings.yml
+|  |      |   └── python-notebook/
+|  |      |       ├── cell-1.token.py
+|  |      |       └── cell-2.token.py
+|  |      ├── report_bar.token/
+|  |      |   ├── query-1.token.sql
+|  |      |   ├── query-2.token.sql
+|  |      |   ├── index.html
+|  |      |   ├── settings.yml
+|  |      |   └── python-notebook/
+|  |      |       ├── cell-1.token.py
+|  |      |       └── cell-2.token.py
+|  |      └── archived/
+|  |          └──report_old.token/
+|  |             ├── query-1.token.sql
+|  |             ├── query-2.token.sql
+|  |             ├── index.html
+|  |             └── settings.yml
+|  ├── themes/
+|  |  ├── theme-1.css
+|  |  └── theme-2.css
+|  └── README.md
+----
+
+All code pushed from your {product} Workspace to your GitHub repository will be stored under a top-level directory called `Mode`.
+This is to allow you to nest other analytics code (for example,
+dbt, airflow, etc.) within this repository.
+
+== Setting up the sync
+
+. Create a GitHub organization if you don't already have one.
++
+{product}'s GitHub sync requires your repo to be part of a GitHub organization.
+Learn more about link:https://help.github.com/enterprise/2.12/admin/guides/user-management/creating-organizations/[creating a GitHub organization,window=_blank].
+
+. Create a new repository in GitHub for your {product} assets.
++
+NOTE: While we suggest this repository be solely dedicated to syncing with {product}, other top-level folders in the repository will not be affected.
+
+. Install the {product} GitHub app.
++
+Navigate to the link:https://github.com/apps/modeanalytics[installation page for {product}'s GitHub app,window=_blank] and click *Configure*.
+Confirm the installation location and then select the repository you'd like to use.
++
+[.bordered]
+image::github-mode-app.png[GitHub Analyst Studio app]
+
+. Retrieve the installation ID for your {product} GitHub app.
++
+The ID appears as numerical code at the end of the installation success page's URL, for example 88888 in this URL:
++
+`+https://github.com/settings/installations/88888+`
+
+. Configure your {product} Workspace.
+ .. On the top left of {product} home page, click on your account and select *Workspace Settings*.
+ .. Select *GitHub* from the left navigation panel under Features.
+ .. Input your GitHub organization name, GitHub repository name, and installation ID.
+ .. Click *Initialize Setup*.
+This may take a few minutes to complete.
+
+== Maintaining your repository
+
+=== Modifying the sync
+
+{product} does not support editing the repository name or the GitHub organization name.
+Changes to these names in GitHub will cause the {product}-GitHub sync to break.
+If you'd like to change the repository you use for the sync, you will have to delete your existing sync in {product} and restart the setup process.
+
+=== Deleting the sync
+
+Deleting your GitHub sync details from {product} will prevent {product} from syncing changes with your GitHub repo, but it will not remove your repo.
+To delete your Workspace's existing {product}-GitHub sync:
+
+. On the top left of {product} home page, click on your name and select *Workspace Settings*.
+. Select *GitHub* from the left navigation panel under *Features*.
+. Click on the gear icon next to GitHub and select *Delete*.
+
+=== User administration
+
+Administration of users will be up to you.
+Anyone making changes through the {product} UI can push those changes to GitHub.
+However, if users want to make changes in GitHub, they'll need to be added to the GitHub repository.
+
+=== Repository visibility
+
+If you have non-{product} data in the GitHub repository used for the {product}-GitHub sync, please be aware that {product} has visibility to the entire repository.
+
+[#faqs]
+== FAQs
+
+[discrete]
+=== *Q: Where is the button for admins to push all reports to GitHub all at once?*
+
+The *Push All* button is found by accessing the Workspace Settings menu, going to the GitHub tab under Features (highlighted in red below), selecting the Unresolved Differences tab (highlighted in orange below), and looking on the right side of the Resolve All Differences section (highlighted in pink below).
+
+[.bordered]
+image::githubunresolved.png[Github Unresolved Differences]
+
+[discrete]
+=== *Q: Are restricted collections synced to GitHub?*
+
+Both restricted and public collections are synced to GitHub.
+Reports in users' personal Collections or the community Collection will not be synced.

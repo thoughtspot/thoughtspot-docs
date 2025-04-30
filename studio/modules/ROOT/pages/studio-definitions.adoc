@@ -1,0 +1,100 @@
+= Definitions
+:categories: ["Query and analyze data"]
+:categories_weight: 50
+:date: 2020-07-15
+:description: Develop and reuse saved SELECT statements.
+:ogdescription: Develop and reuse saved SELECT statements.
+:path: /articles/definitions
+:versions: ["business"]
+:product: Analyst Studio
+
+[#overview]
+== Overview
+
+[.bordered]
+image::raw_definition.png[Definitions - saved SELECT SQL statements]
+
+A Definition is a saved `SELECT` statement that can be referenced in other SQL queries.
+Definitions allow you to write business logic in one place and reference that logic in multiple {product} Reports.
+This ensures that members of your Workspace continue to pull the right data when business logic changes.
+Use Definitions to:
+
+* *Reduce repetitive tasks* - Convert frequently-referenced pieces of code into Definitions and then reference them in many Reports instead of copying and pasting the code.
+* *Simplify complex queries* - Integrate complex query logic into a Definition.
+Less SQL-savvy users can then do a simple `SELECT * FROM {{ @definition_name }}` to get results.
+* *Ensure consistency* - Commit important business logic to a Definition so that users across your Workspace compute metrics consistently.
+
+Definitions are similar in concept to a link:https://www.w3schools.com/sql/sql_view.asp[database view,window=_blank].
+However, Definitions are created and maintained in {product} rather than your database.
+You can create an unlimited number Definitions against any connected database.
+
+Each Definition is built on top of one database connection.
+You must have query access to the database connection in order to write a Definition against it and to see and share Definitions written by others against that database connection.
+You cannot run a Definition against any other database connection, unless you switch the data source of the Definition in the Definitions editor.
+
+== Create a Definition
+
+. Click the app switcher icon in the top navigation bar and select *{product}*, then sign in to your Workspace.
+. Under the Definitions section on the left side, click on the name of the connection against which you'd like to define the Definition.
+. Click the *New Definition* button in the upper right of the window.
+. Under *Data Source*, select the connection you want to create the Definition against.
+. Enter a name for your Definition.
+Only alphanumeric characters and underscores are permitted in Definition names.
+. Add a description (optional).
+. Click *Create*.
+. In the editor, write the Definition.
+. Click *Run* to test and save your Definition.
+If the run succeeds, you or anyone else in your Workspace with access to the underlying connection can reference the Definition in their reports.
+
+[NOTE]
+====
+* You can reference a Definition within a Definition in exactly the same way you would nest a query within a query.
+{product} supports up to 10 layers of nested Definitions.
+* Remember to remove the check next to *Limit 100* once you finish writing your Definition, or the Definition will only ever return 100 rows when you use it.
+* Definitions must be comprised of a single `SELECT` statement.
+====
+
+== View existing Definitions
+
+. Click the app switcher icon in the top navigation bar and select *{product}*, then sign in to your Workspace.
+. Under the Definitions section on the left side, click on the Connection whose Definitions you want to see.
+. All of the Definitions for that Connection will be listed on the right.
+Click on one to view or modify it.
+
+NOTE: At this time, we do not support renaming Definitions. If you'd like to rename an existing Definition, we recommend creating a new Definition with a new name.
+
+== Use a Definition in a SQL query
+
+You can reference a Definition in any report query using the following syntax:
+
+`{{ @definition_name }}`
+
+In this example, we're going to reference a Definition called `sfdc_account_details`:
+
+[source,sql]
+----
+SELECT *
+FROM {{ @sfdc_account_details }}
+----
+
+If you want, you can add an *alias for a Definition*, using the same SQL syntax you'd use to assign an alias to a table:
+
+[source,sql]
+----
+SELECT *
+FROM {{ @sfdc_account_details AS sfdc }}
+----
+
+You can *join between two or more definitions* from the same data source.
+The process for this is basically the same as if you were joining any two subqueries.
+
+[source,sql]
+----
+SELECT *
+FROM {{ @sfdc_account_details AS sfdc }}
+JOIN {{ @nydc_account_details AS nydc}}
+ON sfdc.website_id = nydc.web_id
+----
+
+Because Definitions are SQL `SELECT` statements, you can refer to Definitions within other Definitions.
+You can create up to 10 layers of nested Definitions.
