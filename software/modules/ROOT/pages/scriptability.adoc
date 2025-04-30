@@ -1,29 +1,29 @@
-= Scriptability
-:last_updated: 08/06/2021
+= Import and export TML files
+:last_updated: 3/9/2023
+:author: Teresa Killmond
 :linkattrs:
 :page-partial:
 :page-aliases: /admin/scriptability/scriptability.adoc
 :experimental:
-:description: Use Scriptability to export and import worksheets, views, tables, Liveboards, SpotIQ results, and answers in a human-readable format.
+:description: Export and import worksheets, views, tables, Liveboards, SpotIQ results, and answers in a human-readable format.
 
-include::partial$liveboards-announcement.adoc[]
 
-Use Scriptability to export and import worksheets, views, tables, Liveboards, SpotIQ results, and answers in a human-readable format.
+Use ThoughtSpot Modeling Language (TML) files to export and import worksheets, views, tables, Liveboards, SpotIQ results, and answers in a human-readable format.
 
 ThoughtSpot developed its own scriptable approach for exporting, enhancing, and migrating worksheets, views, tables, Liveboards, SpotIQ results, and answers.
 
 You can model your data and build out sophisticated dashboards in your test environment, before deploying to all users.
 
-The Scriptability feature supports several scenarios that you may encounter:
+TML supports several scenarios that you may encounter:
 
 * *Migrating from a development environment to a production environment* by downloading files from the development cluster and uploading the same files into the production cluster
-* *Implementing metadata changes outside ThoughtSpot UI*, such as replacing the underlying tables for an object, or replacing a single column from one table with a column in another table
+* *Implementing metadata changes outside the ThoughtSpot UI*, such as replacing the underlying tables for an object, or replacing a single column from one table with a column in another table
 * *Making bulk changes*, such as mass renaming of objects defined by worksheets, and managing duplicates
 * *Reusing existing objects to build new objects*, such as building two very similar objects based on a similar, pre-existing object.
 
-== How to use Scriptability
+== How to use TML files
 
-Depending on how you want to use Scriptability, there are several workflows you can follow:
+Depending on how you want to migrate or change your files, there are several workflows you can follow:
 
 . *Edit and update an existing object in the same cluster*: You can either
  ** <<export-object,export>> the object(s), edit the object(s) by modifying its xref:tml.adoc[ThoughtSpot Modeling Language] (`TML`) representation, and <<update-object,import>> the updated file(s) to modify the existing object _or_
@@ -111,7 +111,7 @@ image::scriptability-cloud-pinboard-export.png[Export a Liveboard]
 To export multiple objects at a time, follow these steps:
 
 . Navigate to the *Answers*, *Liveboards*, *SpotIQ*, or *Data* page from the top navigation bar, depending on the objects you want to export.
-. Hover over the objects you want to export, and click the empty checkboxes that appear.
+. Hover over the objects you want to export, and select the empty checkboxes that appear.
 . Select the *Export* button.
 +
 image::scriptability-cloud-export-multiple.png[Export multiple objects]
@@ -121,7 +121,7 @@ If you export a table, you do not see this modal, since tables do not have any d
 +
 image::scriptability-cloud-select-export.png[Choose what to export]
 
-. Click *Export*.
+. Select *Export*.
 . Open the downloaded `TML` zip file.
 The zip file contains a document called the `Manifest` file, which defines the objects you exported, their underlying data sources, and any export errors.
 If an individual export fails, you can find an error message in the `Manifest` file.
@@ -155,13 +155,13 @@ image::scriptability-edit-tml-object.png[Edit TML from object]
 . The TML editor opens.
 Edit the TML file(s), using the syntax specified in xref:tml.adoc[ThoughtSpot Modeling Language].
 Note that SpotIQ results are in the form of Liveboards.
-Refer to xref:tml.adoc#syntax-liveboards[Liveboard TML] to edit a SpotIQ TML file.
+Refer to xref:tml-liveboards.adoc[Liveboard TML] to edit a SpotIQ TML file.
 +
 The TML editor has the following functions under the top menu:
 
  ** *File*: Validate, Publish, and Exit editor.
 You can also validate and publish using the *validate* and *publish* buttons at the upper right of the editor.
-You can also exit the editor using the X button at the upper right corner.
+You can also exit the editor using the X button at the upper-right corner.
 The system warns you if you try to exit with unsaved changes.
  ** *Edit*: Undo, Redo, Cut, Copy, Select all, Fold, Fold all, Unfold, Unfold all, and Go to line.
 The *Fold* option compresses the lines in the file so you only see the first line of a section.
@@ -169,14 +169,14 @@ The *Fold* option compresses the lines in the file so you only see the first lin
 This is useful for long TML files.
  ** *Find*: Find and Find and replace.
 This functionality allows you to easily find words or parameters in the TML file.
-You can also click on a word or parameter in the TML editor, and the editor highlights all instances of that word.
+You can also select a word or parameter in the TML editor, and the editor highlights all instances of that word.
  ** *View*: Show/Hide errors, Show line numbers, and Hide line numbers.
 *Show/Hide errors* toggles the *Errors* sidebar on and off.
 The *Errors* sidebar does not appear until after you Validate a file, if there are errors in it.
  ** *Help*: Documentation.
 This links to the xref:tml.adoc[ThoughtSpot Modeling Language] documentation.
 
-. When you finish editing the TML file(s), select *Validate* in the upper right corner.
+. When you finish editing the TML file(s), select *Validate* in the upper-right corner.
 You must validate each file individually.
 A blue dot appears next to any file that contains changes.
 +
@@ -184,11 +184,11 @@ image::scriptability-tml-editor-validate.png[Validate the file]
 
 . If you constructed the file(s) correctly, a green check mark appears next to the name of the file.
 If you did not construct the file correctly, a red bar appears near the top of the screen, telling you that ThoughtSpot found errors in one or more files.
-Click *Show errors* to see the errors listed in the *Errors* sidebar.
+Select *Show errors* to see the errors listed in the *Errors* sidebar.
 +
 image::scriptability-tml-editor-errors.png[Review errors]
 
-. After validating,  select *Publish* in the upper right corner, next to *Validate*.
+. After validating,  select *Publish* in the upper-right corner, next to *Validate*.
 You must publish each file individually.
 . The system displays a *Publish status* dialog box.
 You can select *Open [object]* to open the object you just published in a new tab, or click *Close* to return to the TML editor.
@@ -225,18 +225,18 @@ image::scriptability-worksheet-update-browse.png[Find the Worksheet TML file]
 
 * *Cannot import* and *View Errors*, with a red exclamation mark: The object contains errors, and you cannot import it. You must fix the errors. To view the errors and a suggested resolution, select *View Errors*.
 . Resolve any errors by selecting the *Edit* button for the object with errors. This opens the <<tml-editor,TML editor>>. Within the editor, resolve the errors using the method suggested under *View Errors* in the Import workflow.
-. After you resolve the errors, click *Validate*, and then *Save*. Exit the TML editor.
+. After you resolve the errors, select *Validate*, and then *Save*. Exit the TML editor.
 . Select the objects you want to import. ThoughtSpot automatically selects objects with no errors, but does not select objects with errors, even after you resolve them. You must select the objects yourself.
-. Click *Import selected*.
+. Select *Import selected*.
 . The *Import Status* screen displays the status of the objects you imported.
-. *The Import Status* screen displays the status of the objects you imported. You can open the object(s) that you imported, or click *Exit* to return to the main object page.
+. *The Import Status* screen displays the status of the objects you imported. You can open the object(s) that you imported, or select *Exit* to return to the main object page.
 
 [#migrate-object]
 == Migrate an object
 
 To migrate an answer, Liveboard, SpotIQ result, view, or worksheet from one cluster to another, follow these steps.
 To migrate collections of objects packaged together as a zip file, refer to xref:tml-import-export-multiple.adoc[Migrate multiple TML files].
-Note that you cannot create a new table using Scriptability.
+Note that you cannot create a new table using TML files.
 You can only update existing tables.
 
 . <<export-object,Export the object>> you want to move, as in steps 1 to 5 of the <<export-object,Export an Object>>.
@@ -244,13 +244,13 @@ You can only update existing tables.
 The object remains on the original cluster as well, unless you delete it.
 
 . Navigate to the cluster you want to add the object to.
-. Click *Answers*, *Liveboards*, *SpotIQ*, or *Data* on the top navigation bar, depending on the objects you want to migrate.
-. To upload a worksheet or view, click the More icon image:icon-more-10px.png[more options menu] in the upper-right side of the screen.
+. Select *Answers*, *Liveboards*, *SpotIQ*, or *Data* on the top navigation bar, depending on the objects you want to migrate.
+. To upload a worksheet or view, select the More icon image:icon-more-10px.png[more options menu] in the upper-right side of the screen.
 Then, select *Import TML*.
 +
 image::scriptability-data-import.png[Import Worksheet or View TML]
 
-. To upload a Liveboard or answer, click the *Import TML* button in the upper-right side of the screen.
+. To upload a Liveboard or answer, select the *Import TML* button in the upper-right side of the screen.
 +
 image::scriptability-cloud-import.png[Import a Liveboard or answer]
 
@@ -265,11 +265,11 @@ The file uploads automatically.
 
 * *Cannot import* and *View Errors*, with a red exclamation mark: The object contains errors, and you cannot import it. You must fix the errors. To view the errors and a suggested resolution, select *View Errors*.
 . Resolve any errors by selecting the *Edit* button for the object with errors. This opens the <<tml-editor, TML editor>>. Within the editor, resolve the errors using the method suggested under *View Errors* in the Import workflow.
-. After you resolve the errors, click *Validate*, and then *Save*. Exit the TML editor.
+. After you resolve the errors, select *Validate*, and then *Save*. Exit the TML editor.
 . Select the objects you want to import. ThoughtSpot automatically selects objects with no errors, but does not select objects with errors, even after you resolve them. You must select the objects yourself.
-. Click *Import selected*.
+. Select *Import selected*.
 . The *Import Status* screen displays the status of the objects you imported.
-You can open the object(s) that you imported, or click *Exit* to return to the main object page.
+You can open the object(s) that you imported, or select *Exit* to return to the main object page.
 
 == Limitations of working with TML files
 

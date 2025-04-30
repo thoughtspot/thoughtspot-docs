@@ -4,7 +4,6 @@
 :experimental:
 :description: Learn about types of backups.
 
-include::partial$liveboards-announcement.adoc[]
 
 Learn about types of backups.
 
@@ -21,14 +20,14 @@ For manual backups, the system creates a backup using the named snapshot you spe
 For periodic backups, the system uses the most recent snapshot to create the backup.
 
 WARNING: You should never disable the periodic snapshot system, because backups rely on it.
-For example, if you have disabled the periodic snapshots system and periodic backups are enabled, then the periodic backup may use a very outdated snapshot or it may fail all together.
+For example, if you have disabled the periodic snapshots system and periodic backups are enabled, then the periodic backup may use a very outdated snapshot or it may fail altogether.
 
 ThoughtSpot usually stores backups on a xref:nas-mount.adoc[NAS (network attached storage) file system] but you can store them on a local disk as well.
 You can back up an AWS cluster xref:aws-backup-restore.adoc[using an S3 bucket].
 You can back up a GCP cluster xref:gcp-backup-restore.adoc[using a GCS bucket].
-When creating a backup, ThoughtSpot copies a release tarball and several supporting files to a disk you specify.
-Storing these supporting files takes about 10 GB of extra space beyond the backup itself.
-The final backup image is smaller because these extra files are removed after the backup completes successfully.
+When creating a backup, ThoughtSpot copies a release tarball and several supporting files to a storage you specify.
+Storing these supporting files takes about 10 GB of extra space temporarily beyond the backup itself.
+These supporting files are removed after the backup completes successfully.
 So, make sure you have enough disk space both to _take_ a backup and store the result.
 Use the `tscli storage df` command to identify the amount of space available.
 
@@ -68,7 +67,7 @@ In this case, the data, like the tables they were loaded into, are saved.
 == Dataless backups
 
 A dataless backup saves a backup of the schema (metadata), with no customer data or search indices saved to the backup.
-Dataless backups allow you to send a copy of your cluster metadata to ThoughtSpot Support for troubleshooting. For clusters where you connected to an external cloud data warehouse, you can use dataless backups to recover the cluster in the case of irrecoverable issues, such as a cluster crash or a non-restartable cluster.
+Dataless backups allow you to send a copy of your cluster metadata to {support-url} for troubleshooting. For clusters where you connected to an external cloud data warehouse, you can use dataless backups to recover the cluster in the case of irrecoverable issues, such as a cluster crash or a non-restartable cluster.
 
 When restoring from a dataless backup, you must supply the correct release tarball, since this type of backup does not include the release tarball, just the release version. Note that the release version that you use to restore the cluster from the backup must exactly match the version information in the backup.
 

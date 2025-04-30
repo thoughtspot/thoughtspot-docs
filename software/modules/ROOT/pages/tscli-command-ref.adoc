@@ -283,16 +283,16 @@ tscli backup [-h] {create,delete,ls}
 
 This subcommand has the following options:
 
-tscli backup create [-h] [--mode {full,light,dataless}] [--type {full,incremental}] [--base BASE] [--storage_type {local,nas,s3a,gcs}] [--remote] [--no-orion-master] [--bucket_name BUCKET_NAME] [--staging_dir STAGING_DIR] name out::
+tscli backup create [-h] [--mode {full,light,dataless}] [--type {full,incremental}] [--base BASE] [--storage_type {local,nas,s3a,gs}] [--remote] [--no-orion-master] [--bucket_name BUCKET_NAME] [--staging_dir STAGING_DIR] name out::
   Pulls a snapshot and saves it as a backup. You must specify the snapshot name, `name`, and also the backup directory, `out`. The command has the following optional parameters:
   --mode {full,light,dataless};; Mode of backups. The default is `full`.
   --type;; Type of backup. Only `STANDALONE` is supported.
   --base BASE;; Based snapshot name for incremental backup. Because `incremental` is not implemented, neither is this option. There is no default setting.
-  --storage_type {local,nas,s3a,gcs};;  Storage type of output directory. Specify `s3a` to use Amazon S3 storage, and specify `gcs` to use Google GCS storage. The default setting is `local`.
+  --storage_type {local,nas,s3a,gs};;  Storage type of output directory. Specify `s3a` to use Amazon S3 storage, and specify `gs` to use Google Cloud Storage. The default setting is `local`.
   --remote;; Takes backup through Orion. The default setting is `False`.
   --no-orion-master;; Determines whether Orion is available during backup. The default is `False`.
-  --bucket_name BUCKET_NAME;; The name of the s3a/gcs bucket to create the backup. The platform depends on the storage type of the cluster. You must specify `--storage_type as one of `s3a` or `gcs`.
-  --staging_dir STAGING_DIR;; Specify the staging directory for hdfs data in cloud-based backups. No effect in backups not based on cloud. You must specify `--storage_type` as one of `s3a` or `gcs`.
+  --bucket_name BUCKET_NAME;; The name of the Amazon S3 (s3a) or Google Cloud Storage (gs) bucket to create the backup. The platform depends on the storage type of the cluster. You must specify `--storage_type as one of `s3a` or `gs`.
+  --staging_dir STAGING_DIR;; Specify the staging directory for hdfs data in cloud-based backups. No effect in backups not based on cloud. You must specify `--storage_type` as one of `s3a` or `gs`.
 
 tscli backup delete ID::
   Deletes the backup with the specified ID.
@@ -479,7 +479,7 @@ tscli cluster check [--path PATH] [--includes INCLUDES] [--retry RETRY] [--local
   --disable-events;; Disables raising configuration events. The default is `False`.
 
 tscli cluster create RELEASE::
-  Creates a new cluster from the release file specified by adding the release number. Used by ThoughtSpot Support when installing a new cluster. For example, `tscli cluster create 6.3.1.tar.gz`. This command has the following parameters:
+  Creates a new cluster from the release file specified by adding the release number. Used by {support-url} when installing a new cluster. For example, `tscli cluster create 6.3.1.tar.gz`. This command has the following parameters:
   --disable_rotate_keys;; Disables cluster rotate key configuration. The default is `False`.
   --enable_cloud_storage {s3a,gcs};; Determines whether to enable Cloud Storage setup, and which storage format to use.
 //goofys is included in this list but is internal-only. don't add
@@ -715,7 +715,7 @@ tscli fileserver configure [-h] --user USER [--password PASSWORD]::
   Configures the secure file server username and password for file upload/download, and the call home feature. You only have to issue this command one time, to set up the connection to the secure file server. Reissue this command if the password changes. The parameter `PASSWORD` is optional. If a password is not specified, the system prompts the user to enter it.
 
 tscli fileserver download-release [-h] [--user USER] [--password PASSWORD] [--url URL] [--md5 MD5] [--out OUT] release::
-  Downloads the specified release file, including its checksum, and verifies the integrity of release bundle. You must specify the exact release number, such as `6.3.1`. Before using this command for the first time, you must set up the file server connection using `tscli fileserver configure`.  You must work with a member of the ThoughtSpot Support team, because they must specify a privileged `user` and a corresponding `password` to allow you to download releases.  This command has the following parameters:
+  Downloads the specified release file, including its checksum, and verifies the integrity of release bundle. You must specify the exact release number, such as `6.3.1`. Before using this command for the first time, you must set up the file server connection using `tscli fileserver configure`.  You must work with a member of the {support-url} team, because they must specify a privileged `user` and a corresponding `password` to allow you to download releases.  This command has the following parameters:
   --user USER;; The fileserver username.
   --password PASSWORD;; The fileserver password.
   --url URL;; Url from where the release needs to be downloaded.
@@ -1115,7 +1115,7 @@ tscli saml configure::
 --multi;; Adds multiple Identity Provider (IDP) configuration. After you fill out the configuration prompts for one IDP, the configurator asks `Do you want to add an IDP metadata?` Type `y` to configure another IDP.
 +
 The default is `False`.
---change_default_idp;; If you configured multiple IDPs, changes your default IDP. When users log into ThoughtSpot from the ThoughtSpot URL, the login screen takes them to the default IDP to log in. To use other, non-default IDPs that you configured with the `--multi` flag, users must log into ThoughtSpot from the other IDP's login page.
+--change_default_idp;; If you configured multiple IDPs, changes your default IDP. When users log in to ThoughtSpot from the ThoughtSpot URL, the login screen takes them to the default IDP to log in. To use other, non-default IDPs that you configured with the `--multi` flag, users must log in to ThoughtSpot from the other IDP's login page.
 +
 The default is `False`.
 
@@ -1150,7 +1150,7 @@ tscli scheduled-pinboards status::
   Shows the status of scheduled Pinboards for the cluster.
 
 NOTE: When you enable scheduled Pinboards, you must also configure a list of allowed email domains.
-Contact xref:support-contact.adoc[ThoughtSpot Support]  for help on how to configure this list.
+Contact {support-url}  for help on how to configure this list.
 
 [#tscli-set]
 === set
@@ -1228,7 +1228,7 @@ $ tscli smtp set-relayhost IP_address
 ----
 $ tscli smtp set-relayhost IP_address:custom_port
 ----
-  * If you are on 6.1 or on a version earlier than 6.0.5, contact xref:support-contact.adoc[ThoughtSpot Support] to help you set up a custom port.
+  * If you are on 6.1 or on a version earlier than 6.0.5, contact {support-url} to help you set up a custom port.
 
 tscli smtp set-saslcredentials::
   Sets SASL credentials and enables SMTP AUTH.
@@ -1263,18 +1263,18 @@ To learn more about snapshots and backups, see xref:backup-strategy.adoc[].
 
 This subcommand has the following options:
 
-tscli snapshot backup [-h] [--mode {full,light,dataless}] [--type {full,incremental}] [--base __BASE__] [--storage_type {local,nas,s3a,gcs}] [--remote] [--no-orion-master] [--bucket_name __BUCKET_NAME__] [--staging_dir __STAGING_DIR__] __NAME__ __OUT__::
+tscli snapshot backup [-h] [--mode {full,light,dataless}] [--type {full,incremental}] [--base __BASE__] [--storage_type {local,nas,s3a,gs}] [--remote] [--no-orion-master] [--bucket_name __BUCKET_NAME__] [--staging_dir __STAGING_DIR__] __NAME__ __OUT__::
   Pulls snapshot out as a backup. This command has two required elements: `name` and `out`. The rest of the flags are optional:
   name;; Name of snapshot to pull out as a backup. To list all snapshots, run `tscli snapshot ls`.
   out;; Directory where backup will be written. The directory must not already exist.
   --mode {full,light,dataless};; Mode of backups. The default is `full`.
   --type {full,incremental};; Type of backup. Incremental backup is not implemented. The default setting is `full`.
   --base __BASE__;; Based snapshot name for incremental backup. Incremental backup is not implemented yet.
-  storage_type {local,nas,s3a,gcs};; Storage type of output directory. The default is `local`.
+  storage_type {local,nas,s3a,gs};; Storage type of output directory. The default is `local`.
   --remote;; Takes backup through orion master. The default is `False`.
   --no-orion-master;; Specifies whether orion master is available during backup. The default is `False`.
-  --bucket_name __BUCKET_NAME__;; The name of the s3a/gcs bucket to create the backup. The platform depends on the storage type of the cluster. You must specify `--storage_type` as one of `s3a` or `gcs`.
-  --staging_dir __STAGING_DIR__;; Specify the staging directory for hdfs data in cloud-based backups. No effect in backups not based on cloud. You must specify `--storage_type` as one of `s3a` or `gcs`.
+  --bucket_name __BUCKET_NAME__;; The name of the Amazon S3 (s3a) or Google Cloud Storage (gs) bucket to create the backup. The platform depends on the storage type of the cluster. You must specify `--storage_type` as one of `s3a` or `gs`.
+  --staging_dir __STAGING_DIR__;; Specify the staging directory for hdfs data in cloud-based backups. No effect in backups not based on cloud. You must specify `--storage_type` as one of `s3a` or `gs`.
 
 tscli snapshot create [-h] NAME REASON TTL::
   Creates a new snapshot with the specified `name` and `reason`. This command does not accept `.` (periods). It does accept `-` (dashes or hyphens). The `ttl`, or 'time to live,' parameter is the number of days after which this snapshot is automatically deleted. A value of `-1` disables automatic deletion.
@@ -1388,7 +1388,7 @@ tscli ssl off::
   Disables SSL. Disabling SSL will stop users from seeing a security warning when accessing ThoughtSpot from a browser if there is no SSL certificate installed.
 
 tscli ssl on [-h]::
-  If SSL is enabled and there is no certificate, users see a security warning when accessing ThoughtSpot from a browser. To bypass this warning, users must click *Advanced* and then *Proceed*.
+  If SSL is enabled and there is no certificate, users see a security warning when accessing ThoughtSpot from a browser. To bypass this warning, users must select *Advanced* and then *Proceed*.
 
 tscli ssl remove-valid-hosts::
   Turns off validation of hosts.
@@ -1443,7 +1443,7 @@ tscli sssd disable::
 tscli sssd disable-openldap::
   Disables OpenLDAP integration.
 
-NOTE: If you mapped your OpenLDAP admin user to ThoughtSpot's local admin user through the Ansible playbook while deploying ThoughtSpot on RHEL, do not run this command. If you ran `tscli sssd enable-openldap` and also mapped your OpenLDAP admin user to ThoughtSpot's local admin user through the Ansible playbook, contact xref:support-contact.adoc[ThoughtSpot Support].
+NOTE: If you mapped your OpenLDAP admin user to ThoughtSpot's local admin user through the Ansible playbook while deploying ThoughtSpot on RHEL, do not run this command. If you ran `tscli sssd enable-openldap` and also mapped your OpenLDAP admin user to ThoughtSpot's local admin user through the Ansible playbook, contact {support-url}.
 
 [#tscli-sssd-enable]
 tscli sssd enable --user USER --domain DOMAIN::
@@ -1563,7 +1563,7 @@ tscli support set-admin-phone PHONE_NUMBER::
 
 tscli support set-debug-ui-password [--stdin_password]::
   Changes the admin password for the UI debug page, with the following optional parameter:
-  --stdin_password;; Passes the password through stdin for scriptability purposes. The default is `False`.
+  --stdin_password;; Passes the password through stdin for TML purposes. The default is `False`.
 
 tscli support set-remote [-h] [--addr ADDR] [--user USER]::
   Configures the cluster for remote support through SSH tunneling, where _`ADDR`_ is the support address, such as `tunnel.thoughtspot.com`, and _`USER`_ is the support username.

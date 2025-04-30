@@ -1,16 +1,22 @@
 = SQL-based views
-:last_updated: 8/19/2022
+:last_updated: 11/26/2024
 :linkattrs:
 :experimental:
-:description: With SQL views, you can quickly start using ThoughtSpot to get insights from your data by creating a connection and running SQL queries against it.
-
-NOTE: Only users with the *Can administer ThoughtSpot* or the *Can manage data* privilege can create views and link them.
-
-IMPORTANT: While you cannot apply row-level security (RLS) to a view, you can apply row-level security to the view's underlying table in order to restrict the data shown when searching on the view.
+:author: Teresa Killmond
+:description: With SQL views, you can quickly start using ThoughtSpot to get insights from your data.
+:jira: SCAL-204462
 
 With SQL views, you can quickly start using ThoughtSpot to get insights from your data. Simply create a connection to your external data warehouse, and you can run SQL queries against it. When you save these queries as SQL views, they become data sources that you can run traditional ThoughtSpot xref:search.adoc[searches] on, allowing you to create charts, tables, and Liveboards from the data.
 
 SQL views are very similar to other ThoughtSpot views. Refer to xref:views.adoc[] for an introduction to views and their use in ThoughtSpot. This article describes a specific type of view, the SQL view, which follows the same rules as other ThoughtSpot views.
+
+[#prerequisites]
+== Prerequisites
+To create a SQL view, you must satisfy the following prerequisites:
+
+* You must have either the *Can administer ThoughtSpot* or the *Can manage data* privilege.
+* You cannot apply RLS rules to a SQL view.
+* You can only create SQL views based on data from xref:connections.adoc[Connections].
 
 [#create-sql-view]
 == Creating SQL views
@@ -22,19 +28,24 @@ To create a SQL view, follow these steps:
 
 . From the side navigation bar, select *+ Create new > Custom SQL view*.
 
-. Choose a connection to the data you would like to query. Select *Choose connection* in the side panel, and click on or search for a connection in the dropdown.
+. Choose a connection to the data you would like to query. Select *Choose connection* in the side panel, and select or search for a connection in the dropdown.
 +
 If you did not already create a connection, select *Add new connection*. Refer to the xref:connections.adoc[connections] documentation.
 
-. After you select the connection, a list of tables appears in the side panel, under the schema and database names. To see a list of the columns in a table, click on the table name. A list of the columns and their data types appears.
+. After you select the connection, a list of tables appears in the side panel, under the schema and database names. To see a list of the columns in a table, select the table name. A list of the columns and their data types appears.
 
 . In the SQL editor, write your SQL query.
 +
-NOTE: The SQL you use must be compliant with your data warehouse's SQL standard.
+[NOTE]
+====
+The SQL you use must be compliant with your data warehouse's SQL standard.
+
+SQL views only support `SELECT` and `WITH` clauses. Your SQL view can only contain one SQL statement.
+====
 +
 The SQL editor has autocomplete functionality, based on the tables and columns in your connection.
 +
-In the following example, after we type `select * from`, the SQL editor suggests several tables. When we click on the `DIM_RETAPP_PRODUCTS` table, the query autocompletes as `select * from RETAILAPPAREL.PUBLIC.DIM_RETAPP_PRODUCTS AS d`, completing this part of the query and assigning the table an alias.
+In the following example, after we type `select * from`, the SQL editor suggests several tables. When we select the `DIM_RETAPP_PRODUCTS` table, the query autocompletes as `select * from RETAILAPPAREL.PUBLIC.DIM_RETAPP_PRODUCTS AS d`, completing this part of the query and assigning the table an alias.
 +
 image::sql-view-autocomplete.gif[SQL view autocomplete gif]
 
@@ -58,6 +69,8 @@ If you have *can edit* privileges on a SQL view, you see the *Edit View* button 
 
 image::sql-view-edit.png[Edit SQL view]
 
+For information about how to edit the metadata of your view, see xref:data-modeling-settings.adoc[Data modeling settings].
+
 == Managing SQL views
 
 You can use a SQL view just like any other data source.
@@ -68,7 +81,7 @@ You can perform the same actions on a SQL view that you can perform on a regular
 
 * xref:share-views.adoc[Share SQL views]
 * xref:join-add.adoc[Join a SQL view to another data source]
-* xref:tml.adoc#syntax-sql-views[Edit, export, and import SQL views with ThoughtSpot Modeling Language]
+* xref:tml-sql-views.adoc[Edit, export, and import SQL views with ThoughtSpot Modeling Language]
 * <<search-sql-view,Create a search based on the SQL view>>
 * xref:worksheets.adoc[Create a worksheet that includes a SQL view]
 
