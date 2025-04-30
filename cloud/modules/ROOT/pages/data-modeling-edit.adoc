@@ -1,23 +1,22 @@
 = Edit the system-wide data model
-:last_updated: 04/15/2021
-:experimental:
+:last_updated: tbd
 :linkattrs:
-:page-partial:
+:experimental:
+:page-layout: default-cloud
 :page-aliases: /admin/data-modeling/edit-model-file.adoc
-
-Edit the modeling file to edit your data settings.
+:description: Edit the modeling file to edit your data settings.
 
 When you load data, ThoughtSpot uses defaults for data modeling metadata.
-You can change these defaults using the data modeling file if you have access to the menu:Data[Settings > Business Data Model] page.
+You change these defaults using the data modeling file.
 Editing this file allows you to view and edit all the system data columns.
 When you (or your users) add new data to your system, this file changes as it expands to accommodate new data columns.
 
-TIP: If you just want to change a subset of your data, xref:model-data-ui.adoc[change a table's data model] instead.
+TIP: If you just want to change a subset of your data, use the xref:model-data-ui.adoc#[Change a table's data model] instead.
 
 == Overview of the modeling process
 
-The data formats you use in your system are controlled by the modeling file, an Excel file. The modeling file contains a list of all your Worksheets, tables, and their columns.
-To make changes to the model.xls file, you download the model file, change the model, and upload your changes back into the system.
+The data formats you use in your system are controlled by the modeling file, an Excel file.
+To make these changes you download the model file, change the model, and upload your changes back into the system.
 
 In each row of the modeling file, all the data properties corresponding to a column from your data are listed.
 You can modify many of these properties by typing in the new value.
@@ -32,9 +31,10 @@ You can change all or a subset of rows.
 You can edit the file to leave the heading rows and only those rows you want to change.
 This can make the file more convenient to work with.
 
-The model file must be saved in TSV (tab-separated values) format, and it must be UTF-8 encoded. If you already changed the file extension to .tsv after downloading, your file editor should save it in TSV format automatically.
-If your model file includes multi-byte characters, edit the file using vi or vim to ensure the file is  saved in the correct format.
-Otherwise, you won't be able to upload it after  making your edits.
+The model file must be saved in TSV (tab-separated values) format, and it must be UTF-8 encoded.
+If you already changed the file extension to .tsv after downloading, your file editor should save it in TSV format automatically.
+If your model file includes multi-byte characters, edit the file using vi or vim to ensure the file is saved in the correct format.
+Otherwise, you won't be able to upload it after making your edits.
 
 == Download the model file
 
@@ -44,20 +44,24 @@ Then, you edit it using Microsoft Excel, vi/vim, or a similar text editing tool.
 To obtain the model file:
 
 . Log in to ThoughtSpot from a browser as an Administrator user.
-. Click the *Data* tab in the top navigation bar.
-. Click *Settings*, then click *Business Data Model*.
+. Navigate to menu:Data[Settings > Business Data Model].
 . Click *Download*.
 +
-image::download_model.png[]
+image::model-file-download.png[Download the model file]
 
-. Change the file extension to `.tsv`. This ensures that your editor (Excel, vi/vim, and so on) knows the file contains tab-separated values.
+. Change the file extension to `.tsv`.
+This ensures that your editor (vi/vim, and so on) knows the file format is tab-separated values.
+*If you are using Excel*, change the file extension to `.txt`.
+This ensures that Excel knows the file format is tab-separated values.
 +
-The model file downloads in the TSV (tab-separated values) format, but its extension is `.xls`, which can prompt editors to suggest you save the file in xls format when you open or edit the file. Do not change the existing TSV format. To avoid this problem, change the file extension to `.tsv`.
+The model file downloads and uploads only in the TSV (tab-separated values) format, but its extension is `.xls`, which can prompt editors to open the file in the wrong format.
+Do not change the existing TSV format.
+To avoid this problem, change the file extension to `.tsv`.
 
 == Edit the file and change the settings
 
 You can make changes to the settings using this procedure.
-To see a list of the changes you can make, see xref:data-modeling-settings.adoc[Data modeling settings].
+To see a list of the changes you can make, see xref:data-modeling-settings.adoc#[Data modeling settings].
 You can edit any of the values in the model file, except for those where the words *DoNotModify* appear under the column header.
 To make changes in the model file:
 
@@ -69,15 +73,15 @@ Click `YES` to proceed.
 
 . Find the column you want to modify.
 +
-Descriptions of the meanings of the columns are listed in xref:data-modeling-settings.adoc[Data modeling settings].
+Descriptions of the meanings of the columns are listed in xref:data-modeling-settings.adoc#[Data modeling settings].
 
 . Select the value you want to change.
 . Type in the new value.
 . After making all your changes, save the model file.
 +
-The model file must be saved in TSV (tab-separated values) format, and it must be UTF-8 encoded. If you already changed the file extension to .tsv after downloading, your file editor should save it in TSV format automatically.
-If your model file includes multi-byte characters, edit the file using vi or vim to ensure the file is  saved in the correct format.
-Otherwise, you won't be able to upload it after  making your edits.
+For ThoughtSpot to allow the file to upload, the model file format must be TSV (tab-separated values), and it must be UTF-8 encoded.
+If you already changed the file extension to .tsv (most editors) or .txt (Excel) after downloading, your file editor should save it in TSV format automatically.
+Otherwise, you will not be able to upload it after making your edits.
 
 == Upload the edited file
 
@@ -85,24 +89,22 @@ After you have made changes to the modeling file, you must upload it back to Tho
 To upload the model file:
 
 . Log in to ThoughtSpot from a browser as an Administrator user.
-. Click *Data*, on the top navigation bar.
-. Click *Settings*, then click *Business Data Model*.
-. Click *Browse your files* to upload the model file in .tsv format, or drag and drop it in the zone.
+. Navigate to menu:Data[Settings > Business Data Model].
+. Click *Browse your files* to upload the model file in `.tsv` format, or drag and drop it in the zone.
 +
-image::upload_model.png[]
+image::model-file-upload.png[Upload the model file]
 +
 If you receive an error message upon uploading the file, check that it does  not include any multi-byte characters (for example, Japanese or other multi-byte  language characters).
 If it does, you must download the file again and  make your edits using vi or vim.
 +
-You can remove all the rows you have not changed from  the model file before uploading it.
-If you upload a model file that includes only the changed rows, you won't lose any of the pre-existing model file  settings.
+You can remove all the rows you have not changed from the model file before uploading it.
+If you upload a model file that includes only the changed rows, you won't lose any of the pre-existing model file settings.
 This is a good option if your model file is causing an error on upload, but you aren't sure where in the model file the problem is.
 
 As soon as the file is uploaded, ThoughtSpot performs any necessary re-indexing for you automatically.
 Your new settings will be reflected within a few minutes.
 
-'''
-> **Related information**
->
-> * xref:data-modeling-settings.adoc[Data modeling settings]
-> * xref:model-data-ui.adoc[Change a table's data model]
+== Related information
+
+* xref:data-modeling-settings.adoc#[Data modeling settings]
+* xref:model-data-ui.adoc[Change a table's data model]

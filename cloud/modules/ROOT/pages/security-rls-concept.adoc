@@ -1,17 +1,17 @@
 = How rule-based RLS works
-:last_updated: 12/31/2020
-:experimental:
+:last_updated: 11/05/2021
 :linkattrs:
-:page-partial:
+:experimental:
+:page-layout: default-cloud
 :page-aliases: /admin/data-security/row-level-security.adoc
+:description: Use rule-based RLS to restrict a group's access to data. Users see only accessible row data.
 
-Use rule-based RLS to restrict a group's access to data.
+include::partial$liveboards-announcement.adoc[]
 
-Users see only accessible row data.  Row level security works at the group level and is configured on tables.
+Row-level security works at the group level and is configured on tables.
 A table's RLS rules also apply to any objects with data from that table.
-So, searches, answers, worksheets, and pinboards that rely on a table's data fall under RLS rules.
+So, searches, answers, worksheets, and Liveboards that rely on a table's data fall under RLS rules.
 
-[#worksheets-queries-rls]
 == Worksheet queries and RLS
 
 You cannot set RLS rules on worksheets, only on tables.
@@ -24,7 +24,7 @@ This means that not all RLS rules on underlying tables are applied when a user q
 
 You can configure a stricter application of RLS rules to take into account RLS rules from all the tables underlying the worksheet.
 This is recommended if you have key dimension tables that worksheets rely on but that are not necessarily regularly accessed through query.
-To do this, contact ThoughtSpot Customer Support.
+To do this,  https://community.thoughtspot.com/customers/s/contactsupport[contact ThoughtSpot Customer Support].
 
 [#exempt-rls]
 == Privileges that allow users to set, or be exempt from, RLS
@@ -45,7 +45,6 @@ Members of groups with *Can Administer and Bypass RLS*:
 
 This behavior is true regardless of whether the privilege is from a direct group membership or indirect (through a group hierarchy, where the user is part of a group that is part of a larger, top-level group with the RLS privilege).
 
-[#rls-rule-examples]
 == Examples of RLS rules
 
 An RLS rule evaluates against two system variables:
@@ -79,9 +78,8 @@ You want to give your vendors the ability to see trends in company purchases.
 You give vendor personnel access to ThoughtSpot _and_ add them to self-titled vendor groups.
 So, all users from the Starbucks vendor are in the `Starbucks` group and all users from `round table` are in the `Round Table` group.
 Then, you set a *Row security* on the `vendor-purchase` table as follows:
-----
-VENDOR = ts_groups
-----
+
+`VENDOR = ts_groups`
 
 Only users in `Starbucks` group see `starbucks` data and so forth.
 Rules ignore case inconsistencies and spaces are evaluated so `round table` in the data matches the `Round table` group but not a group named `RoundTable` .
@@ -123,16 +121,16 @@ When you share, share worksheets.
 This is a general best practice.
 Worksheets simplify the data environment for end users;
 they only need to choose among a few sources, rather than many tables.
-Also, one worksheet can also  combine data from several tables.
+Also, one worksheet can also combine data from several tables.
 
 * Set row level security wherever you want to keep data secure.
 +
-It is always a possible that a particular search only includes data from a  single table, and a user will see something they shouldn't.
-So, protect your  data by setting row level security wherever you want to keep data secure.
+It is always a possible that a particular search only includes data from a single table, and a user will see something they shouldn't.
+So, protect your data by setting row level security wherever you want to keep data secure.
 
 * Explicitly grant access for users that should see all rows.
 +
-As soon as you define a rule on a table for one group, you prevent access by   all others outside of that group hierarchy.
+As soon as you define a rule on a table for one group, you prevent access by all others outside of that group hierarchy.
 Subsequent rules should specifically add groups that need access.
 
 * Keep in mind that multiple rules on a table are additive with `or`.
@@ -145,9 +143,8 @@ Then, expand the access as needed.
 Complex rules can impact the system performance.
 So, err on the side of simple rules rather than complex rules with a lot of logic.
 
-'''
-> **Related information**
->
-> * To learn the procedure you follow for setting a rule, xref:security-rls-implement.adoc[Set RLS rules]
-> * For a list of operators and functions you can use to build RLS rules see xref:rls-rule-builder-reference.adoc[Row level security rules reference].
-> * For information on bypassing rules on a worksheet, see xref:worksheet-inclusion.adoc[Change inclusion, join, or RLS for a worksheet].
+== Related information
+
+* To learn the procedure you follow for setting a rule, xref:security-rls-implement.adoc#[Set RLS rules]
+* For a list of operators and functions you can use to build RLS rules see xref:rls-rule-builder-reference.adoc#[Row level security rules reference].
+* For information on bypassing rules on a worksheet, see xref:worksheet-inclusion.adoc#[Change inclusion, join, or RLS for a worksheet].
