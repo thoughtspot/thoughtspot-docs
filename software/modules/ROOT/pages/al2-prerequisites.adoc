@@ -7,28 +7,31 @@ Prepare the system and ThoughtSpot clusters for installation.
 [cols="5%,95%"]
 |===
 | &#10063;
-| <<set-up-hosts,1.
-Set up hosts for the ThoughtSpot cluster>>
+| <<set-up-hosts,1. Set up hosts for the ThoughtSpot cluster>>
 
 | &#10063;
-| <<aws-ssm,2.
-[Optional] Set up AWS Systems Manager Agent>>
+| <<aws-ssm,2. [Optional] Set up AWS Systems Manager Agent>>
 
 | &#10063;
-| <<partition-hosts,3.
-Partition the hosts>>
+| <<partition-hosts,3. Partition the hosts>>
 
 | &#10063;
-| <<enable-hosts,4.
-Enable the hosts to download Amazon Linux 2 packages>>
+| <<enable-hosts,4. Enable the hosts to download Amazon Linux 2 packages>>
 
 | &#10063;
-| <<enable-ansible,5.
-Enable an Ansible Control Server>>
+| <<enable-ansible,5. Enable an Ansible Control Server>>
 
 | &#10063;
-| <<disable-selinux,6.
-Disable SELinux or run it in permissive mode>>
+| <<disable-selinux,6. Disable SELinux or run it in permissive mode>>
+
+| &#10063;
+| <<tmp-permission,7. Ensure tmp has permission 777>>
+
+| &#10063;
+| <<proc,8. Ensure /proc mount point flags are compatible>>
+
+| &#10063;
+| <<etc-sudoers,9. Remove Defaults requiretty from /etc/sudoers>>
 |===
 
 [#set-up-hosts]
@@ -36,12 +39,12 @@ Disable SELinux or run it in permissive mode>>
 
 Set up hosts for the ThoughtSpot cluster on Amazon Web Services.
 
-. Refer to xref:configuration-options-aws.adoc[AWS configuration options] for the exact specification for the hosts:
+. Refer to xref:configuration-options.adoc[AWS configuration options] for the exact specification for the hosts:
  ** CPU
  ** memory
  ** disks
-. Refer to xref:launch-an-instance-aws.adoc[Set up AWS resources for ThoughtSpot] to create and launch your AWS virtual machines.
- ** Ensure that your xref:launch-an-instance-aws.adoc#prerequisites-ami[AMI] is an Amazon Linux 2 image.
+. Refer to xref:launch-an-instance.adoc[Set up AWS resources for ThoughtSpot] to create and launch your AWS virtual machines.
+ ** Ensure that your xref:launch-an-instance.adoc#al2-ami[AMI] is an Amazon Linux 2 image.
 
 [#aws-ssm]
 == [Optional] Set up AWS Systems Manager Agent
@@ -58,22 +61,25 @@ Refer to https://docs.aws.amazon.com/systems-manager/latest/userguide/sysman-man
 
 As you create VMs, ensure that all ThoughtSpot hosts have the following partitions on the root drive.
 [width="100%",options="header"]
-|====================
+|===
 | Partition | Drive type | Description | Minimum size
 | *OS partition* | SSD (root drive) | Root partition for OS, /tmp | Allocate at least 50GB to /tmp
 | *Export partition* | SSD (root drive) | Stores ThoughtSpot objects, hdfs logs, service logs, and so on | 200GB
-|====================
+|===
 
 [#enable-hosts]
 == Enable the hosts to download Amazon Linux 2 packages
 
 *Repositories*
 
+[#yum-repositories]
 * *Yum repositories*: you must enable the following Yum repositories in your cluster: `epel`, `nux-desktop`, `google-cloud-sdk`, and `azure-cli`.
 
+[#python-repositories]
 * *Python repository*: for Python, ensure the machine is able to reach the `PyPI` repository located at https://pypi.python.org/.
 
-* *R repository*: for R, ensure the machine is able to reach the `CRAN` repository located at link:c[cran.rstudio.com].
+[#r-repositories]
+* *R repository*: for R, ensure the machine is able to reach the `CRAN` repository located at link:https://cran.rstudio.com[cran.rstudio.com].
 
 Make sure that you can download Amazon Linux 2 packages to all hosts, either from the <<official-repositories,official package repositories>>, or from a <<mirror-repositories,mirror repository>> owned and managed by your organization.
 
@@ -101,6 +107,20 @@ You must install both `rsync` and Ansible on the Ansible Control Server host.
 
 ThoughtSpot does not support policies that enforce SELinux.
 We recommend that you disable SELinux, or run it in permissive mode.
+
+[#tmp-permission]
+== Ensure tmp has permission 777
+
+The `/tmp` directory must have the `777` permission. If you mount the `/tmp` directory as a separate partition, it must NOT have the `noexec` flag set.
+
+[#proc]
+== Ensure /proc mount point flags are compatible
+You cannot mount the /proc mount point with the `hidepid` flag. You must mount it without that flag.
+
+[#etc-sudoers]
+== Remove Defaults requiretty from /etc/sudoers
+
+The `/etc/sudoers` file must not have the `Defaults requiretty` line. This line can cause cluster creation to fail.
 
 == Next steps
 

@@ -1,5 +1,5 @@
 = Create, edit, or delete a user
-:last_updated: 5/14/2020
+:last_updated: 7/24/2020
 
 For each unique person who accesses ThoughtSpot, you must create a user account. When you create a user manually in ThoughtSpot, you continue to manage that user in ThoughtSpot.
 
@@ -11,7 +11,7 @@ For users who have access through LDAP, the LDAP installation manages all user i
 == Create a user in ThoughtSpot
 
 This procedure demonstrates how to create a user manually.
-When you create a user, you can specify the xref:username[_username_], xref:display-name[_display name_], xref:sharing-visibility[_sharing visibility_], the xref:password[_password_], xref:email[_email_], whether they get a xref:welcome-email[_welcome email_] and its xref:email-text[_text_], and assign xref:groups[_group_] memberships.
+When you create a user, you can specify the _<<username,username>>_, _<<display-name,display name>>_, _<<sharing-visibility,sharing visibility>>_, the _<<password,password>>_, _<<email,email>>_, whether they get a _<<welcome-email,welcome email>>_ and its _<<welcome-text,text>>_, and assign _<<groups,group>>_ memberships.
 The user inherits privileges and permissions directly from the group assignments.
 
 Note that all users automatically belong to the group *All*.
@@ -19,46 +19,61 @@ Note that all users automatically belong to the group *All*.
 To create a new user and assign that user to groups, follow these steps:
 
 . Log in to ThoughtSpot from a browser.
-. Click the *Admin* icon, on the top navigation bar.
+. Navigate to the Admin Console by clicking on the *Admin* tab from the top navigation bar.
 +
 image::click-admin.png[Admin tab]
 
-. In the *Admin* panel, click *User Management*.
+. Select *Users* from the side navigation bar that appears.
 +
-image::admin-user-management.png[Admin > User Management]
+image::admin-portal-users.png[Admin Console - Users]
 
-. In the *User Management* section, click *Users*.
+. Click the *+ Add User* button on the upper left-hand side of the list of users.
 +
-image::admin-user-management-users.png[Manage Groups]
-
-. Click the *+ Add User* button on the upper right-hand side of the list of users.
-+
-image::admin-user-management-add-user.png[Add a new User]
+image::admin-portal-users-add-user.png[Add a new User]
 
 . In the *Add a new user* interface, enter the details for the new user:
 +
 image::add-user.png[Add a new User]
-[cols="20%,10%,70%",options="header"]
-|===
-| Field | Required? | Description
-a| [[username]]Username | Yes a| A login name for the user. Usernames must be unique and lowercase. +
-If you are using Active Directory to authenticate users, and your LDAP configuration requires users to be created manually (they are not created automatically in ThoughtSpot upon authentication), the username you specify has to be domain-qualified (`username@ldap.thoughtspot.com`), and you must enter a dummy password.
-a| [[display-name]]Display name | Yes | A unique name for the user (usually their first and last name).
-a| [[sharing-visibility]]Sharing visibility | Yes a| Indicate whether objects can be shared with this user. When set to *SHARABLE*, this user is an option in the *Share* dialog.
-a| [[password]]Change password | Yes | A password. Your password must contain three of the following: uppercase letters A-Z, lowercase letters a-z, special characters !\#$ etc, numbers 0-9. Your password must be at least eight characters long. When you click on the *change password* field, a tooltip appears to tell you these requirements.
-a| [[confirm_password]]Confirm password | Yes | Enter the password again.
-a| [[email]]Email | Yes a| The user's email address. ThoughtSpot uses this for  notification when another user shares something with them, for onboarding, for the *Ask an Expert* feature, and others. +
-Note that during cluster configuration, the domain is specified. ThoughtSpot does not accept emails outside this domain. xref:contact.adoc[Contact ThoughtSpot Support] to add new domains to your list of allowed domains.
-a| [[welcome-email]]Send a welcome email | No | When checked, this option ensures that the new user receives a welcome email.
-a| [[email-text]]Email message text | No | Enter text of the optional welcome email here.
-a| [[groups]]Groups | Recommended a| Select the groups for the user. +
-Note that if you add the user to a group that has the privilege *Has administration privileges*, they can see all the data in ThoughtSpot. +
-When you create a new user, the groups they belong to define the following attributes for the user: +
-     * *Privileges*: the actions they can perform, defined when you xref:add-group.adoc[Add a group and set security privileges].
-     * *Permissions*: the data they can access and view, defined when you consider xref:sharing-security-overview.adoc[Data security]. +
-Administrators can see all data sources, and xref:about-row-security.adoc[Row level security] does not apply to them.
-|===
++
+[width="100%",options="header",cols="20%,10%,70%"]
+|====================
+|Field|Required?|Description
 
+a| [#username]
+Username | Yes | A login name for the user. Usernames must be unique and lowercase.
+
+If you are using Active Directory to authenticate users, and your LDAP configuration requires users to be created manually (they are not created automatically in ThoughtSpot upon authentication), the username you specify has to be domain-qualified `(username@ldap.thoughtspot.com)`, and you must enter a dummy password.
+
+a| [#display-name]
+Display name | Yes | A unique name for the user (usually their first and last name).
+
+a| [#sharing-visibility]
+Sharing visibility | Yes | Indicate whether objects can be shared with this user. When set to **SHARABLE**, this user is an option in the *Share* dialog.
+a| [#password]
+Change password | Yes | A password. Your password must contain three of the following: uppercase letters A-Z, lowercase letters a-z, special characters !\#$ etc, numbers 0-9. Your password must be at least eight characters long. When you click on the *change password* field, a tooltip appears to tell you these requirements.
+| Confirm password | Yes | Enter the password again.
+
+a| [#email]
+Email | Yes | The user's email address. ThoughtSpot uses this for notification when another user shares something with them, for onboarding, for the *Ask an Expert* feature, and others.
+
+Note that during cluster configuration, the domain is specified. ThoughtSpot does not accept emails outside this domain. Contact ThoughtSpot Support to add new domains to a list of allowed domains.
+
+a| [#welcome-email]
+Send a welcome email | No | When checked, this option ensures that the new user receives a welcome email.
+
+a| [#welcome-text]
+Email message text | No | Enter text of the optional welcome email here.
+
+a| [#groups]
+Groups | Recommended a| Select the groups for the user.
+Note that if you add the user to a group that has the privilege **Has administration privileges**, they can see all the data in ThoughtSpot.
+
+When you create a new user, the groups they belong to define the following attributes for the user:
+
+- **Privileges**: the actions they can perform, defined when you xref:add-group.adoc[Add a group and set security privileges].
+- **Permissions**: the data they can access and view, defined when you consider xref:sharing-security-overview.adoc[Data security].
+- *Administrators*: can see all data sources, and xref:about-row-security.adoc[Row level security] does not apply to them.
+|====================
 . Click *Add* to create the user.
 
 Note that this process of identifying the user's needs contributes to a robust onboarding process.
@@ -73,23 +88,19 @@ You can also help users by resetting their password, and evaluating their onboar
 To edit an existing user, follow these steps:
 
 . Log in to ThoughtSpot from a browser.
-. Click the *Admin* icon, on the top navigation bar.
+. Navigate to the Admin Console by clicking on the *Admin* tab from the top navigation bar.
 +
 image::click-admin.png[Admin tab]
 
-. In the *Admin* panel, click *User Management*.
+. Select *Users* from the side navigation bar that appears.
 +
-image::admin-user-management.png[Admin > User Management]
-
-. In the *User Management* section, click *Users*.
-+
-image::admin-user-management-users.png[Manage Groups]
+image::admin-portal-users.png[Admin Console - Users]
 
 . Click the username in the list to open the *Edit User* interface.
 +
 If you don't immediately see the username you plan to edit, try searching for it.
 +
-image::edit-user-search.png[Search Users]
+image::admin-portal-users-search.png[Search Users]
 
 . In the *Edit User* interface, edit the basic user information.
 +
@@ -97,7 +108,7 @@ You can change the _<<username,username>>_, _<<display-name,display name>>_, _<<
 +
 image::edit-user.png[Edit User]
 +
-You can also xref:edit-user-preview-onboarding[Preview onboarding], and make changes to the xref:edit-user-groups[_Groups_] assigned to the user.
+You can also <<edit-user-preview-onboarding,Preview onboarding>>, and make changes to the _<<edit-user-groups,Groups>>_ assigned to the user.
 // , and check _[Email](#edit-user-email)_ options.
 
 . Click *Update*.
@@ -106,7 +117,7 @@ You can also xref:edit-user-preview-onboarding[Preview onboarding], and make cha
 === Preview onboarding
 
 You can click *Preview onboarding* to evaluate this user's first experience with ThoughtSpot.
-After previewing the user's default data source and Pinboards, you may choose to change the *xref:edit-user-groups[Group]* assignments.
+After previewing the user's default data source and Pinboards, you may choose to change the <<edit-user-groups,group>> assignments.
 
 image::edit-user-preview-onboarding.png[Preview onboarding experience]
 
@@ -146,7 +157,7 @@ Follow these steps to configure group-wide emails:
 
 6. Click **Update** to save changes.
 
-![Edit User Email]({{ site.baseurl }}/images/edit-user-email.png "Edit User Email")
+image::edit-user-email.png[Edit User Email]
 ////
 
 [#delete-user]
@@ -155,24 +166,20 @@ Follow these steps to configure group-wide emails:
 To delete users, follow these steps:
 
 . Log in to ThoughtSpot from a browser.
-. Click the *Admin* icon, on the top navigation bar.
+. Navigate to the Admin Console by clicking on the *Admin* tab from the top navigation bar.
 +
 image::click-admin.png[Admin tab]
 
-. In the *Admin* panel, click *User Management*.
+. Select *Users* from the side navigation bar that appears.
 +
-image::admin-user-management.png[Admin > User Management]
+image::admin-portal-users.png[Admin Console - Users]
 
-. In the *User Management* section, click *Users*.
+. Select the users you plan to delete by clicking the box that appears when you hover over the username.
 +
-image::admin-user-management-users.png[Manage Groups]
-
-. Select the users you plan to delete by clicking the box next to the username.
+If you don't immediately see the user you plan to delete, try searching for it.
 +
-If you don't immediately see the username you plan to delete, try searching for it.
-+
-image::edit-user-search.png[Search Users]
+image::admin-portal-users-search.png[Search Users]
 
 . Click *Delete*.
 +
-image::delete-users.png[Delete Users]
+image::admin-portal-users-delete.png[Delete Users]

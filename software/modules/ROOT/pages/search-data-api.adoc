@@ -1,15 +1,14 @@
 = Search Data API
-:last_updated: 4/21/2020
-
+last_updated: 4/21/2020
 To use the data retrieved from a search query programmatically, you can first query this data using the ThoughtSpot Search Data API.
 
 It is often difficult to programmatically use the result set of a query that runs in the ThoughtSpot UI search  bar.  To use the data that we retrieve from a query programmatically, you can use ThoughtSpot Search Data API.
 
-When issuing a query through the ThoughtSpot UI, users make selections to disambiguate a query. Because selection is not possible with an API approach, we modified the API query language to include query disambiguation. See xref:components[Components of a search query].
+When issuing a query through the ThoughtSpot UI, users make selections to disambiguate a query. Because selection is not possible with an API approach, we modified the API query language to include query disambiguation. See <<Components of a search query>>.
 
 == Resource URL
 
-`post`/tspublic/v1/searchdata
+`post/tspublic/v1/searchdata`
 
 == Request Parameters
 
@@ -18,130 +17,142 @@ When issuing a query through the ThoughtSpot UI, users make selections to disamb
 | Query Parameter | Data Type | Description
 | `query_string` | string | The data search query.
 
-See xref:components[Components of a search query].
-|`data_source_guid`  | string | The GUID of the data source, either a Worksheet, a View, or a table.
+See <<Components of a search query>>.
+|`data_source_guid`  | string | The GUID of the data source, either a worksheet, a view, or a table.
 
-Example: [`"4fdf9d2c-6f34-4e3b-9fa6-bd0ca69676e1"`]
+Example: ["4fdf9d2c-6f34-4e3b-9fa6-bd0ca69676e1"]
 |`batchsize`  | integer | The batch size for loading search objects.
 
-The system default is `-1`.
-| `pagenumber` | integer | Alternate way to specify 1-based offset:
+The system default is -1.
+| pagenumber | integer | Alternate way to specify 1-based offset:
 
 `indexingOffset = (pageNumber - 1) * batchSize`
 
-The system default is `-1`.
-| `offset` | integer | Specify a 1-based offset.
+The system default is -1.
+| offset | integer | Specify a 1-based offset.
 
-The system default is `-1`.
+The system default is -1.
 | `formattype` | string | The format of the data.
 
 Valid values are `COMPACT` (default) or `FULL` JSON.
 |====================
 
-[#components]
+[id="components"]
 == Components of a search query
 
 In ThoughtSpot Query Language, we classify components of a query into various types of tokens: xref:Column[Column], xref:Operator[Operator], xref:Value[Value], xref:Date-Bucket[Date Bucket], xref:Keyword[Keyword], and xref:Calendar[Calendar]:
 
 [#Column]
-Column:: Columns must be enclosed in square brackets, `[ ]`.
+Column:: Columns must be enclosed in square brackets, [ ].
 
-*Example* In the query `revenue by ship mode`, both `revenue` and `ship mode` are columns. A valid query for the API is:
+*Example* In the query revenue by ship mode, both revenue and ship mode are columns. A valid query for the API is:
 
-    [revenue] by [ship mode]
-
+[source]
+----
+[revenue] by [ship mode]
+----
 [#Operator]
-Operator:: ThoughtSpot supports various operators such as `=`, `!=`, `>`, `>=`, `<=`, `<`, `contains`, `not contains`, and so on. Use these operators in the API query in the same manner as in the UI.
+Operator:: ThoughtSpot supports various operators such as =, !=, >, >=, <=, <, contains, not contains, and so on. Use these operators in the API query in the same manner as in the UI.
 +
-*Example* Specify `revenue` over 1000, and limit `ship mode` to 'air':
+*Example* Specify revenue over 1000, and limit ship mode to 'air':
 +
+[source]
 ----
 [revenue] > 1000 [ship mode] = ‘air’
 ----
 [#Value]
-Value:: String (text) and date values must be enclosed within quotes, `’ ’`. Do not use quotes for numeric values, except for dates.
+Value:: String (text) and date values must be enclosed within quotes, ’ ’. Do not use quotes for numeric values, except for dates.
 +
-When using multiple values, separate them by a comma, `,`.
+When using multiple values, separate them by a comma, ,.
 +
-*Example* When a ThoughtSpot UI query is `revenue top 2 ship mode`, the equivalent API query is:
+*Example* When a ThoughtSpot UI query is revenue top 2 ship mode, the equivalent API query is:
 +
+[source]
 ----
 [revenue] top 2 [ship mode]
 ----
 +
-*Example* When a ThoughtSpot UI query is `revenue ship mode = air`, the equivalent API query is:
+*Example* When a ThoughtSpot UI query is revenue ship mode = air, the equivalent API query is:
 +
+[source]
 ----
 [revenue] [ship mode] = ‘air’
 ----
 [#Date-Bucket]
-Date Bucket:: In the ThoughtSpot UI, when there are several date columns, users can bind date bucket tokens to a specific column. When using the API, this binding between the date column and the date bucket must be made explicit. The column with which the date bucket is bound, and the date bucket token, must be separated by a period, `.`.
+Date Bucket:: In the ThoughtSpot UI, when there are several date columns, users can bind date bucket tokens to a specific column. When using the API, this binding between the date column and the date bucket must be made explicit. The column with which the date bucket is bound, and the date bucket token, must be separated by a period, ..
 +
-Single word date buckets can be expressed _as is_. Multi-word date buckets must be enclosed within quotes.
+Single word date buckets can be expressed as is. Multi-word date buckets must be enclosed within quotes.
 +
-*Example* When a ThoughtSpot UI query is `revenue commit date monthly`, and if `monthly` is bound to `commit date`, the equivalent API query is:
+*Example* When a ThoughtSpot UI query is revenue commit date monthly, and if monthly is bound to commit date, the equivalent API query is:
 +
+[source]
 ----
 [revenue] [commit date].monthly
 ----
 +
-*Example* When a ThoughtSpot UI query is `revenue day of week = 5`, and if `day of week` is bound to `commit date`, the equivalent API query is:
+*Example* When a ThoughtSpot UI query is revenue day of week = 5, and if day of week is bound to commit date, the equivalent API query is:
 +
+[source]
 ----
 [revenue] [commit date].'day of week' = 5
 ----
-[#Keyword]
 Keyword:: Use keywords in the API query in the same manner as in the UI.
 +
-*Example* When a ThoughtSpot UI query uses keywords `growth of` and `sort by`, the equivalent API query is:
+*Example* When a ThoughtSpot UI query uses keywords growth of and sort by, the equivalent API query is:
 +
+[source]
 ----
 growth of [revenue] by [commit date]
 ----
-[#Calendar]
-Calendar:: You can specify a custom calendar in the query. Use the calendar.*calendar_name* format explicitly.
+Calendar:: You can specify a custom calendar in the query. Use the calendar.calendar_name format explicitly.
 +
 When the calendar name contains multiple words, these words must be enclosed in single quotes.
 +
-*Example* When a ThoughtSpot UI query is `revenue by commit date fiscal`, where the name of the calendar is `fiscal`, the equivalent API query is:
+*Example* When a ThoughtSpot UI query is revenue by commit date fiscal, where the name of the calendar is fiscal, the equivalent API query is:
 +
+[source]
 ----
 [revenue] by [commit date] calendar.fiscal
 ----
 +
-*Example* When a ThoughtSpot UI query is `revenue by commit date my calendar`, where the name of the calendar is `my calendar`, the equivalent API query is:
+Example When a ThoughtSpot UI query is revenue by commit date my calendar, where the name of the calendar is my calendar, the equivalent API query is:
 +
+[source]
 ----
 [revenue] by [commit date] calendar.'my calendar'
 ----
-
 == Request example
 
 === cURL - COMPACT
 
+[source]
 ----
 curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' --header 'X-Requested-By: ThoughtSpot' 'https://<instance>/callosum/v1/tspublic/v1/searchdata?query_string=%5Bsales%5D%20%5Bstore%20region%5D&data_source_guid=06517bd1-84c0-4bc6-bd09-f57af52e8316&batchsize=-1&pagenumber=-1&offset=-1&formattype=COMPACT'
 ----
 
 === Request URL - COMPACT
 
+[source]
 ----
 https://<instance>/callosum/v1/tspublic/v1/searchdata?query_string=%5Bsales%5D%20%5Bstore%20region%5D&data_source_guid=06517bd1-84c0-4bc6-bd09-f57af52e8316&batchsize=-1&pagenumber=-1&offset=-1&formattype=COMPACT
 ----
 
 === cURL - FULL
 
+[source]
 ----
 curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' --header 'X-Requested-By: ThoughtSpot' 'https://<instance>/callosum/v1/tspublic/v1/searchdata?query_string=%5Bsales%5D%20%5Bstore%20region%5D&data_source_guid=06517bd1-84c0-4bc6-bd09-f57af52e8316&batchsize=-1&pagenumber=-1&offset=-1&formattype=FULL’
 ----
 
 === Request URL - FULL
+[source]
 ----
 https://<instance>/callosum/v1/tspublic/v1/searchdata?query_string=%5Bsales%5D%20%5Bstore%20region%5D&data_source_guid=06517bd1-84c0-4bc6-bd09-f57af52e8316&batchsize=-1&pagenumber=-1&offset=-1&formattype=FULL
 ----
 
 == Response example
 
+[source]
 ----
 {
   "columnNames": [
@@ -186,49 +197,54 @@ To test the search query API, follow these steps:
 === Determine the GUID of the data source
 
 . In a Web Browser tab, navigate to the following address, and log in as admin user:
-
-
-    https://<instance>/
++
+----
+https://<instance>/
+----
 
 . In the top navigation, click **Data**.
-Alternatively, navigate to the following address:
 
+   Alternatively, navigate to the following address:
+[source]
++
+----
+https://<instance>/#/data/tables/
+----
 
-   https://<instance>/#/data/tables/
+. Select a data source that you plan to query: a worksheet, a table, or a view.
 
-
-. Select a data source that you plan to query: a Worksheet, a table, or a View.
-
-. In the address bar of the Web Browser, note the GUID of the selected data source; it is the last string of the address.  For example, in the following address string, the GUID is `9d93a6b8-ca3a-4146-a1a1-e908b71b963f`:
-
-
-    https://<instance>/#/data/tables/9d93a6b8-ca3a-4146-a1a1-e908b71b963f
-
+. In the address bar of the Web Browse, note the GUID of the selected data source; it is the last string of the address.  For example, in the following address string, the GUID is `9d93a6b8-ca3a-4146-a1a1-e908b71b963f`:
+[source]
++
+----
+https://<instance>/#/data/tables/9d93a6b8-ca3a-4146-a1a1-e908b71b963f
+----
 
 . Copy and save the GUID.
 
 === Run the Search Data API
 
 . In another browser, navigate to the following address:
-
-
-    https://<instance>/external/swagger/#!/tspublic%2Fv1/searchData
-
++
+[source]
+----
+https://<instance>/external/swagger/#!/tspublic%2Fv1/searchData
+----
 
 . Click on `POST /tspublic/v1/searchdataTS`.
-+
-The parameter interface appears.
+
+   The parameter interface appears.
 
 . In the **Parameters** interface, enter the values for the following:
 
-    - `query_string` is the actual search query. See xref:components[Components of a search query].
-    - `data_source_guid` is the identifier you  obtained earlier, in xref:get-guid[Determine the GUID of the data sources].
-+
-You can leave other parameters at their default value.
+    - `query_string` is the actual search query. See [Components of a search query](#components).
+    - `data_source_guid` is the identifier you  obtained earlier, in [Determine the GUID of the data sources](#get-guid).
+
+    You can leave other parameters at their default value.
 
 . Click **Try it out!**, and note the results.
-+
-You may wish to check that the same query, when you run it in the ThoughtSpot UI search bar (with slightly different syntax), returns the same data.
+
+   You may wish to check that the same query, when you run it in the ThoughtSpot UI search bar (with slightly different syntax), returns the same data.
 
 == Limitations of Search Query API
 
@@ -237,14 +253,13 @@ You may wish to check that the same query, when you run it in the ThoughtSpot UI
 - Search execution of query strings is **case insensitive**.
 
 - All Column names in the data source must have **unique names** that also pass the "case insensitivity" test.
-+
-For example, Columns `[Revenue]` and `[revenue]` are not unique.
 
+  For example, Columns `[Revenue]` and `[revenue]` are not unique.
 - Column names cannot contain square brackets, `[` or `]`.
 
 - Values must be enclosed in quotes, `‘’`, but they cannot contain quotes.
 
-- The API does not support **in-query formula** definitions. To use a formula, first create it on the Worksheet or a table using the ThoughtSpot UI, and then use the named formula inside the API query.
+- The API does not support **in-query formula** definitions. To use a formula, first create it on the worksheet or a table using the ThoughtSpot UI, and then use the named formula inside the API query.
 
 - Users must be **authenticated** and have **read access** to the data source.
 

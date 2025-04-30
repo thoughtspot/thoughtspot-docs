@@ -1,15 +1,16 @@
 = Install ThoughtSpot clusters in Azure
-:last_updated: 2/27/2020
+:last_updated: ["2/27/2020"]
 :linkattrs:
+
 Learn how to install ThoughtSpot clusters in Azure.
 
 == Prerequisites
 
 Before you can install your ThoughtSpot clusters in Azure, complete these prerequisites.
 
-. *Review configuration options* Refer to xref:configuration-options-azure.adoc[Azure configuration options] for detailed instance specs.
-. *Create the instance* Refer to xref:launch-an-instance-azure.adoc[Set up Azure for ThoughtSpot] to create and launch your instance.
-. *Review required ports* Refer to xref:firewall-ports.adoc[Network Policies] to view the required ports for successful operation of ThoughtSpot.
+. *Review configuration options* Refer to xref:configuration-options.adoc[Azure configuration options] for detailed instance specs.
+. *Create the instance* Refer to xref:launch-an-instance.adoc[Set up Azure for ThoughtSpot] to create and launch your instance.
+. *Review required ports* Refer to xref:ports.adoc[Network ports] to view the required ports for successful operation of ThoughtSpot.
 . *Configure nodes* Refer to xref:installing-azure.adoc[Configure ThoughtSpot nodes in Azure] to configure your nodes.
 
 [#cluster-install]
@@ -39,25 +40,23 @@ If you do not have a link, open a support ticket with xref:contact.adoc[ThoughtS
 
 . Copy the downloaded release bundle to `/export/sdc1/TS_TASKS/install` using the following command:
 +
-[source,console]
 ----
  $ scp <release-number>.tar.gz admin@<hostname>:/export/sdc1/TS_TASKS/install/<file-name>
 ----
 +
 Note the following parameters:
 
-** `release-number` is the release number of your ThoughtSpot instance, such as 5.3, 6.0, and so on.
-** `hostname` is your specific hostname.
-** `file-name` is the name of the tarball file on your local computer.
+ ** `release-number` is the release number of your ThoughtSpot instance, such as 5.3, 6.0, and so on.
+ ** `hostname` is your specific hostname.
+ ** `file-name` is the name of the tarball file on your local computer.
 
 +
-NOTE: You can use another secure copy method, if you prefer a method other than the `scp` command.
+{% include note.adoc content="You can use another secure copy method, if you prefer a method other than the `scp` command." %}
 
 . Alternatively, use `tscli fileserver download-release` to download the release bundle.
++ You must xref:tscli-command-ref.adoc#tscli-fileserver[configure the fileserver] by running `tscli fileserver configure` before you can download the release.
 +
-You must xref:tscli-command-ref.adoc#tscli-fileserver[configure the fileserver] by running `tscli fileserver configure` before you can download the release.
 +
-[source,console]
 ----
  $ tscli fileserver download-release <release-number> --user <username> --out <release-location>
 ----
@@ -70,10 +69,8 @@ Note the following parameters:
 For example, `/export/sdc1/TS_TASKS/install/6.0.tar.gz`.
 
 . Verify the checksum to ensure you have the correct release.
++ Run `md5sum -c <release-number>.tar.gz.MD5checksum`.
 +
-Run `md5sum -c <release-number>.tar.gz.MD5checksum`.
-+
-[source,console]
 ----
  $ md5sum -c <release-number>.tar.gz.MD5checksum
 ----
@@ -83,38 +80,31 @@ Your output says `ok` if you have the correct release.
 . Launch a https://linux.die.net/man/1/screen[screen,window=_blank] session.
 Use screen to ensure that your installation does not stop if you lose network connectivity.
 +
-[source,console]
 ----
  $ screen -S DEPLOYMENT
 ----
 
 . Manually update tscli.
-+
-[source,console]
-----
+
  $ tar -C /usr/local/scaligent -zxpf <release-number>.tar.gz './bin/tscli'
-----
 
 . Create the cluster.
++ Run `tscli cluster create` to create the cluster.
 +
-Run `tscli cluster create` to create the cluster.
-+
-[source,console]
 ----
  $ tscli cluster create <release-number>.tar.gz
 ----
 
 . Edit the output with your specific cluster information.
-+
-For more information on this process, refer to xref:cluster-create.adoc[Using the tscli cluster create command] and xref:parameters-cluster-create.adoc[Parameters of the `cluster create` command].
++ For more information on this process, refer to xref:cluster-create.adoc[Using the tscli cluster create command] and xref:parameters-cluster-create.adoc[Parameters of the `cluster create` command].
 +
 The cluster installer automatically reboots all the nodes after a successful install.
 The `firewalld` service automatically turns on.
 At this time, the system is rebooting, which may take approximately 15 minutes.
++
 
 . Log in to any node to check the current cluster status:
 +
-[source,console]
 ----
  $ tscli cluster status
 ----
@@ -129,8 +119,6 @@ Your output may look similar to the following:
 [source,console]
 ----
 $ tscli cluster status
-----
-----
 Cluster: RUNNING
 Cluster name    : thoughtspot
 Cluster id      : 1234X11111
@@ -159,11 +147,7 @@ Number of tables in WILL_NOT_INDEX state: 0
 
 Ensure that the cluster is `RUNNING` and that the Database and Search Engine are `READY`.
 
-[source,console]
-----
  $ tscli cluster check
-----
-----
  Connecting to hosts...
  [Wed Jan  8 23:15:47 2020] START Diagnosing ssh
  [Wed Jan  8 23:15:47 2020] SUCCESS
@@ -218,7 +202,7 @@ Ensure that the cluster is `RUNNING` and that the Database and Search Engine are
    InsecureRequestWarning)
  [Wed Jan  8 23:16:12 2020] SUCCESS
  ################################################################################
-----
+
 Your output may look something like the above.
 Ensure that all diagnostics show `SUCCESS`.
 
@@ -239,7 +223,6 @@ Follow these steps:
 ----
 
 . If you don't have a security certificate for ThoughtSpot, you must bypass the security warning:
-
  ** Click *Advanced*
  ** Click *Proceed*
 . The ThoughtSpot sign-in page appears.
@@ -259,10 +242,11 @@ After installing the cluster, contact xref:contact.adoc[ThoughtSpot Support] for
 
 As you develop your expertise in Azure cluster installation, we recommend the following ThoughtSpot U course:
 
-* https://training.thoughtspot.com/create-upgrade-patch-a-thoughtspot-cluster/430642[Create a Cluster,window=_blank]
+* https://training.thoughtspot.com/create-upgrade-patch-a-thoughtspot-cluster/430642[Create a Cluster, window=_blank]
 
-See other training resources at
-https://training.thoughtspot.com/[ThoughtSpot U,window=_blank]
+See other training resources at:
+
+image::ts-u.png[link="https://training.thoughtspot.com/", window=_blank]
 
 '''
 > **Related information**

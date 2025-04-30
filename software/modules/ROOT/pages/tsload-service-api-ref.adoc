@@ -1,5 +1,5 @@
-= tsload service API reference
-:last_updated: 10/21/2020
+= tsload connector reference
+:last_updated: 3/22/2022
 
 The tsload connector APIs enable you to load data into ThoughtSpot.
 
@@ -19,7 +19,6 @@ a| password a| string a| ThoughtSpot password
 
 === Request
 
-[source,tsload connector]
 ----
 POST /ts_dataservice/v1/public/session HTTP/1.1
 Host: client.mydomain.com Accept: application/json Content-type: application/json
@@ -130,7 +129,6 @@ a| `max_reported_parsing_errors`(optional) a| integer a| Maximum number of parsi
 
 ==== Example use of parameters
 
-[source,tsload connector]
 ----
 {
       target : {
@@ -223,7 +221,7 @@ All of this data is uploaded to the ThoughtSpot cluster unless a commit load is 
 === Request
 
 ----
-POST /ts_dataservice/v1/public/loads/cycle_id
+POST /ts_dataservice/v1/public/loads/<cycle_id>
 Cookie: <token>
 Content-Type: multipart/form-data; boundary=bndry
 --bndry
@@ -284,7 +282,7 @@ Once the data load is complete, you use *CommitLoad* to commit data to be loaded
 === Request
 
 ----
-POST /ts_dataservice/v1/public/loads/cycle_id/commit
+POST /ts_dataservice/v1/public/loads/<cycle_id>/commit
 Cookie: <token>
 ----
 
@@ -326,7 +324,7 @@ Use this API to stop loading data.
 === Request
 
 ----
-POST /ts_dataservice/v1/public/loads/cycle_id/cancel
+POST /ts_dataservice/v1/public/loads/<cycle_id>/cancel
 Cookie: token
 ----
 
@@ -362,7 +360,7 @@ Use the api to get the current status of a load.
 === Request
 
 ----
-GET /ts_dataservice/v1/loads/cycle_id
+GET /ts_dataservice/v1/public/loads/<cycle_id>
 Cookie: token
 ----
 
@@ -411,6 +409,14 @@ if (status != OK) {
 
 Use this api to view the bad records file data.
 
+=== Request
+
+----
+GET /ts_dataservice/v1/public/loads/cycle_id/bad_records_file
+Cookie: token
+Content-range: xxx-xxxx
+----
+
 === Response
 
 ----
@@ -445,4 +451,4 @@ error code = INTERNAL, message = Couldn't resolve the authentication service.
 '''
 > **Related information**
 >
-> * xref:load-with-service.adoc[Use the tsload connector to load data]
+> * xref:load-with-tsload.adoc[Use the tsload connector to load data]

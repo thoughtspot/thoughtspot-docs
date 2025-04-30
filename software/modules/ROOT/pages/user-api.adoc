@@ -18,20 +18,22 @@ NOTE: You cannot transfer objects to or from the system user or the administrati
 
 === Request Parameters
 [width="100%",options="header",cols="20%,15%,65%"]
-|====================
+|===
 | Query Parameter | Data Type | Description
 | `fromUserName` | string | Username to transfer from.
 | `toUserName` | string | Username to transfer to.
-|====================
+|===
 
 === Request Example
 
 .cURL
+[source]
 ----
 curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' --header 'X-Requested-By: ThoughtSpot' 'https://<instance>/callosum/v1/tspublic/v1/user/transfer/ownership?fromUserName=guest&toUserName=guest1'
 ----
 
 .Request URL
+[source]
 ----
 https://<instance>/callosum/v1/tspublic/v1/user/transfer/ownership?fromUserName=guest&toUserName=guest1
 ----
@@ -88,26 +90,79 @@ When true, this flag removes any deleted users or groups.
 === Request Example
 
 .cURL
+[source]
 ----
 curl -X POST --header 'Content-Type: application/x-www-form-urlencoded' --header 'Accept: application/json' -d 'applyChanges=false' 'https://<instance>/callosum/v1/tspublic/v1/user/sync'
 ----
 
 .Request URL
+[source]
 ----
 https://<instance>/callosum/v1/tspublic/v1/user/sync
 ----
 
 === Response Example
 
+This example covers user objects (with emails), group objects, and their relationships.
+
+* `created` and `modified` dates may be left blank for new users.
+* `principalTypeEnum` value specifies if the principal is a user or a group.
+
+Here, `test1` user belongs to two groups - `Customer Success` and `Marketing`.
+`test2` belongs to the group `Administrator`.
+`All` is a default group to which every user belongs;
+you may omit it from the input.
+
+Set `visibility` to `NON_SHARABLE` if you do not want users to be able to xref:add-user.adoc#sharing-visibility[share objects] with users in this group.
+
+[source]
 ----
-{
-  'usersAdded': ['username1','username2'],
-  'usersDeleted': ['username3'],
-  'usersUpdated': ['username4'],
-  'groupsAdded': ['groupname1'],
-  'groupsDeleted': ['groupname2','groupname3'],
-  'groupsUpdated': ['groupname4']
-}
+[
+  { "name": "Customer Success",
+    "displayName": "Customer Success",
+    "description": "CS",
+    "created": 1568926267025,
+    "modified": 1568926982242,
+    "principalTypeEnum": "LOCAL_GROUP",
+    "groupNames": [],
+    "visibility": "DEFAULT" },
+
+  { "name": "All",
+    "displayName": "All Group",
+    "created": 1354006445722,
+    "modified": 1354006445722,
+    "principalTypeEnum": "LOCAL_GROUP",
+    "groupNames": [],
+    "visibility": "DEFAULT" },
+
+  { "name": "Marketing",
+    "displayName": "Marketing",
+    "description": "Marketing Group",
+    "created": 1587573582931,
+    "modified": 1587573583003,
+    "principalTypeEnum": "LOCAL_GROUP",
+    "groupNames": [],
+    "visibility": "DEFAULT" },
+
+  { "name": "test1",
+    "displayName": "test one",
+    "description": "",
+    "created": 1587573554475,
+    "modified": 1587573589986,
+    "mail": "test1@test.com",
+    "principalTypeEnum": "LOCAL_USER",
+    "groupNames": [ "All", "Customer Success", "Marketing" ],
+    "visibility": "DEFAULT" },
+
+  { "name": "test2",
+    "displayName": "test two",
+    "created": 1587573621279,
+    "modified": 1587573621674,
+    "mail": "test2@test.com",
+    "principalTypeEnum": "LOCAL_USER",
+    "groupNames": [ "Administrator", "All" ],
+    "visibility": "DEFAULT" }
+]
 ----
 
 == Change password
@@ -120,21 +175,23 @@ Use this API to change the password of a user.
 
 === Request Parameters
 [width="100%",options="header",cols="20%,15%,65%"]
-|====================
+|===
 | Form Parameter | Data Type | Description
-| `name` | string | Name of the user.
-| `currentpassword` | string | The current password of the user.
+| `name` | string | The current password of the user.
+| `currentpassword` | string | Username to transfer to.
 | `password` | string | A new password of the user.
-|====================
+|===
 
 === Request Example
 
 .cURL
+[source]
 ----
 curl -X POST --header 'Content-Type: application/x-www-form-urlencoded' --header 'Accept: application/json' --header 'X-Requested-By: ThoughtSpot' -d 'name=guest&currentpassword=test&password=foobarfoobar' 'https://<instance>/callosum/v1/tspublic/v1/user/updatepassword'
 ----
 
 .Request URL
+[source]
 ----
 https://<instance>/callosum/v1/tspublic/v1/user/updatepassword
 ----
@@ -151,26 +208,26 @@ Not applicable
 Use this API to get a list of all users, groups, and their inter-dependencies in the form of principal objects.
 A typical principal object contains the following properties:
 [width="100%",options="header",cols="25%,75%"]
-|====================
+|===
 | Property | Description
 | `name` | Name of the principal.
 
 This field, in conjunction with whether the object is a user or group, is used to identify a user/group. Consequently, this field is required to be unique (unique for users and groups separately. i.e., you can have user “x” and group “x”).
 | `displayName` | Display name of the principal.
 | `description` | Description of the principal.
-| `mail` | Email address of the user. This field should be populated in case of user only. It is ignored in the case of groups.
+| `mail` |
 | `principalTypeEnum` a| Type of the user created in the ThoughtSpot system.
 
-* `LOCAL_USER` (a user is validated through password saved in the ThoughtSpot database)
-* `LOCAL_GROUP`
+* LOCAL_USER (a user is validated through password saved in the ThoughtSpot database)
+* LOCAL_GROUP
 | `password` a| Password of the user. This field should be populated in case of user only. It is ignored in the case of groups. Password is only required:
 
-* if the user is of `LOCAL_USER` type
+* if the user is of LOCAL_USER type
 * when the user is created for the first time.
 
 In subsequent update, the user password is not updated even if it changes in the source system.
 |`groupNames` | Group names that a principal belongs to. Groups and users can belong to other groups.
-|====================
+|===
 
 === Resource URL
 

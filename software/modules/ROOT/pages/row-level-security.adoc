@@ -4,20 +4,20 @@ Use rule-based RLS to restrict a group's access to data. Users see only accessib
 
 Row level security works at the group level and is configured on tables.
 A table's RLS rules also apply to any objects with data from that table.
-So, searches, Answers, Worksheets, and Pinboards that rely on a table's data fall under RLS rules.
+So, searches, answers, worksheets, and pinboards that rely on a table's data fall under RLS rules.
 
 == Worksheet queries and RLS
 
-You cannot set RLS rules on Worksheets, only on tables.
-However, administrators can disable RLS on Worksheets that are derived from tables with RLS rules.
-After RLS rules are disabled, users with access to the Worksheet can see all its data.
+You cannot set RLS rules on worksheets, only on tables.
+However, administrators can disable RLS on worksheets that are derived from tables with RLS rules.
+After RLS rules are disabled, users with access to the worksheet can see all its data.
 
-By default, Worksheet queries only take into account RLS rules on tables whose columns appear in the query.
-Other related tables that may underly the Worksheet are ignored.
-This means that not all RLS rules on underlying tables are applied when a user queries a Worksheet.
+By default, worksheet queries only take into account RLS rules on tables whose columns appear in the query.
+Other related tables that may underly the worksheet are ignored.
+This means that not all RLS rules on underlying tables are applied when a user queries a worksheet.
 
-You can configure a stricter application of RLS rules to take into account RLS rules from all the tables underlying the Worksheet.
-This is recommended if you have key dimension tables that Worksheets rely on but that are not necessarily regularly accessed through query.
+You can configure a stricter application of RLS rules to take into account RLS rules from all the tables underlying the worksheet.
+This is recommended if you have key dimension tables that worksheets rely on but that are not necessarily regularly accessed through query.
 To do this, contact ThoughtSpot Customer Support.
 
 [#privileges-that-allow-users-to-set-or-be-exempt-from-rls]
@@ -28,14 +28,14 @@ As a result:
 
 * Row level security does not apply to them.
 * They can create, edit, and delete RLS rules.
-* They can also disable RLS rules on individual Worksheets.
+* They can also disable RLS rules on individual worksheets.
 
 If your installation has enabled the *Can Administer and Bypass RLS* privilege, administrators can also grant *Can Administer and Bypass RLS* to groups.
 Members of groups with *Can Administer and Bypass RLS*:
 
 * Are exempt from row-level security (RLS) rules.
 * Can add/edit/delete existing RLS rules.
-* Can check or uncheck Bypass RLS on a Worksheet.
+* Can check or uncheck Bypass RLS on a worksheet.
 
 This behavior is true regardless of whether the privilege is from a direct group membership or indirect (through a group hierarchy, where the user is part of a group that is part of a larger, top-level group with the RLS privilege).
 
@@ -76,12 +76,12 @@ Then, you set a *Row security* on the `vendor-purchase` table as follows:
 `VENDOR = ts_groups`
 
 Only users in `Starbucks` group see `starbucks` data and so forth.
-Rules ignore case inconsistencies and spaces are evaluated so `round table` in the data matches the `Round table` group but not a group named `RoundTable`.
+Rules ignore case inconsistencies and spaces are evaluated so `round table` in the data matches the `Round table` group but not a group named `RoundTable` .
 
 Rules can be simple or they can incorporate logic such as `if/then` rules.
 For example, vendors should see their own data but your accounts payable group needs to see all the vendor data:
 
-`VENDOR = ts_groups or 'Accounts Payable' = ts_groups`
+`VENDOR = ts_groups or 'Accounts Payable' = ts_groups `
 
 This rule continues to work as you add data from new vendor or team members to `Accounts Payable`.
 In this way, a well-written rule is _self maintaining_, meaning you don't have to revisit the rule as your system changes.
@@ -111,11 +111,11 @@ Use these best practices for Rule-Based Row Level Security:
 Non-administrative users and groups have no way to access any data without first having it shared with them.
 So, only share what you need.
 +
-When you share, share Worksheets.
+When you share, share worksheets.
 This is a general best practice.
 Worksheets simplify the data environment for end users;
 they only need to choose among a few sources, rather than many tables.
-Also, one Worksheet can also  combine data from several tables.
+Also, one worksheet can also  combine data from several tables.
 
 * Set row level security wherever you want to keep data secure.
 +
@@ -124,8 +124,8 @@ So, protect your  data by setting row level security wherever you want to keep d
 
 * Explicitly grant access for users that should see all rows.
 +
-As soon as you define a rule on a table for one group, you prevent access by all others outside of that group hierarchy.
-Subsequent rules should specifically add groups that need access.
+As soon as you define a rule on a table for one group, you prevent access by   all others outside of that group hierarchy.
+Subsequent rules should   specifically add groups that need access.
 
 * Keep in mind that multiple rules on a table are additive with `or`.
 +
@@ -142,4 +142,4 @@ So, err on the side of simple rules rather than complex rules with a lot of logi
 >
 > * To learn the procedure you follow for setting a rule, xref:set-rls.adoc[Set RLS rules]
 > * For a list of operators and functions you can use to build RLS rules see xref:rls-rule-builder-reference.adoc[Row level security rules reference].
-> * For information on bypassing rules on a Worksheet, see xref:change-inclusion-rule.adoc[Change inclusion, join, or RLS for a worksheet].
+> * For information on bypassing rules on a worksheet, see xref:change-inclusion-rule.adoc[Change inclusion, join, or RLS for a worksheet].

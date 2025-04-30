@@ -1,38 +1,39 @@
 = About materialized views
 :last_updated: 10/31/2018
 
-You can materialize a View to improve its performance.
+You can materialize a view to improve its performance.
 
 == Introduction to materialized views
 
-Views can become slow as your data volume and the number of Views stacked on top of one another grow.
-This happens because when doing a search, each View is computed on the fly.
-To improve the performance of a View, you can materialize it.
-Materializing pre-computes the View and stores it in memory, just like a table.
-You can expect a Materialized View to be three to six times faster than a View that is not materialized, on average.
+Views can become slow as your data volume and the number of views stacked on top of one another grow.
+This happens because when doing a search, each view is computed on the fly.
+To improve the performance of a view, you can materialize it.
+Materializing pre-computes the view and stores it in memory, just like a table.
+You can expect a materialized view to be three to six times faster than a view that is not materialized, on average.
 
-To materialize a View, you must have the xref:about-users-groups.adoc[*Can administer ThoughtSpot* privilege].
+To materialize a view, you must have the xref:about-users-groups.adoc[*Can administer ThoughtSpot* privilege].
 
-NOTE: The number of Materialized Views you can create is limited to 50, because Materialized Views take up space in memory.
+NOTE: The number of materialized views you can create is limited to 50, because materialized views take up space in memory.
+Row Level Security does not apply to materialized views.
+All users will see the same data when using the materialized view as a data source.
 
-NOTE: Row Level Security does not apply to Materialized Views.
-All users will see the same data when using the Materialized View as a data source.
+These are the operations you can do on a view:
 
-These are the operations you can do on a View:
+* xref:materialize-a-view.adoc[Materialize a view] to improve performance,
+* xref:dematerialize-a-view.adoc[Dematerialize a view] to save space, or
+* xref:refresh-view.adoc[Refresh a view] to synchronize its data with the latest data load to the underlying tables.
+* Check the status of a view.
 
-* xref:materialize-a-view.adoc[Materialize a View] to improve performance,
-* xref:dematerialize-a-view.adoc[Dematerialize a View] to save space, or
-* xref:refresh-view.adoc[Refresh a View] to synchronize its data with the latest data load to the underlying tables.
-* Check the status of a View.
-
-After materializing, a View can have one of three statuses.
-You can see the status of a View by selecting *Data*, clicking on *Views*, and finding your View in the list.
-The status is shown next to the name of your View.
+After materializing, a view can have one of three statuses.
+You can see the status of a view by selecting *Data*, clicking on *Views*, and finding your view in the list.
+The status is shown next to the name of your view.
 
 [#materialization-status]
 == Materialization status
 
-These are the statuses a View can have:
+
+
+A materialized view can be in one of the following states:
 [width="100%",options="header",cols="20%,40%,40%"]
 |===
 | Status | Description | Action
@@ -48,11 +49,11 @@ Wait for materialization to finish.
 
 | Materialized
 | View has been materialized into memory.
-| You can now search the Materialized View.
+| You can now search the materialized view.
 
 | Stale
 | View has become out of sync with the data in the tables that make it up, usually due to an incremental data load.
-| Refresh the View by clicking *Refresh Data*.
+| Refresh the view by clicking *Refresh Data**.
 
 | Unknown
 | View status could not be determined.
@@ -60,7 +61,7 @@ Wait for materialization to finish.
 
 | Error
 | An error occurred.
-| Refresh the View by clicking *Refresh Data*.
+| Refresh the view by clicking *Refresh Data**.
 Optionally run a report.
 |===
 
@@ -68,18 +69,18 @@ Optionally run a report.
 
 == Freshness of data
 
-Your View can become stale, if it isn't refreshed when the data in the tables used to create it is updated.
+Your view can become stale, if it isn't refreshed when the data in the tables used to create it is updated.
 There are two ways to refresh the data:
 
-* xref:refresh-view.adoc[Manually refresh data in a View]
-* xref:schedule-materialization.adoc[Refresh the View on a schedule]
+* xref:refresh-view.adoc[Manually refresh data in a view]
+* xref:schedule-materialization.adoc[Refresh the view on a schedule]
 
-Here are some conditions that could lead to a View becoming stale:
+Here are some conditions that could lead to a view becoming stale:
 
-* Changes to the View definition
-* Changes to the fields used in the View
-* Changes to the join relationships used in the View
-* Change to formulas in the View
+* Changes to the view definition
+* Changes to the fields used in the view
+* Changes to the join relationships used in the view
+* Change to formulas in the view
 * Change the datatypes in the underlying tables
 
 '''

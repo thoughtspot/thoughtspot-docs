@@ -52,15 +52,25 @@ To make deployment easy, the ThoughtSpot AMI includes a custom ThoughtSpot image
 * Launch permissions that control which AWS accounts can use the AMI to launch instances.
 * A block device mapping that specifies the volumes to attach to the instance when it launches.
 
-The ThoughtSpot AMI has specific applications on a base image.
+The ThoughtSpot AMI has specific applications on a CentOS-based image.
 The AMI includes the EBS volumes necessary to install ThoughtSpot in AWS.
 When you launch an EC2 instance from this image, it automatically sizes and provisions the EBS volumes.
 The base AMI includes 200 GB (xvda), 2X400 GB (xvdb), and SSD (gp2).
 It contains the maximum number of disks to handle a fully loaded VM.
 
+[#rhel-ami]
+=== RHEL AMI
+
 This guide explains how to deploy ThoughtSpot on AWS, using ThoughtSpot's CentOS-based image.
-Starting with version 6.0.4, you can also deploy ThoughtSpot on AWS using Red Hat Enterprise Linux (RHEL), allowing you to run ThoughtSpot on an RHEL image that your organization manages internally.
-To install ThoughtSpot using RHEL, refer to the xref:rhel.adoc[RHEL deployment guide].
+You can also deploy ThoughtSpot on AWS using Red Hat Enterprise Linux (RHEL), allowing you to run ThoughtSpot on an RHEL 7.7 or 7.8 image that your organization manages internally.
+To install ThoughtSpot using RHEL, choose your own RHEL-based image on the AWS console, instead of ThoughtSpot's image, and refer to the xref:rhel.adoc[RHEL deployment guide] after you launch your virtual machines.
+
+[#al2-ami]
+=== Amazon Linux 2 AMI
+
+This guide explains how to deploy ThoughtSpot on AWS, using ThoughtSpot's CentOS-based image.
+You can also deploy ThoughtSpot on AWS using Amazon Linux 2, allowing you to run ThoughtSpot on an Amazon Linux 2 image that your organization manages internally.
+To install ThoughtSpot using Amazon Linux 2, choose your own Amazon Linux 2-based image on the AWS console, instead of ThoughtSpot's image, and refer to the xref:al2-overview.adoc[Amazon Linux 2 deployment guide] after you launch your virtual machines.
 
 [#prerequisites]
 == Prerequisites
@@ -95,15 +105,15 @@ For more details, see https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Subne
 
 | &#10063;
 | A ThoughtSpot AMI.
-For details, see xref:ami[Choose VM instances].
+For details, see <<ami,Choose VM instances>>.
 
 | &#10063;
 | AWS security groups.
-For required open ports, see xref:firewall-ports.adoc[Network ports].
+For required open ports, see xref:ports.adoc[Network ports].
 
 | &#10063;
 | AWS VM instances.
-For instance type recommendations, see xref:configuration-options-aws.adoc#ts-aws-instance-types[ThoughtSpot AWS instance types].
+For instance type recommendations, see xref:configuration-options.adoc#ts-aws-instance-types[ThoughtSpot AWS instance types].
 
 | &#10063;
 | EBS volumes for data storage.
@@ -122,12 +132,11 @@ Refer to the chart below to find the AMI you should use, depending on your relea
 |===
 | Release Number | AMI Name | AMI ID | Region
 
-| 6.0 | thoughtspot-image-20191031-8ae15008336-prod | ami-06276ece42ed96994 | N. California
-| 6.0.1 | thoughtspot-image-20191031-8ae15008336-prod | ami-06276ece42ed96994 | N. California
-| 6.0.2 | thoughtspot-image-20191031-8ae15008336-prod | ami-06276ece42ed96994 | N. California
-| 6.0.3 | thoughtspot-image-20200304-8b8c7b0e56a-prod | ami-09079fee8bc0543fc | N. California
-| 6.0.4 | thoughtspot-image-20200304-8b8c7b0e56a-prod | ami-09079fee8bc0543fc | N. California
-| 6.0.5 | thoughtspot-image-20200304-8b8c7b0e56a-prod | ami-09079fee8bc0543fc | N. California
+| 6.2
+| thoughtspot-image-20200304-8b8c7b0e56a-prod
+| ami-09079fee8bc0543fc
+| N.
+California
 |===
 +
 NOTE: The AMI is based in the N.
@@ -139,7 +148,7 @@ Once the copy is complete, you can return to your own region.
 [#ec2-setup]
 == Choose VM instances
 
-. Choose the appropriate EC2 instance type: See xref:configuration-options-aws.adoc#ts-aws-instance-types[ThoughtSpot AWS instance types] for help choosing the correct instance type for your cluster.
+. Choose the appropriate EC2 instance type: See xref:configuration-options.adoc#ts-aws-instance-types[ThoughtSpot AWS instance types] for help choosing the correct instance type for your cluster.
 . Networking requirements: 10 GbE network bandwidth is needed between the VMs.
 Ensure that you have this bandwidth.
 . Ensure that all your VMs are on the same Amazon Virtual Private Cloud (VPC) and subnetwork.
@@ -147,7 +156,7 @@ This is necessary because VMs that are part of a cluster need to be accessible b
 Additional external access may be required to bring data in/out of the VMs to your network.
 Add all nodes in the same placement group.
 . Determine the number of EC2 instances you need: Based on the datasets, this number will vary.
-Refer to xref:configuration-options-aws.adoc#ts-aws-instance-types[ThoughtSpot AWS instance types] for recommended nodes for a given data size.
+Refer to xref:configuration-options.adoc#ts-aws-instance-types[ThoughtSpot AWS instance types] for recommended nodes for a given data size.
 
 NOTE: Staging larger datasets (> 50 GB per VM), may require provisioning additional attached EBS volumes that are SSD (gp2).
 
@@ -155,7 +164,7 @@ NOTE: Staging larger datasets (> 50 GB per VM), may require provisioning additio
 == Setting up your Amazon S3 bucket (recommended)
 
 If you are going to deploy your cluster using the S3-storage option, you must set up that bucket before you set up your cluster.
-Contact xref:contact.adoc[ThoughtSpot Support] to find out if your specific cluster size can benefit from the S3 storage option.
+Contact xref:contact.adoc#[ThoughtSpot Support] to find out if your specific cluster size can benefit from the S3 storage option.
 
 Follow these steps to set up an S3 bucket in AWS.
 
@@ -201,12 +210,12 @@ image::launch_instance.png[]
 . In the *My AMIs* tab under *1.
 Choose AMI*, search *ThoughtSpot* to find the ThoughtSpot AMI.
 . Click *Select*.
-Ensure that you select the ThoughtSpot AMI listed xref:ami[above], which you entered earlier in this process.
+Ensure that you select the ThoughtSpot AMI listed <<ami,above>>, which you entered earlier in this process.
 +
 image::aws-choose-ami.png[Select the ThoughtSpot AMI]
 
 . On the *Choose an Instance Type* page, select a ThoughtSpot-supported instance type.
-(See xref:configuration-options-aws.adoc#ts-aws-instance-types[ThoughtSpot AWS instance types].)
+(See xref:configuration-options.adoc#ts-aws-instance-types[ThoughtSpot AWS instance types].)
 . Click *Next: Configure Instance Details*.
 . Configure the instances by choosing the number of EC2 instances you need.
 The instances must be on the same VPC and subnetwork.
@@ -215,10 +224,13 @@ ThoughtSpot sets up the instances to be in the same ThoughtSpot cluster.
 *S3 storage setting*: If you are going to use the S3 storage option, ThoughtSpot recommends that you restrict access to a specific S3 bucket.
 Create a new IAM role that provides read/write access to the specific bucket, and select it.
 For details on that, click *Create new IAM role*.
++
+*AWS Systems Manager Agent*: If you plan to use the https://docs.aws.amazon.com/systems-manager/latest/userguide/ssm-agent.adoc[AWS SSM agent,window=_blank] as an alternative to SSH, create a new IAM role with an SSM policy to grant AWS SSM permission to perform actions on your instances.
+Refer to https://docs.aws.amazon.com/systems-manager/latest/userguide/setup-instance-profile.adoc[Create an IAM instance profile for Systems Manager,window=_blank].
 
 . Click *Next: Add Storage*.
 Add the required storage based on your instance type (either EBS volumes or S3), and the amount of data you are deploying.
-For specific storage requirements, refer to xref:configuration-options-aws.adoc#ts-aws-instance-types[ThoughtSpot AWS instance types].
+For specific storage requirements, refer to xref:configuration-options.adoc#ts-aws-instance-types[ThoughtSpot AWS instance types].
 +
 image::aws-add-storage.png[]
 +
@@ -247,15 +259,12 @@ This tag allows you to identify your instance more easily.
 . Click *Next: Configure Security Group*.
 . Select an existing security group to attach new security groups to so that it meets the security requirements for ThoughtSpot.
 +
-TIP: *Security setting for ThoughtSpot* +
- * The VMs need intragroup security, i.e.
+{{site.data.alerts.tip}} *Security setting for ThoughtSpot*<ul><li>The VMs need intragroup security, i.e.
 every VM in a cluster must be accessible from one another.
-For easier configuration, ThoughtSpot recommends that you enable full access between VMs in a cluster. +
-* Additionally, more ports must be opened on the VM to provide data staging capabilities to your network.
-Check ThoughtSpot's Network ports documentation to determine the minimum required ports you must open for your ThoughtSpot appliance.
-
+For easier configuration, ThoughtSpot recommends that you enable full access between VMs in a cluster.</li> <li>Additionally, more ports must be opened on the VM to provide data staging capabilities to your network.
+Check ThoughtSpot's Network ports documentation to determine the minimum required ports you must open for your ThoughtSpot appliance.</li></ul> {{site.data.alerts.end}}
 +
-Refer to xref:firewall-ports.adoc[Network ports].
+Refer to xref:ports.adoc[Network ports].
 
 . Click *Review and Launch*.
 . After you have reviewed your instance launch details, click *Launch*.
@@ -278,5 +287,6 @@ As you develop your expertise in AWS VM creation, we recommend the following Tho
 
 * https://training.thoughtspot.com/node-network-configuration/484851[Node Configuration: AWS,window=_blank]
 
-See other training resources at
-https://training.thoughtspot.com/[ThoughtSpot U]
+See other training resources at:
+
+image::ts-u.png[link="https://training.thoughtspot.com/", window=_blank]

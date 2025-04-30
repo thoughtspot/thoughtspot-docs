@@ -56,10 +56,10 @@ You may have a schema where there is a fact table that you want to join with ano
 If there isn't a primary key/foreign key relationship between the tables, you can use many-to-many to enable this.
 You can do this by using the RELATIONSHIP syntax to add a link between them, that works similarly to the WHERE clause in a SQL join clause.
 
-NOTE: Using generic relationships is not a best practice.
+NOTE: Using many-to-many joins is not a best practice.
 In cases where you have two fact tables you want to join, it is better to find a way to create a bridge table between them, so you have a chasm trap.
 Look at your two fact tables to see if they share some common data that you could use to create a dimension table between them.
-For example, a date or product dimension could join an inventory fact table to a sales fact table. This is best done in your ETL process, before bringing the data into ThoughtSpot.
+For example, a date or product dimension could join an inventory fact table to a sales fact table.
 
 NOTE: A many-to-many implementation does not protect from over counting in some searches.
 If you plan to use it, make sure your searches don't include aggregation or count searches that will count one value multiple times, because it satisfies the join condition for multiple rows.
@@ -80,6 +80,7 @@ To use a many-to-many relationship, you need to follow a few rules:
 
 This example shows the TQL statements that create the two fact tables and the relationship between them.
 
+[source]
 ----
 TQL> CREATE TABLE "wholesale_buys" (
 
