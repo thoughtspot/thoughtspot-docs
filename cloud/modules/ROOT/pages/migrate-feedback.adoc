@@ -5,7 +5,7 @@
 :linkattrs:
 :experimental:
 :description: You can now migrate feedback between Models or Worksheets using the feedback TML file.
-:jira: SCAL-226681
+:jira: SCAL-226681, SCAL-253054
 
 You can now migrate feedback from one Model to another across different Orgs and instances or clusters using the feedback TML file. This feature allows you to transfer coaching insights efficiently, eliminating the need to duplicate efforts in training Spotter for each Model or Worksheet separately. To export or import feedback, you must have edit access to the respective Model or Worksheet.
 
@@ -207,7 +207,11 @@ To avoid errors with feedback TML files, check the following before uploading:
 +
 NOTE: We do not currently support importing a new Worksheet and its feedback in the same zip file.
 * Check the sanity of the TML file, making sure you don’t have missing fields, invalid entries for fields like `type`, `access`, `chart_type`, or `display_mode`, invalid `search_tokens` for the Worksheet or Model, or invalid formula expressions for the Worksheet or Model that feedback entries are being targeted for.
-* Check for conflicts within the file– no two feedback entries can have the same 'feedback_phrase'. If the target Worksheet or Model has existing feedback entries matching the feedback TML phrase, it will throw a warning and will override the existing feedback entry if import is still done. You always have the option to edit the feedback TML or modify the existing entries to avoid the conflict.
+
+* Check for similar entries within the file: No two feedback entries can have the same 'feedback_phrase'. This can occur when uploading feedback entries on the user level, which can have the same feedback phrase. The system will throw an error when uploading multiple such entries. Users have the option to edit the feedback TML to avoid such scenarios.
+
+* Check for conflicts with existing entries: The feedback entry should not have the same 'feedback_phrase' as a feedback present already on the target Worksheet. It will throw a warning and will override the existing feedback entry if import is still done. Users have the option to edit the feedback TML or modify the existing entries to avoid the conflict.
+
 * Do not modify the values for the following fields: `display_mode`, `chart_type`, and `axis_config`. Changes to these fields are not validated by the system during upload and may lead to unintended behavior.
 
 '''
