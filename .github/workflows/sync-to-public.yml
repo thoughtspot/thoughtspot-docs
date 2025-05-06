@@ -3,7 +3,8 @@ name: Sync Repository to Public Mirror
 on:
   pull_request:
     types: [closed]
-    # No branches filter means it will trigger for ALL branches
+    branches:
+      - '**'
   workflow_dispatch:
     inputs:
       force_sync:
@@ -20,7 +21,7 @@ jobs:
   call-sync-workflow:
     # Only run this job when the PR was merged, not just closed
     if: github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch'
-    uses: thoughtspot/workflows/.github/workflows/sync-to-public-mirror.yml@c19c7b395533a67a484bb86bd497aa71ed279a07
+    uses: thoughtspot/workflows/.github/workflows/sync-to-public-mirror.yml@530484424fb6f6711943f33b4cc938cf246d6c16
     with:
       force_sync: ${{ github.event.inputs.force_sync == 'true' }}
       public_repo_name: ${{ github.event.inputs.public_repo_name || '' }}
