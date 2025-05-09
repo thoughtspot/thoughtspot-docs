@@ -1,4 +1,4 @@
-name: Sync Repository to Public Mirror
+name: Sync to Public Mirror
 
 on:
   push:
@@ -17,20 +17,30 @@ on:
         type: boolean
       public_repo_name:
         description: 'Public repository name'
-        required: true
+        required: false
         type: string
+        default: ''
 
 jobs:
+  debug-info:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Debug Information
+        run: |
+          echo "Event name: ${{ github.event_name }}"
+          echo "Repository: ${{ github.repository }}"
+          echo "PR merged?: ${{ github.event_name == 'pull_request' && github.event.pull_request.merged == true }}"
+  
   call-sync-workflow:
-    # Run for appropriate events
+    needs: debug-info
+    # Only run for merged PRs, push events, or manual triggers
     if: |
       github.event_name == 'push' || 
       github.event_name == 'workflow_dispatch' || 
       (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
-    # Replace with your repository, path, and new commit hash after making the changes
-    uses: thoughtspot/workflows/.github/workflows/sync-to-public-mirror.yml@2a878111b6648ee65f13a362a731a3800f7410cc
+    uses: thoughtspot/workflows/.github/workflows/sync-to-public-mirror.yml@main
     with:
       force_sync: ${{ github.event.inputs.force_sync == 'true' || github.event_name == 'workflow_dispatch' }}
-      public_repo_name: ${{ github.event.inputs.public_repo_name || github.event.repository.name | replace('-private', '') }}
+      public_repo_name: ${{ github.event.inputs.public_repo_name }}
     secrets:
       SSH_DEPLOY_KEY: ${{ secrets.SSH_DEPLOY_KEY }}
