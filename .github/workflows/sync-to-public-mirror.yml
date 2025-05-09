@@ -1,15 +1,13 @@
-name: Sync Repository to Public Mirror
+name: Sync to Public Mirror
 
 on:
+  push:
+    branches:
+      - '**'  # Matches all branches
   pull_request:
     types: [closed]
     branches:
-      - '**'
-      - '*'
-  push:
-    branches:
-      - '*'         # Match any branch without slashes 
-      - '**'        # Match any branch with slashes
+      - '**'  # Matches all branches
   workflow_dispatch:
     inputs:
       force_sync:
@@ -18,17 +16,31 @@ on:
         default: 'true'
         type: boolean
       public_repo_name:
-        description: 'Public repository name (leave empty to auto-derive by removing "-private")'
+        description: 'Public repository name'
         required: false
         type: string
+        default: ''
 
 jobs:
+  debug-info:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Debug Information
+        run: |
+          echo "Event name: ${{ github.event_name }}"
+          echo "Repository: ${{ github.repository }}"
+          echo "PR merged?: ${{ github.event_name == 'pull_request' && github.event.pull_request.merged == true }}"
+  
   call-sync-workflow:
-    # Run for merged PRs, direct pushes, or manual triggers
-    if: (github.event_name == 'pull_request' && github.event.pull_request.merged == true) || github.event_name == 'push' || github.event_name == 'workflow_dispatch'
-    uses: thoughtspot/workflows/.github/workflows/sync-to-public-mirror.yml@530484424fb6f6711943f33b4cc938cf246d6c16
+    needs: debug-info
+    # Only run for merged PRs, push events, or manual triggers
+    if: |
+      github.event_name == 'push' || 
+      github.event_name == 'workflow_dispatch' || 
+      (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
+    uses: thoughtspot/workflows/.github/workflows/sync-to-public-mirror.yml@main
     with:
-      force_sync: ${{ github.event.inputs.force_sync == 'true' }}
-      public_repo_name: ${{ github.event.inputs.public_repo_name || '' }}
+      force_sync: ${{ github.event.inputs.force_sync == 'true' || github.event_name == 'workflow_dispatch' }}
+      public_repo_name: ${{ github.event.inputs.public_repo_name }}
     secrets:
       SSH_DEPLOY_KEY: ${{ secrets.SSH_DEPLOY_KEY }}
