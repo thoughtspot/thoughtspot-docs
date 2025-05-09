@@ -5,28 +5,38 @@
 :page-layout: default-cloud-beta
 :description: Publish objects between Orgs
 
-Publishing allows tenant administrators to share objects across Orgs. Tenant administrators can publish objects, as read only, from a primary Org to target Orgs.  Administrators of the target Orgs can then share the objects to users within that Org. Liveboards, worksheets and answers can all be published.
+In a multi-tenant, org-enabled cluster administrators may want to make common, curated Liveboards and Answers available across multiple tenants or Orgs. Publishing allows tenant administrators to share read only objects across Orgs. Tenant administrators can publish objects, from a primary Org to target Orgs.  Administrators of the target Orgs can then share the objects to users within that Org. Liveboards, worksheets and Answers can all be published.
+
+NOTE: Tenant administrators must have the *Can publish to orgs* privilege to publish obejects from a primary Org to another Org. For more information about privileges, see xref:rbac.adoc[].
+//user and group privilege
+
+To publish an object from a primary Org to other Orgs, complete the following steps:
+
+. Log in to the primary Org as a tenant administrator.
+. Go to
+
+
 
 
 [#conditions]
 == Conditions
-* Objects can only be published from a primary org to other Orgs.
+* Objects can only be published from a primary Org to other Orgs.
+* Objects are published with read-only access in the non-primary Orgs.
 * Only tenant administrators can publish and unpublish objects.
-* Objects are published with read-only access in non-primary Orgs.
 * Only tenant administrators can modify published objects in the primary Org.
 * Org administrators have read access to published objects.
 //* Published connections are not be visible in non-owner Orgs.
 
 [#limitations]
 == Limitations
+* Spotter functionality is not supported on published objects.
+* For published tables, Sage Data Indexing is disabled.
+* In a published calendar, users are only able to add or import custom calendars using *Import Existing*. *Create Calendar* and *Upload Calendar* are not supported.
+* Custom calendars with different metadata across Orgs are not supported.
 * Cohort publishing is not supported.
-* Spotter functionality is not supported on published WS.
-* For the published tables, Sage Data Indexing will be disabled. This means no data value suggestions during search data and explore.
-* On a published calendar the users will only be able to add/import custom calendars using the Import Existing method and the Create Calendar and Upload Calendar methods will not be supported.
-* Custom calendars with different metadata across orgs will not be supported (i.e. month name etc.)
-* Users will not be able to create cohorts on the published worksheets.
-* Connection Remapping YAML will not be available.
-* Only Tenant Admin / user with access to all the orgs where the object is present will be able to update a published object.
-* CDWs supported: Snowflake, Redshift, Databricks, GBQ, (others can be added as per customer need)
-* Git integration with published objects will not be supported.
-
+* Users can't create cohorts in the published worksheets.
+* Connection remapping YAML is not available.
+* Only tenant administrators with access to all the Orgs where the object exists can update a published object.
+* Snowflake, Redshift, Databricks, GBQ, are supported.
+* Git integration with published objects is not  supported.
+//* Sage data indexing is not supported on published objects thus affecting the suggestions one gets to see in search data

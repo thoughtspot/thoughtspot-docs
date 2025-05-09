@@ -1,9 +1,13 @@
 name: Sync Repository to Public Mirror
 
 on:
+  push:
+    branches:
+      - '**'  # Matches all branches
   pull_request:
     types: [closed]
-    # No branches filter means it will trigger for ALL branches
+    branches:
+      - '**'  # Matches all branches
   workflow_dispatch:
     inputs:
       force_sync:
@@ -12,17 +16,21 @@ on:
         default: 'true'
         type: boolean
       public_repo_name:
-        description: 'Public repository name (leave empty to auto-derive by removing "-private")'
-        required: false
+        description: 'Public repository name'
+        required: true
         type: string
 
 jobs:
   call-sync-workflow:
-    # Only run this job when the PR was merged, not just closed
-    if: github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch'
-    uses: thoughtspot/workflows/.github/workflows/sync-to-public-mirror.yml@c19c7b395533a67a484bb86bd497aa71ed279a07
+    # Run for appropriate events
+    if: |
+      github.event_name == 'push' || 
+      github.event_name == 'workflow_dispatch' || 
+      (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
+    # Replace with your repository, path, and new commit hash after making the changes
+    uses: thoughtspot/workflows/.github/workflows/sync-to-public-mirror.yml@2a878111b6648ee65f13a362a731a3800f7410cc
     with:
-      force_sync: ${{ github.event.inputs.force_sync == 'true' }}
-      public_repo_name: ${{ github.event.inputs.public_repo_name || '' }}
+      force_sync: ${{ github.event.inputs.force_sync == 'true' || github.event_name == 'workflow_dispatch' }}
+      public_repo_name: ${{ github.event.inputs.public_repo_name || github.event.repository.name | replace('-private', '') }}
     secrets:
       SSH_DEPLOY_KEY: ${{ secrets.SSH_DEPLOY_KEY }}
