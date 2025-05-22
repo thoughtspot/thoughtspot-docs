@@ -5,6 +5,7 @@
 :page-layout: default-cloud
 :page-aliases: /complex-search/aggregation-flexible.adoc
 :description: Use the group_aggregate function in ThoughtSpot to aggregate measures at different granularities than the dimensions used in the search columns.
+:jira: SCAL-225559
 
 == How aggregation formulas work
 
@@ -160,10 +161,27 @@ For more information, see our video on the new reaggregation behavior:
 Flexible group aggregate formulas allow for flexibility in both xref:formulas-aggregation-group.adoc#[groupings] and xref:formulas-aggregation-filtered.adoc#[filters].
 The formulas give you the ability to specify only groupings or only filters.
 
+[#query-groups]
+== Query groups
+
+With `query_groups()+ {attribute_column}` or `+query_groups()-{attribute_column}+`, you can aggregate results while including/excluding a column from the original search.
+
+The `query_groups()` function returns all attribute columns defined in the base search.
+
+If, for example, you use the condition `query_groups() - {region, sku, name}`, this changes the level of detail for the group aggregate formula. In this scenario, region, sku, and name have been removed. If these columns are not included in the base search, then this definition is ignored.
+
+Under the new logic, the `{region, sku, name}` condition fixes the level of detail for the `group by` columns to the columns defined.
+
+You can combine options to both add and remove columns like in the following example:
+
+`query_groups()+ {region} - {sku, name}`.
+
+Regarding dates, when query_groups() is defined, the date period defined in the search will be passed into the group function. Assuming the search is *monthly*, then the group function will also be at the monthly grain. You can use date functions to change the grain, such as `{start_of_year(transaction date)}`.
+
 [#query-filters]
 == Query filters
 
-With `+query_filters()+{filter_condition}+` or `+query_filters()-{filter_condition}+`, users will be able to aggregate the results while including/excluding a filter condition.
+With `query_filters()+ {filter_condition}` or `+query_filters()-{filter_condition}+`, you can aggregate the results while including/excluding a filter condition.
 
 Filter condition: `Ship Mode='car'`
 

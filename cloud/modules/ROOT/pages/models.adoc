@@ -1,11 +1,11 @@
 = Create Models
-:last_updated: 2/2/2024
+:last_updated: 3/28/2024
 :linkattrs:
 :experimental:
 :page-layout: default-cloud-early-access
 :description: Models are logical views created on top of a more complex data model, to enable business users to more easily consume data.
 :model: Model
-:jira: SCAL-158357, SCAL-207558 (note for role-playing dim)
+:jira: SCAL-158357, SCAL-194041 (9.12.5 -drag to create joins), SCAL-194038 (9.12.5 - bulk edit column properties).
 
 == Introducing Models
 
@@ -59,7 +59,7 @@ To create a data model:
 . Select the *+ Create new* button in the side navigation bar.
 . Select *Model*.
 +
-image::model_choose.png[]
+image::model_choose.png[Choose how to model your data]
 
 
 
@@ -68,9 +68,9 @@ image::model_choose.png[]
 ... To create a new connection, refer to xref:connections.adoc[About connections]
 ... To use an existing connection, select it from the list, and select *Connect*.
 .. To build a model from tables originally created from dbt models, select *dbt*
-... To create a new dbt connection, select *Add dbt connection* and refer to step 5 of xref:dbt-integration#integrate[Integrating with dbt].
+... To create a new dbt connection, select *Add dbt connection* and refer to step 5 of xref:dbt-integration.adoc#integrate[Integrating with dbt].
 ... To use an existing connection, select it from the list, and select *Connect*.
-.. To import the TML for a model, select *TML*, and upload your tml files. For more information, refer to xref:tml-worksheets[TML for Worksheets].
+.. To import the TML for a model, select *TML*, and upload your tml files. For more information, refer to xref:tml-worksheets.adoc[TML for Worksheets].
 +
 NOTE: The information at this link also applies to {model}s.
 .. To use an existing SpotApp as a model, select *SpotApps*, and select a SpotApp.
@@ -88,7 +88,7 @@ If you are not able to see the Models feature, contact your ThoughtSpot administ
 After creating your {model}, you need to add the sources that contain the data.
 A source is another name for a table. You do that using the {model} editor. If you chose an existing model, you can make changes to your model.
 
-image::model_empty.png[]
+image::model_empty.png[Create a Model]
 
 The sources you choose are typically related to one another by foreign keys.
 
@@ -100,19 +100,37 @@ To add tables to your {model}, do the following:
 
 . Drag tables from the list on the left, and drop them into the right pane.
 +
-image::model_tables.png[]
-+
+image::model_tables.png[Model populated with tables]
 
 
-. To add a new join between tables, select the More menu image:model_table_join_more.png[] in the upper right of a table, and select *Add Join*.
+==== Suggested joins
+
+If the tables you added to your {model} were joined previously, a join suggestion appears.
+
+image::model_tables_join_suggestion.png[Suggested join between tables]
+
+You can choose whether to keep, modify or remove the suggested join.
+
+- Click the join icon image:model_join_icon.png[join icon], then select one of the following options:
+.. To keep the join, click *Accept Join*.
+.. To modify the join, click *Edit Join*.
+... Make your changes and click *Save*. For more information, see step 2 of <<add-joins,Adding joins>>.
+.. To remove the join, click *Clear Join*.
+
+[#add-joins]
+=== Adding joins
+. To add a new join between tables, do one of the following:
+
+- Select the More menu image:model_table_join_more.png[Model more menu] in the upper right of a table, and select *Add Join*.
+- Hover over the table until you see a *\+* appear on the edge of the table, then click the *+* and drag to the table you want to join.
 . In the _Create Join_ window for _Table 2_, select the table you want to join to the first table (_Table 1_).
 . For _Column from Table 1_, select the column you want to join to another column in _Table 2_.
 . For _Column from Table 2_, select the column in _Table 2_ which you want to join to the selected column in _Table 1_.
 . For _Join Type_, select a join type. Options include:
-- INNER image:model_join_icon.png[]
-- FULL OUTER image:model_join_full_outer_icon.png[]
-- LEFT OUTER image:model_join_suggestion_icon.png[]
-- RIGHT OUTER image:model_join_right_outer_icon.png[]
+- INNER image:model_join_icon.png[inner join]
+- FULL OUTER image:model_join_full_outer_icon.png[outer join]
+- LEFT OUTER image:model_join_suggestion_icon.png[left outer join]
+- RIGHT OUTER image:model_join_right_outer_icon.png[right outer join]
 . For _Cardinality_, select the cardinality. Options include:
 - Many:1
 - 1:Many
@@ -121,12 +139,19 @@ image::model_tables.png[]
 +
 The join is created.
 +
-image::model_tables_joined.png[]
+image::model_tables_joined.png[Join created]
 
 . Add additional tables and joins, as needed.
 . (Recommended) Name your {model} by clicking *Add name* and entering a name.
 . (Optional) Add a description of your {model} by clicking *Add description* and entering a description.
 . When you are finished adding tables and joins to your {model}, the next step is to add columns.
+
+==== Global and local joins
+
+{model}s support both global and local joins. It's helpful to understand the difference.
+
+- *Global joins* are created between two tables in a connection and they are available to any {model} created in that connection. If you see a join suggestion when you create a model, it means that join is a global join.
+- *Local joins* are created in a specific {model} and they are only available in that {model}.
 
 === Adding columns
 
@@ -134,7 +159,7 @@ To add columns to your {model}, do the following:
 
 . Click the *Columns* tab.
 +
-image::model_columns.png[]
+image::model_columns.png[Model columns tab]
 +
 Table names are highlighted in blue, and their associated columns appear underneath them.
 
@@ -143,9 +168,15 @@ Table names are highlighted in blue, and their associated columns appear underne
 - To add an individual column from a table, drag the column name from the list on the left and drop it into the right pane.
 
 +
-image::model_columns_added.png[]
+image::model_columns_added.png[Columns added to Model]
 
-. (Optional) Edit column properties, as needed.
+. (Optional) Edit column properties, using either of the following methods:
+.. For an individual column:
+... Click the column property you want to edit, and make your changes.
+.. For multiple columns:
+... Click the checkbox next to the columns you want to edit.
+... Click the *Edit* menu, and select the property you want to edit.
+... In the window that opens, select the option you want and click *Update*.
 . To save the columns in your {model}, select *Save changes*.
 +
 You are prompted to edit the title and description of your {model}.
@@ -165,11 +196,11 @@ To add formulas to your {model}, do the following:
 . Create a name for your formula.
 . Enter a formula, using the formula assistant (at right) if needed.
 +
-image::model_formulas_2.png[]
+image::model_formulas_2.png[Formula editor]
 +
 With the formula assistant, you can see a list of formula operators with examples.
 +
-If you want to change what your formula returns, select the Advanced settings button image:icon_formula_gear_32px.png[].
+If you want to change what your formula returns, select the Advanced settings button image:icon_formula_gear_32px.png[gear icon].
 +
 Depending on your formula, you may be able to change:
 
@@ -188,10 +219,10 @@ To add filters to your {model}, do the following:
 . Click *Add filter*.
 . Choose the column you want to filter on.
 +
-image::model_filters.png[]
+image::model_filters.png[Choose column]
 . Select the values to include in your Answer.
 +
-image::model_filters_2.png[]
+image::model_filters_2.png[Select values]
 . If you want to exclude values, select *Exclude* and choose values to exclude.
 +
 You can also include values in bulk, by clicking *+ Add values in bulk*, and adding values separated by a comma (,) or a semicolon (;) or by putting them on separate lines.
@@ -205,7 +236,7 @@ To add parameters to your {model}, do the following:
 . Click the *Parameters* tab.
 . Click *Add Parameter*.
 +
-image::model_parameters.png[]
+image::model_parameters.png[Edit parameter]
 . In the _Parameter name_ text box, enter a name for your Parameter. This name should be unique for the object, and easy for users to understand.
 . Optionally, enter a description for the Parameter in the _Add a description_ text box. Use this field to add additional information users might need before using this Parameter in their analysis. It is a best practice to use this field to specify the formulas this Parameter is used in, in addition to any other information you add.
 . Under _Data settings_, specify the data type the Parameter must be: Integer, Double, String, Boolean, or Date. For more information about data types, refer to xref:data-types.adoc[Data types].
@@ -236,7 +267,7 @@ To set properties for your {model}, do the following:
 - Apply all joins
 . For _Security_ you have the option to disable row level security for your data model.
 +
-image::model_settings.png[]
+image::model_settings.png[Model settings]
 . Click *Save changes*.
 
 ==== Understanding progressive joins
@@ -269,7 +300,7 @@ NOTE: Even though the button currently says _Edit Worksheet_, it allows you to e
 ****
 *Edit tables*
 
-Using the More menu image:model_table_join_more.png[] in the upper right of a table, you can edit a table in the following ways:
+Using the More menu image:model_table_join_more.png[Model more menu] in the upper right of a table, you can edit a table in the following ways:
 
 - Add Join
 - Rename table
@@ -327,14 +358,15 @@ A role-playing dimension is when a single physical dimension is referenced multi
 To implement role-playing dimensions with Models, do the following in the Model editor:
 
 . Go to the *Tables* tab.
-. Click the More menu image:icon-more-10px.png[more menu icon] of the dimension table that you want to use in a different role.
+. Select the More menu image:model_table_join_more.png[Model more menu] in the upper right of  the dimension table that you want to use in a different role.
 . Select *Duplicate Table*.
-. Assign an alias (since 2 tables cannot have the same name).
+. In the _Duplicate Table Name_ window that opens, assign an alias (since 2 tables cannot have the same name) by entering a new name (or alias) for that table.
+. Click *Save*.
 . Join this logical copy of the dimension table to the fact table with the join condition corresponding to the new role.
 +
 . Go to the *Columns* tab.
 . Add columns from the new role-playing dimension.
 +
-It will appear as a new table (with the alias assigned in step 4) on the left panel in the *Columns* tab of the model.
+It will appear as a new table (with the alias assigned in step 4) on the left panel in the *Columns* tab of the model. You can tell it's a role-playing dimension because the original table name appears in parentheses *()* next to the new name.
 
 CAUTION: Copies/aliases of tables that are on the "many" side of a join are not supported in {model}s.

@@ -4,12 +4,13 @@
 :linkattrs:
 :experimental:
 :description:
-:jira: SCAL-154204, SCAL-209705
-
+:jira: SCAL-154204, SCAL-201299, SCAL-202890, SCAL-209705
 
 // designed specifically for data professionals and analysts
 
-Sage Coach allows analysts to fine-tune the results of natural language search by examining and validating the feedback users give. Analysts can hand-select examples and pieces of feedback, personalize Sage output for specific users and groups of users, or for all queries on that Worksheet.
+Sage Coach allows analysts to fine-tune the results of natural language search by examining and validating the feedback users give. Analysts can hand-select examples and pieces of feedback, personalize Sage output for specific users and groups of users, or for all queries on the Worksheet of origin.
+
+NOTE: When you make a change to a Worksheet, ThoughtSpot now alerts you if this will affect any related query feedback. If you accept this and make the change, the feedback depending on that Worksheet is deleted.
 
 == Review user feedback
 
@@ -25,7 +26,7 @@ A list of the natural language queries for which users gave feedback appears. No
 * the user rating.
 * the search tokens used to create the fixed answer.
 * the level of access the feedback is valid for.
-** Global feedback applies to all queries on that Worksheet, while user feedback applies only to the queries that user makes. Unless specified by an administrator, feedback applies only to the user level.
+** Global feedback applies to all queries on that Worksheet, while user feedback applies only to the queries that user makes. Unless specified by an administrator or Worksheet editor, feedback applies only to the user level.
 * the underlying Worksheet the query was generated from.
 * the user who gave the feedback.
 * the time stamp for when the query was generated.
@@ -33,7 +34,7 @@ A list of the natural language queries for which users gave feedback appears. No
 image:queries-feedback.png[ThoughtSpot query feedback]
 
 
-. Administrators can make the following changes to the feedback on individual queries by selecting the box to the left of the original query, or by clicking the *more options* menu  image:icon-more-10px.png[ellipsis icon]
+. Administrators and Worksheet editors can make the following changes to the feedback on individual queries by selecting the box to the left of the original query, or by clicking the *more options* menu  image:icon-more-10px.png[ellipsis icon]
 to the right of the time stamp:
 +
 --
@@ -64,7 +65,7 @@ image:query-term-feedback.png[Query term feedback page]
 * Worksheet
 * Time stamp for last change
 
-. Administrators can make the following changes to the feedback on individual query terms:
+. Administrators and Worksheet editors can make the following changes to the feedback on individual query terms:
 +
 --
 * Update query term
@@ -73,3 +74,23 @@ image:query-term-feedback.png[Query term feedback page]
 --
 +
 If you choose to update the query term, the term appears in editable mode in an AI-answer pop-up window. Click *Submit feedback* to finish.
+
+== Permissions
+
+Access to Sage Feedback depends on your access to the underlying data set in the form of Worksheets, tables, and views. The following table clarifies each permission level, the feedback a user can view, and the actions you can take.
+
+[options="header"]
+|===
+| Permission level | What feedback can you see? | What actions can you take?
+
+| `NO_ACCESS`: User does not have access to a data set. | User cannot see any feedback from this data set, including any feedback they submitted before losing access. | Not applicable. User cannot see the feedback.
+
+| `TABLE_READ_PERMISSION`: User has read access to a data set. a| User can view their own feedback for this data set. +
+User cannot see feedback provided by others for this data set. | User can `change access`, `fix the answer`, and `delete` the feedback submitted by all the users on the dataset.
+
+| `TABLE_MODIFY_PERMISSION`: User has edit access to a data set. | User can view feedback submitted by all the users on the data set. | User can *change access*, *fix the answer*, and *delete* the feedback submitted by all users on the data set.
+
+| Administrator | User can view feedback submitted by all the users for all the data sets in the selected Org. | User can *change access*, *fix the answer*, and *delete* the feedback submitted by all the users for all the data sets in the selected Org.
+|===
+
+IMPORTANT: For an Org-enabled cluster, only the feedback from the selected Org is visible.
