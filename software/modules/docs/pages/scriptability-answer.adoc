@@ -1,0 +1,108 @@
+= Migrate or restore Answers
+:last_updated: 7/20/2020
+
+You can export an entire ThoughtSpot Answer in a flat-file format. After optional modification, you can migrate it to a different cluster, or restore it to the same cluster.
+
+Scriptability for Answers and Pinboards is in [.label.label-beta]#Beta#.
+To enable Scriptable Answers and Pinboards, contact ThoughtSpot Support.
+
+In ThoughtSpot, you can download Answers to a flat file in `TSL`, xref:tsl-answer.adoc[ThoughtSpot's Scripting Language], modify the file, and subsequently upload this file either to the same cluster, or to a different cluster.
+
+This mechanism supports several scenarios that you may encounter:
+
+* *Migrating from a development environment to a production environment* by downloading the file from the development cluster and uploading the same file to the production cluster
+* *Implementing metadata changes outside ThoughtSpot UI*, such as replacing the underlying data source for the entire Answer, or replacing a single column from one data source with a column in another data source
+* *Reusing existing objects to build new objects*, such as building two very similar objects based on a similar, pre-existing object.
+
+== Prerequisites
+
+|===
+| Export with dependents | Export without dependents | Import with dependents | Import without dependents
+
+| *View* permission for the Answer.
+*View* permission on all underlying tables and Worksheets.
+For example, if an Answer is built on top of a Worksheet that is built on top of a View, you must have *view* permission for all of these objects.
+| *View* permission for the Answer.
+| If you are not overwriting the existing dependents, you must have the *can manage data* permission.
+If you are overwriting the existing dependents, you must have the *can manage data* permission, and *edit* permission on the dependents.
+| You must have *view* permission for the dependents that the Answer directly depends on.
+For example, if an Answer is built on top of a Worksheet that is built on top of a View, you must have view permission for the Worksheet, not the View.
+|===
+
+[#answer-export]
+== Export Answer
+
+You can export <<export-one,one Answer at a time>>, or export <<export-zip-file,more than one Answer as a zip file>>.
+The zip file contains a document called the `Manifest` file, which defines the objects you exported, and their underlying data sources.
+
+To export one Answer:
+
+. Navigate to the Answer you want to export.
+. Click the three-dot icon, and select *Export as .tsl*.
++
+image::scriptability-answer-export.png[Export an Answer]
+
+To export multiple Answers at a time, follow these steps:
+
+. Navigate to the *Answers* page from the top navigation bar.
++
+image::scriptability-cloud-nav.png[The top navigation bar]
+
+. Hover over the Answers you want to export, and click the empty checkboxes that appear.
+. Select the *Export* button.
++
+image::scriptability-cloud-export-multiple.png[Export multiple objects]
+
+. Choose whether to export only the Answers, or the Answers and their underlying data sources:
++
+image::scriptability-cloud-select-export.png[Choose what to export]
+
+. Click *Export*.
++
+image::scriptability-cloud-click-export.png[Click Export]
+
+. Open the downloaded `.tsl` zip file:
++
+image::scriptability-cloud-zip-file.png[Zip file]
+
+== Edit the Answer `.tsl` file
+
+You can edit the Answer `.tsl` file before you import it.
+Refer to xref:tsl-answer.html[Answer TSL specification] for the full syntax of the TSL file.
+
+[#answer-update]
+== Update an Answer
+
+To update an existing Answer, you must export the `.tsl` file, make any necessary changes, and then upload it as a new object.
+You cannot overwrite an existing Answer.
+Instead, you must create a new object.
+
+[#answer-migrate]
+== Migrate an Answer
+
+To migrate an Answer from one cluster to another, follow these steps:
+
+. <<answer-export,Export the Answer>> you want to move, as in steps 1 to 5 of the *Export Answer* section above.
++
+The Answer remains on the original cluster as well, unless you delete it.
+
+. Navigate to the cluster you want to add the Answer to.
+. Select *Answers* on the top navigation bar.
+. Select the *Import* button in the upper-right side of the screen.
++
+image::scriptability-answer-import.png[Import an Answer]
+
+. In the *Import* interface, click *Select .tsl file to upload*.
++
+image::scriptability-cloud-import-page.png[Select a file]
+
+. In your file system, find and select the `.tsl` file.
+The file uploads automatically.
+. If you constructed the file correctly, the *Import* interface displays an _Upload successful_ message.
+. To examine the new Answer, click *Done*.
++
+image::scriptability-cloud-successful-import.png[Upload successful]
+
+== Related Information
+
+* link:tsl-answer.html[Answer TSL specification]

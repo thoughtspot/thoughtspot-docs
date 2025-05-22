@@ -1,0 +1,140 @@
+= How to view a data schema
+:last_updated: 07/27/2019
+:permalink: /:collection/:path.html
+:sidebar: mydoc_sidebar
+
+Use the schema viewer to see tables and worksheets and their relationships.
+
+
+ThoughtSpot has a *Schema Viewer* though which you can examine the database schema.
+It is interactive and configurable, so you can see the level of detail that is relevant to your work.
+
+You must have *Admin* privileges to use the *Schema Viewer*.
+
+== Accessing the Schema Viewer for all objects
+
+. Click the *Data* tab in the top menu.
++
+image::click-data.png[]
+
+. Click the *More* menu image:icon-ellipses.png[more options menu icon], and select *View Schema*.
++
+image::access_schema_viewer.png[]
+
+. When the schema appears, you can see that you can control the visible part of the schema.
++
+image::schema_viewer.png[]
++
+[cols="10%,90%"]
+|===
+| Legend | Action
+
+| 1.
+| See either _All_ (Default), or _Yours_.
+
+| 2.
+| See either _All types_ (Default), _Worksheets_, _Tables_, or _Views_.
+
+| 3.
+| Select artifacts tagged with stickers.
+|===
+
+. The list of tables, worksheets, and imported data on the left changes as you select the various filters.
+The schema view focus changes in tandem.
+. To center the view panel on a specific table, worksheet, or view, click that object.
++
+You can also drag the objects around in the viewer to position them better.
+
+== Accessing Schema Viewer for a single worksheet, table, or view
+
+You can now see the schema for each object for tables, worksheets, or views.
+
+. Click the *Data* tab in the top menu.
++
+image::click-data.png[]
+
+. Select from the list of the possible objects:
++
+image::select-tables.png[]
++
+[cols="10%,90%"]
+|===
+| Legend | Action
+
+| 1.
+| See either _All_ (Default), or _Yours_.
+
+| 2.
+| See either _All types_ (Default), _Worksheets_, _Tables_, or _Views_.
+
+| 3.
+| Select artifacts tagged with stickers.
+|===
+
+. From the list of objects, select one.
+Here, we selected the worksheet _West Regional Sales_.
+. At the top of the worksheet, click the *Joins* tab.
++
+image::select-worksheet-schema.png[]
+
+. The join information and the schema for the worksheet appear.
++
+image::worksheet-join-schema.png[]
+
+== Why use the Schema Viewer
+
+You can use the Schema Viewer to discover the following information:
+
+* What is the relationship between two tables?
+* What tables make up this worksheet, and how are they joined?
+
+The schema viewer shows joins between tables, join directionality, and join type.
+
+////
+()
+(whether they are Foreign Key to Primary Key, relationship joins, or joins
+defined by users through the web interface). Use the **Table** list to find a
+specific table or worksheet.
+////
+
+== How the Schema Viewer shows joins
+
+You can use the Schema Viewer to review your schema and ensure that it was modeled using best practices.
+For example, joins appear in different colors to distinguish their type:
+
+* Generic relationships are in *red*
+* Primary key/ foreign key joins are in *green*
+
+When viewing a worksheet, you can also see what joins connect the tables: the inner, left outer, right outer, or full outer joins.
+
+NOTE: Defining a generic relationship in the UI rather than using a primary key/ foreign key join through TQL has no impact on performance.
+However, when creating relationships in the UI, you must ensure that you create it in the right direction: many to one.
+To create many-to-many joins, or to create joins using >, <, >=, or \<=, use TQL.
+
+== Worksheet view
+
+Worksheets are often based on more than one table.
+The worksheet schema will show schemas for the tables behind the worksheet, as well as the joins between tables _that were created as a part of the worksheet_.
+
+Click a worksheet, to see it in the Schema Viewer.
+If the schema view is not showing the schema behind the worksheet, double click the tab on the top right of the worksheet object.
+
+image::worksheet_viewer_schema.png[]
+
+The worksheet view shows the following information:
+
+* All tables in the worksheet, and the relationships between these tables.
+* Source columns for all columns of a worksheet.
+* Keys and definitions for each relationship, as well as join paths and types.
+* Columns that are derived from formulas.
+* Correct join paths for newly created chasm trap worksheets.
+Chasm trap worksheets created prior to ThoughtSpot version 4.4 do not show the correct join paths.
+
+image::worksheet_viewer.png[]
+
+== Related Information
+
+* xref:add-joins.adoc[Worksheet joins]
+* xref:mod-ws-internal-joins.adoc[Modify joins within a worksheet]
+* xref:change-schema.adoc[Change the schema using TQL]
+* xref:constraints.adoc[Constraints]

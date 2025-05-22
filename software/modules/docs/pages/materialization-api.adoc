@@ -1,0 +1,65 @@
+= Materialization API
+:last_updated: 11/18/2019
+
+The materialization API allows you to synchronize a view's data with the latest data.
+
+This API enables you to refresh a materialized view to synchronize its data with the latest data load to the underlying tables.
+You may want to invoke this API in the following scenarios:
+
+* When the status of a materialized view is `Stale` (out of sync) due to an incremental data load,
+* When the status of a materialized view is `Error` due to an error that occurred.
+
+To refresh a materialized view, you must have the xref:about-users-groups.adoc#list-of-privileges[*Can administer ThoughtSpot* privilege].
+
+== Resource URL
+
+`post` /tspublic/v1/materialization/refreshview/\{id}
+
+== Request Parameters
+[width="100%",options="header",cols="20%,20%,60%"]
+|====================
+| Path Parameter | Data Type | Description
+| `id` | string | ID of the metadata object
+|====================
+
+== Request Example
+
+.cURL
+----
+curl -X POST --header 'Content-Type: */*' --header 'Accept: application/json' --header 'X-Requested-By: ThoughtSpot' 'https://<instance>/callosum/v1/tspublic/v1/materialization/refreshview/e27f3c1c-a9cd-4996-9029-097449cd6f60'
+----
+
+.Request URL
+----
+https://<instance>/callosum/v1/tspublic/v1/materialization/refreshview/e27f3c1c-a9cd-4996-9029-097449cd6f60
+----
+
+== Response Example
+
+----
+Not applicable
+204 - Refresh submitted
+----
+
+////
+## Error Codes
+
+<table>
+   <colgroup>
+   <col style="width:20%" />
+   <col style="width:60%" />
+   <col style="width:20%" />
+   </colgroup>
+   <thead class="thead" style="text-align:left;">
+      <tr>
+         <th>Error Code</th>
+         <th>Description</th>
+         <th>HTTP Code</th>
+      </tr>
+   </thead>
+   <tbody>
+    <tr> <td><code>10002</code></td>  <td>Bad request. Invalid parameter values.</td> <td><code>400</code></td></tr>
+    <tr> <td><code>10000</code></td>  <td>Internal server error.</td><td><code>500</code></td></tr>
+  </tbody>
+</table>
+////

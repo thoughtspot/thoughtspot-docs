@@ -1,0 +1,46 @@
+= Schedule a pinboard job
+:last_updated: tbd
+
+You can schedule a pinboard job for any pinboard by using the Add a schedule prompt page.
+
+You can add multiple schedules with different configurations for a single pinboard.
+However, each job is limited to one pinboard schedule.
+To add a schedule, you must either be an administrator or have the schedule pinboard privilege, and at least edit-only and view-only access to the pinboard.
+
+To schedule a pinboard:
+
+. Sign in to ThoughtSpot from a browser.
+. Click *Pinboards*, on the top navigation bar.
++
+image::click-pinboards.png[]
+
+. Select the pinboard you want to create a schedule for.
+. Click the More icon image:icon-ellipses.png[more options menu icon] and select *Manage schedules* to view all of the schedules set for the pinboard.
++
+image::view_schedules.png[]
+
+. Click *+ Schedule* to add a new schedule.
++
+image::new_pinboard_schedule.png[]
++
+On the *Add a Schedule* page, you create a new schedule for your pinboard.
++
+image::scheduled_pinboards_1.png[]
+
+. Set the values for your schedule.
++
+[width="100%",options="header",cols="20%,80%"]
+|====================
+| Field | Description
+| Repeats | You can rebuild a pinboard every n minutes, hourly, daily, weekly, or monthly. For some of these, you can also choose specific times of the day or days of the week. Make sure to note the Server time zone which is the timezone which will be used.
+| Name | Provide a short name for this schedule, Monthly Report Source is an example of a good name.
+| Description | Enter a description to remind yourself and to inform others. For example, if this is an important schedule for a meeting or a report, you should mention that.
+| Type | CSV files provide all data for tables, with one attachment per table. Use CSV files to perform further analysis offline. PDF files show all visualizations in the pinboard. Each chart takes up a whole page in the file, while only the first 100 rows of a table are included. Use PDF files to skim the data.
+| Gating condition | Write a statement that returns a single boolean value (true or false). For example, sum (revenue) > 100 is a valid condition but is_weekend (commit_date) is not. You can use any valid formula in your statement. Other than checking your formula syntax, ThoughtSpot does not validate your formula returns a single boolean.
+
+At the scheduled time, ThoughtSpot checks the gating condition, and, if the condition returns true, processes the pinboard. For a list of valid formulas, see the xref:formula-reference.adoc[Formula function reference].
+| Recipients | You are limited to 1000 recipients per job. You can add Users or groups to enter ThoughtSpot users or groups. Use Emails to add recipients that are not ThoughtSpot users. Your ThoughtSpot admin must set these email domains as allowed domains. Contact ThoughtSpot Support to add allowed domains.
+
+If you experience problems with sending email, your cluster may not have SMTP enabled. Contact your system administrator to resolve this issue.
+|====================
+. Click *Schedule* to save your schedule configuration.

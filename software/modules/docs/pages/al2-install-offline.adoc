@@ -1,0 +1,218 @@
+= Install the ThoughtSpot application on offline clusters that use Amazon Linux 2
+:linkattrs:
+:last_updated: 9/30/2020
+
+Install ThoughtSpot on Amazon Linux 2 offline clusters."
+Before starting the install, complete the xref:al2-prerequisites.adoc[pre-installation steps].
+
+If you are using the xref:https://docs.aws.amazon.com/systems-manager/latest/userguide/ssm-agent.html[AWS SSM agent, window="_blank"] as an alternative to SSH, you must run the Ansible playbook and all commands on the __SSM console__. Ensure that your nodes have the right IAM roles for executing SSM scripts, and that they have access to your S3 bucket, if you are using S3.
+
+In an offline cluster, the hosts cannot connect to the public repositories to download the required packages. Instead, you must download the packages from your organization’s mirror repository to each host. Otherwise, the steps for installing on offline clusters are practically the same as the steps for installing on online cluster.
+
+Before you build the ThoughtSpot cluster and install the ThoughtSpot application on the hosts, you must run the Ansible playbook. The TS Ansible playbook prepares your clusters in the following manner:
+
+- Ansible installs the required packages: YAML, Python, and R packages; see [Packages installed with ThoughtSpot for Amazon Linux 2]({{ site.baseurl }}/appliance/amazon-linux-2/al2-packages.html).
+- It creates and configures local user accounts for ThoughtSpot:
+   - `admin` user has full administrative functionality
+   - `thoughtspot` user can load data in the application
+- It installs the ThoughtSpot CLI, `tscli`.
+- It configures the ThoughtSpot host nodes:
+   - checks that customization scripts can execute on the nodes
+   - checks that the partitions meet minimum size requirements
+
+[width="100%",options="header",cols="5%,95%"]
+|====================
+| &#10063; | xref:tmp[1. Prepare the `/tmp` disk]
+| &#10063; | xref:configure-ansible[2. Configure the Ansible Playbook]
+| &#10063; | xref:redirect-mirror[3. Redirect the mirror repository]
+| &#10063; | xref:run-ansible[4. Run the Ansible Playbook]
+| &#10063; | xref:install-thoughtspot[5. Install ThoughtSpot]
+|====================
+
+[#tmp]
+== Prepare the `/tmp` disk
+. Declare the bash variables:
++
+```
+DISK=dev/<disk_name>
+PART=$<DISK>1
+```
++
+. Unmount `/tmp` if necessary:
++
+```
+sudo umount /tmp || true
+```
++
+. Remove `/tmp` from `/etc/fstab`:
++
+```
+sudo sed -i "/.*tmp.*/d" /etc/fstab
+```
++
+. Remove `/tmp` from the partition table:
++
+```
+echo -e "d\nw\n" | sudo fdisk $<DISK>
+```
++
+. Partition the disk:
++
+```
+sudo parted -s $<DISK> mklabel gpt
+sudo parted -s $<DISK> mkpart primary xfs 0% 100%
+```
++
+. Create the file system:
++
+```
+sudo mkfs.xfs -f $PART
+echo "UUID=$(sudo blkid -o value -s UUID $PART) /tmp xfs defaults,nofail 0 1" | sudo tee -a /etc/fstab
+sudo mount /tmp
+sudo chmod 777 /tmp
+```
++
+. Create a working directory for Ansible:
++
+```
+WORKDIR=/tmp/ansible
+rm -rf $WORKDIR
+mkdir -p $WORKDIR
+cd $WORKDIR
+```
++
+
+
+[#configure-ansible]
+== Configure the Ansible Playbook
+
+To set up the Ansible, follow these steps:
+
+. Obtain the Ansible tarball by talking to your ThoughtSpot contact. Download it to your local machine.
++
+You can download it by running the cp command. For example, if the tarball is in your S3 bucket, run `aws s3 cp s3://bucket_name/path/to/the/tarball ./`.
++
+Note that you only need to copy the tarball to one node.</code>.
+. Unzip the Ansible tarball, to see the following files and directories on your local machine:
+
+ansible_pkgs:: This contains the Ansible Yum packages.
+customize.sh:: This script runs as the last step in the preparation process. You can use it to inject deployment-specific customizations, such as enabling or disabling a corporate proxy, configuring extra SSH keys, installing extra services, and so on. Additionally, you can include the prepare_disks script here. Add the following line to the `customize.sh` file: `sudo /usr/local/scaligent/bin/prepare_disks.sh`.
+hosts.sample:: The Ansible inventory file.
+prod_image:: This directory contains the ThoughtSpot tools and tscli, the ThoughtSpot CLI binary.
+python3_pkgs:: This contains all the xref:al2-packages.adoc#pip3[python 3 packages].
+python_pkgs:: This contains all the xref:al2-packages.adoc#pip2[python 2 packages].
+README.md:: Basic information for the unzipped file.
+r_pkgs:: This contains all the xref:al2-packages.adoc[R packages].
+rpm_gpg:: This directory contains the xref:https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2rl_verify.html[GPG keys, window="_blank"] that authenticate the public repository.
+run_offline.sh:: This script installs the Yum, R, and Python packages.
+toolchain:: The tools that are necessary to compile the instructions you define in the Ansible Playbook, the source code, into executables that can run on your device. The toolchain includes a compiler, a linker, and run-time libraries.
+ts-new.yaml:: The Ansible Playbook for new installations.
+ts-update.yaml:: The Ansible Playbook for updates.
+ts.yaml::
+yum_pkgs:: This contains all the xref:al2-packages.adoc#yum[yum packages].
+yum.repos.d:: This directory contains information about the yum repo used by the cluster.
+. Run the following script to install packages:
++
+```
+sudo sed -i "s/localpkg_gpgcheck/# localpkg_gpgcheck/g" /etc/yum.conf
+sudo touch /tmp/run_offline_log
+sudo chmod 777 /tmp/run_offline_log
+sudo pip uninstall ansible -y
+./run_offline.sh >> /tmp/run_offline_log 2>&1
+```
+. Copy the Ansible inventory file `hosts.sample` to `hosts.yaml`, and using a text editor of your choice, update the file to include your host configuration.
++
+Copy the file by running this command: cp hosts.sample hosts.yaml.
++
+If you are using SSM, you must additionally run a command to replace the ts_partition_name, and run a command to create a single partition on the disk mounted under /export. Run the following command to replace the ts_partition_name:
++
+```
+TS_DISK=disk_name_for_export_partition
+  TS_PARTITION_NAME=${TS_DISK}1
+sed -i "s/xvda9/$TS_PARTITION_NAME/g" hosts.yaml
+```
++
+Then run this command to create a single partition on the disk mounted under `/export`:
++
+```
+sudo parted -s /dev/$TS_DISK mklabel gpt
+sudo parted -s /dev/$TS_DISK mkpart primary xfs 0% 100%
+```
+hosts:: Add the IP addresses or hostnames of all hosts in the ThoughtSpot cluster.
+admin_uid:: The admin user ID parameter. If you are using `ssh` instead of AWS SSM, use the default values. If you are using SSM, the `ssm_user` uses the default value, `1001`. You must choose a new value. Note that the `thoughtspot` user uses `1002`, so you cannot use `1001` or `1002`.
+admin_gid:: The admin user group ID. If you are using `ssh` instead of AWS SSM, use the default values. If you are using SSM, the `ssm_user` uses the default value, `1001`. You must choose a new value. Note that the `thoughtspot` user uses `1002`, so you cannot use `1001` or `1002`.
+ssh_user:: The `ssh_user` must exist on the ThoughtSpot host, and it must have `sudo` privileges. This user is the same as the `ec2_user`.
++
+If you are using AWS SSM instead of ssh, there is no need to fill out this parameter.
+ssh_private_key:: Add the private key for `ssh` access to the `hosts.yaml` file. You can use an existing key pair, or generate a new key pair in the Ansible Control server.
+Run the following command to verify that the Ansible Control Server can connect to the hosts over `ssh`:
++
+```
+ansible -m ping -i hosts.yaml all
+```
++
+If you are using AWS SSM instead of ssh, there is no need to fill out this parameter or run the above command.
+ssh_public_key:: Add the public key to the `ssh authorized_keys` file for each host, and add the private key to the `hosts.yaml` file. You can use an existing key pair, or generate a new key pair in the Ansible Control server.
+Run the following command to verify that the Ansible Control Server can connect to the hosts over `ssh`:
++
+```
+ansible -m ping -i hosts.yaml all
+```
++
+If you are using AWS SSM instead of ssh, there is no need to fill out this parameter or run the above command.
+extra_admin_ssh_key:: [Optional] An additional or extra key may be required by your security application, such as Qualys, to connect to the hosts.
+If you are using AWS SSM instead of ssh, there is no need to fill out this parameter.
+http(s)_proxy:: If the hosts must access public repositories through an internal proxy service, provide the proxy information.
+This release of ThoughtSpot does not support proxy credentials to authenticate to the proxy service.
+ts_partition_name:: The extended name of the ThoughtSpot export partition, such as `/dev/sdb1`.
+
+[#redirect-mirror]
+== Redirect the mirror repository
+
+For the cluster hosts to connect to your organization mirror repository, you must redirect the hosts requests to the mirror repository, through the DNS.
+
+Alternatively, you can manually update the repository URLs in the `yum.repos.d` file.
+
+[#run-ansible]
+== Run the Ansible Playbook
+
+First, to allow installation of the Yum, Python, and R packages, you must run the `run_offline` script on your local machine or from the SSM console. Run the following command on all nodes:
+
+```
+run_offline.sh
+```
+
+Now you can run the Ansible Playbook from your local machine or from the SSM console by entering the following command. You must run this command on all nodes.
+
+```
+ansible-playbook -i hosts.yaml ts.yaml
+```
+
+As the Ansible Playbook runs, it performs these tasks:
+
+. Trigger the installation of xref:al2-packages.adoc[Yum, Python, and R packages].
+. Configure the local user accounts that the ThoughtSpot application uses
+. Install the ThoughtSpot CLI
+. Configure all the nodes in the ThoughtSpot cluster:
+    - Format and create export partitions, if they do not exist
+
+After the Ansible Playbook finishes, run the `prepare_disks` script on every node, if you did not include it in the `customize.sh` file. Specify the data drives by adding the full device path for all data drives, such as `/dev/sdc`, after the script name. Separate data drives with a space.
+
+```
+sudo /usr/local/scaligent/bin/prepare_disks.sh /dev/sdc /dev/sdd
+```
+
+Your hosts are now ready for installing the ThoughtSpot application.
+
+[#install-thoughtspot]
+== Install the ThoughtSpot cluster and the application
+
+Refer to xref:aws-cluster-install.adoc[Install ThoughtSpot clusters in AWS] for more detailed information on installing the ThoughtSpot cluster.
+
+Follow these general steps to install ThoughtSpot on the prepared hosts:
+
+. Connect to the host as an admin user.
+. Download the release artifact from the ThoughtSpot file sharing system.
+. Upload the release artifact to your organization's mirror repository.
+. Run the `tscli cluster create` command. This script prompts for user input.
+. Check the cluster health by running health checks and logging into the application.

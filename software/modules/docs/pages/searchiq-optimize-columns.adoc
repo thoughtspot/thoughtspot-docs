@@ -1,0 +1,68 @@
+= Enable Columns for SearchIQ
+:last_updated: 11/19/2019
+
+Allow users to use SearchIQ by enabling SearchIQ for the columns of the data source.
+
+SearchIQ is in [.label.label-beta]#Beta#.
+
+NOTE: SearchIQ is turned off by default.
+ThoughtSpot Support can enable it for you.
+SearchIQ is only available in English.
+
+Before enabling columns, keep in mind these points, and other in-product guidelines:
+
+* Enable no more than fifteen (15) columns for SearchIQ.
+* Enable at most one (1) date column.
+* Column names should not contain more than 3 words.
+* Name the columns well, by optimizing for business users.
+For example, use _Opportunity Cost_ and avoid `opp_cst`.
+* Avoid indexing descriptive columns, ones that contain more than seven (7) words, or contain values with stop words, such as _is_, _are_, _the_, _what_, and so on).
+See the link:{{ site.baseurl }}/reference/stop-words.html[Stop Words] reference for the full list of stop words.
+* For columns that represent formulas with categorical values, set the *Indexing Type* to `PREFIX_AND_SUBSTRING`.
+
+To enable columns in a worksheet for SearchIQ, follow these steps:
+
+. Click *Data* on top navigation bar.
+. Click *Tables*.
+. Click *Worksheets*.
+. Select and open the worksheet you want to enable for SearchIQ.
+. Scroll to the far right, until you see the *SearchIQ Enabled* attribute.
++ Set it to _Yes_ for each column enabled for SearchIQ.
++
+image::worksheet-column-enable-searchiq.png[]
+
+. Change the *Entity Category* for the columns you marked *SearchIQ Enabled*, from _default_ to one that accurately describes the column.
++
+See link:{{ site.baseurl }}/admin/data-modeling/set-entity-category.html[Set Entity Categories].
+The category options are _default_, _person_, _replace_, _time_, _money_, _product_, _zip_code_, _lat_long_, _company_org_, and _num_types_.
++
+image::worksheet-column-entity-categories-searchiq.png[]
+
+. Add *Synonyms* for all columns you marked *SearchIQ Enabled*, simply by typing them in the appropriate cell.
+See link:{{ site.baseurl }}/admin/data-modeling/change-visibility-synonym.html[Add common synonyms] for more information.
++
+image::worksheet-column-synonyms-searchiq.png[]
+
+. Change the *Index Type* to `DONT_INDEX` for columns when they must be excluded from indexing.
+We recommend excluding a column when it is descriptive in nature, =contains a large amount of text, has link:{{ site.baseurl }}/reference/stop-words.html[stop words], or for a variety of similar reason.
+See link:{{ site.baseurl }}/admin/data-modeling/change-index.html[Turn off indexing].
++
+image::data-modeling-columns-indextype-dont-index.png[]
++
+This prevents SearchIQ from scanning through large amounts of text to understand what user asked.
+Note that searches on text fields that use the `contains` keyword still work.
++
+image::worksheet-column-do-not-index-searchiq.png[]
+
+. Change the *Index Type* for columns that represent formulas with categorical values to `PREFIX_AND_SUBSTRING`.
+See link:{{ site.baseurl }}/admin/data-modeling/change-index.html[Turn off indexing].
++
+image::data-modeling-columns-indextype-prefix-substring.png[]
++
+image::worksheet-column-prefix-and-substring-searchiq.png[]
+
+. Rename the columns to have names that are shorter (maximum three words), and easier for business users to understand.
++
+image::worksheet-column-rename.png[]
+
+. Click *Save Changes*.

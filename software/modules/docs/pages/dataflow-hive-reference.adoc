@@ -1,0 +1,524 @@
+= Hive connection reference
+:last_updated: 06/19/2020
+
+Learn about the fields used to create a Hive connection with ThoughtSpot DataFlow.
+
+Here is a list of the fields for a Hive connection in ThoughtSpot DataFlow.
+You need specific information to establish a seamless and secure connection.
+
+== Connection properties
+Connection name:: Name your connection.
++
+Mandatory field.
+*Example:*
++
+HiveConnection
+
+Connection type:: Choose the Hive connection type.
++
+Mandatory field.
++
+*Example:*
++
+HiveHiveServer2 HA configured:: Specify this option if using HiveServer2 High Availability.
++
+Mandatory field.
+
+HiveServer2 zookeeper namespace:: Specify zookeeper namespace as hivesever2. This is the default value.
++
+Mandatory field.
++
+Only when using Hiveserver2 HA.
++
+*Example:*
++
+hiveserver2
++
+*Other notes:*
++
+If value is different then, the value can be found from hive-site.xml against the property `hive.server2.zookeeper.namespace`.
+
+Host:: Specify the hostname or the IP address of the Hadoop system.
++
+Mandatory field.
++
+Only when _not_ using Hiveserver2 HA.
++
+*Example:* + myEmail@example.com
+
+Port:: Specify the port.
++
+Mandatory field.
++ Only when _not_ using Hiveserver2 HA.
++
+*Example:*
++
+1234
+
+Hive security authentication:: Specifies the type of security protocol to connect to the instance. Based on the type of security select the authentication type and provide details.
++
+Mandatory field.
++
+*Example:*
++
+Kerberos *Valid Values:*
++
+Simple, Kerberos, LDAP, SSL, Kerberos & SSL, LDAP & SSL
++
+*Default:*
++
+Simple
++
+*Other notes:*
++
+The authentication type setup for the instance can be found from hive-site.xml against the property `hive.server2.authentication`.
+
+User:: Specify the user to connect to Hive. This user must have data access privileges.
++
+Mandatory field.
++
+For simple, LDAP, and Simple authentication only.
++
+*Example:*
++
+userdi
++
+*Default:*
++
+simple
+
+Password:: Specify the password.
++
+Optional field.
++ For simple, LDAP authentication only.
++
+*Example:*
++ pswrd234%!
+
+Trust store:: Specify the trust store name for authentication
++
+Mandatory field.
++
+For SSL and Kerberos & SSL authentication only.
++
+*Example:*
++
+trust store
++
+*Default:*
++
+SSL
+
+Trust store password:: Specify the password for the trust store.
++
+Mandatory field.
++
+For SSL and Kerberos & SSL authentication only.
++
+*Example:*
++
+password
++
+*Default:*
++
+SSL
+
+Hive transport mode:: Applicable only for hive process engine. This specifies the network protocol used for communicating between hive nodes.
++
+Mandatory field.
++
+*Example:*
++
+binary
++
+*Valid Values:*
++
+Binary, HTTP
++
+*Default:*
++
+binary
++
+*Other notes:*
++
+The Hive transport mode can be identified from hive-site.xml against the property hive.server2.transport.mode.
+
+HTTP path:: This is specified as an option when http transport mode is selected.
++
+Mandatory field.
++
+For HTTP transport mode only.
++
+*Example:*
++
+cliservice
++
+*Valid Values:*
++
+cliservice
++
+*Default:*
++
+cliservice
++
+*Other notes:*
++
+The HTTP Path value can be identified from `hive-site.xml` against the property `hive.server2.thrift.http.path`.
+
+Hadoop distribution:: Provide the distribution of Hadoop being connected to.
++
+Mandatory field.
++
+*Example:*
++
+Hortonworks
++
+*Valid Values:*
++
+CDH, Hortonworks, EMR
++
+*Default:*
++
+CDH
+
+Distribution version:: Provide the version of the Distribution chosen above.
++
+Mandatory field.
++
+*Example:*
++
+2.6.5
++
+*Valid Values:*
++
+Any Numeric value
++
+*Default:*
++
+6.3.x
+
+Hadoop conf path:: By default, the system picks the Hadoop configuration files from the HDFS. To override, specify an alternate location.
+Applies only when using configuration settings that are different from global Hadoop instance settings.
++
+Mandatory field.
++
+*Example:*
++
+$DI_HOME/app/path
++
+*Other notes:*
++
+An instance where this could be needed is, if the hdfs is encrypted and the location of key files and password decrypt the files is available in the hadoop config files.
+
+DFS HA configured:: Specify if using High Availability for DFS.
++
+Optional field.
++
+For Hadoop Extract only.
++
+*Example:*
++
+Checked
+
+DFS name service:: Specify the logical name of the HDFS nameservice.
++
+Mandatory field.
++
+For DFS HA and Hadoop Extract only.
++
+*Example:*
++
+lahdfs *Other notes:*
++
+It is available in hdfs-site.xml and defined as dfs.nameservices
+
+DFS name node IDs:: Specify a comma-separated list of NameNode IDs.
+System uses this property to determine all NameNodes in the cluster. XML property name is `dfs.ha.namenodes.dfs.nameservices`.
++
+Mandatory field.
++
+For DFS HA and Hadoop Extract only.
++
+*Example:*
++
+nn1, nn2
+
+RPC address for namenode1:: Specify the fully-qualified RPC address for each listed NameNode. Defined as `dfs.namenode.rpc-address.dfs.nameservices.name node ID 1`.
++
+Mandatory field.
++
+For DFS HA and Hadoop Extract only.
++
+*Example:*
++
+lclabh.example.com:5678
+
+RPC address for namenode2:: Specify the fully-qualified RPC address for each listed NameNode. Define as `dfs.namenode.rpc-address.dfs.nameservices.name node ID 2`.
++
+Mandatory field.
++
+For DFS HA and Hadoop Extract only.
++
+*Example:*
++
+lvclabh.example.com:9876
+
+DFS host:: Specify the DFS hostname or the IP address.
++
+Mandatory field.
++
+For Hadoop Extract only, when _not_ using DFS HA.
++
+*Example:* + myemail@example.com
+
+DFS port:: Specify the associated DFS port.
++
+Mandatory field.
++
+For Hadoop Extract only, when _not_ using DFS HA.
++
+*Example:*
++
+1234
+
+Default DFS location:: Specify the location for the default source/target location.
++
+Mandatory field.
++
+For Hadoop Extract only.
++
+*Example:*
++ /tmp
+Temp DFS location:: Specify the location for creating temp directory.
++
+Mandatory field.
++
+For Hadoop Extract only.
++
+*Example:*
++
+/tmp
+DFS security authentication:: Select the type of security being enabled.
++
+Mandatory field.
++
+For Hadoop Extract only.
++
+*Example:*
++
+Kerberos
++
+*Valid Values:*
++
+Simple, Kerberos
++
+*Default:*
++
+simple
+
+Hadoop RPC protection:: Hadoop cluster administrators control the quality of protection using the configuration parameter `hadoop.rpc.protection`.
++
+Mandatory field.
++
+When using Kerberos DFS security authentication _and_ Hadoop Extract.
++
+*Example:*
++
+none
++
+*Valid Values:*
++
+None, authentication, integrity, privacy
++
+*Default:*
++
+authentication
++
+*Other notes:*
++
+It is available in core-site.xml.
+
+Hive principal:: Principal for authenticating hive services.
++
+Mandatory field.
++
+*Example:*
++
+hive/host@lab.example.com
++
+*Other notes:*
++
+It is available in hive-site.xml
+
+User principal:: To authenticate via a key-tab you must have supporting key-tab file which is generated by Kerberos Admin and also requires the user principal associated with Key-tab (Configured while enabling Kerberos).
++
+Mandatory field.
+*Example:*
++ labuser@labdp.example.com
+
+User keytab:: To authenticate via a key-tab you must have supporting key-tab file which is generated by Kerberos Admin and also requires the user principal associated with Key-tab (Configured while enabling Kerberos).
++
+Mandatory field.
++
+*Example:*
++
+/app/keytabs/labuser.keytab
+
+KDC host:: Specify KDC Host Name where as KDC (Kerberos Key Distribution Center) is a service than runs on a domain controller server role (Configured from Kerbores configuration-/etc/krb5.conf)
++
+Mandatory field.
+*Example:*
++
+example.example.com
+
+Default realm:: A Kerberos realm is the domain over which a Kerberos authentication server has the authority to authenticate a user, host or service (Configured from Kerbores configuration-/etc/krb5.conf)
++
+Mandatory field.
++
+*Example:*
++
+labhdp.example.com
+
+Queue name:: Specify the queue name followed by a coma separated form in yarn.scheduler.capacity.root.queues.
++
+Mandatory field.
++
+For Hadoop Extract only.
++
+*Example:*
++
+default
++
+*Other notes:*
++
+It is available in capacity-scheduler.xml
+
+YARN web UI port:: Yarn Providing web UI for yarn RM and by default 8088 in use.
++
+Mandatory field.
++
+For Hadoop Extract only. +
+*Example:*
++
+8088
+
+Zookeeper quorum host:: Specify the value of hadoop.registry.zk.quorum from yarn-site.xml.
++
+Mandatory field.
++
+Only when _not_ using Hiveserver2 HA.
++
+*Example:*
++
+lvclhdp1.example.com:21,lvclabhdp12.example.com:81,lvclabhdp12.example.com:2093
+
+Yarn timeline webapp host:: Specify the ip adress of yarn timeline service web application.
++
+Mandatory field.
++
+*Example:*
++
+8188
+
+Yarn timeline webapp port:: Specify the port associated with the yarn timeline service web application.
++
+Mandatory field.
+*Example:*
++
+8190
+
+Yarn timeline webapp version:: Specify the version associated with the yarn timeline service web application.
++
+Mandatory field.
++
+*Example:*
++
+v1
+
+JDBC options:: Specify the options associated with the JDBC URL.
++
+Optional field.
++
+*Example:*
++
+`jdbc:sqlserver://[serverName[\instanceName][:portNumber]]`
+
+== Sync properties
+
+Data extraction mode:: Specify the extraction type.
++
+Mandatory field.
+*Example:*
++
+Hadoop Extract *Valid Values:*
++
+Hadoop Extract, JDBC
++
+*Default:*
++
+Hadoop Extract
+
+Null value:: Specifies the string literal that should indicate the null value in the extracted data. During the data load the column value matching this string will be loaded as null in the target.
++
+Mandatory field.
++
+For Hadoop Extract only.
++
+*Example:*
++
+NULL *Valid Values:*
++
+NULL *Default:*
++
+NULL
+
+Enclosing character:: Specify if the text columns in the source data needs to be enclosed in quotes.
++
+Mandatory field.
+*Example:*
++
+DOUBLE
++
+*Valid Values:*
++
+SINGLE, DOUBLE
+*Default:*
++
+DOUBLE
+
+Escape character:: Specify the escape character if using a text qualifier in the source data.
++
+Mandatory field.
+*Example:*
++
+\"
+*Valid Values:*
++
+\\, Any ASCII character
+*Default:*
++
+\"
+
+TS load options:: Specifies the parameters passed with the `tsload` command, in addition to the commands already included by the application.
+The format for these parameters is:
++
+` --<param_1_name> <optional_param_1_value>`
++
+` --<param_2_name> <optional_param_2_value>`
++
+Optional field.
++
+*Example:*
++ --max_ignored_rows 0
++
+*Valid Values:*
++
+` --null_value "`
++
+` --escape_character "`
++
+` --max_ignored_rows 0`
++
+*Default:*
++
+--max_ignored_rows 0
