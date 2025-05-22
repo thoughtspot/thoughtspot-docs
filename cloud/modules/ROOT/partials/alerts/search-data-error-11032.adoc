@@ -1,0 +1,36 @@
+[#search-data-error-11032]
+
+=== 11032
+
+Description:: ThoughtSpot does not currently support complex usages of median, rank, rank_percentile, percentile, and aggregate SQL passthrough functions.
+
+Details:: This error is displayed as a query generation error when the usage of median, rank, rank_percentile, and aggregate SQL passthrough functions are used in conjunction with an underlying query plan of a fan or chasm trap. Refer to link:https://community.thoughtspot.com/customers/s/article/What-is-Attribution-and-Chasm-Traps[this community article] for further details regarding these complex query patterns.
++
+The following is a simple example of a fan trap. Assume the data model has a central fact table for Sales. This is joined as a many-to-one to a region dimension table and another many-to-one join on the customer table.
++
+----
+[Sales] by [Region] [Count Customers]
+----
++
+The [Count Customers] token results in a fan trap. This ensures that there is no overcounting of the results.
+
+
+Cause:: These functions do not currently support advanced formula planning. This is required to ensure that the results that are returned are correct.
+
+Resolution:: For certain situations it may be possible to leverage the group_aggregate function to force an independent query plan for these functions. The fan trap example is extended to include a function to return the median value. This requires a formula to be defined:
++
+----
+fxMedian = median(sales)
+----
++
+The resulting search token is the following, which results in an error:
++
+----
+[Sales] by [Region] [Count Customers] [fxMedian]
+----
++
+The formula can be updated with the group_aggregate definition. Note that after the query_groups() section there is an additional definition of ‘+{}’. This is required so that query generation does not attempt to simplify the query plan.
++
+----
+fxMedian = group_aggregate(median(sales),query_groups()+{},query_filters())
+----

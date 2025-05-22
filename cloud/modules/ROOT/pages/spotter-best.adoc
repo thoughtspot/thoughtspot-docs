@@ -1,0 +1,159 @@
+= Spotter best practices
+:last_updated: 11/19/2024
+:author: Naomi
+:linkattrs:
+:experimental:
+:page-layout: default-cloud
+:description:
+:jira: SCAL-228500
+
+
+== Understand Spotter’s capabilities
+
+
+=== What questions can Spotter answer today?
+
+
+Spotter brings in the ability to translate natural language instructions to analytical queries on your data model that can help you perform some complex analysis. Let’s take a look at the capabilities of Spotter in more detail by taking a simplified table given below.
+
+[#table]
+[options=”header”]
+|===
+
+| Region | Month | Total sales
+
+| East | Jul 2024 | 4,000,000
+
+| East | Aug 2024 | 4,000,000
+
+| East | Sep 2024 | 4,000,000
+
+| Midwest | Jul 2024 | 5,000,000
+
+| Midwest | Aug 2024 | 5,000,000
+
+| Midwest | Sep 2024 | 4,000,000
+
+| South | Jul 2024 | 1,000,000
+
+| South | Aug 2024 | 1,000,000
+
+| South | Sep 2024 | 1,000,000
+
+| Southwest | Jul 2024 | 3,000,000
+
+| Southwest | Aug 2024 | 2,000,000
+
+| Southwest | Sep 2024 | 2,000,000
+
+| West | Jul 2024 | 4,000,000
+
+| West | Aug 2024 | 4,000,000
+
+| West | Sep 2024 | 3,000,000
+|===
+
+Currently, Spotter can help you answer questions about your data which can be answered by using a combination of the capabilities mentioned below:
+
+Mathematical computations:: Spotter can count things in your dataset (for example, `how many regions are there?` ) , or it can aggregate metrics (for example,  `what is the average sales?` )  or it can perform complex mathematical computations (for example, `how does the sales for the east region compare against sales of the west region?`).
+
+Grouping:: Spotter can help you perform the computations for specific groups (for example, `what is the total sales by region?` or `what is the maximum sales for each region?`). You can also ask Spotter to create grouping on date columns on the fly (for example, `what are the yearly sales?` or `what are the monthly sales?`).
+
+Filtering:: You can instruct Spotter to perform the above operations on a filtered set of data instead of the full table. For example, `what are the total sales for August?` or `what are the sales for this month?` or  `what are the sales for South in July 2024?`
+
+Here is a quick glance of the kind of questions you can ask using a combination of the above skills.
+
+Common Date Intents::
+Group by date:::
+Sample questions;; What are my weekly sales?, What are the quarterly sales?
+Filter by date:::
+Sample questions;; What are our yearly sales for the last 7 years?, What are the sales this year?
+
+Simple computations::
+Counting:::
+Sample question;; How many products were sold in the east region last week?
+Aggregation:::
+Sample questions;; What is the average sales for each store?, What is the maximum order size in the east region this week?
+Conditional counting/ aggregations:::
+Sample questions;; What are the sales for the east region?, What would be the sales if no jackets were sold?, What is total sales for east and the sales from small orders where small orders mean sales less than 50?
+
+Advanced computations::
+Ratios and percentage:::
+Sample questions;; What is the percentage of jacket sales in Arizona for the year 2023?, What is the ratio of units sold for shirts against pants?
+Comparison:::
+Sample questions;; Compare the quantity of jackets being sold to pants during 2020, 2021 and 2022, Compare the sales of east and west region
+Advanced calculations (change, nested aggregations, etc.):::
+Sample questions;; What is the change in sales each day between 2021 and 2023?, Can you provide the quarterly revenue breakdown for products that were part of the promotional campaign in Q2?
+
+
+=== What questions are currently out of scope?
+
+
+Spotter is currently not designed to answer other types of questions. A few types of questions that Spotter doesn’t answer well are listed below.
+
+
+"Why" questions are not yet supported in Spotter and should be avoided. For example, Why did my sales go down in Q2?
+Spotter is not able to answer descriptive questions about data sources. For example, How many columns does the Worksheet have?
+Spotter can not change chart types. You can go to Edit Answer from the context menu to access additional chart types.
+
+
+
+
+== Spotter user interface
+
+
+Let’s take a look at the Spotter user interface to understand how users can use the various options available. Spotter is designed as a conversational experience. The image below highlights some of the key elements:
+
+[.bordered]
+image:spotter-interface-1.png[Spotter interface basics]
+
+User Input:: The user input area is available at the bottom of the screen. You can use this to ask questions to the AI analyst or provide instructions on how the AI analyst should modify the answer. +
+NOTE: All follow-up questions in Spotter are treated as a follow-up to the last question. If you want to start with a new question, we recommend using the New chat option to reset the conversation.
+Last User Input:: Shows how your historical questions are displayed in the conversation.
+
+Interactive Chart:: Interactive chart is one of the elements of the response generated by Spotter. You can interact with the chart (similar to other parts of the ThoughtSpot product).
++
+NOTE: Only the last answer in the conversation supports interactive charts.
+
+Data Source:: Shows the data source used for the conversation. You can change the data source from here if you want to start conversations on a different data source.
+NOTE: Spotter conversations started from a Liveboard do not allow changing the data source.
+
+
+
+[.bordered]
+image:spotter-interface-2.png[Spotter interface conversations]
+
+
+Changes from Last Step (verification)::  Whenever you ask a follow-up question in the conversation, Spotter’s response includes the changes made from the last step to help you verify what has changed from the previous step.
++
+NOTE: The changes from Last Step are not currently available in saved chats.
+
+Query Tokens (verification):: All answers in Spotter show query tokens. These query tokens represent the simplified query and they uniquely specify how the data shown in the answer was computed. You can use the query tokens at any step to verify the complete answer.
+
+Switch Table/Chart (verification):: You can choose to view any answer in table view or chart view. The chart views are helpful for consuming simple answers while the table view is useful when the number of columns in the generated answer cannot be visualized elegantly in any chart.
+Edit user input (correction):: You can use the edit user input option to make modifications to your last question and make it more precise. Editing the latest user input will generate a new response using the edited instructions.
++
+NOTE: The option to edit user input is only available on the last question you asked.
+
+Delete (correction):: Generating insights sometimes requires a fair bit of exploration of the data. You can remove follow-up questions in case you want to go back to a previous state in the conversation and deep-dive in a different direction.
++
+NOTE: The option to edit user input is only available on the last question asked. Once the user input is deleted, the answer associated with it is also deleted.
+
+Edit Answer (correction)::  You can take control and modify the answer or visualization settings using our keyword-based search interface. It’s useful when you want to explore the data set in Do it yourself mode. You can always make modifications to an answer and come back to the conversation to ask more questions on the modified answers.
++
+NOTE: The option to edit the answer is only available on the last question asked by the user.
+
+
+[.bordered]
+image:spotter-interface-3.png[Spotter interface details]
+
+
+Answer Actions:: You can download the answer generated during the conversation. You can also save or pin the answer from the conversation when using Spotter in Cloud.
+
+Preview Data:: Preview data shows a few rows from the data source to help you check what columns are available for analysis in the selected data source. Preview Data is currently unavailable for data sources which contain a chasm trap.
+
+New chat / Reset chat:: All questions in the conversational experience are treated as a follow-up to the previous answer. If you want to start a new analysis with a fresh question, use this option to start a new conversation.
++
+NOTE: Spotter on Liveboards only provides the option to reset chat. When the chart is reset, you go back to the initial visualization from which the conversation started.
+
+Feedback:: Use the feedback option to inform us and your analytics team about which questions are not working.

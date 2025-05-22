@@ -1,0 +1,85 @@
+= Change the Attribution Dimension
+:last_updated: 11/26/2024
+:linkattrs:
+:experimental:
+:page-layout: default-cloud
+:page-aliases: /admin/data-modeling/attributable-dimension.adoc
+:description: The Attribution Dimension setting applies only to tables related through a chasm trap. If your schema doesn't include these, you can ignore this setting.
+:jira: SCAL-210658
+
+The *Attribution Dimension* setting only applies to tables that join over a xref:chasm-trap.adoc[chasm trap], and specifically when an attribution query is generated. In short, an attribution query is planned when one side of the chasm trap includes a non-shared attribute column. This could be from a non-shared table or a column from the fact table itself. Refer to this community article, https://community.thoughtspot.com/customers/s/article/What-is-Attribution-and-Chasm-Traps[What is Attribution and Chasm Traps^].  By default, the attribution dimension setting will be set to YES, but you can override that by setting the column’s attribution dimension property to NO, as described here.
+
+Importantly, this setting is at the table level rather than the column level. Note that the current UI implies this is a column-level setting. For example, assuming a shared dimension table, PRODUCT, has three columns: *ID*, *Name*, and *Group*. If one of these columns is set to `NO` then the entire table is ignored in the attribution query plan.
+
+
+== What is a chasm trap?
+
+A chasm trap is a data model where two or more fact tables have no direct relationship to each other except through shared dimensions. A shared dimension is a table that joins two or more fact tables.
+
+ThoughtSpot ensures that double counting does not occur with chasm traps.
+
+The following model represents a chasm trap between SALES and DELIVERIES, where the shared dimension tables are PRODUCT, DATE, and STORE.
+
+[.bordered]
+image::chasm-trap-example.png[Chasm trap example]
+
+== What is attribution?
+
+Attribution includes the following:
+
+- In ThoughtSpot, this is a data model setting (worksheet or table) that is applied to shared dimensions. This logic is automatically applied when a non-shared filter or column is selected from one side of a chasm trap. This affects the aggregation of the initial query plans prior to the final query.
+The query generator must determine how to aggregate the fact that is not linked to the filter or column from the non-shared dimension.
+- By default this is on for all shared dimensions as this is the most common business scenario.
+The attribution setting is for the entire table, not a specific column within the table. For example, if attribution is off for one column it is off for all columns in that table.
+- Depending upon the business rule, the initial query plan could:
+** Return the total aggregate amount from query 0 which is then applied to every row from query 1. In this scenario no attribution is applied.
+** Calculate the amount from query 0 that is attributed to each segment from query 1. This amount per segment is determined through the shared dimensions.
+
+The following model includes a non-shared attribute table: CUSTOMER. If a search were to include columns from DELIVERIES:QUANTITY, SALES:QUANTITY and CUSTOMER, then the attribution query would be generated.
+
+For example, it shows from a business sense how the DELIVERIES:AMOUNT value is attributed to each customer. There is no direct join. Instead this contribution value is determined through the shared dimensions.
+
+[.bordered]
+image::chasm-trap-example2.png[Chasm trap example]
+
+== Enable or disable attribution?
+
+To determine if attribution for a shared dimension should be enabled, the easiest method is to remove ThoughtSpot from the picture. When writing a SQL statement to join the two fact tables, for example, which shared dimensions are required in the `group by` clause?
+
+If certain shared dimensions are not required to return the result, then attribution can be disabled on those tables.
+The ThoughtSpot query plan can be used to validate the resulting SQL.
+
+
+== How to set attribute dimension
+
+You cannot configure this setting in the model file.
+You can only configure it on a table-by-table basis.
+To designate a column as not being an attribution dimension (not producing any meaningful attribution across a chasm trap):
+
+. Find the column that is not an attribution dimension.
+. Select its *Attribution Dimension*.
+. Set the value to `NO`.
+. Save your changes.
+
+== Table vs Worksheet property Scenarios
+
+With the example data model displayed above, the following scenarios involved setting the Product’s Name column to NO. The example search is:
+`[SALES:QUANTITY] [DELIVERIES:QUANTITY] [CUSTOMER NAME]`
+
+*Attribution Configuration 1*: Table property is set to *Yes* and Worksheet property is set to *Yes
+Attribution Query Plan*: SALES and DELIVERIES tables are joined through DATE, STORE and PRODUCT.
+
+*Attribution Configuration 2*: Table Property Set to *NO*, Worksheet Property is set to *Yes
+Attribution Query Plan*: SALES and DELIVERIES tables are joined through DATE and STORE.
+
+The PRODUCT table is only included in the plan when a column from this table is included directly in the search.
+
+*Attribution Configuration 2*: Table Property Set to *Yes*, Worksheet Property Set to *No
+Attribution Query Plan*: SALES and DELIVERIES tables are joined through DATE and STORE.
+
+The PRODUCT table is only included in the plan when a column from this table is included directly in the search. This configuration allows for different attribution rules to be applied to different worksheets.
+
+'''
+> **Related information**
+>
+> * xref:data-modeling.adoc[Model the data for searching]
