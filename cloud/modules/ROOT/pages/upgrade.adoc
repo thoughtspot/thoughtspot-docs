@@ -1,0 +1,72 @@
+= Minimal Downtime Ephemeral Mode upgrades
+:last_updated: 1/24/2023
+:linkattrs:
+:experimental:
+:page-layout: default-cloud
+:page-aliases:
+:description: Upgrade ThoughtSpot in the background while you use ThoughtSpot in read-only mode.
+
+With ThoughtSpot’s Minimal Downtime Ephemeral Mode upgrade option, we upgrade ThoughtSpot in the background while you use ThoughtSpot in Ephemeral mode. It means your business users can still unleash the power of ThoughtSpot, delivering them the data they need, even during an upgrade, however as the system is in a Transient state, any new objects (Liveboards, Answers, Tags, etc) that you create or modify during the upgrade will be lost.
+
+During this upgrade workflow:
+
+. Users are signed out briefly (around 5 minutes) when the upgrade starts.
+. Upgrades take approximately 4 hours to complete. The exact duration depends on the metadata size in the system.
+. Users are signed out briefly (around 5 minutes) when upgrades are complete.
+
+image::upgrade_minimal.png[Upgrade diagram]
+
+== What it means
+
+During an upgrade, ThoughtSpot is in Ephemeral mode, which means that users who perform write operations, like creating or modifying objects, will lose their data after the upgrade.
+
+== What to expect
+
+When the upgrade starts, a banner displays a message that ThoughtSpot is in Ephemeral mode, similar to the following:
+
+image::upgrade.png[Upgrade banner saying that ThoughtSpot is in read-only mode]
+
+All users are signed out at this point and can sign in again after a brief downtime of fewer than 5 minutes.
+Once the banner is up, the upgrade starts and runs in the background. During the upgrade, users can still use ThoughtSpot to query data, search for Answers and view Liveboards as usual, but *should not make any write/modify operations during this period*.
+
+IMPORTANT: Any objects created or edited during this period will be lost after the upgrade completes.
+
+The upgrade duration depends on the number of metadata objects in ThoughtSpot and typically lasts 4 hours or less. Business users will still be able to access Answers, Liveboards, SpotIQ analysis, and more. Data analysts, data engineers, and developers, however, should not use the system because any changes they make will be lost as a result of the upgrade.
+
+After the upgrade is complete,  ThoughtSpot returns to full-access mode. At that point, users are signed out, resulting in a brief disruption of 5 minutes or less. After that, the system is once again in normal read-write mode and users can sign in and use the upgraded ThoughtSpot cluster normally. At that point, the upgrade banner is no longer displayed.
+
+== Impacted services
+
+While most of the core ThoughtSpot services are available during an upgrade, the following services are unavailable to avoid data inconsistency.
+
+Unavailable services during an upgrade:
+
+[cols="20%,80%"]
+|===
+|Service |Description
+
+|API-Based Services and Integrations
+|All API-based services, such as TML uploads, cs-tools, etc., and API integrations, including all TSE customers, will be able to use the APIs as usual during the upgrade period. However, the system will NOT save any changes made during the upgrade period.
+
+|Admin tab
+|Is not visible during the upgrade.
+
+|AD sync
+|Since it operates external to ThoughtSpot, it works during the  upgrade. However, any changes are lost after the upgrade. Therefore, you must re-run the AD sync script after the upgrade to avoid access management issues, even if the sync reports as successful during the upgrade.
+
+|Scheduled Liveboards
+|Run during upgrade and should take the appropriate action. However, if you make any changes during the upgrade, your changes will be lost after the upgrade.
+
+|Search indexing
+|Any new searches you make or new objects you create will not be indexed during upgrades. The existing indexes will still be valid, and you will still get recommendations on the data that was present when the upgrade started.
+
+|ThoughtSpot Sync
+|Does not run during upgrades, so ThoughtSpot will not send any new visualizations to external apps during the upgrade.
+|===
+
+
+If you have a technical issue during the upgrade, contact {support-url}.
+
+== Enabling the feature on your ThoughtSpot cluster
+
+This upgrade feature is disabled by default. Please contact {support-url} if you would like to enable Minimal Downtime Read-Only Mode upgrades for your ThoughtSpot cluster.
