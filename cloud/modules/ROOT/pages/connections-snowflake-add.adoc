@@ -4,7 +4,7 @@
 ////include::7.1@software:ROOT:connections-snowflake-add.adoc[]
 ////
 = Add a {connection} connection
-:last_updated: 8/11/2020
+:last_updated: 10/08/2024
 :linkattrs:
 :page-layout: default-cloud
 :experimental:
@@ -27,15 +27,25 @@ Example:
 
 To connect to {connection}:
 
+ifndef::spotter[]
 . Select *Data* in the top navigation bar.
 . Open the *Connections* tab in the left navigation bar, and select the {connection} tile. Alternatively, select *+ Create new* in the left navigation bar, select *Connection*, and select the {connection} tile.
+endif::[]
+ifdef::spotter[]
+. Click the app switcher menu image:spotter-app-switcher.png[Spotter app switcher] and then click *{form-factor}*.
+. On the left side of the screen, select *Manage data > Add data source*.
+. On the _Add a data source_ page, click *Connect data*.
++
+[.bordered]
+image::connection-spotter-set-up-new-connection.png[Set up new connection]
+endif::[]
 . Create a name for your connection and a description (optional), then select *Continue*.
 +
 image::embrace-snowflake-connection-type-ts-cloud.png[Add a {connection} connection]
 
 . Enter the connection details for your {connection} data source using either OAuth, OAuth with PKCE, Microsoft Azure AD OAuth, Service Account, or Key Pair authentication:
 +
-The Use OAuth option uses https://docs.snowflake.com/en/user-guide/oauth-partner.html[{connection} OAuth authentication].
+The Use OAuth option uses https://docs.snowflake.com/en/user-guide/oauth-partner.html[{connection} OAuth authentication^].
 +
 Before selecting *Use OAuth* or *OAuth with PKCE* authentication, you must configure OAuth in {connection}.
 For details, see xref:connections-snowflake-oauth.adoc[Configure OAuth for a {connection} connection].
@@ -66,7 +76,7 @@ image:snowflake-connectiondetails-azure-ad-oauth.png[Enter connection details]
 // [Enter connection details]({{ site.baseurl }}/images/gbq-connectiondetails.png "Enter connection details")
  .. If you wish to provide the optional additional key-value pairs for your {connection} connection, complete the procedure in step 5, and then select *Continue*.
 If not, select *Continue*.
-.. To enable link:https://docs.snowflake.com/en/user-guide/security-access-control-overview#enforcement-model-with-primary-role-and-secondary-roles[Snowflake secondary roles], enter the following key-value pair:
+.. To enable link:https://docs.snowflake.com/en/user-guide/security-access-control-overview#enforcement-model-with-primary-role-and-secondary-roles[Snowflake secondary roles^], enter the following key-value pair:
 [#secondary]
 ... Key: enableSecondaryRoles
 ... Value: true
@@ -125,6 +135,21 @@ The Create connection message appears, telling you the number of tables and colu
 
 . Select *Create*.
 
+ifdef::spotter[]
+. On the _Add a data source_ page, click *Model your data*.
++
+[.bordered]
+image::connection-spotter-set-up-new-connection-2.png[connection created]
+
+include::partial$model-build.adoc[]
+
+include::partial$spotter-coach-and-chat.adoc[]
++
+
+endif::[]
+
+ifndef::spotter[]
++
 After you add the connection, you can search your {connection} database using the Search field.
 
 // [The "Connection created" screen]({{ site.baseurl }}/images/snowflake-connectioncreated.png "The "Connection created" screen")
@@ -152,7 +177,8 @@ You can also xref:connections-snowflake-delete.adoc[Delete a {connection} connec
 See the xref:connections-snowflake-reference.adoc[Connection reference] for details of connection parameters.
 
 We also recommend that you review xref:connections-snowflake-best.adoc[Best practices for {connection} connections].
-
+endif::[]
+ifndef::spotter[]
 == Sharing a connection
 
 Users with *can manage data* or *admin* privileges can share connections with other users or groups that have *can manage data* privileges. Once granted access to a connection, users can add, remove, and modify tables in that connection.
@@ -173,6 +199,7 @@ Note that to remove share access from a connection, you must navigate to the *Sh
 include::partial$connection-create-additional-config.adoc[]
 
 You can edit additional configurations after you create them, including disabling and deleting them. For details, see xref:connections-snowflake-edit.adoc#edit-additional-connections[Edit additional connections of your {connection} connection].
+endif::[]
 
 '''
 > **Related information**
@@ -189,6 +216,5 @@ You can edit additional configurations after you create them, including disablin
 > * xref:connections-snowflake-private-link.adoc[]
 > * xref:connections-snowflake-psc.adoc[]
 > * xref:connections-snowflake-reference.adoc[Connection reference for {connection}]
-> * xref:connections-query-tags.adoc#tag-snowflake[ThoughtSpot query tags in Snowflake]
+> * xref:10.3.0.cl@cloud:ROOT:connections-query-tags.adoc#tag-snowflake[ThoughtSpot query tags in Snowflake]
 > * xref:connections-snowflake-passthrough.adoc[]
-

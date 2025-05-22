@@ -4,18 +4,9 @@
 :linkattrs:
 :page-layout: default-cloud
 :experimental:
-:jira: SCAL-127727, SCAL-89341, SCAL-173345, SCAL-164086, SCAL-201032, SCAL-201033, SCAL-207062
+:jira: SCAL-127727, SCAL-89341, SCAL-173345, SCAL-164086, SCAL-201032, SCAL-201033, SCAL-207062, SCAL-208519
 
 ThoughtSpot now supports alerts for changes in xref:chart-kpi.adoc[Key Performance Indicators (KPIs)] in your data. Use the Monitor function to receive notifications when data in your KPI is anomalous or when your KPI satisfies a certain threshold condition, or to schedule notifications for your KPIs on an hourly, daily, weekly, or monthly basis.
-
-You can now add ad-hoc filters to the Liveboard underlying your KPI and set a threshold or scheduled alert that preserves those filters, all without saving the filter to the Liveboard.
-
-NOTE: Monitor emails do not contain mention of the filters used on the underlying Liveboard.
-
-[#early-access]
-When you receive an email alert about a threshold or scheduled alert, ThoughtSpot now tells you if the KPI value is anomalous. You can see the upper and lower boundary for the expected behaviour of the KPI. For further analysis, click the link to view your KPI in the original Liveboard.
-
-
 
 Monitor for KPIs is part of the xref:answer-experience-new.adoc[new answer experience]. From the *Monitor* tab, you can view and manage all KPI alerts you create or subscribe to. You can customize other aspects of the alert email, such as the email address ThoughtSpot sends it from, from the *Onboarding* section of the Admin Console. Refer to xref:onboarding-email-settings.adoc[].
 
@@ -31,6 +22,9 @@ For example, you can create an alert for a `sales weekly` KPI, and specify that 
 Note that ThoughtSpot checks your KPI data against the expected data range at the time period you define. If your KPI data temporarily exceeds the expected range, but does not satisfy the condition at the time the condition is next checked, you will not receive an alert notification.
 
 NOTE: Anomaly alerts are in Early Access and off by default. Since this feature is early access, we do not support webhook and TML functionality. If you create an anomaly alert, and anomaly alerts are subsequently disabled from your cluster, the anomaly alert will be disabled. If you create an anomaly alert, and your cluster is downgraded from 10.1.0.cl, the anomaly alert becomes a scheduled alert.
+
+NOTE: You can create alerts directly from watchlist KPIs on the home page. This feature is in Early Access and off by default.
+__
 
 To create an anomaly alert, follow these steps:
 
@@ -99,7 +93,7 @@ If your KPI includes a time-series keyword (such as `weekly`), you may also sele
     * Decreases by (%)
     * Changes by (%)
 ====
-. Enter your threshold value. The exact current value of your KPI appears below the *Threshold value* entry.
+. Enter your threshold value. The exact value against which the selected threshold condition will be checked appears below the *Threshold value* entry.
 . The default time interval to check for threshold conditions appears below the *Condition* entry.
 . [Optional] Select *change* to manually schedule the frequency at which ThoughtSpot checks your KPI for the threshold condition. For example, you can schedule to check the KPI `Sales weekly` every week, every day, or every hour. Note that ThoughtSpot sends an alert if your KPI reaches the threshold condition at the time that it is checked. If a KPI temporarily reaches your threshold condition but no longer satisfies that condition when threshold check is scheduled, you _will not_ receive an alert.
 
@@ -169,6 +163,24 @@ If you do not have **edit** access to the KPI’s underlying data source, you ca
 
 NOTE: Admins will be able to view, edit, or delete alerts even if they are not the creator or subscriber of those alerts.
 
+=== Ad-hoc filters
+
+You can now add ad-hoc filters to the Liveboard underlying your KPI and set a threshold or scheduled alert that preserves those filters, all without saving the filter to the Liveboard.
+NOTE: Monitor emails do not contain mention of the filters used on the underlying Liveboard, but the filters still apply. You can add details about filters in the custom message to include them in the email.
+
+=== Anomalies in email alerts
+[#early-access]
+
+When you receive an email alert about a threshold or scheduled alert, ThoughtSpot now tells you if the KPI value is anomalous. You can see the upper and lower boundary for the expected behaviour of the KPI. For further analysis, click the link to view your KPI in the original Liveboard.
+
+=== Configure source email for email alerts
+
+ThoughtSpot supports configuring the email address from which alerts are sent, if you are using the previous email service. To find out what service your account uses, contact {support-url}. You can request to migrate to the previous service as desired.
+
+=== Row-level security
+
+Row-level security applies to your KPI alert subscriptions. For example, if you create a threshold-based alert for a KPI on Sales in all regions, you receive a notification when total sales reached your defined threshold. Another user subscribed to your alert whose access is limited to the “West” region would receive an alert _only_ when sales in the “West” region reached the threshold defined in your alert.
+
 
 == Limitations
 
@@ -176,10 +188,10 @@ When creating an alert for a KPI, the following limitations apply:
 
 - A KPI chart must be saved as an Answer before you can create an alert.
 - When creating an alert for a KPI pinned to a Liveboard, you must first save any changes to the Liveboard containing your KPI.
-- You cannot create an alert for a pinned KPI if your Liveboard contains filters applied through the Liveboard **more options** menu. First, remove the Liveboard filters, then refresh the page before creating a scheduled alert for your KPI.
+//- You cannot create an alert for a pinned KPI if your Liveboard contains filters applied through the Liveboard **more options** menu. First, remove the Liveboard filters, then refresh the page before creating a scheduled alert for your KPI.
 - If you modify a pinned KPI visualization using the Liveboard’s Explore mode, you must reset the KPI using the reset button before you can create an alert notification.
 - You cannot create an alert for a pinned KPI visualization if the KPI is in edit mode.
-- Row-level security applies to your KPI alert subscriptions. For example, if you create a threshold-based alert for a KPI on Sales in all regions, you receive a notification when total sales reached your defined threshold. Another user subscribed to your alert whose access is limited to the "West" region would receive an alert _only_ when sales in the "West" region reached the threshold defined in your alert.
+
 
 '''
 > **Related information**

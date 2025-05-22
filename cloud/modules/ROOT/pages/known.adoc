@@ -1,43 +1,79 @@
 = Known issues
 :keywords: known issues
-:last_updated: 8/15/2024
+:last_updated: 10/14/2024
 :author: Mark Plummer
 :experimental:
 :page-layout: default-cloud
 :page-toclevels: -1
 :linkattrs:
-:jira: SCAL-206809 (9.12.0.cl), SCAL-210330 (9.12.5.cl), SCAL-214503 (10.0.0.cl), SCAL-216844 (10.1.0.cl)
+:jira: SCAL-206809 (9.12.0.cl), SCAL-210330 (9.12.5.cl), SCAL-214503 (10.0.0.cl), SCAL-216844 (10.1.0.cl), SCAL-228467 (10.3.0.cl)
 
 These are the known issues in this release of ThoughtSpot Cloud.
 
 [#releases-10-0-x]
-== 10.2.0.cl known issues
+== 10.3.0.cl known issues
 
 [cols="17%,39%,38%"]
 |===
 |Issue ID |Description|Symptoms, conditions, and workaround
 
-|SCAL-TBD
-|x
+|SCAL-227438
+|"WORKSHEET_GEN_FAIL" error appears when searching a Worksheet in the Search Data window.
 a|*Symptoms*:
-x
-
+"WORKSHEET_GEN_FAIL" error appears.
 
 *Conditions*:
-x
+Worksheet is selected as the data source in the Search Data window. The Worksheet has multiple roots (tables/views which are on the _Many_ side of a _Many:1_ join). In addition, the Worksheet has nested formulas used with different join paths.
+
+To identify if there are formulas used with different join paths, look at the TML of the underlying Worksheet. If you have two entries in the formulas section which have the same name, and one of those formulas has the id field set as well, then your Worksheet has nested formulas with different join paths.
+
+Example of formulas with different join paths:
+```
+- name: fx1
+  expr: "concat ( [DATE_1::Month] , [DATE_1::Day Of Week] )"
+  was_auto_generated: false
+- id: fx1_1
+  name: fx1
+  expr: "concat ( [DATE_2::Month] , [DATE_2::Day Of Week] )"
+  was_auto_generated: false
+```
+
+These both are actually different representations of the same formula (user only defined one formula).
 
 *Workaround*:
-None.
+Contact {support-url}.
 
-|SCAL-TBD
-|x
+|SCAL-227326
+|Conditional formatting is not applied to a KPI value when enhanced conditional formatting is enabled.
 a|*Symptoms*:
-x
-
+Conditional formatting styles (for example: font styles) are not applied to KPI chart values. The value used for conditional formatting differs from the value displayed in the KPI chart.
 
 *Conditions*:
-x
+Enhanced conditional formatting is enabled, and a conditional formatting rule is applied to a KPI chart value.
 
 *Workaround*:
-x
+Contact {support-url} to disable enhanced conditional formatting. This will ensure KPI values and conditional formatting match.
+
+|SCAL-218093
+|The chart visualization menu does not appear when selecting two points on a KPI chart by right-clicking in the Watchlist. This prevents contextual change analysis from working.
+a|*Symptoms*:
+The chart visualization menu fails to appear when two points are selected on a KPI chart in a Watchlist.
+
+*Conditions*:
+The new navigation and homepage experience is enabled.
+Occurs when a time-series KPI is added to the Watchlist, and two points on the KPI chart are selected using right-click.
+
+*Workaround*:
+Use the *KPI Comparison* button to start contextual change analysis instead.
+
+|SCAL-178756
+|Red banner error is displayed without any proper error message when the original verifier of the Liveboard was deleted from ThoughtSpot.
+a|*Symptoms*:
+An error banner is displayed at the top of the screen, indicating the user is not available.
+
+*Conditions*:
+When the requester or verifier has been deleted.
+
+*Workaround*:
+With a verified Liveboard, the user can close the error banner because there is no impact on functionality. With a pending request when the requester is deleted, the user must contact {support-url} to delete the request.
 |===
