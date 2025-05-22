@@ -1,35 +1,24 @@
 = Getting started with Spotter
-:last_updated: 5/13/2025
-:author: Naomi, Mary
+:last_updated: 11/18/2024
+:author: Naomi
 :linkattrs:
 :experimental:
 :page-layout: default-cloud
 :description:
-:jira: SCAL-228500, SCAL-244132, SCAL-239699, SCAL-227908, SCAL-245110
+:jira: SCAL-228500, SCAL-244132, SCAL-230530
 
-Spotter is our new AI-powered search experience which uses GPT-3.5T, GPT-4T and GPT-4o, with the large language models (LLM) of Microsoft https://learn.microsoft.com/en-us/legal/cognitive-services/openai/data-privacy?context=%2Fazure%2Fcognitive-services%2Fopenai%2Fcontext%2Fcontext[Azure OpenAI Service^] and Google Gemini.
 
-[#spotter-shortcuts]
+
+
 == Understanding Spotter
-.Spotter shortcuts [.badge.badge-early-access-whats-new]#Early Access#
-****
-Enable Spotter shortcuts to select from existing verified data constructs, including columns, filter values, and search data keywords. These shortcuts allow you to mix natural language and deterministic inputs when using Spotter. Create more precise questions by referencing actual column names and values from their worksheets.
 
-NOTE: Values only appear if indexing is enabled. If indexing is not enabled, you see only column names and select ThoughtSpot keywords, weekdays, and system variables.
-
-To enable Spotter shortcuts, contact {support-url}.
-
-To use Spotter shortcuts, do the following:
-
-. In the Spotter question box, type *@* to enter lookup mode.
-. Select from the list of available columns, filter values, and search data keywords, then start your search.
-****
 
 To make it easier to understand how Spotter answers your questions, we surface the search query information in the form of the Answer title and search tokens used to construct the answer. When you ask a follow-up question, Spotter highlights the changes it made in search tokens to answer your question. You can also hover over formulas to see how they’re calculated, and edit them within Spotter.
 
 
 [.bordered]
 image:spotter-answer.png[Spotter answer]
+
 
 
 To edit an AI-generated Answer in Spotter, click *Edit* next to the search tokens. The *Edit Answer* modal opens. When finished editing, click *Done editing* or *Discard changes*.
@@ -46,8 +35,8 @@ You can click a point on the Answer to drill down by different attributes direct
 
 
 
-
-You can see sample rows of the underlying Worksheet to get a sense of what columns are in the dataset and how the sample rows look by clicking *Preview data*. Note that Preview data is not available for Worksheets with chasm or fan traps.
+[#spotter-preview-data]
+You can see sample rows of the underlying Worksheet to get a sense of what columns are in the dataset and how the sample rows look by clicking *Preview data*. It allows you to preview the data, and supports complex models with multiple join paths.
 
 
 [.bordered]
@@ -58,6 +47,27 @@ image:spotter-search-bar.png[Spotter search bar]
 
 
 Spotter treats successive questions in a conversation as a follow-up. If you want to ask a question to start a new analysis, click the *Reset* button. On the Home page, reset lets you start from a fresh question on the selected data source. On a Liveboard, reset takes you back to the original visualization.
+
+[#spotter-shortcuts]
+.Spotter shortcuts [.badge.badge-early-access]#Early Access#
+****
+ThoughtSpot now supports Spotter shortcuts that allow you to select from existing verified data constructs, including columns, filter values, and search data keywords. These shortcuts allow you to mix natural language and deterministic inputs when using Spotter.
+
+To use this feature, complete the following steps:
+
+. Enter your question in the search. Type *@* followed by a column name that you would like to search based on.
++
+A list of existing verified data constructs appears.
+. Select from the list to complete your query.
++
+image::spotter-shortcut.png[Spotter shortcut]
+
+
+NOTE: Indexing for relevant columns must be turned on to use this feature.
+
+To enable this feature, contact {support-url}.
+
+****
 
 
 == Coach Spotter
@@ -75,10 +85,12 @@ You can now give feedback on AI-generated Answers in Spotter without interruptin
 To coach Spotter from an incorrect Answer, click the *x* icon next to *Did Spotter interpret your question correctly* at the bottom of the Answer. You can edit the underlying search, save, and review the search query tokens making up the Answer. Only terms that you select *Accept* or *Reject* for will be saved by the system; terms you pass over will not be saved. Click *Submit* to save.
 
 If you mark an Answer correct by clicking the checkmark icon, you can review and save the underlying search query tokens so Spotter remembers your choices in the future for similar questions. Only terms that you select *Accept* or *Reject* for will be saved by the system; terms you pass over will not be saved. Click *Submit* to save.
-
+[#llm-spotter]
 == Choose LLM for Spotter
 
 
-Admin users can decide which LLM to use to enable all ThoughtSpot AI features. By default, ThoughtSpot uses Azure OpenAI. For 10.4.0.cl, we are offering support for Google Gemini.
+Admin users can decide which LLM to use to power their Spotter experience. By default, ThoughtSpot uses Azure OpenAI.
+
+NOTE: Google Gemini and Mistral LLMs are supported as beta in this release.
 
 To change the LLM for your cluster, navigate to *Admin > ThoughtSpot AI* and click *Edit* for the *Choice of LLM* section. Select your new LLM from the dropdown that appears and click *Save*.
