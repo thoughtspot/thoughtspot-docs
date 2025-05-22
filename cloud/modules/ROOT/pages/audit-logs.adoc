@@ -37,14 +37,13 @@ For more information, see link:https://developers.thoughtspot.com/docs/?pageid=l
 
 ThoughtSpot security events include the following information:
 
+
 * An event ID
-* A unique description of the event (for example,
-"`A user account was created`")
+* A unique description of the event (for example, "`A user account was created`")
 * Timestamp (in UTC) yyyy/mm/dd:hh:mm:ss
 * User ID of the person initiating the event
 * public IP of the system from which the request originates
-* Fields specific to the event (for example,
-name of the new account)
+* Fields specific to the event (for example, name of the new account)
 
 [#security-events]
 == Security events
@@ -55,9 +54,12 @@ The possible events are:
 * <<create-answer,answer-creation>>
 * <<delete-answers,answer-deletion>>
 * <<update-answers,answer-update>>
+* <<failed-to-create-auth-token,auth-token-creation-failure>>
+* <<auth-token-created-successfully,auth-token-creation-successful>>
 * <<csv-upload-finished,csv-upload-finished>>
 * <<csv-upload-started,csv-upload-started>>
 * <<create-rls-rule,create-rls-rule>>
+* <<data-upload-configured,data-upload-configured>>
 * <<delete-rls-rules,delete-rls-rules>>
 * <<login-failed,failed-login>>
 * <<logout-failed,failed-logout>>
@@ -68,7 +70,7 @@ The possible events are:
 * <<account-locked,locked-account>>
 * <<share-objects,object-sharing>>
 * <<update-password,password-change>>
-* <<update-password-failed,update-password-failed>>
+* <<update-password-failed,update-password-failure>>
 * <<create-pinboard,pinboard-creation>>
 * <<delete-pinboards,pinboard-deletion>>
 * <<update-pinboards,pinboard-update>>
@@ -94,12 +96,18 @@ Answer creation::  A user attempts to create a new answer.
 Answer deletion::  A user attempts to delete an answer.
 [#update-answers]
 Answer update::  A user attempts to modify an existing answer.
+[#failed-to-create-auth-token]
+Auth token creation failed:: Auth token creation fails.
+[#auth-token-created-successfully]
+Successful auth token creation:: Auth token creation succeeds.
 [#csv-upload-finished]
 CSV upload finished:: CSV upload finishes.
 [#csv-upload-started]
 CSV upload started:: CSV upload starts.
 [#create-rls-rule]
 Row-level security (RLS) rule creation::  A user creates an RLS rule on a table.
+[#data-upload-configured]
+Data upload configured:: Data upload configured for a connection.
 [#delete-rls-rules]
 RLS rule deletion::  A user deletes an RLS rule on a table.
 [#login-failed]
@@ -122,22 +130,21 @@ A local user fails to authenticate _x_ times in a row, locking the account.
 Administrators can configure the number of authentication attempts before lockout within ThoughtSpot.
 
 ////
-<dlentry id="object-creation">
- <dt>Object creation</dt>
- <dd>A user creates a new object (pinboard, worksheet, answer, etc.) in ThoughtSpot.</dd>
-</dlentry>
-<dlentry id="object-deletion">
- <dt>Object deletion</dt>
- <dd>A user successfully or unsuccessfully attempts to delete an object (pinboard, worksheet, answer).</dd>
-</dlentry>
-<dlentry id="object-modification">
- <dt>Object modification</dt>
- <dd>A user successfully or unsuccessfully attempts to change the properties of an object.</dd>
-</dlentry>
+[#object-creation]
+Object creation::
+A user creates a new object (pinboard, worksheet, answer, etc.) in ThoughtSpot.
+
+[#object-deletion]
+Object deletion::
+A user successfully or unsuccessfully attempts to delete an object (pinboard, worksheet, answer).
+
+[#object-modification]
+Object modification::
+A user successfully or unsuccessfully attempts to change the properties of an object.</dd>
 ////
 
 [#share-objects]
-Object sharing::  A user successfully or unsuccessfully attempts to share an object (Pinboard, Worksheet, Answer) with another user or group.
+Object sharing::  A user successfully or unsuccessfully attempts to share an object (pinboard, worksheet, answer) with another user or group.
 [#update-password]
 Password change::  A user successfully or unsuccessfully attempts to change their password.
 [#update-password-failed]
@@ -164,10 +171,9 @@ User account creation::  A new user creates an account, either manually in the A
 User account deletion::  A user account is deleted, either manually in the Admin Portal or through the internal API.
 
 ////
-<dlentry id="user-group-change">
-  <dt>User group change</dt>
-  <dd>A successful or unsuccessful attempt to change the user list to a group by adding or removing members.</dd>
-  </dlentry>
+[#user-group-change]
+User group change::
+A successful or unsuccessful attempt to change the user list to a group by adding or removing members.
 ////
 
 == Team Edition events
@@ -206,17 +212,14 @@ Trial account creation:: A user successfully or unsuccessfully attempts to creat
 Trial account deletion:: A user successfully or unsuccessfully attempts to delete a Free Trial account.
 [#trial-user-expire]
 Trial account expiration:: A Free Trial account expires.
-
-
 [#user-invited]
 User invitation::  A user is invited to ThoughtSpot for a free trial.
-
 
 
 ////
 ThoughtSpot includes a number of management tools, monitoring applications, and automated processes to support system security. System security includes managing access and privileges, audit logs, security policies, and Linux OS installed package updates.
 
-## Audit logs
+== Audit logs
 
 There are several ways you can view audit log information in ThoughtSpot. You can see recent events in the Control Center or view more detailed audit logs using tscli. Administrators can view audit logs of configuration changes users have made to ThoughtSpot in these ways:
 
@@ -275,7 +278,7 @@ To get audit logs:
     ```
 
 
-## Security policies
+== Security policies
 
 Security policies are the principles and processes ThoughtSpot uses in development to ensure a product that conforms to security standards. Security policies ensure a secure product with each release. When a release is in development, each build is tested using Qualys Network Security and Vulnerability Management Suite. Issues and vulnerabilities are fixed proactively, based on the results.
 
