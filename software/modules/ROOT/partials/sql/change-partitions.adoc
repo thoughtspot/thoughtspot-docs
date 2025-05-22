@@ -1,0 +1,23 @@
+ALTER TABLE <table> [SET DIMENSION | SET FACT [PARTITION BY HASH [(<shards>)] [KEY(<column>)]]]:: Changes the partitioning on a table by doing one of the following:
++
+* re-sharding a sharded table
+* changing a replicated table to a sharded table
+* changing a sharded table to a replicated (unsharded) table
++
+By default, ThoughtSpot does not shard dimension tables.
++
+To change the partitioning on a table, or to change a dimension table to a sharded table, use the `ALTER TABLE\...SET FACT PARTITION BY HASH\...;` command.
++
+To make a sharded table into a dimension table (replicated on every node),  use the `ALTER TABLE\...SET DIMENSION;` command.
++
+Examples;;
++
+[source]
+----
+ALTER TABLE "sales_fact"
+  SET FACT PARTITION BY HASH (96)
+  KEY ("PO_number");
+
+ALTER TABLE "fruit_dim"
+  SET DIMENSION;
+----
