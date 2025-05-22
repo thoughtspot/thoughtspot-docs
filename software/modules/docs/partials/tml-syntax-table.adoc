@@ -1,0 +1,63 @@
+== Syntax of the table TML file
+
+The `TML` file for scriptable tables has a specific syntax.
+
+See the xref:parameters[TML paramters] for details about the keywords used in this example.
+
+You may not see each of these parameters in your own TML files, depending on whether each variable is explicitly defined.
+For example, if you did not define any conditional formatting, the `conditional_formatting` variable does not appear.
+You can add that variable in the TML file to specify conditional formatting.
+
+....
+
+table:
+  name: <table_name>
+  db: <database_name>
+  schema: <schema_name>
+  db_table: <database_table_name>
+  connection:
+    name: <connection_name>
+    type: <connection_type>
+  columns:
+  - name: <column_name_1>
+    db_column_name: <database_column_name>
+    is_primary_key: [true | false]
+    is_foreign_key: [true | false]
+    data_type: [ BOOL | VARCHAR | DOUBLE | FLOAT | INT32 | INT64 | DATE | TIME ]
+    properties:
+      column_type: [ MEASURE | ATTRIBUTE ]
+      aggregation: [ SUM | COUNT | AVERAGE | MAX | MIN |
+                     COUNT_DISTINCT | NONE | STD_DEVIATION | VARIANCE]
+      index_type: [ DONT_INDEX | DEFAULT | PREFIX_ONLY |
+                    PREFIX_AND_SUBSTRING | PREFIX_AND_WORD_SUBSTRING ]
+      index_priority: <index_priority>
+      synonyms :
+             <synonym_1>
+             <synonym_2>
+      is_attribution_dimension : [true | false]
+      is_additive : [ true | false ]
+      calendar : [ default | calendar_name ]
+      format_pattern : <format_pattern_string>
+      currency_type :
+        is_browser : true
+          OR
+        column : <column_name>
+          OR
+        iso_code : <valid_ISO_code>
+      is_hidden: [ true | false ]
+      geo_config :
+        latitude : true
+          OR
+        longitude : true
+          OR
+        country : true
+          OR
+        region_name:
+        - country : <name_supported_country>
+        - region_name : <region_name_in_UI>
+      spotiq_preference: <spotiq_preference_string>
+      search_iq_preferred: [ true | false ]
+  - name: <column_name_2>
+  - name: <column_name_n>
+guid: <table_guid>
+....

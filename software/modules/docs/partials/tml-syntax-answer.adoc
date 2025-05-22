@@ -1,0 +1,104 @@
+== Syntax of the Answer TML file
+
+The `TML` file for Scriptable Answers has a specific syntax.
+
+See the xref:parameters[TML paramters] for details about the keywords used in this example.
+
+You may not see each of these parameters in your own TML files, depending on whether each variable is explicitly defined.
+For example, if you did not define any conditional formatting, the `conditional_formatting` variable does not appear.
+You can add that variable in the TML file to specify conditional formatting.
+
+....
+
+answer:
+  name: <answer_name>
+  description:
+    This is a multi-line description of the answer
+    Description line 2
+  tables:
+  - id: <table_id>
+    name: <table_name_1>
+    fqn : <optional_GUID_of_table_name_1>
+  joins:
+  - name: <join_name_1>
+    source: <source_table_name>
+    destination: <destination_table_name>
+    type: [RIGHT_OUTER | LEFT_OUTER | INNER | OUTER]
+    on: <on_string>
+    is_one_to_one: [ false | true ]
+  - ...
+  table_paths:
+  - id: <table_path_name_1>
+    table: <table_name_1>
+    join_path:
+    - {}
+  formulas:
+  - id: <formula_id_1>
+    name: <formula_name_1>
+    expr: <formula_definition_1>
+    properties: <formula_properties_1>
+      column_type: [ MEASURE | ATTRIBUTE ]
+      data_type: [ BOOL | VARCHAR | DOUBLE | FLOAT | INT | BIGINT | DATE | DATETIME | TIMESTAMP | TIME ]
+      aggregation: [ SUM | COUNT | AVERAGE | MAX | MIN |
+                     COUNT_DISTINCT | NONE | STD_DEVIATION | VARIANCE]
+  - id: <formula_id_2>
+    name: <formula_name_2>
+    expr: <formula_definition_2>
+    properties: <formula_properties_2>
+  - id: <formula_id_3>
+    name: <formula_name_3>
+    expr: <formula_definition_3>
+    properties: <formula_properties_3>
+  search_query: <search_query_string>
+  answer_columns:
+  - id: <column_id_1>
+    name: <column_name_1>
+    custom_name: <custom_name_1>
+  - name: <column_name_2>
+  table:
+    table_columns:
+    - column_id: <column_id_1>
+      conditional_formatting:
+      - range:
+        min: <conditional_formatting_minimum>
+        max: <conditional_formatting_maximum>
+      - rule: <conditional_formatting_rule_1>
+          range:
+            min: <conditional_formatting_minimum>
+            max: <conditional_formatting_maximum>
+          color: <color_string>
+          plotAsBand: [ true | false ]
+      - rule: <conditional_formatting_rule_2>
+      show_headline: [ true | false ]
+      headline_aggregation: <headline_aggregation_string>
+    - column_id: <column_id_2>
+    ordered_column_ids:
+    - column_id: <column_id_1>
+    - column_id: <column_id_2>
+    client_state: <client_state_string>
+  chart:
+    type: <chart_type>
+    chart_columns: <chart_column_1>
+    - column_id: <column_id_1>
+      conditional_formatting:
+      - rule: <conditional_formatting_rule_1>
+          range:
+            min: <conditional_formatting_minimum>
+            max: <conditional_formatting_maximum>
+          color: <color_string>
+          plotAsBand: [ true | false ]
+      - rule: <conditional_formatting_rule_2>
+    - column_id: <column_id_2>
+    axis_configs: <axis_config_1>
+    - x:
+      - column_id: <column_id_x_axis>
+    - y:
+      - column_id: <column_id_y_axis>
+      color:
+      - column_id: <column_id_color>
+    axis_configs: <axis_config_2>
+    locked: [ true | false ]
+    client_state: <client_state_string>
+  display_mode: <display_mode_string>
+guid: <answer_guid>
+....

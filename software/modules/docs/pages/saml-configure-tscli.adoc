@@ -1,0 +1,46 @@
+= Configure SAML
+:last_updated: 01/03/2021
+:linkattrs:
+:experimental:
+
+You can configure Security Assertion Markup Language (SAML) using ThoughtSpot's command line interface, tscli.
+
+ThoughtSpot can use Security Assertion Markup Language (SAML) to authenticate users.
+You can set up SAML through the shell on the ThoughtSpot instance xref:tscli[using a `tscli` based configurator] or xref:admin-portal[through the Admin Console].
+
+[options="interactive"]
+.Before configuring SAML, you need this information:
+* [ ] 1. Domain name for ThoughtSpot service, such as `thoughtspot.ts-customer.com`
+* [ ] 2. Port of the server where your ThoughtSpot instance is running, such as `443`
+* [ ] 3. Protocol, or the authentication mechanism for ThoughtSpot: `http` or `https`
+* [ ] 4. Unique service name used as the unique key by IDP to identify the client, such as `urn:thoughtspot:callosum:saml`
+* [ ] 5. Allowed skew time, which is the time after authentication response is rejected and sent back from the IDP; `86400` is a popular choice.\
+* [ ] 6. The absolute path to identity provider's metadata file, typically called `idp-meta.xml` or similar.
++
+You must have this to persist the configuration over upgrades. We recommend that you set it up on persistent/HA storage (NAS volumes), or in the same absolute path on all nodes in the cluster.
++
+This configurator checks if the users internal authentication must be set.
++
+This internal mechanism authenticates `tsadmin` and other ThoughtSpot local users. Set it to `true` by default to let local system/admin users through the front end.
+
+[#tscli]
+== Configure SAML using tscli
+
+Use this procedure to set up SAML on ThoughtSpot for user authentication.
+Note that this configuration persists across software updates, so you do not have to reapply it if you update to a newer release of ThoughtSpot.
+
+. Log in to the Linux shell using SSH.
+. Execute the command to launch the interactive SAML configuration:
++
+----
+ tscli saml configure
+----
+
+. Complete the configurator prompts with the information you gathered above.
+. When the configuration is complete, open a Web browser and go to the ThoughtSpot login page.
+It should now show the Single Sign On option.
+
+[#admin-portal]
+== Configure SAML using the Admin Console
+
+include::partial$authentication-saml.adoc[]

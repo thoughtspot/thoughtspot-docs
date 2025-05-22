@@ -1,0 +1,115 @@
+= Migrate or restore Worksheets
+:last_updated: 7/7/2020
+:permalink: /:collection/:path.html
+:sidebar: mydoc_sidebar
+
+You can export an entire ThoughtSpot worksheet in a flat-file format. After optional modification, you can migrate it to a different cluster, or restore it to the same cluster.
+
+In ThoughtSpot, you can download Worksheets to a flat file in `TSL`, xref:yaml-worksheet.adoc[ThoughtSpot's Scripting Language], modify the file, and subsequently upload this file either to the same cluster, or to a different cluster.
+
+Note that starting in release 6.2, you can use this feature to export and import Worksheets with filters.
+
+This mechanism supports several scenarios that you may encounter:
+
+* *Migrating from a development environment to a production environment* by downloading the file from the development cluster and uploading the same file into the production cluster
+* *Implementing metadata changes outside ThoughtSpot UI*, such as replacing the underlying tables for the entire table, or replacing a single column from one table with a column in another table
+* *Making bulk changes*, such as mass renaming of objects defined by the worksheets, and managing duplicates
+* *Reusing existing objects to build new objects*, such as building two very similar objects based on a similar, pre-existing object.
+
+== Prerequisites
+
+|===
+| Export | Import
+
+| *Can view* permission on the Worksheet and all underlying tables.
+| When not overwriting an existing Worksheet, you must have the *can manage data* permission.
+If updating a previously existing Worksheet, you must have the *can manage data* permission and *can edit* permission for the Worksheet.
+|===
+
+[#worksheet-export]
+== Export Worksheet
+
+To export a worksheet, follow these steps:
+
+. Click *Data* on the top navigation bar.
+. Click the name of the worksheet you want to edit.
+. Click the ellipsis image:icon-ellipses.png[more options menu] (more options) menu in the upper-right side of the screen.
+. From the menu, select *Export Worksheet*.
++
+Here, we are downloading the _Sales_ worksheet.
++
+image::worksheet-export.png[Export Worksheet]
+
+. The worksheet downloads into your default directory.
++
+You can access the downloaded `*.tsl` file, named for your worksheet either through the file system manager, or by clicking on the name of the downloaded file in the left bottom corner of your Internet browser.
++
+image::worksheet-export-complete.png[Open downloaded worksheet file]
+
+[#worksheet-change]
+== Working with the Worksheet TSL file
+
+You can change the TSL file that represents the Worksheet by editing its content.
+See xref:yaml-worksheet.adoc[TSL Worksheet specification] for the full syntax of the TSL file.
+
+[#worksheet-update]
+== Update a Worksheet
+
+To update an existing worksheet, follow these steps:
+
+. Click *Data* on the top navigation bar.
+. Click the name of the worksheet you want to edit.
+. Click the More image:icon-ellipses.png[more options menu] menu in the upper-right side of the screen.
+. From the menu, select *Update Worksheet from file*.
++
+Here, we are uploading the edited _Sales_ worksheet.
++
+image::worksheet-update-from-file.png[Start Worksheet update from file]
+
+. In the upload interface, click *Browse your files*.
++
+image::worksheet-update-browse.png[Find the Worksheet TSL file]
+
+. In your file system, find and select the TSL file.
+. In the *Update worksheet* interface, click *Upload*.
++
+image::worksheet-update-upload.png[Upload the Worksheet]
+
+. If you constructed the Worksheet file correctly, the *Upload Worksheet* interface displays an _Upload successful_ message.
+. To examine the updated Worksheet, click *Go to Worksheet*.
++
+image::worksheet-update-success.png[Go to updated Worksheet]
+
+[#worksheet-migrate]
+== Migrate a Worksheet
+
+To migrate a Worksheet from one cluster to another, follow these steps:
+
+. <<worksheet-export,Export the Worksheet>> you want to move, as in steps 1 to 5 of the *Export Worksheet* section above.
++
+The Worksheet remains on the original cluster as well, unless you delete it.
+
+. Navigate to the cluster you want to add the worksheet to.
+. Click *Data* on the top navigation bar.
+. Click the More image:icon-ellipses.png[more options menu] menu in the upper-right side of the screen.
+. Select *Create worksheet from file*.
++
+image::worksheet-create-from-file.png[Create worksheet from file]
+
+. In the *Create Worksheet* interface, click *Browse your files.*
++
+image::worksheet-create-browse-files.png[Browse your files]
+
+. In your file system, find and select the TSL file.
+. Click *Upload*.
++
+image::worksheet-create-upload.png[Upload the Worksheet]
+
+. If you constructed the Worksheet file correctly, the *Create Worksheet* interface displays an _Upload successful_ message.
+. To examine the new Worksheet, click *Go to Worksheet*.
++
+image::worksheet-create-go-to-worksheet.png[Go to new Worksheet]
+
+== Related Information
+
+* xref:yaml-worksheet.adoc[Worksheet TSL specification]
