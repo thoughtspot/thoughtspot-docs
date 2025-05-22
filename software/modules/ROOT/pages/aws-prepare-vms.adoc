@@ -1,36 +1,32 @@
 = Prepare AWS VMs for ThoughtSpot
-:last_updated: 12/17/2019
+:last_updated: 12/31/2020
 :linkattrs:
+:experimental:
 
 Prepare the VMs before installing your ThoughtSpot cluster(s).
 
 . SSH into a VM.
 +
-[source,console]
+[source,bash]
 ----
 $ ssh -i key.pem admin@<VM-IP>
 ----
 
-. To configure the VMs, run:
-+
-[source,console]
-----
-$ sudo /usr/local/scaligent/bin/prepare_disks.sh
-----
+. Run `sudo /usr/local/scaligent/bin/prepare_disks.sh` to configure the VMs.
 +
 WARNING: Make sure you migrate any data off the disks.
 This command formats the disks, wiping them clean.
 +
-[source,console]
+[source,bash]
 ----
- $ sudo /usr/local/scaligent/bin/prepare_disks.sh
+$ sudo /usr/local/scaligent/bin/prepare_disks.sh
 ----
 
 . Configure the VM based on your specific network information.
 Refer to your site-survey or ask your network administrator for that information.
-. To confirm configuration, run:
+. Run `df -h` to confirm configuration.
 +
-[source,console]
+[source,bash]
 ----
 $ df -h
 ----
@@ -39,25 +35,26 @@ $ df -h
 +
 When complete, your storage is mounted and ready for use with your cluster.
 
-When the setup is complete, you can load data into ThoughtSpot for search analytics.
+When the setup completes, you can load data into ThoughtSpot for search analytics.
 
 [#network-ports]
 == Open the required network ports
 
 If you have not already opened the required network ports, see xref:ports.adoc[Network ports] to determine which ports to open.
 
+[#install-cluster]
 == Install Cluster
 
 Next, you must configure your nodes and install your cluster.
-Follow the steps in xref:installing-aws.adoc[Installing AWS].
+Follow the steps in xref:aws-installing.adoc[Installing AWS].
 
 '''
 > **Related information**
 >
-> * link:http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-best-practices.adoc[EC2 Best Practices,window=_blank]
-> * xref:use-data-importer.adoc#loading-data-from-an-aws-s3-bucket[Loading data from an AWS S3 bucket]
-> * xref:launch-an-instance-aws.adoc[Set up AWS resources for ThoughtSpot]
-> * xref:installing-aws.adoc[Configure ThoughtSpot nodes in AWS]
+> * http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-best-practices.html[EC2 Best Practices^]
+> * xref:tsload-import-csv.adoc#loading-data-from-an-aws-s3-bucket[Loading data from an AWS S3 bucket]
+> * xref:aws-launch-instance.adoc[Set up AWS resources for ThoughtSpot]
+> * xref:aws-installing.adoc[Configure ThoughtSpot nodes in AWS]
 > * xref:aws-cluster-install.adoc[Install ThoughtSpot clusters in AWS]
 > * xref:ha-aws-efs.adoc[Set up high availability]
 > * xref:aws-backup-restore.adoc[Back up and Restore using S3]

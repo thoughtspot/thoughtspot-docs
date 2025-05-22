@@ -1,5 +1,7 @@
 = Metadata API
-:last_updated: 11/18/2019
+:last_updated: 02/11/2021
+:linkattrs:
+:experimental:
 
 The Metadata APIs allow you to fetch metadata for ThoughtSpot objects.
 
@@ -13,24 +15,28 @@ The expected output includes a list of objects, each with information about the 
 
 === Resource URL
 
-`get` /tspublic/v1/metadata/listvizheaders
+[source]
+----
+get /tspublic/v1/metadata/listvizheaders
+----
 
 === Request Parameters
-[width="100%",options="header",cols="20%,15%,75%"]
-|====================
-| Query Parameter | Data Type | Description
-| id | string | ID of a particular answer or a pinboard.
-|====================
+
+`id`::
+  ID of a particular answer or a pinboard.
+  Data type;; string
 
 === Request Example
 
 .cURL
+
 [source]
 ----
 curl -X GET --header 'Accept: application/json' --header 'X-Requested-By: ThoughtSpot' 'https://<instance>/callosum/v1/tspublic/v1/metadata/listvizheaders?id=97begg839e-71b6-42ad-a980-20c38b4d6db5'
 ----
 
 .Request URL
+
 [source]
 ----
 https://<instance>/callosum/v1/tspublic/v1/metadata/listvizheaders?id=97be839e-71b6-42ggad-a980-20c38b4d6db5
@@ -38,6 +44,7 @@ https://<instance>/callosum/v1/tspublic/v1/metadata/listvizheaders?id=97be839e-7
 
 === Response Example
 
+[source]
 ----
 [
   {
@@ -76,66 +83,89 @@ Use this API to fetch a comprehensive list of metadata headers of a specific obj
 
 === Resource URL
 
+[source]
+----
 `get` /tspublic/v1/metadata/listobjectheaders
+----
 
 === Request Parameters
-[width="100%",options="header",cols="20%,20%,60%a"]
-|====================
-| Query Parameter | Data Type | Description
-| `type` | string a| Specifies the metadata object type. Valid values are:
 
-* QUESTION_ANSWER_BOOK
-* PINBOARD_ANSWER_BOOK
-* QUESTION_ANSWER_SHEET
-* PINBOARD_ANSWER_SHEET
-* LOGICAL_COLUMN
-* LOGICAL_TABLE
-* LOGICAL_RELATIONSHIP
-* TAG
-* DATA_SOURCE
-| `subtypes` | string | Specifies the sub-types of metadata object. Valid values are:
+`type`::
+  Specifies the metadata object type.
+  Data type;; string
+  Valid values;; `QUESTION_ANSWER_BOOK`, `PINBOARD_ANSWER_BOOK`, `QUESTION_ANSWER_SHEET`, `PINBOARD_ANSWER_SHEET`, `LOGICAL_COLUMN`, `LOGICAL_TABLE`, `LOGICAL_RELATIONSHIP`, `TAG`, `DATA_SOURCE`
 
-* ONE_TO_ONE_LOGICAL
-* WORKSHEET
-* PRIVATE_WORKSHEET
-* USER_DEFINED
-* AGGR_WORKSHEET
-| `category` | string | Specifies the metadata object category. Valid values are:
+`subtypes`::
+  Specifies the sub-types of metadata object.
++
+NOTE: This parameter only applies to the `LOGICAL_TABLE` type.
 
-* ALL
-* MY
-* FAVORITE
-* REQUESTED
-| `sort` | string | Sort order of returned headers. Valid values are:
++
+Data type;; string
+Valid values;; `ONE_TO_ONE_LOGICAL`, `WORKSHEET`, `PRIVATE_WORKSHEET`, `USER_DEFINED`, `AGGR_WORKSHEET`
 
-* DEFAULT
-* NAME
-* DISPLAY_NAME
-* AUTHOR
-* CREATED
-* MODIFIED
-| `sortascending` | boolean | A flag to specify the sort order. A null value defines the default order.
+`category`::
+  Specifies the metadata object category.
+  Data type;; string
+  Valid values;; `ALL`, `MY`, `FAVORITE`, `REQUESTED`
 
-* Choose true to set ascending order
-* Choose false to set descending order
-| `offset` | integer | The batch offset to fetch the page headers. The system default is -1 that implies first page.
-| `batchsize` | integer | The batch size of the object. A value of -1 implies no pagination.
-| `tagname` | string | A JSON array containing a set of tag names to filter headers by.
-| `pattern` | string | A pattern to match for object name. Use % for wildcard match.
-| `skipids` | string | IDs of metadata objects to fetch.
-| `fetchids` | string | IDs of metadata objects to fetch.
-| `auto_created` | boolean | A flag that indicates whether to list auto-created objects only. A value of null signifies return all.
-|====================
+`sort`::
+  Sort order of returned headers.
+  Data type;; string
+  Valid values;; `DEFAULT`, `NAME`, `DISPLAY_NAME`, `AUTHOR`, `CREATED`, `MODIFIED`
+
+`sortascending`::
+  A flag to specify the sort order.
+  Data type;; boolean
+  Valid values;;
+    A `null` value defines the default order.
+    * Choose `true` to set ascending order
+    * Choose `false` to set descending order
+
+`offset`::
+  The batch offset to fetch the page headers.
+  Data type;; integer
+  Valid values;;
+    The system default is `-1` that implies first page.
+
+`batchsize`::
+  The batch size of the object.
+  Data type;; integer
+  Valid values;;
+    A value of `-1` implies no pagination.
+
+`tagname`::
+  A JSON array containing a set of tag names to filter headers by.
+  Data type;; string
+
+`pattern`::
+  A pattern to match for object name.
+  Data type;; string
+  Valid values;; Use `%` for a wildcard match.
+
+`skipids`::
+  IDs of metadata objects to exclude.
+  Data type;; string
+
+`fetchids`::
+  IDs of metadata objects to fetch.
+    Data type;; string
+
+`auto_created`::
+  A flag that indicates whether to list auto-created objects only. A value of null signifies return all.
+  Data type;; boolean
 
 === Request Example
 
 .cURL
+
 [source]
 ----
 curl -X GET --header 'Accept: application/json' --header 'X-Requested-By: ThoughtSpot' 'https://<instance>/callosum/v1/tspublic/v1/metadata/listobjectheaders?type=PINBOARD_ANSWER_BOOK&subtypes=WORKSHEET&category=ALL&sort=CREATED&offset=-1'
 ----
 
 .Request URL
+
 [source]
 ----
 https://<instance>/callosum/v1/tspublic/v1/metadata/listobjectheaders?type=PINBOARD_ANSWER_BOOK&subtypes=WORKSHEET&category=ALL&sort=CREATED&offset=-1
@@ -143,6 +173,7 @@ https://<instance>/callosum/v1/tspublic/v1/metadata/listobjectheaders?type=PINBO
 
 === Response Example
 
+[source]
 ----
 [
   {
@@ -181,24 +212,3 @@ https://<instance>/callosum/v1/tspublic/v1/metadata/listobjectheaders?type=PINBO
   }
 ]
 ----
-
-////
-## Error Codes
-<table>
-   <colgroup>
-      <col style="width:20%" />
-      <col style="width:60%" />
-      <col style="width:20%" />
-   </colgroup>
-   <thead class="thead" style="text-align:left;">
-      <tr>
-         <th>Error Code</th>
-         <th>Description</th>
-         <th>HTTP Code</th>
-      </tr>
-   </thead>
-   <tbody>
-    <tr> <td><code>10002</code></td>  <td>Bad request. Invalid parameter values i.e., wrong pinboard ID.</td> <td><code>400</code></td></tr>
-  </tbody>
-</table>
-////

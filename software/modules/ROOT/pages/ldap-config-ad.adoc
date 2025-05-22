@@ -1,34 +1,29 @@
 = Configure authentication through Active Directory
-:last_updated: 10/10/2019
+:last_updated: 10/30/2020
+:linkattrs:
+:experimental:
+:page-aliases: /admin/setup.LDAP-config-AD.adoc
 
 ThoughtSpot enables you to set up integration with LDAP using Active Directory. After successful setup, you can authenticate users against a secure LDAP server.
+
+NOTE: This article describes how to set up integration with LDAP using Active Directory.
+On ThoughtSpot version 6.3 and later, and on release 6.0.5, ThoughtSpot also integrates with OpenLDAP for user authentication.
+LDAP provides security and makes user management more centralized.
+To enable user authentication through OpenLDAP, xref:support-contact.adoc[contact ThoughtSpot Support].
 
 [#prerequisites]
 == Configuration prerequisites
 
 You can configure LDAP <<configure-ldap-tscli,using tscli>> or <<admin-portal,through the Admin Console>>.
+
 Before you configure ThoughtSpot for Active Directory, collect the following information:
 
-[cols="5%,95%"]
-|===
-| &#10063;
-| <<url,URL>>
-
-| &#10063;
-| <<domain-name,Domain name>>
-
-| &#10063;
-| <<search-base,Search base>>
-
-| &#10063;
-| <<ssl,SSL>>
-
-| &#10063;
-| <<auto-add,Automatically add LDAP or AD users in ThoughtSpot?>>
-
-| &#10063;
-| <<ts-auth,Also use ThoughtSpot internal authentication?>>
-|===
+* [ ] xref:url[1. URL]
+* [ ] xref:domain-name[2. Domain name]
+* [ ] xref:search-base[3. Search base]
+* [ ] xref:ssl[4. SSL]
+* [ ] xref:auto-add[5. Automatically add LDAP or AD users in ThoughtSpot]
+* [ ] xref:ts-auth[6. Use ThoughtSpot internal authentication]
 
 [#url]
 === URL
@@ -47,7 +42,7 @@ Authentication against multiple domains is not supported.
 
 Users who don't belong to the default domain must explicitly qualify their username when they log in.
 
-For example: `username@ad.yourdomain.local`
+For example: `username@ad.yourdomain.local`.
 
 [#search-base]
 === Search base
@@ -93,14 +88,15 @@ To configure AD based authentication, follow these steps:
 . Log in to the Linux shell using SSH.
 . Run the command to configure AD authentication:
 +
-[source,console]
+[source]
 ----
-$ tscli ldap configure
+ $ tscli ldap configure
 ----
 
 . Answer the prompts using the information you collected under *Before you begin* section.
 For example:
 +
+[source]
 ----
  Choose the LDAP protocol:
  [1] Active Directory
@@ -114,12 +110,12 @@ For example:
  Also use ThoughtSpot internal authentication (y/n): y
 ----
 
-. If you are using SSL, xref:add-SSL-for-LDAP.adoc[add the SSL certificate for AD].
+. If you are using SSL, xref:ldap-ssl.adoc[add the SSL certificate for AD].
 . If you want to remove the AD configuration, issue the following command:
 +
-[source,console]
+[source]
 ----
-$ tscli ldap purge-configuration
+ $ tscli ldap purge-configuration
 ----
 
 [#admin-portal]

@@ -2,13 +2,15 @@
 +
 For more information on this process, refer to xref:cluster-create.adoc[Using the tscli cluster create command] and xref:parameters-cluster-create.adoc[Parameters of the `cluster create` command].
 
-The cluster installer automatically reboots all the nodes after a successful install.
+. The cluster installer automatically reboots all the nodes after a successful install.
 The `firewalld` service automatically turns on.
-At this time, the system is rebooting, which may take approximately 15 minutes. +
+At this time, the system is rebooting, which may take approximately 15 minutes.
++
 Log in to any node to check the current cluster status:
-
++
+[source,bash]
 ----
-    $ tscli cluster status
+$ tscli cluster status
 ----
 
 [#cluster-step-2]
@@ -16,9 +18,9 @@ Log in to any node to check the current cluster status:
 
 After the cluster installs, check its status using the `tscli cluster status` command.
 
-Your output may look similar to the following:
+Your output may look similar to the following listing:
 
-[source,console]
+[source,bash]
 ----
 $ tscli cluster status
 Cluster: RUNNING
@@ -49,6 +51,11 @@ Number of tables in WILL_NOT_INDEX state: 0
 
 Ensure that the cluster is `RUNNING` and that the Database and Search Engine are `READY`.
 
+Your output may look something like the following listing.
+Ensure that all diagnostics show `SUCCESS`.
+
+[source,bash]
+----
  $ tscli cluster check
  Connecting to hosts...
  [Wed Jan  8 23:15:47 2020] START Diagnosing ssh
@@ -104,11 +111,9 @@ Ensure that the cluster is `RUNNING` and that the Database and Search Engine are
    InsecureRequestWarning)
  [Wed Jan  8 23:16:12 2020] SUCCESS
  ################################################################################
+----
 
-Your output may look something like the above.
-Ensure that all diagnostics show `SUCCESS`.
-
-WARNING: If `tscli cluster check` returns an error, it may suggest you run `tscli storage gc` to resolve the issue.
+CAUTION: If `tscli cluster check` returns an error, it may suggest you run `tscli storage gc` to resolve the issue.
 If you run `tscli storage gc`, note that it restarts your cluster.
 
 [#cluster-step-3]
@@ -120,16 +125,19 @@ Follow these steps:
 . Start a browser from your computer.
 . Enter your secure IP information on the address line.
 +
+[source,bash]
 ----
- https://<IP-address>
+https://<IP-address>
 ----
 
 . If you don't have a security certificate for ThoughtSpot, you must bypass the security warning:
- ** Click *Advanced*
- ** Click *Proceed*
++
+Click *Advanced*.
++
+Click *Proceed*.
 . The ThoughtSpot sign-in page appears.
-. In the <<ts-login,ThoughtSpot sign-in window>>, enter admin credentials, and click *Sign in*.
+. In the xref:ts-login[ThoughtSpot sign-in window], enter admin credentials, and click *Sign in*.
++
 ThoughtSpot recommends changing the default admin password.
 +
 image:ts-login-page.png[ThoughtSpot's sign-in window]
-// {% include image.html file="ts-login-page.png" title="ThoughtSpot's sign-in window" alt="Sign in to ThoughtSpot. Enter Username, Password, and click Sign in. You may select the Remember me option." caption="ThoughtSpot's sign-in window" %}

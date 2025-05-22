@@ -1,19 +1,21 @@
 = Set up high availability for AWS
-:last_updated: 12/10/2019
+:last_updated: 02/02/2021
 :linkattrs:
+:experimental:
 
 This article explains how to set up High Availability (HA) for your ThoughtSpot cluster using the AWS Elastic File System (EFS).
 
 [#configure-ha]
-== Configure high availabiity
+== Configure high availability
 
 Follow these steps to set up High Availability (HA) for your ThoughtSpot cluster using the AWS Elastic File System (EFS).
 
 . Create an EFS File System that spans across different availability zones, and across different subnets.
-Refer to AWS documentation on https://docs.aws.amazon.com/efs/latest/ug/getting-started.adoc?shortFooter=true[creating an EFS File System,window=_blank].
++
+Refer to AWS documentation on https://docs.aws.amazon.com/efs/latest/ug/getting-started.html?shortFooter=true[creating an EFS File System^].
 . Create two ThoughtSpot clusters in each availability zone and in the subnets, where the new file system is.
 . Change the IP addresses of the cluster, if necessary.
-. Create an EFS +++<customizable_name>+++directory in the `/home/admin` path.+++</customizable_name>+++
+. Create an EFS `<customizable_name>` directory in the `/home/admin` path.
 . Issue the following command to mount the new file system.
 +
 Modify the fields as necessary for your installation.
@@ -50,12 +52,13 @@ tscli backup create --mode full --type full
 +
 [source]
 ----
-tscli backup ls
+  tscli backup ls
 ----
 
 . Take down the first cluster instances.
 . On the second cluster, delete the existing cluster.
 . Create a new cluster by restoring from the first cluster backup.
++
 This is accessible from the EFS mount point.
 +
 [source]
@@ -75,8 +78,8 @@ NOTE: At this time, ThoughtSpot does not support AWS Auto Scaling or deployment 
 '''
 > **Related information**
 >
-> * xref:launch-an-instance-aws.adoc[Set up AWS resources for ThoughtSpot]
+> * xref:aws-launch-instance.adoc[Set up AWS resources for ThoughtSpot]
 > * xref:aws-prepare-vms.adoc[Prepare AWS VMs for ThoughtSpot]
-> * xref:installing-aws.adoc[Configure ThoughtSpot nodes in AWS]
+> * xref:aws-installing.adoc[Configure ThoughtSpot nodes in AWS]
 > * xref:aws-cluster-install.adoc[Install ThoughtSpot clusters in AWS]
 > * xref:aws-backup-restore.adoc[Back up and Restore using S3]

@@ -1,7 +1,9 @@
 = User API
-:last_updated: 05/04/2020
+:last_updated: 02/16/2021
+:linkattrs:
+:experimental:
 
-The User APIs enable you to manage user and group-related operations in the ThoughtSpot system.
+The User APIs enable you to manage user- and group-related operations in the ThoughtSpot system.
 
 You can use the User APIs to manage your users and groups in ThoughtSpot.
 For example, you may want to view all users and groups in your ThoughtSpot cluster.
@@ -17,33 +19,35 @@ NOTE: You cannot transfer objects to or from the system user or the administrati
 `post` /tspublic/v1/user/transfer/ownership
 
 === Request Parameters
-[width="100%",options="header",cols="20%,15%,65%"]
-|====================
-| Query Parameter | Data Type | Description
-| `fromUserName` | string | Username to transfer from.
-| `toUserName` | string | Username to transfer to.
-|====================
 
-=== Request Example
+`fromUserName`::
+  Username to transfer from.
+  Data type;; string
 
-.cURL
-[source]
+`toUserName`::
+  Username to transfer to.
+  Data type;; string
+
+=== Request Examples
+
+* cURL
++
+[source,console]
 ----
 curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' --header 'X-Requested-By: ThoughtSpot' 'https://<instance>/callosum/v1/tspublic/v1/user/transfer/ownership?fromUserName=guest&toUserName=guest1'
 ----
 
-.Request URL
-[source]
+* Request URL
++
+[source,console]
 ----
 https://<instance>/callosum/v1/tspublic/v1/user/transfer/ownership?fromUserName=guest&toUserName=guest1
 ----
 
 === Response Example
 
-----
-Not applicable
-204 - Successful login
-----
+[source,console]
+include::partial$status-codes/204-success-login.adoc[]
 
 == Synchronize principals
 
@@ -57,47 +61,48 @@ This includes group membership.
 * Objects not present in ThoughtSpot, and present in the external list - will be created in ThoughtSpot.
 
 === Resource URL
-[source]
-----
+
+[source,console]
 `post` /tspublic/v1/user/sync
-----
+
 === Request Parameters
 
 This API uses `multipart/form-data` content type.
-[width="100%",options="header",cols="20%,15%,65%"]
-|===
-| Form Parameter | Data Type | Description
 
-| `principals`
-| string
-| Specifies a list of principal objects.
+`principals`::
+  Specifies a list of principal objects.
++
 This is ideally a JSON file containing containing all users and groups present in the external database.
+  Data type;; string
 
-| `applyChanges`
-| boolean
-| A flag indicating whether to sync the users and groups to the system, and apply the difference evaluated.
+`applyChanges`::
+  A flag indicating whether to sync the users and groups to the system, and apply the difference evaluated.
++
 Use this parameter to validate a difference before applying changes.
+  Data type;; boolean
 
-| `removeDeleted`
-| boolean
-| A flag indicating whether to remove deleted users/groups.
+`removeDeleted`::
+  A flag indicating whether to remove deleted users/groups.
++
 When true, this flag removes any deleted users or groups.
+  Data type;; boolean
 
-| `password`
-| string
-| Specifies a password.
-|===
+`password`::
+  Specifies a password.
+Data type;; string
 
 === Request Example
 
-.cURL
-[source]
+* cURL
++
+[source,console]
 ----
 curl -X POST --header 'Content-Type: application/x-www-form-urlencoded' --header 'Accept: application/json' -d 'applyChanges=false' 'https://<instance>/callosum/v1/tspublic/v1/user/sync'
 ----
 
-.Request URL
-[source]
+* Request URL
++
+[source,console]
 ----
 https://<instance>/callosum/v1/tspublic/v1/user/sync
 ----
@@ -114,8 +119,9 @@ Here, `test1` user belongs to two groups - `Customer Success` and `Marketing`.
 `All` is a default group to which every user belongs;
 you may omit it from the input.
 
-Set `visibility` to `NON_SHARABLE` if you do not want users to be able to xref:add-user.adoc#sharing-visibility[share objects] with users in this group.
+Set `visibility` to `NON_SHARABLE` if you do not want users to be able to xref:user-management.adoc#sharing-visibility[share objects] with users in this group.
 
+[source,json]
 ----
 [
   { "name": "Customer Success",
@@ -170,88 +176,105 @@ Set `visibility` to `NON_SHARABLE` if you do not want users to be able to xref:a
 Use this API to change the password of a user.
 
 === Resource URL
-[source]
+
+[source,console]
 ----
 `post` /tspublic/v1/user/updatepassword
 ----
+
 === Request Parameters
-[width="100%",options="header",cols="20%,15%,65%"]
-|====================
-| Form Parameter | Data Type | Description
-| `name` | string | The current password of the user.
-| `currentpassword` | string | Username to transfer to.
-| `password` | string | A new password of the user.
-|====================
+
+`name`::
+  Name of the user.
+  Data type;; string
+
+`currentpassword`::
+  The current password of the user.
+  Data type;; string
+
+`password`::
+  A new password of the user.
+  Data type;; string
 
 === Request Example
 
-.cURL
-[source]
+* cURL
+[source,console]
 ----
 curl -X POST --header 'Content-Type: application/x-www-form-urlencoded' --header 'Accept: application/json' --header 'X-Requested-By: ThoughtSpot' -d 'name=guest&currentpassword=test&password=foobarfoobar' 'https://<instance>/callosum/v1/tspublic/v1/user/updatepassword'
 ----
 
-.Request URL
-[source]
+* Request URL
+[source,console]
 ----
 https://<instance>/callosum/v1/tspublic/v1/user/updatepassword
 ----
 
 === Response Example
 
-----
-Not applicable
-204 - Successful password update
-----
+include::partial$status-codes/204-password-update.adoc[]
 
 == Fetch users and groups
 
 Use this API to get a list of all users, groups, and their inter-dependencies in the form of principal objects.
+
 A typical principal object contains the following properties:
-[width="100%",options="header",cols="25%,75%"]
-|====================
-| Property | Description
-| `name` | Name of the principal.
 
-This field, in conjunction with whether the object is a user or group, is used to identify a user/group. Consequently, this field is required to be unique (unique for users and groups separately. i.e., you can have user “x” and group “x”).
-| `displayName` | Display name of the principal.
-| `description` | Description of the principal.
-| `mail` |
-| `principalTypeEnum` a| Type of the user created in the ThoughtSpot system.
+`name`::
+  Name of the principal. This field, in conjunction with the object that is either a `user` or a `group`, must be unique, separately for users and for groups. You can have both a user `xyz` and a group `xyz`.
 
-* LOCAL_USER (a user is validated through password saved in the ThoughtSpot database)
-* LOCAL_GROUP
-| `password` a| Password of the user. This field should be populated in case of user only. It is ignored in the case of groups. Password is only required:
+ `displayName`::
+   Display name of the principal.
 
-* if the user is of LOCAL_USER type
-* when the user is created for the first time.
+`description`::
+  Description of the principal.
 
-In subsequent update, the user password is not updated even if it changes in the source system.
-|`groupNames` | Group names that a principal belongs to. Groups and users can belong to other groups.
-|====================
+`mail`::
+  Email address of the user. This field is for `user` principals only. The system ignores it for  `groups`.
+
+`principalTypeEnum`::
+  Type of the user created in the ThoughtSpot system.
++
+* `LOCAL_USER` is a user who is validated through a password saved in the ThoughtSpot database)
+* `LOCAL_GROUP` is a group saved in the ThoughtSpot database
+
+`password`::
+  Password of the user. This field is only valid for user principals only. The system ignores it for group principals.
++
+The password is necessary in following circumstances:
++
+* if the user is a `LOCAL_USER`
+* at the time the user is created in the system
+
+`groupNames`::
+  Group names to which the principal belongs. Both users and groups can belong to other groups.
 
 === Resource URL
-[source]
+
+[source,console]
 ----
-`get` /tspublic/v1/user/list
+`get /tspublic/v1/user/list
 ----
 
 === Request Example
 
-.cURL
-[source]
+* cURL
++
+[source,console]
 ----
 curl -X GET --header 'Accept: application/json' 'https://<instance>/callosum/v1/tspublic/v1/user/list'
 ----
 
-.Request URL
-[source]
+* Request URL
++
+[source,console]
 ----
 https://<instance>/callosum/v1/tspublic/v1/user/list
 ----
 
 === Response Example
 
+[source,json]
 ----
 [
   {
@@ -279,31 +302,8 @@ https://<instance>/callosum/v1/tspublic/v1/user/list
     "created": 1459376495060,
     "modified": 1459376590681,
     "principalTypeEnum": "LOCAL_GROUP",
-    "groupNames": ["rls-group-5"],
+    "groupNames": rls-group-5,
     "visibility": "DEFAULT"
   }
   ]
 ----
-
-////
-## Error Codes
-<table>
-   <colgroup>
-      <col style="width:20%" />
-      <col style="width:60%" />
-      <col style="width:20%" />
-   </colgroup>
-   <thead class="thead" style="text-align:left;">
-      <tr>
-         <th>Error Code</th>
-         <th>Description</th>
-         <th>HTTP Code</th>
-      </tr>
-   </thead>
-   <tbody>
-   <tr> <td><code>10000</code></td>  <td>Internal server error.</td> <td><code>500</code></td></tr>
-    <tr> <td><code>10002</code></td>  <td>Bad request. No user found with the given username.</td> <td><code>400</code></td></tr>
-    <tr> <td><code>10003</code></td>  <td>Unable to authenticate user</td><td><code>403</code></td></tr>
-  </tbody>
-</table>
-////
