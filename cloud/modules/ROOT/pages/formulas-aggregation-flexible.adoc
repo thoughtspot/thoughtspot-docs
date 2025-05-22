@@ -1,5 +1,5 @@
 = Flexible aggregation functions
-:last_updated: 01/23/2023
+:last_updated: 04/12/2023
 :linkattrs:
 :experimental:
 :page-layout: default-cloud
@@ -39,10 +39,10 @@ ThoughtSpot provides flexible aggregation with the `group_*` functions.
 You can use `group_*` formulas when you want to specify columns and filters to include or ignore in your query.
 
 The `group_*` formulas use a sub-query to perform these custom aggregations.
-If the sub-query is at a less detailed level than the original query, ThoughtSpot adds the result column to the result of original query.
-When the sub-query is at a finer detail level than the original query, ThoughtSpot re-aggregates the formula's results to match the groupings of the original query.
+If the sub-query is at a different level of detail than the original query, ThoughtSpot adds the result column to the result of the original query.
+// When the sub-query is at a finer detail level than the original query, ThoughtSpot re-aggregates the formula's results to match the groupings of the original query.
 
-To ensure that the level of aggregation of the sub-query is returned the sub-query grouping columns must be included in the search query and/or visualized chart columns.
+//To ensure that the level of aggregation of the sub-query is returned the sub-query grouping columns must be included in the search query and/or visualized chart columns.
 
 To use the groups and filters, specify them using the `query_groups` and `query_filters` keywords, respectively.
 You can also add or exclude groups or filters.
@@ -68,9 +68,10 @@ group_aggregate(sum(revenue), query_groups() - {commit date} + {year(commit date
 This is helpful to include the main query groups that are not known at formula creation time.
 You can use `+/-` to modify the set of groups included from the query.
 
+////
 == Finer-grained group formula results
 
-The flexibility of groupings for group formulas enables you to create a formula that generates a computed column that is finer or coarser than the search itself. Note that ThoughtSpot by default aggregates formula results to the level of detail defined in the search bar. To increase the level of detail in your results, you must add filters to your search as well as defining them in your formula.
+The flexibility of groupings for group formulas enables you to create a formula that generates a computed column that is finer or coarser than the search itself. Note that ThoughtSpot by default respects the level of detail defined in the formula results.
 
 For example, you can have a search that shows *total yearly sales* and a formula that computes total sales _for each month_ (a finer-grained calculation than the search).
 
@@ -85,7 +86,6 @@ For example, in this search we've added the keyword *min* just before our formul
 +
 where, the `monthly_sales` formula is written as:
 +
-[source]
 ----
    group_aggregate(sum(revenue), {start_of_month(date)}, {})
 ----
@@ -96,7 +96,6 @@ where, the `monthly_sales` formula is written as:
 +
 where, the `min_monthly_sales` formula is written as:
 +
-[source]
 ----
 min(monthly_sales)
 ----
@@ -122,16 +121,17 @@ An example of this is this search:
 
 where the formula `monthly_sales` is written as:
 
-[source]
 ----
 group_aggregate(sum(revenue), query_groups() + {start_of_month(date)}, {})
 ----
 
 For more extensive examples of using the `group-aggregate` function, we encourage you to see xref:reaggregation-scenarios.adoc[Reaggregation scenarios in practice].
+////
 
 [#reaggregation-enhancement]
 .Reaggregation enhancement [.badge.badge-beta]#Beta#
 ****
+
 To reduce confusion when using aggregate formulas, the level of detail defined in group formulas is now respected at query level.
 
 For example, when trying to calculate the contribution of each store’s sales to the entire region, you might use a group_sum or group_aggregate formula, where the sales at store level is divided by the sales at regional level.
@@ -144,10 +144,9 @@ According to the old reaggregation behavior, if a customer removed `Customer reg
 Under the new aggregation behavior, the formula result will continue to display revenue as a percentage of each region, even if you remove `Customer region` from the search bar. Visualizations will also display the correct aggregation even if the grouping column is not added to the X-axis.
 
 For more information, see our video on the new reaggregation behavior:
+
 +++<script src="https://fast.wistia.com/embed/medias/ydxcgzmnlv.jsonp" async></script><script src="https://fast.wistia.com/assets/external/E-v1.js" async></script><div class="wistia_responsive_padding" style="padding:50% 0 0 0;position:relative;"><div class="wistia_responsive_wrapper" style="height:100%;left:0;position:absolute;top:0;width:100%;"><span class="wistia_embed wistia_async_ydxcgzmnlv popover=true popoverAnimateThumbnail=true popoverBorderColor=4E55FD popoverBorderWidth=2 videoFoam=true" style="display:inline-block;height:100%;position:relative;width:100%">&nbsp;</span></div></div>+++
 ****
-
-
 
 == Groups and filters
 
@@ -163,7 +162,6 @@ Filter condition: `Ship Mode='car'`
 
 For a search on `Category Customer ID sales by customer id and category Ship Mode='car’`, you can add a formula to calculate sales by category for each customer as:
 
-[source]
 ----
 sales by Customer ID and Category= group_aggregate (sum(Sales), {Category, Customer ID }, query_filters()+{Ship Mode='air'})
 ----
@@ -176,7 +174,6 @@ Filter condition: `Ship Mode='car'`
 
 For a search on `Customer ID sales by customer id and category Ship Mode='car'`, you can add a formula to calculate sales for each customer while ignoring the filter on a column as:
 
-[source]
 ----
 sales by Customer ID and Category= group_aggregate (sum(Sales), {Customer ID, Category }, query_filters()-{Ship Mode})
 ----
@@ -191,9 +188,9 @@ Beginning in the 9.0.0.cl release, you can specify a column in the third argumen
 
 For example, say that you would like to determine how many stores a certain product was sold in during a given time period, expressed as a ratio of total available stores. In order to calculate the total available stores you require a group_aggregate function that will accept the filters associated with transaction date (for example, this year, last six months, august), and ignore filters from other fields.
 
-Before 9.0.0.cl, this formula would look like: `group_aggregate(count(storid),query_groups(),query_filters()-{field1,field2,fieldN})`, where users would have to use `query_filters() - {}` to manually remove every field in the search bar that did not relate to transaction date. When adding a new unrelated filter to the search bar, users would then have to edit all existing formulas to ignore the filter.
+Before 9.0.0.cl, this formula would look like: `group_aggregate(count(storeid),query_groups(),query_filters()-{field1,field2,fieldN})`, where users would have to use `query_filters() - {}` to manually remove every field in the search bar that did not relate to transaction date. When adding a new unrelated filter to the search bar, users would then have to edit all existing formulas to ignore the filter.
 
-Now, users can simply specify the formula as `group_aggregate(count(storied),query_groups, {date}), and the formula will automatically ignore all unrelated filters in the search bar.
+Now, users can simply specify the formula as `group_aggregate(count(storeid),query_groups, \{date})`, and the formula will automatically ignore all unrelated filters in the search bar.
 
 '''
 > **Related information**
