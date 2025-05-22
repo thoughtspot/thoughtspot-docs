@@ -1,0 +1,163 @@
+= Configure and run the ansible playbook
+:last_updated: 5/10/2023
+:linkattrs:
+:author: Teresa Killmond
+:experimental:
+:description: Configure and run the ansible playbook for deployment of ThoughtSpot on your own OS.
+
+After you xref:customer-os-untar.adoc[untar the ansible tarball], and xref:customer-os-offline-script.adoc[run the `run_offline.sh` script] if deploying ThoughtSpot offline, you are ready to configure and run the ansible playbook.
+
+[#configure]
+== Configure the ansible playbook
+Copy the ansible inventory file `hosts.sample` from your untarred ansible tarball to `hosts.yaml`. Using a text editor of your choice, update the file to include your host configuration. See the following parameters:
+
+`env`::
+*_[Required]_* Do not edit this flag.
+
+`external_sudo_manager`::
+*_[Optional]_* When this is configured, ThoughtSpot does not make any changes to the sudoers file, such as adding the administrator user. The user is then responsible for ensuring that the administrator user has the ability to run certain elevated privilege commands. The default is undefined.
+
+`extra_admin_ssh_key`::
+*_[Optional]_* An additional or extra key may be required by your security application, such as Qualys, to connect to the hosts.
+
+`groupname`::
+*_[Required]_* Specify the group name for the group who will set up the node. The default is `admin`.
+
+`hosts`::
+*_[Required]_* Add the IP addresses or hostnames of all hosts in the ThoughtSpot cluster.
+
+`http(s)_proxy`::
+*_[Optional]_* If the hosts must access public repositories through an internal proxy service, provide the proxy information.
++
+We do not currently support proxy credentials to authenticate to the proxy service.
+
+[#is_user_wheel_group]
+`is_user_wheel_group`::
+*_[Required]_* Specifies if the administrator user should be added to the wheel group. The default is `true`. If you specify `false`, the administrator user is not added to the wheel group.
++
+NOTE: If the <<remote_user_management,remote_user_management>> parameter is defined, `is_user_wheel_group` is always `false`, even if you manually set it to `true`.
+
+[#minimal_sudo_install]
+`minimal_sudo_install`::
+*_[Optional]_* When this is defined, ThoughtSpot disables certain functionality to avoid making additional sudo calls. This functionality includes the email notification management system, some cluster statistics reporting, and logging of connectivity status between nodes. The default is undefined.
+
+`no_mail_packages`::
+*_[Optional]_* When this is defined, ThoughtSpot does not install the mail packages `mutt` and `postfix`. The default is undefined.
++
+NOTE: This flag only applies for online installations.
+
+`offline`::
+When this is set, the ansible playbook runs an offline installation. This flag is required for an offline installation, but it is not present in the online ansible tarball.
+
+`pgversion`::
+*_[Required]_* Specifies the `postgres` version that the cluster uses. Do not modify this field.
+
+[#remote_user_management]
+`remote_user_management`::
+*_[Optional]_* When this parameter is defined, you use your LDAP or Active Directory service account for installation, and ThoughtSpot does not create a local account when installing. When this parameter is defined, <<is_user_wheel_group,is_user_wheel_group>> is always `false`, even if you manually set it to `true`. `remote_user_management` is undefined by default. If you want to define this parameter, the following prerequisites apply:
++
+. You must set up Active Directory or LDAP integration prior to installation.
+. The remote_user must be present on the node.
+. The remote user must still function on the VM, even if the VM's connection to the AD or LDAP server goes down. If there is a node reboot, the remote user must be available as soon as possible.
+
+[#skip_r]
+`skip_r`::
+*_[Optional]_* When this is defined, the ansible playbook execution skips R package installation. Attempting to enable rserve orion service will fail.
++
+NOTE: This flag only applies for online installations.
+
+`skip_sshd_config`::
+*_[Optional]_* When this is configured, ThoughtSpot does not make any changes to the sshd configuration of the node.  The user must ensure that the MaxSessions value for the administrator user is at least 10. The default is undefined.
+
+`skip_time_sync_setup`::
+*_[Optional]_* When this is defined, ThoughtSpot does not configure time synchronization between nodes using `ntp`. The user must configure time synchronization using either `ntp` or `chronyd` themselves. The default is undefined.
+
+`skip_yum_update`::
+*_[Optional]_* When this is defined, the ansible playbook does not attempt to run a blanket yum update to pull the latest packages. The default is undefined.
++
+NOTE: This flag only applies for online installations.
+
+`ssh_private_key`::
+*_[Required]_* Add the private key for `ssh` access to the `hosts.yaml` file. You can use an existing key pair, or generate a new key pair in the ansible Control server.
++
+Run the following command to verify that the ansible Control Server can connect to the hosts over `ssh`:
++
+[source]
+----
+ansible -m ping -i hosts.yaml all
+----
+
+`ssh_user`::
+*_[Required]_* The `ssh_user` must exist on the ThoughtSpot host, and it must have `sudo` privileges.
+On-premise deployments;;
+The `ssh_user` is the user who runs the playbook, and who is connected to the hosts.
+AWS;;
+The same as `ec2_user`.
+GCP;;
+The `ssh_user` is the user who runs the playbook, and who is connected to the hosts.
+
+`ts_partition_name`::
+*_[Required]_* The extended name of the ThoughtSpot export partition, such as `/dev/sdb1`.
+
+`user_gid`::
+*_[Required]_* Specify the user group ID for the user who will set up the node. The default is `1081`.
++
+If you do not use the default, add values that are not currently in use. To determine what values your system uses already, run the following command:
++
+[source]
+----
+cat /etc/passwd | cut -d ":" -f3-4| sort
+----
++
+NOTE: If the <<remote_user_management,remote_user_management>> parameter is defined, do not specify anything for the `user_gid` parameter.
+
+`user_uid`::
+*_[Required]_* Specify the user ID for the user who will set up the node. The default is `1081`.
++
+If you do not use the default, add values that are not currently in use. To determine what values your system uses already, run the following command:
++
+[source]
+----
+cat /etc/passwd | cut -d ":" -f3-4| sort
+----
++
+NOTE: If the <<remote_user_management,remote_user_management>> parameter is defined, do not specify anything for the `user_uid` parameter.
+
+`username`::
+*_[Required]_* Specify the username for the user who will set up the node. The default is `admin`. If you use Active Directory, the username must be 20 characters or fewer, and cannot contain any of the following characters: `"/ \ [ ] : ; | = , + * ? < >`
+
+// NOTE FOR LATER: at some point we may want to have details on redirecting a mirror repository, which some orgs use for offline deployments. This is a nice to have and you would have to work with Kirsten Stark on it.
+
+[#run]
+== Run the ansible playbook
+Run the ansible Playbook from your local machine by entering the following command:
+
+[source,bash]
+----
+ansible-playbook -i hosts.yaml ts.yaml
+----
+
+As the ansible playbook runs, it will perform these tasks:
+
+. Triggers the installation of xref:customer-os-packages.adoc[Yum, Python, and R packages].
+. Configures the local user accounts that the ThoughtSpot application uses, unless you defined the <<remote_user_management,remote_user_management>> parameter and used your LDAP or Active Directory service account for installation.
+. Installs the ThoughtSpot CLI.
+. Configures all the nodes in the ThoughtSpot cluster:
+- Formats and creates export partitions, if they do not exist.
+- Formats the data disks.
+
+== Next steps
+Next, xref:customer-os-install.adoc[deploy ThoughtSpot clusters].
+
+'''
+> **Related information**
+>
+> * xref:customer-os.adoc[]
+> * xref:customer-os-prerequisites.adoc[]
+> * xref:customer-os-artifacts.adoc[]
+> * xref:customer-os-untar.adoc[]
+> * xref:customer-os-offline-script.adoc[]
+> * xref:customer-os-install.adoc[Deploy ThoughtSpot clusters on your own OS]
+> * xref:customer-os-upgrade.adoc[Upgrading ThoughtSpot on your own OS to a new release]
+> * xref:customer-os-add-node.adoc[Adding new nodes to clusters running on your own OS]
+> * xref:customer-os-packages.adoc[Packages installed with ThoughtSpot running on your own OS]

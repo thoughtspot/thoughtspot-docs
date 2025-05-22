@@ -1,0 +1,54 @@
+= Known issues
+:keywords: known issues
+:last_updated: 10/6/2022
+:experimental:
+:page-layout:
+:linkattrs:
+
+These are the known issues in this release of ThoughtSpot Software.
+
+[#releases-8-7-x]
+== 9.0.0.sw known issues
+
+None.
+
+
+[#releases-8-7-x]
+== 8.8.0.sw known issues
+
+[cols="17%,39%,38%"]
+|===
+|Issue ID |Description|Symptoms, conditions, and workaround
+
+|SCAL-129737
+|Headline summary is truncated despite the number of decimals.
+a|*Symptoms*:
+
+Headline with decimal digits is rounded off, causing a loss of accuracy.
+
+*Conditions*:
+
+Headline value is `DOUBLE` type.
+
+*Workaround*:
+
+None
+
+|SCAL-129691
+|“UniqueCount is not supported for the current query” error on pinned-headline tiles in a Liveboard.
+a|*Symptoms*:
+
+- When editing a pinned visualization, the Edit page shows the entire answer that the pinned headline came from. If the headline summary in the answer page is showing **--**, the selected aggregation is not compatible with the column that it is summarizing.
+- Pinning the headline to a Liveboard is not a locked action from the UI. When attempting to retrieve the actual summary, the visualization tile displays the execution error message specified in the *Description* section for this issue instead.
+
+*Conditions*:
+
+- The headline is over a formula column that contains any of the following: `unique_count`, `unique_count_if`, `group_unique_count`, `approx_unique_count`.
+- The formula’s unique count portion uses columns that come from tables of a connection to a cloud data warehouse.
+- The selected headline aggregation for the formula (the headline visualization at the bottom of the main answer visualization) is Table Aggregate.
+
+*Workaround*:
+
+Set the selected headline aggregation to something other than Table Aggregate. Usually, **TOTAL** is a sufficient replacement for Table Aggregate and better matches customer use cases.
+
+|===

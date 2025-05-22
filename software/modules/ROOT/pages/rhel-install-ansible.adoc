@@ -1,0 +1,156 @@
+= Install ThoughtSpot using ansible on clusters that use RHEL
+:last_updated: 12/8/2022
+:author: Teresa Killmond
+:linkattrs:
+:experimental:
+:description: Install ThoughtSpot using ansible on RHEL clusters.
+
+This is an alternative installation method to the xref:customer-os-install.adoc[default RHEL installation]. If your organization requires that privilege escalation take place through an external tool that integrates with ansible, follow the steps in this article.
+
+Before starting the installation, complete the xref:customer-os-prerequisites.adoc[prerequisites].
+
+[#system-settings]
+== Prepare system settings
+There are certain system settings, specific to this type of RHEL installation, that you must configure. Configure these settings _after_ completing the xref:customer-os-prerequisites.adoc[prerequisites].
+
+. Install the required yum, Python 3, and R packages on each node of the ThoughtSpot cluster: xref:customer-os-packages.adoc[].
+. If you are using a physical machine or appliance, you must disable the disk write cache. On each ThoughtSpot-specific mounted drive, run the following command:
++
+[source,bash]
+----
+hdparm -W 0 /dev/sdX
+----
+
+. Configure `journalctl` log rotation:
+.. Create a `/var/log/journal` directory.
+.. In that directory, run `systemd-tempfiles –create –prefix /var/log/journal`.
+.. Modify the `journald.conf` file to specify `Storage=Persistent` under the `[Journal]` section.
+.. Set up regular journal log rotation.
+. If you install the `nfs-utils` yum package, ensure that the `rpc.statd` port is bound to a fixed port to prevent conflicts. You can check this in `/etc/sysconfig/nfs`. Both `STATD_PORT` and `STATD_OUTGOING_PORT` should equal a fixed number.
+. Set both `net.core.rmem_max` and `net.core.wmem_max` to *3145728*. To check this setting, run the following commands:
++
+[source,bash]
+----
+sysctl net.core.wmem_max
+sysctl net.core.rmem_max
+----
++
+To ensure this remains true even after reboots, set these values in a file under `/etc/sysctl.d`.
+. Ensure that the `fs.file-max sysctl` setting is the default for linux, and that the `user.max_user_namespaces` is set to *5000* or higher.
++
+To ensure this remains true even after reboots, set these values in a file under `/etc/sysctl.d`.
+. Set up the `kernel cores sysctl` setting to create dump files on crashes.
++
+To ensure this remains true even after reboots, set these values in a file under `/etc/sysctl.d`.
+. Set the soft and hard nofile ulimit values to *524288* or higher. ThoughtSpot prefers the soft core to be unlimited. Pending signals (-i) must be *2062971* or higher.
+. `sshd config` must contain `AllowUsers: tspot`. It must have a `MaxSessions` value greater than or equal to 10. Each node must be able to `ssh` without a password, via keys, to every other node in the cluster as the `tspot` user.
+. Set the `postfix` settings to send email from the cluster.
+. Configure passwordless ssh for `ts_service_user`.
+
+== Set up nodes
+
+. Unzip the ansible tarball provided by {support-url}. The ansible tarball contains the following yaml files:
++
+--
+* *ts-cluster-create-A.yaml:* Untars the release, sets up the environment, and copies the release toolchain to all nodes.
+* *ts-cluster-create-full-flow.yaml:* Triggers the cluster installation. Calls ts-cluster-create-A.yaml, hadoop-ansible/install.yaml, ts-setup.yaml, and ts-no-sudo-cluster-install.yaml. After the release tarball is installed, it calls installer_main from the coordinator node. The installer_main pushes all the services and finishes the installation.
+* *ts-no-sudo-cluster-install.yaml:* Installs the release on all nodes. Starts up ThoughtSpot core services on all nodes.
+* *ts-packages.yaml:* Checks that `postgres` was installed correctly and sets up `atop`.
+* *ts-setup.yaml:* Sets up the system settings, including nginx, log rotation, and environment settings. Ensures python3 packages are installed. Calls ts-systemd.yaml and ts-packages.yaml.
+* *ts-systemd.yaml:* Sets up systemd services.
+* *hadoop-ansible/install.yaml:* Installs Zookeeper and HDFS on the cluster.
+--
+
+. Ensure that the nodes are correctly initialized. Run the following command *_twice_* from `ts_service_id`, once as a root user and once as an admin user. The output of this command informs you of any missing configurations and provides recommended actions.
++
+[source,bash]
+----
+./os_settings.sh
+----
+. Configure passwordless ssh for `ts_service_user`.. Set up the ThoughtSpot directories that require root privileges. Run the following commands:
++
+[source,bash]
+----
+mkdir -p /export/scaligent /export/thoughtspot
+ln -s /export/scaligent /usr/local/scaligent
+ln -s /export/thoughtspot /etc/thoughtspot
+chown -h $ts_service_id:$ts_group_id /export /export/scaligent /usr/local/scaligent /etc/thoughtspot /export/thoughtspot
+----
+
+. Fix the `postgresql symlinks` after installing it.
++
+[source,bash]
+----
+mkdir -p /usr/lib/postgresql
+ln -s /usr/pgsql-11 /usr/lib/postgresql/11
+----
+
+. Set up `symlink` for `localtime`.
++
+[source,bash]
+----
+ln -s /etc/localtime /usr/share/zoneinfo/localtime
+----
+
+== Create the cluster
+
+Cluster creation takes about 60 to 90 minutes.
+
+The node that acts as the coordinator node must be part of the cluster. It is defined by the `var: local_node` in the ansible vars. The release tarball `<software_release.tar.gz>` must be present in the coordinator node and must be specified by the `tarball_location` var in the coordinator node.
+
+. Untar the ansible.tar.gz file on the node from which the ansible playbook will be run, if you have not already. If you are using the ansible tower for running the playbook, this should be the ansible tower machine.
+. Rename *cluster_create_hosts.sample* to *cluster_create_hosts.yaml*.
+. Update the ansible vars in *cluster_create_hosts.yaml* with your own specific values. See <<ansible-vars,Sample ansible vars>>.
+. Run the ansible-playbook. This installs ThoughtSpot software on all nodes. Run the following command on any cluster node:
++
+[source,bash]
+----
+ansible-playbook -i cluster_create_hosts.yaml ts-cluster-create-full-flow.yaml
+----
++
+If privilege escalation requires a password, add the `-K` option to the `ansible-playbook` command.
+. If there is a failure at any point, fix the failure and rerun the `ansible-playbook` command. Bypass the completed steps using the `--start-at-task` option, specifying the task at which to start.
+
+[#ansible-vars]
+=== Sample ansible vars
+
+This is the definition of the *cluster_create_hosts.sample* file that is present in your ansible tarball. You must replace anything in this file within `<>` with your own specific information.
+
+[source,bash]
+----
+all:
+  hosts:
+    # List of IPs of the nodes in the cluster
+    <node_ip1>:
+    <node_ip2>:
+  vars:
+    ssh_user: <ts_service_user>
+    username: <ts_service_user>
+    groupname: <ts_service_group>
+    env: {}
+    ssh_private_key: <private key use for ssh>
+    tarball_location: <Release tarball complete path>
+    cluster_id: <Cluster id. Provided by ThoughtSpot.>
+    cluster_name: <Cluster name>
+    ramdisk_size: <size of ramdisk for falcon> # The default is 50619136k (50Gb)
+    # ThoughtSpot variables. Do not modify.
+    release_location: /export/releases/root/
+    installer_spec_path: /usr/local/scaligent/install/install_config
+    pgversion: 11
+    layout_file: /tmp/hadoop_config.json
+    no_sudo: 1
+    minimal_sudo_install: 1
+    offline: 1
+    skip_r: 1
+    skip_local_user_creation: 1
+----
+
+'''
+> **Related information**
+>
+> * xref:rhel-restore-ansible.adoc[Restoring a cluster]
+> * xref:rhel-start-stop-ansible.adoc#start[Starting a cluster]
+> * xref:rhel-start-stop-ansible.adoc#stop[Stopping a cluster]
+> * xref:rhel-upgrade-ansible.adoc[Upgrading a cluster]
+> * xref:rhel-add-node-ansible.adoc[Adding a node to a cluster]
+> * xref:rhel-delete-ansible.adoc[Deleting a cluster]

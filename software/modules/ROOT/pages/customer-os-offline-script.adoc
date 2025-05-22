@@ -1,0 +1,65 @@
+= Run the offline script for deployment on your own OS
+:last_updated: 5/10/2023
+:linkattrs:
+:author: Teresa Killmond
+:experimental:
+:description: If you are deploying ThoughtSpot offline, you must run the run-offline.sh script before you can configure and run the ansible playbook.
+
+After you untar the ansible tarball, but before you configure and run the ansible playbook, you must run the `run_offline.sh` script on your local machine. This is *_only_* required for offline deployments of ThoughtSpot on your own OS. This script is not available if you are deploying online.
+
+The `run_offline.sh` script installs the required xref:customer-os-packages.adoc[Yum, Python, and R packages] without connecting to the internet.
+
+Run the run_offline.sh script on all nodes, including the <<flags,optional flags>> as necessary. Run this command as either a <<root,root user>> or <<sudo,with sudo>>.
+
+[#root]
+== Run run_offline as a root user
+
+Run the following command as a root user, including the <<flags,optional flags>> as necessary.
+
+[source,bash]
+----
+run_offline.sh
+----
+
+[#sudo]
+== Run run_offline with sudo
+
+Run the following command, including the <<flags,optional flags>> as necessary. Run this command as a non-root user with sudo permissions.
+
+[source,bash]
+----
+sudo run_offline.sh
+----
+
+[#flags]
+== Optional flags
+
+`run_offline.sh` has the following optional flags:
+
+-r:: Skips installing R packages. This can make the installation quicker. If you specify this flag in the `run_offline.sh` script, you must also set xref:customer-os-ansible-configure.adoc#skip_r[the skip_r flag in the ansible playbook].
+
+-s:: Skips installing ansible. If you already have ansible installed, or if you run ansible on a different node separate from the ThoughtSpot installation, include this flag when you run `run_offline.sh`. This skips the ansible yum package installation on the node.
+
+-v::
+Verbose output.
+
+-y:: Skips installing yum packages. *_Only_* use this flag if you are sure you already have all the required yum packages already installed.
+
+
+
+== Next steps
+
+Next, xref:customer-os-ansible-configure.adoc[configure and run the ansible playbook].
+
+'''
+> **Related information**
+>
+> * xref:customer-os.adoc[]
+> * xref:customer-os-prerequisites.adoc[]
+> * xref:customer-os-artifacts.adoc[]
+> * xref:customer-os-untar.adoc[]
+> * xref:customer-os-ansible-configure.adoc[]
+> * xref:customer-os-install.adoc[]
+> * xref:customer-os-upgrade.adoc[Upgrading ThoughtSpot on your own OS to a new release]
+> * xref:customer-os-add-node.adoc[]
+> * xref:customer-os-packages.adoc[Packages installed with ThoughtSpot running on your own OS]
