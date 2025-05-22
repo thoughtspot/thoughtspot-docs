@@ -1,0 +1,131 @@
+The latest release of ThoughtSpot Cloud contains several new and enhanced features.
+
+* <<9-1-0-cl-first,For the First User>>
+* <<9-1-0-cl-analyst,For the Analyst>>
+* <<9-1-0-cl-business-user,For the Business User>>
+* <<9-1-0-cl-data-engineer,For the Data Engineer>>
+* <<9-1-0-cl-it-ops-engineer,For the IT Ops Engineer>>
+* <<9-1-0-cl-developer,For the Developer>>
+
+[#9-1-0-cl-first]
+=== For the First User
+
+Getting started with ThoughtSpot Cloud::
+The first user on the account has to complete a series of steps before other people can start using ThoughtSpot with your organization's data.
+For these instructions, see xref:ts-cloud-getting-started.adoc[Getting Started with ThoughtSpot Cloud].
+
+[#9-1-0-cl-analyst]
+=== For the Analyst
+
+Upload custom geo maps::
+Upload your own custom maps and visualize data on xref:chart-geo.adoc[geo charts] with regions that are specific to you and your organization.
++
+For more information, see xref:geomaps-custom.adoc[].
+
+Change filter order for Liveboard filters::
+
+Arrange Liveboard filters in the filter bar so that they are in a logical, coherent order, by dragging and dropping them to different spots in the list. This makes it easier for viewers of the Liveboard to understand and use the filters on the Liveboard. For more information, see xref:liveboard-filters.adoc#order[Change the filter order].
+
+TML for Monitor alerts::
+TML for Monitor alerts is now GA and on by default. Export, edit, and import xref:monitor.adoc[KPI Monitor alerts] programmatically, using ThoughtSpot Modeling Language. For more information, see xref:tml.adoc#syntax-alerts[Syntax of the Monitor alert TML file].
+
+Remove attached files from scheduled emails:: For data security, you may choose to remove attached files from scheduled Liveboard emails. When this feature is enabled, scheduled Liveboard email recipients will receive an email with a link to the Liveboard, which they will need to sign in to see.To ensure that only signed-in users can access your data, contact ThoughtSpot Support to enable this option. For more information, see xref:schedule-liveboards.adoc#disable-csv-pdf[Scheduled Liveboards].
+
+Disable heatmap data labels::
+
+Optionally disable heatmap charts' data labels, and understand the chart quickly by scanning the heatmap colors. This makes complex heatmap charts with many data values easier to read. See xref:chart-heatmap.adoc#labels[Heatmap charts].
+
+Show timezone in scheduled Liveboards modal:: When scheduling Liveboards, you can now specify your timezone.
+
+ Scheduled or downloaded Liveboard PDF width::
+
+By default, scheduled and downloaded Liveboard PDFs now render at a width of 1920 px. This ensures that most Liveboard PDFs you download or schedule look the same as the Liveboards you see in ThoughtSpot. You can also change this default width to a different width for your company, by contacting {support-url}. See xref:liveboard-download-pdf.adoc#pdf-width[Download a Liveboard as a PDF] and xref:liveboard-schedule.adoc#pdf-width[Schedule a Liveboard job].
+
+Group aggregate enhancements: filters:: Group aggregate filter enhancements are GA and on by default. Previously, when using group_aggregate formulas, users could use query_filters to include filters entered in the search bar in the formula's value, but it was difficult to write a formula that accepted filters from only a single column. +
+Starting with this release, you can specify column names within the ‘filters’ section of a group_aggregate formula, and any filter in your search bar referencing that column will be added to the formula. Filters entered in the search bar that are not on columns specified in the third argument of the group_aggregate formula will be ignored. For details, see xref:formulas-aggregation-flexible.adoc#groupagg-filters-enhancement[Group aggregation filters].
+
+Data labels on a dark background::
+Data labels on a dark background are now GA and on by default. Labels that appear on a dark background now display in a lighter text color, making them easier to read.
+
+Text keywords enhancements::
+
+We improved the syntax of our text keywords, such as `begins with` and `contains`, to provide users with more flexibility. For example, the `contains` keyword now accepts expressions such as `product name contains 'shoes' or 'snickers'`. See the xref:keywords.adoc#text[Keyword reference].
++
+Additionally, if your query includes two or more `contains` phrases that modify the same column, ThoughtSpot now combines the phrases using `or` logic, instead of `and`. If you have existing Answers or visualizations using this `and` logic, ThoughtSpot will automatically update your queries after you upgrade to 9.1.0.cl, to ensure they return the same information. See xref:keywords.adoc#contains[the contains keyword].
+
+[#9-1-0-cl-business-user]
+=== For the Business User
+
+Mandatory Liveboard filters::
+
+Mandatory Liveboard filters are now GA. Mark certain filters in your Liveboard as mandatory. If you add mandatory filters to a Liveboard, the visualizations will only load after Liveboard viewers select values for the mandatory filters. Use mandatory filters for Liveboards that contain data that may not be relevant for everyone who must view and consume the Liveboard. Mandatory filters also lower query and performance costs.
++
+For more information, see xref:liveboard-filters-mandatory.adoc[].
+
+Custom comparison points for KPI charts:: You can now set your KPI chart to display a percent change comparison between the most recent data point and a custom comparison point. For example, when searching for `sales monthly`, you can choose to see percent change between this month and the previous month, previous quarter, or previous year. For more information, see
+xref:chart-kpi.adoc#kpi-custom-comparison[Custom comparison points].
+
+Change for analysis KPI charts::
+KPI change analysis is now GA and on by default. You can now use change analysis to directly identify the key drivers for change in your KPIs. +
+To access this feature, go to your KPI chart and select the caret icon to the right of the percent change label. The *Run change analysis* pop-up allows you to customize the attribute columns ThoughtSpot analyzes. ThoughtSpot runs change analysis for the most recent data point and the past comparison data point as per the KPI chart's configuration. Note that you need SpotIQ privileges to use the KPI change analysis feature.
+
+Parameters::
+The parameters feature is now GA and on by default. Create Worksheet parameters to optimize your data inquiries. Use parameters to run different scenarios with adjustable values, without creating or modifying the constants in formulas for each new value. For more information, refer to xref:parameters-create.adoc[] and xref:parameters-use.adoc[].
+
+ThoughtSpot Sync::
+You can now use ThoughtSpot Sync to sync data directly from an Answer or custom SQL view to the following apps: +
++
+--
+* xref:sync-gainsight.adoc[Gainsight]
+* xref:sync-zoho.adoc[Zoho]
+--
++
+Using ThoughtSpot Sync, you can push insights directly to your selected app, notify your teams, and view data in context. ThoughtSpot Sync automatically establishes a secure pipeline to the destination app and thus eliminates the need for building custom connectors.
+
+Schedule ThoughtSpot Sync:: When scheduling a sync with an external app, you can now choose to schedule every 5, 10, 15, 20, 30, and 45 minutes, in addition to the other existing schedule options.
+
+
+Apply multiple changes to charts at once:: In previous releases, every time a user reordered the fields in the chart configuration panel, the chart reloaded. When creating a visualization with multiple fields, users often need to make multiple rearrangements to reach a desired chart. Now users can make multiple configurations and apply them at the same time rather than waiting in between each configuration. For more information, see
+xref:chart-x-axis.adoc[Reorder labels on the axis or legend].
+
+Specify format when downloading charts and tables::
+
+We streamlined the file format options when downloading tables and charts from ThoughtSpot. You can download tables in XLSX, CSV, or PDF format, and download charts in XLSX, CSV, or PNG format. To try it out, open a chart or table, and select *Download* from the *more options* menu image:icon-more-10px.png[ellipsis icon]. For more information, see
+xref:search-download.adoc#download-chart-table[Download a chart or table].
+
+Mobile app Load More button:: When using ThoughtSpot Mobile, you can now press the *Load More* button at the bottom of a table to see the next 100 rows of data.
+
+Improvements to French keywords::
+This release improves the translated French keywords. See xref:keywords-fr-FR.adoc[].
+
+[#9-1-0-cl-data-engineer]
+=== For the Data Engineer
+
+
+SQL Server connection:: You can now create connections from ThoughtSpot to SQL Server. For details, see xref:connections-sql-server.adoc[SQL Server].
+
+Delete table columns using TML::
+
+Remove columns from tables in ThoughtSpot by deleting them in the tables' TML files. For more information, see xref:tml.adoc#syntax-tables[Syntax of the table TML file].
+
+Edit join conditions using TML::
+
+Use TML to directly edit a join condition by editing the TML file's `on` parameter. This replaces the existing process of deleting and recreating the join in TML or the ThoughtSpot application. For more information, see xref:tml.adoc#syntax-joins[TML join syntax].
+
+Join creation for views [.badge.badge-beta-relnotes]#Beta#::
+We standardized the method of creating joins for all data objects in ThoughtSpot. When creating a join from a view, users are now directed to a *Create join* page where they can choose a connection, name the join, and map the source and destination columns.
+
+
+[#9-1-0-cl-it-ops-engineer]
+=== For the IT/Ops Engineer
+
+Cross-Region Disaster Recovery::
+
+Cross-Region Disaster Recovery allows ThoughtSpot to recover your ThoughtSpot instance in a secondary cloud region in the case of a failure of the primary cloud region where ThoughtSpot is running. This ensures that if one cloud region fails, ThoughtSpot can start in another region, guaranteeing minimal downtime. See xref:business-continuity.adoc#disaster-recovery[Data Protection and Disaster Recovery].
+
+Object Usage Liveboard:: Use the Object Usage Liveboard to easily track how specific objects (Liveboards, Answers, Worksheets, or tables) are trending over time. Our new visualizations allow you to understand adoption on the object-level, and filter on a specific user or users to see usage on the user-level. For more information, see xref:object-usage-liveboard.adoc[Object Usage Liveboard].
+
+[#9-1-0-cl-developer]
+=== For the Developer
+
+ThoughtSpot Everywhere:: For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation^].
