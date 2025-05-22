@@ -28,10 +28,6 @@ Follow these steps to set up your ThoughtSpot VMs in AWS.
 | &#10063; | xref:prepare-vms[7. Prepare the VMs]
 |===
 
-NOTE: After you launch a VM using a ThoughtSpot marketplace AMI, and the EC2 instance is up and running, it takes 20-30 mins for the services to be ready for use.
-
-CAUTION: Following AWS best practices, we strongly recommend that you **do not** use the AWS root user for deploying ThoughtSpot. For details, see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_root-user.html[AWS account root user^] in Amazon's AWS documentation.
-
 [#prerequisites-ami]
 == About the ThoughtSpot AMI
 
@@ -75,8 +71,6 @@ To install and launch ThoughtSpot, you must have the following:
 | &#10063; | The necessary AWS Identity and Access Management (IAM) users and roles assigned to you to access and deploy the various AWS resources and services as defined in the Required AWS components section that follows.
 | &#10063; | Networking information: Download and fill out the ThoughtSpot link:{attachmentsdir}/site-survey.pdf[site survey] to have a quick reference point. Ask your network administrator if you need help filling out the site survey.
 |===
-
-TIP: ThoughtSpot recommends SSH and web access to the EC2 instance for installation, maintenance and access to the ThoughtSpot application. For more on SSH-key-rotation best practices, please review https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html[Rotating AWS KMS keys^] in the AWS documentation.
 
 For more information about IAM, see: https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction.html[What Is IAM?^] in Amazon's AWS documentation.
 
@@ -183,21 +177,21 @@ To set up a ThoughtSpot cluster in AWS, follow these steps:
 
 . On the AWS website, navigate to the EC2 service dashboard by clicking *Services*, then *EC2*.
 +
-//image::navigate_to_ec2_dashboard.png[]
+image::navigate_to_ec2_dashboard.png[]
 
 . Make sure your selected region is correct in the top-right corner of the dashboard.
 If not, select your region.
 Let ThoughtSpot support know if you change your region.
 . Start the process of launching a VM by clicking *Launch Instance*.
 +
-//image::launch_instance.png[]
+image::launch_instance.png[]
 
 . In the *My AMIs* tab under *1.
 Choose AMI*, search *ThoughtSpot* to find the ThoughtSpot AMI.
 . Click *Select*.
 Ensure that you select the ThoughtSpot AMI listed in xref:ami[Get access to ThoughtSpot AMI], which you entered earlier in this process.
 +
-//image::aws-choose-ami.png[Select the ThoughtSpot AMI]
+image::aws-choose-ami.png[Select the ThoughtSpot AMI]
 
 . On the *Choose an Instance Type* page, select a ThoughtSpot-supported instance type. See xref:aws-configuration-options.adoc#ts-aws-instance-types[ThoughtSpot AWS instance types].
 . Click *Next: Configure Instance Details*.
@@ -216,12 +210,13 @@ Refer to https://docs.aws.amazon.com/systems-manager/latest/userguide/setup-inst
 Add the required storage based on your instance type (either EBS volumes or S3), and the amount of data you are deploying.
 For specific storage requirements, refer to xref:aws-configuration-options.adoc[ThoughtSpot AWS instance types].
 +
-// image::aws-add-storage.png[Add storage volumes]
-
-.. Click *Add new volume*.
-.. Specify the type of storage, either EBS or S3.
-.. Specify the size of the volume.
-.. Ensure that you leave *Delete on termination* unchecked, to prevent potential loss of data if the VM is accidentally terminated.
+image::aws-add-storage.png[Add storage volumes]
++
+[horizontal]
+1:: Click *Add new volume*.
+2:: Specify the type of storage, either EBS or S3.
+3:: Specify the size of the volume.
+4:: Ensure that you leave *Delete on termination* unchecked, to prevent potential loss of data if the VM is accidentally terminated.
 
 . When you are done modifying the storage size, click *Next: Add Tags*.
 . Set a name for tagging your instances.
@@ -250,12 +245,3 @@ Refer to xref:ports.adoc[Network ports].
 == Prepare the VMs
 
 Before installing a ThoughtSpot cluster, an administrator must xref:aws-prepare-vms.adoc[prepare the VMs].
-
-'''
-> **Related information**
->
-> * xref:aws-prepare-vms.adoc[Prepare AWS VMs for ThoughtSpot]
-> * xref:aws-installing.adoc[Configure ThoughtSpot nodes in AWS]
-> * xref:aws-cluster-install.adoc[Install ThoughtSpot clusters in AWS]
-> * xref:ha-aws-efs.adoc[Set up high availability]
-> * xref:aws-backup-restore.adoc[Back up and restore using S3]

@@ -15,10 +15,6 @@ To enable *FIPS-compliant SSL* mode, set both the _use_fips_ssl_ parameter and t
 
 For more information, see https://docs.aws.amazon.com/redshift/latest/mgmt/connecting-ssl-support.html[Connect using SSL^] in Amazon’s Redshift documentation.
 
-== Using AWS Secrets Manager to store your Amazon Redshift connection password
-
-You can store your connection password in AWS Secrets Manager. For details on requirements and how to set up this feature, see xref:connections-aws-secrets.adoc[Configure AWS Secrets Manager].
-
 == Adding a Redshift connection
 
 To add a new connection to Redshift:
@@ -34,56 +30,32 @@ image:redshift-addconnection.png[Click "+ Add connection"]
 image:redshift-choosetype.png[Choose connection type]
 // [](select-new-connection.png "Select a new connection type")
 
-. Enter the connection details for your Redshift data source using either IAM or Service Account.  The *User* you specify must have at least *read* access to the *SVV_TABLE_INFO* table.
-+
-IMPORTANT: If you are going to use AWS Secrets Manager to store your connection password, you must select Service Account.
+. Enter the connection details for your Redshift data source using either IAM or Service Account:
 +
 For IAM authentication, do the following:
 
-- Enter Host, Port, Database, Db User, Access Key, and Secret Key.
+.. Enter Host, Port, Database, Db User, Access Key, and Secret Key.
 // +
 // image:connection-redshift-specify-details-iam.png[Enter connection details]
 
-+
 For Service Account authentication, do the following:
 
-- Enter Host, Port, User, Password, and Database.
-+
-NOTE: If the AWS Secrets Manager feature is enabled, the password field does not appear, and there is advanced configuration required (detailed below).
+.. Enter Host, Port, User, Password, and Database.
 // +
 // image:connection-redshift-specify-details-service-account.png[Enter connection details]
 // [](new-connection-creds.png "Select a connection type")
 +
 Refer to the xref:connections-redshift-reference.adoc[Redshift connection reference] for more information on each of the specific attributes you must enter for your connection.
 
-. (Optional) To customize additional JDBC parameters supported by Redshift, use *Advanced Config*. Refer to the https://docs.aws.amazon.com/redshift/latest/mgmt/jdbc20-configuration-options.html[Redshift JDBC documentation^].
-
 . (Optional) If you enabled SSL in your Redshift cluster, you must do the following:
- .. Click the *Advanced Config* menu to reveal the *Key* and *Value* fields.
- .. For Key, enter *SSL*.
- .. For Value, enter *True*.
+ ** Click the *Advanced Config* menu to reveal the *Key* and *Value* fields.
+ ** For Key, enter *SSL*.
+ ** For Value, enter *True*.
 +
 To add more keys and values, click the plus sign (+), and enter them.
 +
 NOTE: Any key-value pairs that you enter must be defined in your Redshift data source.
 Key-value pairs are case-sensitive.
-
-. If the AWS Secrets Manager feature is enabled, you must add four key-value pairs by doing the following:
-
-  .. Click the *Advanced Config* menu to reveal the *Key* and *Value* fields.
-  .. For Key, enter *secret_manager_region*.
-  .. For Value, enter the AWS-region where AWS Secrets Manager is hosted (example: **us-east-1**).
-  .. Click **+ Add** to and another key-value pair.
-  .. For Key, enter *secret_name_or_ARN*.
-  .. For Value, enter the secret name or ARN created in AWS Secrets Manager.
-  .. Click **+ Add** to and another key-value pair.
-  .. For Key, enter *key_name*.
-  .. For Value, enter any key against which the password is stored in AWS Secrets Manager.
-  .. (Optional) If you have a cross-region connection (Your Thoughtspot-EC2-instance and AWS Secrets Manager are hosted in different AWS-regions), click **+ Add** to and another key-value pair.
-  .. For Key, enter *remote_role_ARN*.
-  .. For Value, enter the name of the role of the remote ARN.
-+
-image::aws-secrets-man-adv-config.png[]
 
 . Click *Continue*.
 . Select tables (on the left) and the columns from each table (on the right), and then click *Create connection*.
@@ -112,12 +84,11 @@ With linked data, ThoughtSpot queries the external database directly, which is s
 '''
 > **Related information**
 >
-> * xref:connections-redshift-edit.adoc[Edit an Amazon Redshift connection]
-> * xref:connections-redshift-remap.adoc[Remap an Amazon Redshift connection]
-> * xref:connections-redshift-delete-table.adoc[Delete a table from an Amazon Redshift connection]
-> * xref:connections-redshift-delete-table-dependencies.adoc[Delete a table with dependencies from an Amazon Redshift connection]
-> * xref:connections-redshift-reference.adoc[Redshift connection reference]
-> * xref:connections-redshift-delete.adoc[Delete an Amazon Redshift connection]
-> * xref:connections-aws-secrets.adoc[Configure AWS Secrets Manager]
+> * xref:connections-redshift-edit.adoc[]
+> * xref:connections-redshift-remap.adoc[]
+> * xref:connections-redshift-delete-table.adoc[]
+> * xref:connections-redshift-delete-table-dependencies.adoc[]
+> * xref:connections-redshift-reference.adoc[]
+> * xref:connections-redshift-delete.adoc[]
 > * xref:data-load.adoc[Load and manage data]
 > * xref:security.adoc[Data and object security]
