@@ -1,0 +1,110 @@
+= Creating charts with Muze Studio
+:last_updated: 2/24/2025
+:linkattrs:
+:experimental:
+:page-layout: default-cloud-beta
+:description: Create your own charts in ThoughtSpot.
+:jira: SCAL-242708
+
+You can now create your own charts inside ThoughtSpot using Muze Studio. With Muze studio, you can use the Muze library to create a chart in any Answer. Muze is a charting library that supports a lot of different chart types and customizations. For information about Muze, see https://cyoc-documentation-site.vercel.app/muze/Guides%20and%20Tutorials/muze[Introduction to Muze^].
+
+If you're a developer, you can use the *code editor* to create a new chart type in an Answer by writing the code. Using the chart library API, you can create complex charts with very few lines of code. Though the chart is available only to an individual Answer, other users can make a copy of the Answer and modify it to reuse the same chart type.
+
+You also can use any of the available charts in the Muze chart library. For more information, see https://cyoc-documentation-site.vercel.app/gallery/Part%20Of%20A%20Whole/Hundread-Percent-Stacked-Area-Chart[Muze chart gallery^]. To enable this feature, contact your ThoughtSpot administrator. If you're an administrator, see <<#enable-muze-studio, Enabling Muze Studio>>.
+
+The code editor comprises three components:
+
+- *The JavaScript editor*, where you can use the API to render complex charts.
+- *The CSS editor*, where you create your chart’s look and feel by applying different styles using available classes in CSS.
+- *The HTML editor*, where you can add the chart container, structure the layout, and add additional elements like annotation.
++
+As you make changes to a chart, you can click the *Run* button to see the results of your changes in the chart preview pane to the left.
+[.bordered]
+image::muze-studio-code-editor.png[Muze studio code editor]
+
+== JavaScript editor
+
+The following APIs and data are available in the JavaScript editor:
+
+* Muze library: contains the exhaustive API to create different kinds of charts, composing multiple layers in the same chart, cross-interaction in multiple canvases, and more.
+* Data and DataModel: The data coming from a Sage search query is available in the editor. Muze also provides an in-memory data-manipulation component called DataModel which you can use to add filters, selection, group-by, and more, allowing you to structure the data to render very specific charts.
+* Color palettes: The color that is used at the global level of the entire application uses the color api, so that you can use it in your chart to match the color and styles used in other chart types. By default, it uses the cluster-wide color palette that is defined by the customer just like other charts.
+
+For more information about the Muze API, see: https://cyoc-documentation-site.vercel.app/muze/API%20Reference/muze/[Muze API reference^].
+
+== CSS editor
+
+In the CSS editor, you can style the container for your chart.
+[.bordered]
+image::muze-css-tab.png[CSS editor]
+
+For details on how you can style your chart, see https://cyoc-documentation-site.vercel.app/muze/Guides%20and%20Tutorials/Tutorials/11%20Styling%20your%20charts[Styling your charts^] in the Muze documentation.
+
+== HTML editor
+
+In the HTML editor, you add a container element for your chart. If you need multiple charts, you can add additional container elements. The `<div>` tags define the container where the visualization appears.
+
+[.bordered]
+image::muze-html-tab.png[HTML tab]
+
+== Getting started
+
+To create a custom chart using Muze Studio, do the following:
+
+. Create an Answer or open an existing one.
+. Click the *Change visualization* button image:icon-chart-type-10px.png[chart type icon].
+. In the _Custom_ section at the bottom of the Chart panel, click *Muze Studio*.
++
+A bar chart appears, by default.
+. In the upper-right corner of the chart preview pane, click the *code editor* button image:icon-muze-code-editor.png[width=21].
++
+The *code editor* panel opens, with the *JavaScript* tab selected and the default code for the chart.
+. Make any changes you want to the existing code, or use code for any of the charts in the https://cyoc-documentation-site.vercel.app/gallery/Part%20Of%20A%20Whole/Hundread-Percent-Stacked-Area-Chart[Muze chart library^].
+. As you make changes, click the *Run* button to see the changes to your chart in the preview pane.
+. After you finish, click the *Save* button to save your chart. If your answer is already pinned to a Liveboard, you can click the *Pin* button, to publish your changes to the Liveboard.
+
+[#enable-muze-studio]
+== Enabling Muze Studio
+
+If you are a ThoughtSpot administrator, you can enable Muze Studio by doing the following:
+
+. Go to *Admin* and click *Chart customization*.
+. Click *Custom charts*, then click *Add chart*.
+. In the _Add custom chart_ window, enter the following:
+* For Chart name, enter:
++
+[source]
+----
+Muze Studio
+----
+* For App URL, enter:
++
+[source]
+----
+https://muze-studio.vercel.app/
+----
+
+* For Icon, enter:
++
+[source]
+----
+https://raw.githubusercontent.com/chartshq/muze/master/logo.png
+----
+. Click *Add chart*.
+. Go to *Developer*, then click *Security settings*.
+. Click *Edit*, and enter the following:
+* For Permitted iFrame domains, enter:
++
+[source]
+----
+vercel.app*
+----
+* For CSP img-src domains, enter:
++
+[source]
+----
+vercel.app*
+----
+. Click *Save Changes*.
++
+Muze Studio is now available on your ThoughtSpot cluster.
