@@ -6,16 +6,22 @@
 :page-partial:
 :description: When you schedule a Liveboard job, you can add a gating condition that triggers the Liveboard email.
 
-include::partial$liveboards-announcement.adoc[]
-
 When you xref:liveboard-schedule.adoc[schedule a Liveboard job], you can add a gating condition that triggers the Liveboard email. If the condition evaluates to `true` at the scheduled time, ThoughtSpot emails the Liveboard to the specified recipients. If it evaluates to `false`, ThoughtSpot does not send the Liveboard.
 
 This article walks you through an example scenario in which you use a gating condition to determine whether to email the Liveboard, sending an alert to specified users.
 
-== Gating condition functionality
-A gating condition is a statement that returns a single boolean value (`true` or `false`). For example, `sum (revenue) > 100` is a valid condition, but `is_weekend (commit_date)` is not, since it returns a result per row of data. Use any data source (table, worksheet, or view) that you have access to for the gating condition. For reports sent to ThoughtSpot users, ThoughtSpot executes the query as that specific user to ensure row-level security. For reports sent to people who are not ThoughtSpot users, ThoughtSpot executes the query as the author of the Liveboard schedule. The gating condition formula and any tables you use in it do not need to be related to the Liveboard the gating condition is for. You can use any valid formula in your statement. ThoughtSpot checks the formula syntax, but does not validate if the formula returns a valid single boolean.
+include::partial$liveboards-announcement.adoc[]
 
-At the scheduled time, ThoughtSpot executes the gating condition query at user level if sending the email to a ThoughtSpot user, or as the author of the schedule if sending the email to someone who is not a ThoughtSpot user. If the condition evaluates to `true`, ThoughtSpot processes the Liveboard.
+
+== Gating condition functionality
+
+A gating condition is a statement that returns a single boolean value (`true` or `false`). For example, `sum (revenue) > 100` is a valid condition, but `is_weekend (commit_date)` is not, since it returns a result per row of data.
+
+Use any data source (table, worksheet, or view) that you have access to for the gating condition. However, note that for reports sent to ThoughtSpot users, ThoughtSpot executes the query as that specific user so that it respects row-level security (RLS) and ensures data security. If you schedule the Liveboard for 3 users, and 1 user does not have access to the data source in the gating condition, the gating condition fails and ThoughtSpot does not send the Liveboard to that 1 user. It does send the Liveboard to the 2 users who do have data access.
+
+For reports sent to people who are not ThoughtSpot users, ThoughtSpot executes the query as the author of the Liveboard schedule. The gating condition will still work if you are using passthrough security for your external data warehouse connection. The gating condition formula and any tables you use in it do not need to be related to the Liveboard the gating condition is for. You can use any valid formula in your statement. ThoughtSpot checks the formula syntax, but does not validate if the formula returns a valid single boolean.
+
+At the scheduled time, ThoughtSpot executes the gating condition query. If the condition evaluates to `true`, ThoughtSpot processes the Liveboard.
 
 For a list of valid formulas, see xref:formula-reference.adoc[Formula function reference].
 
@@ -37,7 +43,7 @@ image:gating-condition-view-example.png[Gating condition view example]
 
 This answer, saved as a view, contains multiple formulas that help determine if a sales, product, or customer exception occurred. The `sales exception` formula uses the `delta sales %` formula, which in turn uses the `max sales` and `max sales -1` formulas. Because of the complexity of these formulas, it is easier to create a view that you can reference for this gating condition (or multiple gating conditions), rather than trying to create one complicated formula defining the 3 exceptions in the gating condition itself.
 
-In the image above, the sales and customer exceptions are `true`, which should result in an alert after you create the Liveboard schedule with the gating condition.
+In the preceding image, the sales and customer exceptions are `true`, which should result in an alert after you create the Liveboard schedule with the gating condition.
 
 === Create a Liveboard to schedule
 Now you have a view where you define the three exceptions that suggest your data loads have invalid data. Next, you must create the Liveboard ThoughtSpot sends out at the scheduled time if the gating condition is met.

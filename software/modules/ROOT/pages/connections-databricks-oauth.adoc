@@ -4,10 +4,14 @@
 :page-aliases:
 :experimental:
 :connection: Databricks
+:description: This page describes the setup and configuration required for Databricks OAuth.
+:jira: SCAL-199788, SCAL-201978
 
 ThoughtSpot supports OAuth for a {connection} connection. This page describes the setup and configuration required.
 
-{connection} SQL endpoints are configured with OAuth 2.0 authentication on the Microsoft Azure platform, using Azure Active Directory (AAD) as the identity provider (IdP).
+{connection} SQL warehouses are configured with OAuth 2.0 authentication. ThoughtSpot supports all IDPs supported by {connection} in OAuth 2.0, including Microsoft Azure’s Azure Active Directory (AAD), AWS, and Okta. As an example, this article documents how to set up OAuth for Microsoft Azure AAD.
+
+NOTE: For OAuth, we recommend checking the {connection} link:https://docs.databricks.com/en/administration-guide/users-groups/single-sign-on/index.html[documentation] to confirm any IDP support and their details. This article documents only the most frequently set-up IDP.
 
 == Part 1: Create an application in AAD
 
@@ -47,7 +51,7 @@ image::databricks-oauth-config-5.png[]
 In the authorization code flow for OAuth, the scope must be set with this resource id:
 [source]
 ----
-2ff814a6-3304-4ab8-85cb-cd0e6f879c1d/.default
+2ff814a6-3304-4ab8-85cb-cd0e6f879c1d/.default offline_access openid
 ----
 
 For more information, see https://docs.microsoft.com/en-us/azure/databricks/dev-tools/api/latest/aad/app-aad-token[Get Azure AD tokens by using the Microsoft Authentication Library^] in Microsoft's Azure {connection} documentation.
@@ -62,6 +66,7 @@ To create AAD users in the {connection} workspace, do the following:
 +
 image::databricks-oauth-config-6.png[]
 
+////
 == Part 4: Connect the client using the OAuth token
 
 The JDBC connection URL which uses the access token from AAD must use the following format:
@@ -71,3 +76,15 @@ The JDBC connection URL which uses the access token from AAD must use the follow
 "ssl=1;httpPath=/sql/1.0/endpoints/c53335555f2222e999;" +
 "AuthMech=11;Auth_Flow=0;" +"Auth_AccessToken=<access_token>"`
 ----
+////
+
+'''
+> **Related information**
+>
+> * xref:connections-databricks-add.adoc[]
+> * xref:connections-databricks-edit.adoc[]
+> * xref:connections-databricks-remap.adoc[]
+> * xref:connections-databricks-delete-table.adoc[]
+> * xref:connections-databricks-delete-table-dependencies.adoc[]
+> * xref:connections-databricks-delete.adoc[]
+> * xref:connections-databricks-reference.adoc[]
