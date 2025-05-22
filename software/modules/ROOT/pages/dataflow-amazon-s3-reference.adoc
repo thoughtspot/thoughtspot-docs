@@ -1,5 +1,5 @@
 = Amazon S3 connection reference
-:last_updated: 03/08/2022
+:last_updated: 03/09/2022
 :experimental:
 :linkattrs:
 :page-aliases: /data-integrate/dataflow/dataflow-amazon-s3-reference.adoc
@@ -11,6 +11,7 @@ You need specific information to establish a seamless and secure connection.
 
 [#connection-properties]
 == Connection properties
+
 [#dataflow-amazon-s3-conn-connection-name]
 Connection name:: Name your connection. Mandatory field.
 Example:;; AmazonS3Connection
@@ -19,36 +20,65 @@ Connection type:: Choose the Amazon S3 connection type. Mandatory field.
 Example:;; Amnazon S3
 [#dataflow-amazon-s3-conn-amazon-s3-url]
 Amazon S3 URL:: Specify the Amazon S3 hostname link. Mandatory field.
-Example:;; https://example1-amazonaws.com
-[#dataflow-amazon-s3-conn-other-s3-compatible-object-store]
-Other S3-compatible object store:: Enable this option to support for non-AWS S3 storage. Optional field.
+Example:;; 'https://s3.eu-central-1.amazonaws.com'
+[#dataflow-amazon-s3-conn-compatible-object-store]
+Other S3-compatible object store:: Enable this option to support for non-AWS S3 storage. When selected, the *Region* field replaces *Authentication Type*. Optional field.
 [#dataflow-amazon-s3-conn-region]
-Region:: Specifies the location on the globe. Location options may vary depending on the type of Cloud Platform. Mandatory field.
-+
-Option appears when you select "Other S3-compatible object store."
+Region:: Specify the location on the globe. Location options may vary depending on the type of Cloud Platform. Mandatory field.
 Example:;; US-West
 [#dataflow-amazon-s3-conn-bucket]
 Bucket::
-Specify the bucket. +
- An Amazon S3 bucket name is globally unique, and the namespace is shared by all AWS accounts. Mandatory field.
- Example:;; bucket
+Specify the bucket.
++
+An Amazon S3 bucket name is globally unique, and the namespace is shared by all AWS accounts. Mandatory field.
+Example:;; bucket
 [#dataflow-amazon-s3-conn-folder]
 Folder::
 Give the storage folder details. Optional field.
 [#dataflow-amazon-s3-conn-authentication-type]
-Authentication type:: Specifies the type of security protocol to connect to the instance. Based on the type of security, select the authentication type and provide details.
+Authentication type:: Specifies the type of security protocol to connect to the instance. Based on the type of security, select the authentication type and provide details. Mandatory field.
 Valid Values:;; EC2 attached IAM role, Access key and secret key
 [#dataflow-amazon-s3-conn-access-key]
- Access key:: Specify the access key ID generated when creating AWS security credentials. Mandatory field.
+ Access key:: Specify the access key ID generated when creating AWS security credentials. Displayed only when "Authentication type" is Access key and Secret key. Mandatory field.
  Example:;; access key
 Other notes:;; Displayed only when "Authentication type" is "Access key and Secret key".
 [#dataflow-amazon-s3-conn-secret-key]
- Secret key:: Specify the secrete access key generated when creating AWS security credentials. Mandatory field.
+ Secret key:: Specify the secret access key generated when creating AWS security credentials. Displayed only when "Authentication type" is Access key and Secret key. Mandatory field.
  Example:;; ABCDEFGH245HIJK
 Other notes:;; Displayed only when "Authentication type" is "Access key and Secret key".
 
+
 [#sync-properties]
 == Sync properties
+
+For DataFlow S3 sync to work properly, it needs bucket-wide list permission. However, it is sufficient to have 'get' permissions for the object.
+
+----
+{
+"Version": "2012-10-17",
+"Statement": [
+{
+"Sid": "VisualEditor0",
+"Effect": "Allow",
+"Action": [
+"s3:ListBucket",
+"s3:GetBucketLocation"
+],
+"Resource": "arn:aws:s3:::datalake"
+},
+{
+"Sid": "VisualEditor1",
+"Effect": "Allow",
+"Action": [
+"s3:PutObject",
+"s3:GetObject"
+],
+"Resource": "arn:aws:s3:::datalake/david/*"
+}
+]
+}
+----
+
 [#dataflow-amazon-s3-sync-file-name]
 File name:: Specify the name of the file. Mandatory field.
 Example:;; PRODUCT.csv
@@ -86,7 +116,7 @@ Example:;; \\n
 Valid Values:;; Any printable ASCII character
 Default:;; \\n (new line character)
 [#dataflow-amazon-s3-sync-enclosing-character]
-Enclosing character:: Specify if text columns in the source data use enclosing quotation marks, and their type. Optional field.
+Enclosing character:: Specify if the text columns in the source data need to be enclosed in quotes. Optional field.
 Example:;; Single
 Valid Values:;; Single, Double, Empty
 Default:;; None
@@ -139,7 +169,6 @@ Default:;; 0
 [#dataflow-amazon-s3-sync-max-ignored-rows]
 include::partial$dataflow/max-ignored-rows.adoc[]
 [#dataflow-amazon-s3-sync-ts-load-options]
-TS load options::
 include::partial$dataflow/ts-load-options.adoc[]
 [#dataflow-amazon-s3-sync-boolean-representation]
 Boolean representation:: Specifies the representation of data in the boolean field. +

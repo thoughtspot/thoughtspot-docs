@@ -1,19 +1,16 @@
 = Runtime filters
-:last_updated: 12/31/2020
+:last_updated: 08/26/2021
 :linkattrs:
+:page-partial:
 :experimental:
 
-Runtime filters allow you to filter an answer or pinboard through parameters you pass in the URL, to filter the returned data.
+With runtime filters, you can filter an answer or pinboard through URL query parameters. Use this approach with the Data API, and with embedded answers and pinboards.
 
-This approach works both with the Data API, and with embedded answers and pinboards.
+Use runtime filters to filter data at the time of retrieval; see xref:data-api.adoc[Data REST API].
 
-== Capabilities of runtime filters
+.Pinboard runtime filter
 
-Runtime Filters provide ability to filter data at the time of retrieval using xref:embedding.adoc[Embedding] or the xref:data-api.adoc[REST API].
-This is done by providing filter information through the URL query parameters.
-
-This example shows the URL to access a pinboard with a filter.
-Here the Runtime Filter is operating on the column "Color" and will only return values that are equal (EQ) to "red".
+In this example, the Pinboard URL uses the runtime filter on the column `Color`, and returns values that are equal (EQ) to "red".
 
 [source,text]
 ----
@@ -21,8 +18,9 @@ http://<thoughtspot_server>:<port>/?col1=Color&op1=EQ&val1=red#
 /pinboard/e36ee65e-64be-436b-a29a-22d8998c4fae
 ----
 
-This example shows the URL for a REST API call with a filter.
-Here the Runtime Filter is operating on the column `Category` and returning values that are equal to `mfgr%2324`.
+.REST API runtime filter
+
+In this example, the URL for a xref:data-api.adoc[Data REST API] call uses a runtime filter on the column `Category`, and returns values that are equal to `mfgr%2324`.
 
 [source,text]
 ----
@@ -31,12 +29,11 @@ id=e36ee65e-64be-436b-a29a-22d8998c4fae&col1=Category
 &op1=EQ&val1=mfgr%2324
 ----
 
-ThoughtSpot will try to find a matching column from the pinboard or visualization being accessed, using the `col` field as `name`.
-You can add any number of filter sets by incrementing the parameters (for example,
-`col2`, `op2`, and `val2`, and so on) For operators that support more than one value you can pass `val1=foo&val1=bar`, and so on.
+ThoughtSpot attempts to find a matching column in the pinboard or visualization using the `col` field as `name`.
+You can add any number of filter sets by adding additional parameters for columns, operations, and values to the URL. For operators that support more than one value, pass `val1=foo&val1=bar`, and so on.
 
-If the pinboard or answer you're filtering already has one or more filters applied, the Runtime Filter(s) will act as an `AND` condition.
-This means that the data returned must meet the conditions of all filters - those supplied in the runtime filter, and those included in the pinboard or visualization itself.
+If the pinboard or answer already has one or more filters, ThoughtSpot combines runtime filter(s) in an `AND` condition.
+This means that the returned data must meet the conditions of all filters, those supplied in the runtime filter, and those included in the pinboard or visualization itself.
 
 == Supported Data Types
 
@@ -45,25 +42,23 @@ xref:data-types.adoc#time[`TIME`].
 
 NOTE: You must specify the date in epoch time (also known as POSIX or Unix time) for `DATE` and `DATETIME` values.
 
-== Example Uses
+== Best practices
 
-You can use Runtime Filters alongside the REST API and Embedding to create dynamic controls in your Web portal.
-For example, you could use the REST API to get a list of possible filters for a visualization.
-Then use that data to populate a select list on your Web portal.
-When a user makes a selection, you would then pass it as a Runtime Filter, and the result returned will apply the filter.
+You can use runtime filters with the Data REST API to create dynamic controls in your application.
+For example, you could use the Data REST API to get a list of possible filters for a visualization.
+Then use that data to populate a _select_ list in your Web application.
+When a user selects an option, the application passes that option as a runtime filter. The resulting answer or pinboard satisfies the conditions of the filter.
 
 [#limitations-of-runtime-filters]
 == Limitations of runtime filters
 
-Runtime Filters do not work directly on top of tables.
-You must create a worksheet if you want to use Runtime Filters.
-This means that the pinboard or visualization on which you apply a runtime filter must be created on top of a worksheet.
+* Runtime filters do not work directly on top of tables.
+You must create a worksheet if you want to use runtime filters.
+This means that the pinboard or visualization on which you apply a runtime filter must be created from a worksheet.
 
-If the worksheet was created from an answer (it is an aggregated worksheet), Runtime Filters will only work if the answer was formed using a single worksheet.
-If the answer from which the worksheet was created includes raw tables or joins multiple worksheets, you won't be able to use Runtime Filters on it.
-This is because of the join path ambiguity that could result.
+* When creating an aggregated worksheet from an answer, you can only use runtime filters if the answer was formed using a single worksheet.
+If the answer from which you create the worksheet includes raw tables or joins multiple worksheets, you cannot use runtime filters on it. This is to prevent join path ambiguity.
 
 CAUTION: Runtime filters do not allow you to apply `having` filters using the URL.
 
-You cannot apply a Runtime Filter on a pinboard or visualization built on tables whose schema includes a chasm trap.
-See the information on handling xref:chasm-trap.adoc[] and xref:formulas-chasm-trap.adoc[].
+* You cannot apply a runtime filter on a pinboard or visualization built on tables whose schema includes a chasm trap. See the information on handling xref:chasm-trap.adoc[] and xref:formulas-chasm-trap.adoc[].

@@ -72,6 +72,28 @@ Then run this command to create a single partition on the disk mounted under `/e
 sudo parted -s /dev/$TS_DISK mklabel gpt
 sudo parted -s /dev/$TS_DISK mkpart primary xfs 0% 100%
 ----
+
+*[7.1.1 and later]* is_user_wheel_group::
+Specifies if the administrator user should be added to the wheel group. The default is `true`. If you specify `false`, the administrator user is not added to the wheel group.
+
+*[7.1.1 and later]* minimal_sudo_install::
+When this is defined, TS disables certain functionality to avoid making additional sudo calls.  This functionality includes the email notification management system, some cluster statistics reporting, and logging of connectivity status between nodes. The default is undefined.
+
+*[7.1.1 and later]* external_sudo_manager::
+When this is configured, ThoughtSpot does not make any changes to the sudoers file, such as adding the administrator user. The user is then responsible for ensuring that the administrator user has the ability to run certain elevated privilege commands. The default is undefined.
+
+*[7.1.1 and later]* no_mail_packages::
+When this is defined, ThoughtSpot does not install the mail packages `mutt` and `postfix`.  This only applies for online installations. The default is undefined.
+
+*[7.1.1 and later]* skip_sshd_config::
+When this is configured, ThoughtSpot does not make any changes to the sshd configuration of the node.  The user must ensure that the MaxSessions value for the administrator user is at least 10. The default is undefined.
+
+*[7.1.1 and later]* skip_yum_update::
+When this is defined, the ansible playbook does not attempt to run a blanket yum update to pull the latest packages. The default is undefined.
+
+*[7.1.1 and later]* skip_time_sync_setup::
+When this is defined, ThoughtSpot does not configure time synchronization between nodes using `ntp`. The user must configure time synchronization using either `ntp` or `chronyd` themselves. The default is undefined.
+
 hosts:: Add the IP addresses or hostnames of all hosts in the ThoughtSpot cluster.
 admin_uid:: The admin user ID parameter. If you are using `ssh` instead of AWS SSM, use the default values. If you are using SSM, the `ssm_user` uses the default value, `1001`. You must choose a new value. Note that the `thoughtspot` user uses `1002`, so you cannot use `1001` or `1002`.
 admin-gid:: The admin user group ID. If you are using `ssh` instead of AWS SSM, use the default values. If you are using SSM, the `ssm_user` uses the default value, `1001`. You must choose a new value. Note that the `thoughtspot` user uses `1002`, so you cannot use `1001` or `1002`.

@@ -1,7 +1,8 @@
 = Flexible aggregation functions
-:last_updated: 04/29/2021
+:last_updated: 08/30/2021
 :linkattrs:
 :experimental:
+:page-partial:
 :page-aliases: /complex-search/aggregation-flexible.adoc
 
 Use the group_aggregate function in ThoughtSpot to aggregate measures at different granularities than the dimensions used in the search columns.
@@ -35,14 +36,14 @@ The aggregation formulas are described in xref:formulas-aggregation.adoc[Overvie
 
 == About flexible aggregation
 
-ThoughtSpot provides flexible aggregation with the `group_aggregate` function.
-You can use this formula to group and filter query results on different dimensions and granularities from the columns already used in the search bar query.
+ThoughtSpot provides flexible aggregation with the `group_*` function.
+You can use group_* formulas when you want to specify columns and filters to include or ignore in your query.
 
-The `group_aggregate` formula uses a sub-query to perform these custom aggregations.
-If the sub-query is at a higher detailed level, ThoughtSpot adds the result column to the result of original query.
-When the sub-query is at a finer detail level than the original query, ThoughtSpot uses _roll-up_, or _reaggregation_.
+The `group_*` formulas use a sub-query to perform these custom aggregations.
+If the sub-query is at less detailed than the original query, ThoughtSpot adds the result column to the result of original query.
+When the sub-query is at a finer detail level than the original query, ThoughtSpot re-aggregates to formula's results to match the groupings of the original query.
 
-This is particularly useful for comparison analysis.
+To ensure that the level of aggregation of the sub-query is returned the sub-query grouping columns must be included in the search query and/or visualized chart columns.
 
 To use the groups and filters, specify them using the `query_groups` and `query_filters` keywords, respectively.
 You can also add or exclude groups or filters.
@@ -76,11 +77,9 @@ group_aggregate(
 This is helpful to include the main query groups that are not known at formula creation time.
 You can use `+/-` to modify the set of groups included from the query.
 
-NOTE: ``+/-`` is currently supported only for `query_groups`, not `query_filters`.
-
 == When group formula results are finer-grained than the search
 
-With the flexibility of groupings for group formulas, the computed column created by a formula can be finer or coarser grained than the search itself.
+With the flexibility of groupings for group formulas, the computed column created by a formula can be finer or coarser grained than the search itself. Note that ThoughtSpot by default aggregates formula results to the level of detail defined in the search bar. To increase the level of detail in your results, you must add filters to your search as well as defining them in your formula.
 
 For example, you can have a search that shows *total yearly sales* and a formula that computes total sales _for each month_ (a finer-grained calculation than the search).
 
@@ -115,11 +114,11 @@ where, the `min_monthly_sales` formula is written as:
 min(monthly_sales)
 ----
 
-Alternatively, if no aggregation is specified, then the search query also inherits the formula groupings, as in this search:
+If no aggregation is specified, then the search query aggregates to the level of detailed defined in the search bar. In the following search:
 
 *sum revenue yearly monthly_sales*
 
-where, the original query is computed at a monthly grain instead of yearly.
+the original query is computed at a yearly grain instead of monthly.
 
 == Reaggregation scenarios
 
@@ -128,7 +127,7 @@ Some scenarios require aggregation on an already aggregated result.
 For example, computing minimum monthly sales per ship mode, requires two aggregations:
 
 * the first aggregation of *sum* to compute total monthly sales per ship mode.
-* the second aggregation of *min* to compute minimum sale that happened for any given month for that ship mode.
+* the second aggregation of *min* to compute the minimum sale that happened for any given month for that ship mode.
 
 An example of this is this search:
 
@@ -147,10 +146,52 @@ group_aggregate(
 
 For more extensive examples of using the `group-aggregate` function, we encourage you to see xref:reaggregation-scenarios.adoc[Reaggregation scenarios in practice]
 
-== Groups and filters
+== Query groups and query filters
 
 Flexible group aggregate formulas allow for flexibility in both xref:formulas-aggregation-group.adoc[groupings] and xref:formulas-aggregation-filtered.adoc[filters].
 The formulas give you the ability to specify only groupings or only filters.
+
+[#query-filters]
+=== Query filters
+
+With `query_filters()+{filter_condition}` or `query_filters()-{filter_condition}`, users will be able to aggregate the results while including/excluding a filter condition.
+
+==== Including a filter condition
+
+Filter condition: `Ship Mode='car'`
+
+For a search on `Category Customer ID sales by customer id and category Ship Mode='car’`, you can add a formula to calculate sales by category for each customer as:
+
+[source]
+----
+sales by Customer ID and Category= group_aggregate (
+  sum(Sales),
+  {Category, Customer ID },
+  query_filters()+{Ship Mode='air'}
+  )
+----
+
+In this case, the results will be aggregated based on the dimensions: `‘Category’` and `‘Customer ID’` and filters: `‘air’` and `‘car’`.
+
+==== Subtracting or removing a filter condition
+
+With `query_filters()-{column}`, users will be able to aggregate the results while removing any expression related to a column.
+
+Filter condition: `Ship Mode='car'`
+
+For a search on `Customer ID sales by customer id and category Ship Mode='car'`, you can add a formula to calculate sales for each customer while ignoring the filter on a column as:
+
+[source]
+----
+sales by Customer ID and Category= group_aggregate (
+  sum(Sales),
+  {Customer ID, Category },
+  query_filters()-{Ship Mode}
+  )
+----
+
+In this case, the results will be aggregated based on the dimensions in the search; Customer ID and any filter related to Ship Mode will not be considered while aggregating the results.
+
 
 '''
 > **Related information**
@@ -158,3 +199,11 @@ The formulas give you the ability to specify only groupings or only filters.
 > * For more examples of flexible aggregation, see the xref:formula-reference.adoc#aggregate-functions[group_aggregate] function in the xref:formula-reference.adoc[Formula function reference].
 > * To learn about aggregation formulas in general, see xref:formulas-aggregation.adoc[Overview of aggregate formulas] and xref:formulas-aggregation-group.adoc[Group aggregation functions].
 > * To learn about how the `group-aggregate` function can be used within your business practice, we encourage you to see xref:reaggregation-scenarios.adoc[Reaggregation scenarios in practice].
+
+'''
+> **Related information**
+>
+> * xref:formulas-cumulative.adoc[Cumulative functions]
+> * xref:formulas-moving.adoc[Moving functions]
+> * xref:formulas-aggregation-group.adoc[Grouping functions]
+> * xref:formulas-aggregation-filtered.adoc[Filtered aggregation functions]

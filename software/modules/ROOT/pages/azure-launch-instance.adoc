@@ -79,7 +79,7 @@ NOTE: This user is necessary for Azure VM creation, but does not exist in Though
 
 SSH public key:: Enter an SSH public key.
 +
-You can choose *use existing public key* or *generate new key pair*, or xref:support-contact.adoc[ThoughtSpot Support^] to obtain a public key.
+You can choose *use existing public key* or *generate new key pair*, or xref:support-contact.adoc[ThoughtSpot Support] to obtain a public key.
 +
 NOTE: This SSH public key is different from the SSH private key you use later, to ssh into your VM from the command line. This public key is necessary for Azure VM creation, but is not necessary at any later point.
 
@@ -91,7 +91,7 @@ See xref:port-requirements[minimum port requirements].
 
 . Specify information under *Disks*.
 +
-//image::azure-disks.png[Specify disk information]
+// image::azure-disks.png[Specify disk information]
 +
 OS disk type:: Choose a disk type from the dropdown menu.
 ThoughtSpot recommends the Premium SSD disks.
@@ -167,7 +167,7 @@ Select *Networking* from the list on the left side of the screen.
 +
 Log in as the admin user, using the private key that your ThoughtSpot contact sent you.
 +
-[source]
+[source,console]
 ----
 $ ssh -i <path_to_private_key> admin@<public_VM_IP>
 ----
@@ -175,7 +175,7 @@ $ ssh -i <path_to_private_key> admin@<public_VM_IP>
 +
 The command prompts you to type in a new password, and then to confirm the password.
 +
-[source]
+[source,console]
 ----
 $ sudo passwd admin
 Changing password for user admin
@@ -192,14 +192,14 @@ Your private key does not work after initial installation.
 
 Verify the existence of your data disks, created in Step 4 of <<create-instance,create an instance>>, by issuing `lsblk` in your terminal application:
 
-[source,bash]
+[source,console]
 ----
 $ lsblk
 ----
 
 Your result may look something like the following listing:
 
-[source,bash]
+[source,console]
 ----
    NAME    MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
    fd0       2:0    1    4K  0 disk
@@ -217,7 +217,7 @@ Your result may look something like the following listing:
 
 . Unmount the temporary disk by issuing the following command:
 +
-[source,bash]
+[source,console]
 ----
 $ sudo umount /mnt/resource
 ----
@@ -231,14 +231,14 @@ You must unmount the `/mnt/resource` disk.
 CAUTION: Do not use the disk `/dev/sdb` (the ephemeral disk).
 Any data on it will be wiped if the VM is shut down.
 +
-[source,bash]
+[source,console]
 ----
  $ sudo /usr/local/scaligent/bin/prepare_disks.sh /dev/sdc /dev/sdd
 ----
 
 . Check the status of the disks by issuing the following command:
 +
-[source,bash]
+[source,console]
 ----
  $ df -h
 ----

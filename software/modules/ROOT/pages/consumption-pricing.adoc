@@ -1,12 +1,12 @@
 = Consumption-based pricing
 :last_updated: 04/09/2021
 :linkattrs:
+:page-partial:
 :page-aliases: /appliance/consumption-pricing.adoc
 :experimental:
 :description: ThoughtSpot’s consumption-based pricing model lets you purchase a ThoughtSpot subscription based on your organization's utilization of the ThoughtSpot product.
 
-ThoughtSpot’s consumption-based pricing model lets you purchase a ThoughtSpot subscription based on your organization's utilization of the ThoughtSpot product. When you purchase ThoughtSpot using consumption-based pricing, ThoughtSpot bills you based on xref:credits[credits]. The ThoughtSpot consumption pricing model is available for
-both Connections software deployment on your cloud platform, and ThoughtSpot Cloud.
+ThoughtSpot’s consumption-based pricing model lets you purchase a ThoughtSpot subscription based on your organization's utilization of the ThoughtSpot product. When you purchase ThoughtSpot using consumption-based pricing, ThoughtSpot bills you based on xref:credits[credits]. The ThoughtSpot consumption pricing model is available both for Connections software deployment on your cloud platform, and ThoughtSpot Cloud.
 
 For more information about pricing, refer to https://www.thoughtspot.com/pricing[ThoughtSpot pricing^].
 Each cluster must have a discrete pricing model.
@@ -16,16 +16,16 @@ ThoughtSpot offers consumption- and capacity-based pricing. Each cluster must ha
 [#rights-obligations]
 == Using the ThoughtSpot consumption pricing model
 
-We originally introduced the consumption-based pricing model in our ThoughtSpot Cloud offering. You can now use the consumption pricing model when you deploy ThoughtSpot Software in your own cloud environment, and use Embrace connections to your data.
+We originally introduced the consumption-based pricing model in our ThoughtSpot Cloud offering. You can now use the consumption pricing model when you deploy ThoughtSpot Software in your own cloud environment, and use connections to your data.
 
 You must allow ThoughtSpot to gather usage information from your cluster environment daily. We use a secure TLS-encrypted SSL connection to gather this information, and use it solely for the purpose of measuring credit consumption.
 
-Additionally, you must allow ThoughtSpot to serve usage information to you, for full visibility and accurate reporting of in-product usage and credit consumption. To accomplish this, ThoughtSpot creates an Embrace JDBC connection to your cluster, and uses TLS-encrypted SSL transport protocol to serve this data. This usage information is secure and isolated inside our cloud environment.
+Additionally, you must allow ThoughtSpot to serve usage information to you, for full visibility and accurate reporting of in-product usage and credit consumption. To accomplish this, ThoughtSpot creates a JDBC connection to your cluster, and uses TLS-encrypted SSL transport protocol to serve this data. This usage information is secure and isolated inside our cloud environment.
 
 The following points outline the necessary prerequisites to licensing and using ThoughtSpot based on consumption level.
 
 Supported deployments::
-The ThoughtSpot consumption pricing model is available for both https://cloud-docs.thoughtspot.com/[ThoughtSpot Cloud^], and for ThoughtSpot Software deployments that use xref:embrace.adoc[] to connect to data.
+The ThoughtSpot consumption pricing model is available for both https://cloud-docs.thoughtspot.com/[ThoughtSpot Cloud^], and for ThoughtSpot Software deployments that use xref:connections.adoc[] to connect to data.
 +
 Consumption pricing *does not apply* to ThoughtSpot Software deployments that use the ThoughtSpot Falcon database, where you import/maintain data using xref:dataflow.adoc[DataFlow] or another ETL tool.
 
@@ -89,10 +89,11 @@ This includes automatically triggered SpotIQ analyses, indexing or other non-use
 
 == Monitor your consumption
 
-ThoughtSpot maintains user activity data in a relational database to make it available for reporting in the ThoughtSpot product. ThoughtSpot instances that are hosted in your on-premises/cloud provider environment must connect to this relational database through an Embrace connection in order to access information about consumption usage. This Embrace connection is created by ThoughtSpot support personnel as part of the setup for consumption pricing on ThoughtSpot Software instances (Software on-premises installations). The connection uses Transport Layer Security (TLS) on port 5439 as a secure channel to query the cluster-specific consumption data.
+ThoughtSpot maintains user activity data in a relational database to make it available for reporting in the ThoughtSpot product. ThoughtSpot instances that are hosted in your on-premises/cloud provider environment must connect to this relational database through a connection in order to access information about consumption usage. This connection is created by ThoughtSpot support personnel as part of the setup for consumption pricing on ThoughtSpot Software instances (Software on-premises installations). The connection uses Transport Layer Security (TLS) on port 5439 as a secure channel to query the cluster-specific consumption data.
 
-IMPORTANT: When using consumption pricing with Embrace in ThoughtSpot Software, you must ensure your cluster can connect to `redshift-pricing.thoughtspot.cloud` on TCP port 5439. Access to this port is *required* for an on-prem cluster that uses consumption pricing.
+IMPORTANT: When using consumption pricing in ThoughtSpot Software, you must ensure your cluster can connect to `redshift-pricing.thoughtspot.cloud` on TCP port 5439. Access to this port is *required* for an on-prem cluster that uses consumption pricing.
 
+[#credit-usage-pinboard]
 You can monitor your credit consumption through the *Credit Usage pinboard*, a new default admin-only pinboard that shows data we collect to monitor credit usage consumption. You can access this Pinboard by searching for it on the **Pinboards** page.
 
 image::consumption-usage-pinboard.png[Credit Usage Pinboard]
@@ -113,4 +114,4 @@ The Credit Usage Pinboard contains the following visualizations and headlines:
 * Month of Year Credit Usage, by User GUID
 
 == Consumption data storage
-ThoughtSpot stores your consumption data and keeps it secure. A dedicated Amazon S3 bucket is set up to store the user activity CSV files temporarily. Then, the S3 data is uploaded to a searchable data store (Amazon Redshift). There is an S3 bucket prefix for each customer and a unique key for each customer to encrypt it. The encryption key is stored in AWS KMS. As part of the pricing configuration, the customer cluster is configured with an access key to have access to the S3 bucket prefix unique to the cluster. ThoughtSpot deploys and maintains an Amazon Redshift database to load the consumption pricing data. Every customer cluster that is enabled for consumption pricing gets access to only that cluster’s consumption pricing data. A unique database user is created in Redshift and configured in the customer cluster as part of the pricing configuration. This results in a unique Embrace connection per customer cluster to the ThoughtSpot manager consumption pricing database (Redshift). This is used to view the consumption pricing related reports in the customer's ThoughtSpot instance.
+ThoughtSpot stores your consumption data and keeps it secure. A dedicated Amazon S3 bucket is set up to store the user activity CSV files temporarily. Then, the S3 data is uploaded to a searchable data store (Amazon Redshift). There is an S3 bucket prefix for each customer and a unique key for each customer to encrypt it. The encryption key is stored in AWS KMS. As part of the pricing configuration, the customer cluster is configured with an access key to have access to the S3 bucket prefix unique to the cluster. ThoughtSpot deploys and maintains an Amazon Redshift database to load the consumption pricing data. Every customer cluster that is enabled for consumption pricing gets access to only that cluster’s consumption pricing data. A unique database user is created in Redshift and configured in the customer cluster as part of the pricing configuration. This results in a unique connection per customer cluster to the ThoughtSpot manager consumption pricing database (Redshift). This is used to view the consumption pricing related reports in the customer's ThoughtSpot instance.

@@ -21,11 +21,23 @@ Connection name::
 [#dataflow-sql-server-conn-connection-type]
 Connection type:: Choose the SQL Server connection type. Mandatory field.
 Example:;; SQL Server
+
+[#dataflow-sql-server-conn-sql-server-type]
+SQL server type:: Specify the SQL server type, either On-premise, Azure SQL database, or SQL server on Cloud VM. Mandatory field.
+Default:;; On-premise
+
+[#dataflow-sql-server-conn-authentication-type]
+Authentication type:: Specifies the type of security protocol to connect to the instance. Based on the type of security, select the authentication type and provide details. Mandatory field.
+Valid Values:;; Database credentials, Active directory password, Active directory service principal, Active directory MSI
+Other notes:;; Field appears when you select "Azure SQL database" as server type.
+
 [#dataflow-sql-server-conn-host]
 Host:: Specify the hostname or the IP address of the SQL Server system. Mandatory field.
 Example:;; www.example.com
+[#dataflow-sql-server-conn-instance]
+Instance:: Specify an instance with all SQL Server databases run by a single SQL Server service. This option appears when SQL server type is "On-premise" or "SQL Server on Cloud VM". To access, select the box next to *Named instance*. When selected, *Instance* replaces the *Port* option.
 [#dataflow-sql-server-conn-port]
-Port:: Specify the port associated with the SQL Server system. Mandatory field.
+Port:: Specify the port associated with the SQL Server system. This option appears when SQL server type is "Azure SQL database", or when the *Named instance* option is not selected. Mandatory field.
 Example:;; 1234
 [#dataflow-sql-server-conn-user]
 User::
@@ -34,7 +46,11 @@ This user should have necessary privileges to access the data in the databases. 
 Example:;; userdi
 [#dataflow-sql-server-conn-password]
 include::partial$dataflow/password.adoc[]
-
+[#dataflow-sql-server-conn-aad-secure-principal-id]
+AAD secure principal id:: Specify the Azure Active Directory secure principal id. Field appears when you select the "Active directory service principal" authentication type.
+[#dataflow-sql-server-conn-aad-secure-principal-secret]
+AAD secure principal secret:: Specify the Azure Active Directory secure principal secret. Field appears when you select the "Active directory service principal" authentication type.
+////
 [#dataflow-sql-server-conn-instance]
 Instance:: Specify an instance with all SQL Server databases run by a single SQL Server service. Optional field.
 Example:;; diazsql
@@ -43,13 +59,16 @@ Other notes:;; Advanced configuration.
 Version:: Specify the SQL Server version being connected to. Optional field.
 Example:;; 2016
 Other notes:;; Advanced configuration.
+////
+[#dataflow-sql-server-conn-azure-ad-user]
+Azure AD User:: This option appears when you select "Azure SQL database" in *SQL server type*. Select the checkbox next to *Azure AD User* to provide Azure Active Directory authentication details.
 [#dataflow-sql-server-conn-jdbc-options]
 include::partial$dataflow/jdbc-options.adoc[]
 
 [#sync-properties]
 == Sync properties
 [#dataflow-sql-server-sync-data-extraction-mode]
-Data extraction mode:: Specify the extraction type. Mandatory field.
+Data extraction mode:: Specify the extraction type. Optional field.
 Example:;; JDBC
 Valid Values:;; JDBC, BCP
 Default:;; JDBC
@@ -78,6 +97,7 @@ Valid Values:;; Any ASCII character
 Default:;; \"
 [#dataflow-sql-server-sync-max-ignored-rows]
 include::partial$dataflow/max-ignored-rows.adoc[]
+
 [#dataflow-sql-server-sync-ts-load-options]
 include::partial$dataflow/ts-load-options.adoc[]
 

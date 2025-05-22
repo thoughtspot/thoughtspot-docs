@@ -1,5 +1,5 @@
 = Exadata connection reference
-:last_updated: 03/08/2022
+:last_updated: 09/10/2021
 :page-aliases: /data-integrate/dataflow/dataflow-exadata-reference.adoc
 :experimental:
 :linkattrs:
@@ -78,13 +78,14 @@ Valid Values:;; SINGLE, DOUBLE
 Default:;; DOUBLE
 Other notes:;; This is required if the text data has newline character or delimiter character.
 [#dataflow-exadata-sync-max-ignored-rows]
-Max ignored rows:: Abort the transaction after encountering 'n' ignored rows. Optional field.
-Default:;; 0
+include::partial$dataflow/max-ignored-rows.adoc[]
+
 [#dataflow-exadata-sync-fetch-size]
 Fetch size:: Specify the number of rows to be fetched at a time and processed in memory.If the value specified is zero then, all rows are extracted at once. Optional field.
 Example:;; 1000
 Valid Values:;; Any numeric value
 Default:;; 1000
+////
 [#dataflow-exadata-sync-file-type]
 File Type:: Specify type of the file Optional field.
 Default:;; Delimiter
@@ -103,6 +104,7 @@ Encryption:: Specify if the data needs to be encrypted Optional field.
 Example:;; NO
 Valid Values:;; NO, YES
 Default:;; NO
+
 [#dataflow-exadata-sync-date-style]
 Date Style:: Specifies how to interpret the date format Optional field.
 Example:;; YMD
@@ -141,6 +143,22 @@ Time Delimiter:: Specifies the character used as separate the time components. O
 Example:;; :
 Valid Values:;; Any printable ASCII character
 Default:;; :
+////
+
+[#dataflow-exadata-sync-tsload-options]
+TS load options:: Specifies the parameters passed with the `tsload` command, in addition to the commands already included by the application. The format for these parameters is:
++
+`--<param_1_name> <optional_param_1_value>`
++
+`--<param_2_name> <optional_param_2_value>`
++
+Optional field.
+
+Example:;; --max_ignored_rows 0
+Valid Values:;; --user "dbuser" --password "$DIWD" --target_database "ditest" --target_schema "falcon_schema"
+Default:;; --max_ignored_rows 0
+
+Reference:;; xref:tsload-api-flags.adoc[]
 
 '''
 > **Related information**
