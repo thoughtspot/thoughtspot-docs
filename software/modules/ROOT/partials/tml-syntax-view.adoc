@@ -1,6 +1,6 @@
-== Syntax of the View TML file
+== Syntax of the view TML file
 
-The `TML` file for Scriptable Views has a specific syntax.
+The `TML` file for scriptable views has a specific syntax.
 
 See the xref:parameters[TML parameters] for details about the keywords used in this example.
 
@@ -10,9 +10,9 @@ You can add that variable in the TML file to specify conditional formatting.
 
 To reduce ambiguity, you may need to add the optional `fqn` parameter to your TML file when you reference source tables or connections. This is necessary if you have multiple connections or tables with the same name. If you do not add the `fqn` parameter, and the connection or table you reference does not have a unique name, the file import fails.
 
-Refer to <<syntax-joins,join syntax>> for more information on the functionality and syntax of Worksheet, View, and table joins in TML.
+Refer to <<syntax-joins,join syntax>> for more information on the functionality and syntax of worksheet, view, SQL view, and table joins in TML.
 
-NOTE: If you edit the joins in the View TML file, you are only editing the joins for that specific View. You are not editing the joins at the table level. To modify table-level joins, you must edit the source table's TML file.
+NOTE: If you edit the joins in the view TML file, you are only editing the joins for that specific view. You are not editing the joins at the table level. To modify table-level joins, you must edit the source table's TML file.
 
 [subs=+macros]
 ....
@@ -112,9 +112,19 @@ NOTE: If you edit the joins in the View TML file, you are only editing the joins
         - region_name : <region_name_in_UI>
       <<spotiq_preference,spotiq_preference>> : <spotiq_preference_string>
       <<search_iq_preferred,search_iq_preferred>> : [ true | false ]
-    <<name,name>> : <column_name_2>
+  - <<name,name>> : <column_name_2>
     <<description,description>> : <column_description>
     <<search_output_column,search_output_column>>: <query_column_name>
     <<column_id,column_id>> : <table_path>::<column_id_2>
-    ...
+  <<joins_with,joins_with>>:
+  - <<name,name>>: <join_name_1>
+    <<description,description>>: <optional_join_description_1>
+    <<destination,destination>>:
+      <<name,name>>: <destination_table_name_1>
+      <<fqn,fqn>>: <optional_table_guid_1>
+    <<on,on>>: <join_expression_string_1>
+    <<type,type>>: [RIGHT_OUTER | LEFT_OUTER | INNER | OUTER]
+    <<is_one_to_one,is_one_to_one>>: [ false | true ]
+    <<name,name>>: <join_name_2>
+    <<name,name>>: <join_name_n>
 ....
