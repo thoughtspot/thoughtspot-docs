@@ -1,0 +1,140 @@
+= Apply conditional formatting
+:last_updated: 11/5/2021
+:linkattrs:
+:experimental:
+:page-layout: default-cloud
+:page-aliases: /end-user/search/apply-conditional-formatting.adoc
+:description: Apply conditional formatting to add visual cues for values in your data.
+:jira: SCAL-177005, SCAL-201639, SCAL-223214
+
+
+Apply conditional formatting to tables or charts to highlight values in the data.
+This makes values above, below, or within a particular threshold stand out.
+
+
+If <<advanced-conditional-formatting,advanced conditional formatting>> is  enabled in your environment, you can apply conditional formatting rules to tables and charts to compare values to another column,
+//or a Parameter,
+as well as to a particular value. To enable this feature, contact your administrator.
+
+
+== Understand conditional formatting
+
+Many companies create Liveboards with key metrics they want to track in daily or weekly staff meetings.
+Using conditional formatting, they can see at a glance how they are performing relative to these metrics.
+
+You can add visual cues for KPIs (Key Performance Indicators) or threshold metrics to charts and tables, to easily show where you are falling short or exceeding targets.
+These visual cues are called conditional formatting, which applies color formatting to your search result.
+For tables, you can add conditional formatting to set the background color of cells in a table based on the values they contain.
+For charts, you can add conditional formatting to show the threshold(s) you defined, and the data that falls within them will be shown using the same color.
+
+[#table]
+== Apply conditional formatting to a table
+
+You can apply conditional formatting to both table cells and column summaries.
+You can specify a background color, font color, and/ or font style: bold, italics, underlined, or strikethrough.
+You can create conditional formatting rules for both measures and attributes.
+For pivot tables, you can only create conditional formatting rules for measures.
+
+Pivot tables follow the same conditional formatting rules as tables, even though they fall under ThoughtSpot’s chart category. However, you cannot set different conditional formatting rules for pivot table cells and pivot table column summaries.
+
+NOTE: You can only apply conditional formatting to numbers and strings.
+For example, you can apply conditional formatting to a `month of year` column, with values such as `January`, but not to date column where dates are in the format `1 Jan 2021`.
+For pivot tables, you can only apply conditional formatting to measure, not attributes.
+
+If you create multiple conditional formatting rules for one measure or attribute, the first rule you create overrides the others, if there is a conflict.
+To change which rule overrides the others, simply drag and drop the rule to the top of the list of conditional formatting rules.
+
+In the following example, the *christmas* table cell falls under both the `is christmas` rule, and the `not winter` rule.
+Currently, the `not winter` rule overrides the `is christmas` rule, so the *christmas* table cell does not have red text and a green background.
+
+image::conditional-formatting-override.png[Drag and drop the rule you would like to override other rules]
+
+To create a conditional formatting rule:
+
+. Select the *edit table configuration* icon image:icon-gear-10px.png[Table configuration icon image] to the upper right of your table.
+The *Edit table* panel appears, on the *Configure* menu.
+. Select the measure or attribute you would like to add a conditional formatting rule for.
+. The *Edit* panel for that column appears.
+Under *Conditional formatting*, select *+ Add rule*.
+If you would like to add conditional formatting for a column summary, select *Summary* under the column name, and click *+ Add rule*.
++
+NOTE: When you create a rule for a column, it does not automatically apply to the column summary.
+You must create a separate rule for the column summary.
++
+image::table-config-conditional-formatting.png[Conditional formatting -- add rule]
+
+. Select an operator.
+The valid options for attributes are `is`, `not`, `contains`, `does not contain`, `starts with`, `ends with`, `empty`, and `not empty`.
+The valid options for measures are `less than`, `greater than`, `less than or equal to`, `greater than or equal to`, `equal to`, `not equal to`, `between`, `empty`, and `not empty`.
+. Specify the column value(s) that the formatting should affect.
+. Choose a background color, font color, and/or font style: bold, italics, underlined, or strikethrough.
++
+In this example, if the `selling season` is (=) `christmas`, the background color for the table cell is green, and the font color is red.
++
+image::table-config-conditional-formatting-rule.png[Conditional formatting example]
+
+. Select *Save*.
+The system applies the rule to the column or column summary.
+. You can edit an existing rule from the *Edit* panel for the column by selecting the rule.
+. You can delete a conditional formatting rule from the *Edit* panel for the column.
+Select the *delete* icon that appears when you hover over a rule.
++
+image::table-config-conditional-formatting-delete.png[Delete a conditional formatting rule]
+
+NOTE: If you change to a chart type, you must apply conditional formatting again.
+Conditional formatting is tied to the specific visualization.
+
+[#conditional-formatting-chart]
+== Apply conditional formatting to a chart
+
+include::partial$conditional-formatting-chart.adoc[]
+
+.[.badge.badge-early-access]#Early Access#
+****
+[#advanced-conditional-formatting]
+*Advanced conditional formatting*
+
+Rather than simply using conditional formatting comparing a column's measures to a single value (for example, `sales > 10000`), you can now use conditional formatting to compare a column's measures to another column.
+//or to a parameter.
+For example, if you search for `sales this year` versus `sales last year`, you can highlight where sales this year were less than last year. You can set multiple conditional formatting rules to a single table or chart. The new *Conditional formatting* window allows you to manage all conditional rules in one place.
+
+To enable this feature, contact your administrator.
+
+
+To create a conditional formatting rule on a chart or table, follow these steps:
+
+. On a table, select the *more options* menu icon image:icon-more-10px.png[ellipsis icon] to the right of your selected column and choose *Conditional formatting* from the dropdown menu. On a chart, open the *edit chart configuration* menu image:icon-gear-10px.png[gear icon], select the tile for your selected column, and click *Edit* under *Conditional formatting*.
++
+NOTE: ThoughtSpot does not support advanced conditional formatting on pivot tables.
+. In the *Conditional formatting* pop-up window, select *+ Add condition*.
+
+. Choose whether to set a *Value based* or *Column based* condition.
+//or *Parameter based* condition.
++
+Value-based conditions let you compare the column's values to a certain numerical value. Column-based conditions let you compare the column's values to the values of another column.
+//Parameter-based conditions let you compare the column's values to a Parameter you create for the Search.
+
+. From the left dropdown menu, you can choose whether to change the column you're basing the condition on.
+
+. From the center dropdown menu, select an operator.
+The valid options for attributes are `is`, `not`, `contains`, `does not contain`, `starts with`, `ends with`, `empty`, and `not empty`.
+The valid options for measures are `less than`, `greater than`, `less than or equal to`, `greater than or equal to`, `equal to`, `not equal to`, `between`, `empty`, and `not empty`.
+. For value based conditions, use the left option to enter your desired value. For column based conditions, use the left dropdown menu to select the comparing column.
+//For Parameter based conditions, use the left dropdown menu to select your Parameter.
+. Choose a background color, font color, and/or font style: bold, italics, underlined, or strikethrough.
+. [Optional] For rules on a table, you can choose to highlight the entire row for all values that fit the condition.
+
+. Select *Apply*.
+The system applies the rule to the column.
+. You can edit an existing rule from the *Edit* panel for the column by selecting the rule.
+. You can delete a conditional formatting rule from the *Edit* panel for the column.
+Select the rule from the *Edit* panel and click *Remove*.
+****
+
+'''
+> **Related information**
+>
+> * xref:chart-table-change.adoc[Change result display options]
+> * xref:show-underlying-data.adoc[Show underlying data]
+> * xref:search-drill-down.adoc[See the search behind a result]
+> * xref:search-download.adoc[Download your search]
