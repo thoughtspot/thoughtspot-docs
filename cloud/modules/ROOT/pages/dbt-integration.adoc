@@ -1,0 +1,151 @@
+= Integrate with dbt
+:last_updated: 6/8/2022
+:linkattrs:
+:experimental:
+:page-layout: default-cloud
+:description: ThoughtSpot's dbt integration allows you to provide your existing dbt models and create ThoughtSpot Worksheets, which you can use to search your data.
+
+ThoughtSpot's dbt integration allows you to easily provide your existing dbt models and automatically create ThoughtSpot xref:worksheets.adoc[Worksheets], which you can use to xref:search-data.adoc[search your data].
+
+dbt takes your raw data in your data warehouse and transforms and validates it. ThoughtSpot's dbt integration  connects users to their cloud data warehouse, integrates with your dbt models using an API key or zip file, and generates the relationships between the tables defined in the dbt model that you select. It also brings any logical tables into ThoughtSpot. Then, ThoughtSpot creates new Worksheets, based on the relationships between the tables. If a table does not have any relationships, ThoughtSpot creates a Worksheet based only on that table. These Worksheets provide user-friendly logical views of your complex datasets. Users can use these Worksheets to easily search their complex data. This process may replace existing dbt tables you imported into ThoughtSpot, but it will not replace existing Worksheets.
+
+NOTE: Integration with dbt is certified only for Amazon Redshift, Databricks, Google BigQuery, and Snowflake connections.
+
+[#prerequisites]
+== Prerequisites
+Before you can integrate with dbt, you must satisfy the following prerequisites
+
+* Create a xref:connections.adoc[connection] to your external cloud data warehouse: Amazon Redshift, Databricks, Google BigQuery, or Snowflake. This cloud data warehouse must contain the tables that are created from your dbt models.
+* If you connect to dbt via *dbt cloud*, you need the API key, Account ID, and Project ID:
++
+API key:: This is also called the *API token* in dbt. To find this token, refer to the https://docs.getdbt.com/docs/dbt-cloud-apis/user-tokens[dbt documentation^].
+Account ID:: Your default dbt Cloud account ID. Find your account ID in your dbt Cloud URL, after you log in. For example, if your URL is `https://cloud.getdbt.com/#/accounts/12345/projects/56789/dashboard`, your account ID is `12345`.
+Project ID:: Find your project ID in your dbt Cloud URL, after you log in. For example, if your URL is `https://cloud.getdbt.com/#/accounts/12345/projects/56789/dashboard`, your project ID is `56789`.
+* Optionally define the relationships for the dbt models in your `yml` schema file. For more information, refer to the https://docs.getdbt.com/docs/build/tests[dbt documentation^].
++
+NOTE: If you do not define relationships, ThoughtSpot imports each model as a single table and creates one Worksheet based on each table.
+* If you are using *dbt cloud*, the *generate docs on run* setting must be on. You can enable this setting in the jobs settings of the project, under *Execution settings*.
+* If you are using *dbt core*, execute the `dbt docs generate` command along with the `dbt run` command.
+* If you are using *dbt core*, you must connect to dbt using a zip file, which must contain the latest `manifest.json` and `catalog.json` files. By default, dbt stores these files under the `<project name>/target` folder.
++
+NOTE: When you compress the `manifest.json` and `catalog.json` files into one zip file, ensure that you do not include any hidden files, as this may cause errors later. To check the folder you plan to compress does not contain hidden files, refer to these articles for viewing hidden files on your https://discussions.apple.com/thread/7581737[Mac^] or https://support.microsoft.com/en-us/windows/view-hidden-files-and-folders-in-windows-97fbc472-c603-9d90-91d0-1166d1d9f4b5[Windows^] computer. If the folder contains hidden files, move them out of the folder before compressing it into a zip file.
+
+== How the dbt integration works
+
+To integrate with dbt, ThoughtSpot reads information from the latest versions of the `manifest.json` and `catalog.json` files. In the <<prerequisites,prerequisites>>, you ensured that ThoughtSpot could find these files, either by enabling the *generate docs on run* setting in dbt cloud, or by creating a zip file with your `manifest.json` and `catalog.json` files for dbt core.
+
+ThoughtSpot reads the following information from the `manifest.json` file:
+
+* Database name
+* Schema name
+* Model/Table name
+* Table description
+* Column name
+* Column description
+* Table relationships (joins)
+
+ThoughtSpot reads the following information from the `catalog.json` file:
+
+* Column data types
+
+=== How ThoughtSpot creates Worksheets from dbt
+
+ThoughtSpot creates Worksheets based on the table relationships defined in a `schema.yml` file in the models directory.
+
+The Worksheet creation follows these steps:
+
+. ThoughtSpot creates logical tables based on the model files. In the following example, ThoughtSpot creates a table for d_customer, d_product, d_product_category, and so on.
+
+. ThoughtSpot creates joins between the logical tables, based on the relationships defined in the `schema.yml` file. In the following example, ThoughtSpot creates joins between d_product and d_product_category, d_shipping and d_customer, and so on.
+
+. ThoughtSpot creates Worksheets made up of the logical tables, based on the relationships defined in the `schema.yml` file.
+
+For example, based on the following `schema.yml` file, ThoughtSpot creates the following Worksheets:
+
+Download the `schema.yml` file link:{attachmentsdir}/schema-example.yml[here].
+
+|===
+| Model name | Relationship to | Worksheet created?
+
+|d_customer | none | No. This model file only has relationships _from_ other model files. It does not have relationships _to_ other model files.
+|d_product | d_product_category | Yes. The Worksheet consists of the 2 tables: d_product and d_product_category.
+|d_shipping | d_customer | Yes. The Worksheet consists of the 2 tables: d_shipping and d_customer.
+|d_product_category | none | No. This model file only has relationships _from_ other model files. It does not have relationships _to_ other model files.
+| f_inventory | d_product, d_product_category | Yes. The Worksheet consists of the 3 tables: f_inventory, d_product, and d_product_category.
+| f_order | d_customer, d_shipping, d_product, d_product_category | Yes. The Worksheet consists of the 5 tables: f_order, d_customer, d_shipping, d_product, and d_product_category.
+|===
+
+== Integrating with dbt
+You can set up your dbt integration from the Data workspace. To integrate with dbt, follow these steps:
+
+. Ensure that you have already xref:connections.adoc[created a connection] to your external cloud data warehouse. This cloud data warehouse must contain the tables that are created from your dbt models.
+
+. Select *Data* in the top navigation bar.
+
+. Select *Utilities* in the side navigation bar.
+
+. Under *dbt Integration*, select *Open dbt integration wizard*. The dbt integration wizard opens.
++
+image::dbt-integration-connect.png[dbt integration step 1]
+
+. Under *Data warehouse*, select the cloud data warehouse you would like to use from the dropdown, or search for it using the search bar in the dropdown.
+
+. Under *Database*, select the database within the cloud data warehouse that you would like to use from the dropdown, or search for it using the search bar in the dropdown. This database must contain the tables that are created from your dbt models.
+
+. Under *Connect to dbt project*, select either *Via dbt cloud* or *Use a .zip file*. If you are using *dbt core*, you must select *Use a .zip file*.
+
+. If you select *Via dbt cloud*, fill in the following parameters:
++
+API key:: This is also called the *API token* in dbt. To find this token, navigate to your *Account Settings* page in dbt cloud. Click on the *Service Account tokens* page, and generate a new token.
+Account ID:: Your default dbt Cloud account ID. Find your account ID in your dbt Cloud URL, after you log in. For example, if your URL is `https://cloud.getdbt.com/#/accounts/12345/projects/56789/dashboard`, your account ID is `12345`.
+Project ID:: Find your project ID in your dbt Cloud URL, after you log in. For example, if your URL is `https://cloud.getdbt.com/#/accounts/12345/projects/56789/dashboard`, your project ID is `56789`.
+
+. If you select *Use a .zip file*, click the *Upload* button, and add the zip file from your files. The zip file must contain the latest `manifest.json` and `catalog.json` files. By default, dbt stores these files under the `<project name>/target` folder.
++
+NOTE: When you compress the `manifest.json` and `catalog.json` files into one zip file, ensure that you do not include any hidden files, as this may cause errors later. To check the folder you plan to compress does not contain hidden files, refer to these articles for viewing hidden files on your https://discussions.apple.com/thread/7581737[Mac^] or https://support.microsoft.com/en-us/windows/view-hidden-files-and-folders-in-windows-97fbc472-c603-9d90-91d0-1166d1d9f4b5[Windows^] computer. If the folder contains hidden files, move them out of the folder before compressing it into a zip file.
+
+. Select *Next*.
+
+. On the next screen, select up to 4 dbt folders to import. ThoughtSpot lists the model names, paths, and the number of tables they have.
++
+To increase the maximum number of dbt folders you can import at a time, contact {support-url}.
++
+image::dbt-integration-folder-multiple.png[dbt integration step 2]
+
+. Select *Next*.
+
+. On the next screen, select tables to import. By default, ThoughtSpot imports all tables in the folder(s). Deselect any tables you do not want to import. You must select at least 1 table within each dbt folder.
++
+image::dbt-integration-tables.png[dbt integration step 3]
+
+. Select *Finish*.
+
+. The *Worksheets generated* page appears. ThoughtSpot generates several Worksheets from your dbt models.
++
+image::dbt-integration-worksheets.png[dbt integration step 4]
++
+To inspect the Worksheet details, click on any of the Worksheet names. You can view the joins created between the related tables in the Worksheet from the *Joins* tab for the Worksheet.
++
+To xref:search-data.adoc[search the data] on the Worksheet, select *Search on this worksheet* next to any Worksheet.
+
+. Select *Exit*.
+
+. On the Data workspace home page, you can see the tables and Worksheets that you just created from dbt.
++
+image::dbt-integration-home-page.png[dbt integration view worksheets and tables]
++
+NOTE: This process may replace existing dbt tables you imported into ThoughtSpot, but it will not replace existing Worksheets.
+
+. If you click on any of the tables and Worksheets you created, and then select *Joins*, you can see the joins ThoughtSpot created, based on the relationships in dbt.
+
+. If there are any changes to the dbt models that you would like the ThoughtSpot Worksheets and tables to reflect, you must run the dbt integration again, which creates a new set of Worksheets, and updates the existing tables.
+
+== Limitations
+
+* By default, you can only connect to a maximum of 4 dbt folders at a time. To increase this maximum, contact {support-url}.
+
+* You must import at least 1 table.
+
+* Integration with dbt is certified only for Amazon Redshift, Databricks, Google BigQuery, and Snowflake connections.
+
+* If you make changes to your dbt models in dbt, ThoughtSpot does not automatically reflect those changes. You must integrate with dbt again. This may affect changes you made to the tables and Worksheets in ThoughtSpot.

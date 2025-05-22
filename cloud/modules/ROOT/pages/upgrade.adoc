@@ -1,0 +1,64 @@
+= Minimal-downtime upgrade
+:last_updated: 4/7/2021
+:linkattrs:
+:experimental:
+:page-layout: default-cloud
+:page-aliases:
+:description: Upgrade ThoughtSpot in the background while you use ThoughtSpot in read-only mode.
+
+With ThoughtSpot's minimal-downtime upgrade option, we upgrade ThoughtSpot in the background while you use ThoughtSpot in read-only mode. This means your business users can still unleash the power of ThoughtSpot delivering them the data they need, even during an upgrade.
+
+== What it means
+
+During the upgrade, ThoughtSpot is in read-only mode, which means that users who perform write operations, like creating or modifying objects, will lose their data after the upgrade.
+
+== What to expect
+
+When we start upgrading ThoughtSpot, we will display a banner signifying that ThoughtSpot is in read-only mode, similar to the following:
+
+image::upgrade.png[Upgrade banner saying that ThoughtSpot is in read-only mode]
+
+All users are logged out at this point and can log in again after a brief downtime of fewer than 5 minutes.
+Once the banner is up, the upgrade has commenced and is running in the background. Therefore, users should refrain from making any write/modify operations during this period while they can still use ThoughtSpot to query data, search for Answers and view Liveboards as usual.
+
+The upgrade duration will depend on the number of metadata objects in ThoughtSpot and should typically last 4 hours or less. This comprises the upgrade downtime for Data Analyst, Data Engineer, and Developer personas, while the Business users can still access ThoughtSpot for Answers, Liveboards, Spot IQ analysis, and more.
+
+After the upgrade concludes, we will move ThoughtSpot back into read-write mode. That will log out users again, resulting in a brief disruption of 5 mins or less. Users would then be able to log in and use the upgraded ThoughtSpot cluster normally. The read-only banner would stop showing, signifying that the system is back to business as usual.
+
+== Impacted services
+
+While most of the core ThoughtSpot services are available during upgrade, the following services are unavailable to avoid data inconsistency.
+
+The list of impacted services is as follows:
+
+[cols="20%,80%"]
+|===
+|Service |Description
+
+|AD sync
+|Since it operates external to ThoughtSpot, it works during the  upgrade. However, any changes are lost after the upgrade. Therefore, you would need to re-run the AD Sync script post the upgrade to avoid access management issues even if the sync is reported as successful during the upgrade.
+
+|Admin tab
+|Is not visible during the upgrade.
+
+|Eureka
+|Any new objects you create will not be indexed during the upgrade.
+
+|Scheduled pinboards
+|Run during upgrade and should take appropriate action. However, if you make any changes during the upgrade, your changes will be lost after the upgrade.
+
+|SeekWell
+|Does not run during the upgrade, so ThoughtSpot will not send any new messages.
+
+|SpotApps
+|Disabled during the upgrade.
+|===
+
+
+If you have a technical issue during upgrade, contact https://community.thoughtspot.com/customers/s/contactsupport[ThoughtSpot Support^].
+
+== What's coming in the 8.10.0.cl release
+
+The following are highlights of the release that will be available after your cluster upgrade is complete.
+
+include::partial$whats-new-8-10-0-cl.adoc[]

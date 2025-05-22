@@ -1,0 +1,147 @@
+= Sync data from ThoughtSpot to HubSpot
+:last_updated: 12/16/2022
+:author: Naomi
+:linkattrs:
+:experimental:
+:page-noindex:
+:page-layout: default-cloud
+:connection: HubSpot
+:description: You can connect ThoughtSpot to your Google account and push CSV tables to HubSpot.
+
+
+
+== Sync to {connection} from an Answer
+
+To create a sync to {connection} from an Answer, follow these steps:
+
+. Select the desired Answer from the *Answers* tab or the ThoughtSpot homepage. You must have *Can manage sync* permissions and *view* access to an Answer to create a sync.
+
+. In the upper-right corner of the Answer, click the *more options* menu icon image:icon-more-10px.png[More options menu icon]. From the dropdown menu, select *Sync to other apps*, then choose *{connection}*.
++
+NOTE: You cannot create a sync from an unsaved Answer. If the *Sync to other apps* option appears grayed-out in the menu, first save the Answer before trying again.
+
+. If this is the first sync you have created for {connection}, a pop-up authorization window appears. To give ThoughtSpot permission to send data to your {connection} account, select your account from the pop-up window.
++
+image:hubspot-login.png[HubSpot sign-in pop-up]
++
+image:hubspot-permission.png[List of HubSpot permissions for ThoughtSpot]
+
+. Within ThoughtSpot, fill in the following parameters:
+
+* Edit the *Pipeline name* if needed. By default, this field populates with _PL-[Answer Name]_.
+* If you have more than one {connection} destination set up, then the *Destination* field appears, and you will have to select a {connection} destination from the dropdown menu available. However, if no destinations have been set up before or if you have only one {connection} destination, the *Destination* field will not appear.
+* Select your {connection} *Object* from the dropdown menu. Sync to {connection} supports four objects: Contacts, Companies, Deals, and Tickets.
+* Select *Operation* from the dropdown menu. You can choose between *Create*,  *Update*, and *Delete*.
+
+* Map the *Source* and *Destination* columns from the dropdown menus provided. Note that the Source column refers to the column in ThoughtSpot, while the Destination column refers to the column in {connection}.
++
+image:sync-hubspot-param.png[HubSpot Sync window]
+
+
+. By default, “Save and sync” is selected. Select *Save* to send your data to {connection}. Your data immediately appears in {connection}.
+
+
+
+== Sync to {connection} from a Custom SQL View
+
+To sync to {connection} from a custom SQL view, follow these steps:
+
+. Navigate to your SQL view by selecting the *Data* tab and searching from the Data Workspace home page. Select the SQL view name.
+
+. In the upper-right corner, click the *more options* menu icon image:icon-more-10px.png[more options menu icon] and select *Sync to {connection}*.
+
+.  If this is the first sync you have created for the selected app, an authorization page appears. To give ThoughtSpot permission to send data to your {connection} account, click *Sign in with {connection}*, select your account, and click *Allow*.
+
+. Fill in the following parameters:
+
+* Edit the *Pipeline name* if needed. By default, this field populates with _PL-[Answer Name]_.
+* If you have more than one {connection} destination set up, then the *Destination* field appears, and you have to select a {connection} destination from the dropdown menu available. However, if no destinations have been set up before or if you have only one {connection} destination, the *Destination* field will not appear.
+* Select *Object* from the dropdown menu. Sync to {connection} supports four objects: Contacts, Companies, Deals, and Tickets.
+* Select *Operation* from the dropdown menu. You can choose between *Create*, *Update*, and *Delete*.
+
+* Map the *Source* and *Destination* columns from the dropdown menus provided.
++
+
+. By default, “Sync and save” is selected. Select *Save* to send your data to {connection}. Your data immediately appears in {connection}.
+
+
+
+
+== Sync to {connection} from the Data Workspace
+
+To create a sync to {connection} from the Data Workspace, follow these steps:
+
+. Select the *Data* tab.
+
+. On the left menu bar, select *Sync*.
+
+. Under the *Pipelines* tab, select “Create new pipeline”. Note that if you do not already have a destination created to the intended destination app, you first need to create one in the *Destinations* tab.
+
+
+
+. Fill in the following parameters:
+
+* Edit the *Pipeline name* if needed. By default, this field populates with _PL-[Answer Name]_.
+* All destinations available appear in the *Destination* dropdown menu.
+* Select your *Source* data. Here you will pick an Answer or a custom SQL view to send through sync.
+* Select *Object* from the dropdown menu. Sync to {connection} supports four objects: Contacts, Companies, Deals, and Tickets.
+* Select *Operation* from the dropdown menu. You can choose between *Create*, *Update*, and *Delete*
+
+* Map the source and destination columns from the dropdown menus provided.
+
+
+.  By default, *Save and sync* is selected. Select *Save* to send your data to {connection}. Your data immediately appears in {connection}.
+
+== Updating and deleting records in {connection}
+
+To update and delete records in HubSpot,the Record Id field must be used as the mapping field. The following table shows the mapping needed for each object to update or delete records in {connection}.
+
+[option="header"]
+|===
+| HubSpot object | Source column | Destination column
+
+| Contacts | ContactID | Record Id
+
+| Companies | CompanyID | Record Id
+
+| Deals | DealID | Record Id
+
+| Tickets | TicketID | Record Id
+|===
+
+This ID can also be found at the end of the URL link when you open a contact, deal, company, or ticket. See the following example, where the contactID / Record Id has been highlighted.
+
+https://app.hubspot.com/contacts/22693066/contact/#1751#
+
+=== Failure to sync
+
+A sync to {connection} can fail due to multiple reasons. If you experience a sync failure, consider the following causes:
+
+* The underlying ThoughtSpot object was deleted.
+* The underlying {connection} object was deleted.
+* The column name was changed in either ThoughtSpot or {connection}, making it different to the column name set up in the mapping.
+* There are data validation rules in {connection} which only allow data with a certain data type to be populated in the {connection} fields, but the columns being mapped onto {connection} from ThoughtSpot do not have the same or allowable data type.
+
+** NOTE: In this case, only the rows in ThoughtSpot that meet the data validation criteria of the column in {connection} will be inserted or updated. All others will be ignored.
+
+* There is a mandatory field in {connection} which has not been mapped as a destination column when setting up the mapping in ThoughtSpot.
+
+=== Manage pipelines
+
+While you can also manage a pipeline from the *Pipelines* tab in the Data Workspace, accessing the *Manage pipelines* option from an Answer or view displays all pipelines local to that specific data object. To manage a pipeline from an Answer or view, follow these steps:
+
+. Click the *more options* menu icon image:icon-more-10px.png[more options menu icon] and select *Manage pipelines*.
+
+. Scroll to the name of your pipeline from the list that appears. Next to the pipeline name, select the *more options* icon image:icon-more-10px.png[more options menu icon]. From the list that appears, select:
+
+* *Edit* to edit the pipeline’s properties. For example, for a pipeline to Google Sheets, you can edit the pipeline name, file name, sheet name, or cell number. Note that you cannot edit the source or destination of a pipeline.
+* *Delete* to permanently delete the pipeline.
+* *Sync now* to sync your Answer or view to the designated destination.
+* *View run history* to see the pipeline’s Activity log in the Data Workspace.
++
+image::ts-sync-manage-pipelines.png[More options menu for a pipeline]
+
+'''
+> **Related information**
+>
+> * xref:thoughtspot-sync.adoc[]
