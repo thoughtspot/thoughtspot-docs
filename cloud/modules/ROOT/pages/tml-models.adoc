@@ -7,12 +7,56 @@
 :page-aliases:
 :description: Use TML to modify Models in a flat-file format. Then, migrate the Model to a different cluster, or restore it to the same cluster.
 :object: Models
-:jira: SCAL-158490, SCAL-186188, SCAL-206010, SCAL-220585
+:jira: SCAL-158490, SCAL-186188, SCAL-206010, SCAL-210659, SCAL-220585
 
 include::partial$tml-intro-models.adoc[]
 
 include::partial$tml-syntax-mandatory.adoc[]
 
+[#column-groups]
+=== Data panel column groups
+
+Analysts can now set definitions in a Model's TML file to group columns together in the Data panel for Search Data, rather than having them grouped by default, as measures and attributes. You can also use TML properties to enable or disable alphabetical sorting of the groups.
+
+To use the data panel column groups properties, you first add a property to each column properties definition, allocating each column to a group. This property, <<data_panel_column_groups,data_panel_column_groups>>, defines which group(s) a column belongs to. To assign a column to multiple groups, use a comma-separated list.
+
+Use the following syntax:
+
+----
+- name: Transactiondate
+    column_id: DIMDATE::TRANSACTIONDATE
+    properties:
+      column_type: ATTRIBUTE
+      index_type: DONT_INDEX
+    data_panel_column_groups: {Dates:}
+----
+
+To enable data panel column groups as a whole, add a section with the following syntax to your TML file:
+
+----
+column_groups:
+  - type: DATA_PANEL
+    properties:
+      status: ENABLE
+      default_sort: ENABLE
+    column_group_info:
+    - name: Dates
+      include_ungrouped_columns: false
+    - name: KPIs
+      include_ungrouped_columns: false
+    - name: Stores
+      include_ungrouped_columns: false
+    - name: ungrouped columns
+      include_ungrouped_columns: true
+    - name: Customers
+      include_ungrouped_columns: false
+----
+
+In the above syntax, the <<status,status>>: Enable property enables the column groups feature. You can change the status to Disable to remove the column groups from the data panel without deleting the definition in the TML file.
+
+The <<default_sort,default_sort>> property keeps the order set in the TML file when disabled. When enabled, the column groups will be listed in alphabetical order in the Data panel.
+
+Define the column group names and contents using the <<column_group_info,column_group_info>> property. The <<name,name>> property defines the group name. The <<include_ungrouped_columns,include_ungrouped_columns>> property defines which group any columns you did not define with the <<data_panel_column_groups,data_panel_column_groups>> property are allocated to. There must be one column group with the include_ungrouped_columns property set to true.
 
 [#syntax-worksheets]
 include::partial$tml-syntax-models.adoc[]
@@ -23,7 +67,7 @@ These parameters and their definitions are specific to {object}; this list doesn
 
 [width="100%",grid="none",options="header"]
 |===
-| a - g | i - l | n - w
+| a - g | i - m | n - w
 a| <<aggregation,aggregation>>
 
 <<alias,alias>>
@@ -36,7 +80,13 @@ a| <<aggregation,aggregation>>
 
 <<column_id,column_id>>
 
+<<column_group_info,column_group_info>>
+
+<<column_groups,column_groups>>
+
 <<column_type,column_type>>
+
+<<columns,columns>>
 
 <<condition,condition>>
 
@@ -48,11 +98,15 @@ a| <<aggregation,aggregation>>
 
 <<custom_file_guid,custom_file_guid>>
 
+<<data_panel_column_groups,data_panel_column_groups>>
+
 <<data_type,data_type>>
 
 <<date_range_condition,date_range_condition>>
 
 <<default_value,default_value>>
+
+<<default_sort,default_sort>>
 
 <<description,description>>
 
@@ -83,6 +137,8 @@ a| <<id,id>>
 <<include_max,include_max>>
 
 <<include_min,include_min>>
+
+<<include_ungrouped_columns,include_ungrouped_columns>>
 
 <<index_priority,index_priority>>
 
@@ -120,6 +176,8 @@ a| <<id,id>>
 
 <<list_config,list_config>>
 
+<<model,model>>
+
 a| <<name,name>>
 
 <<on,on>>
@@ -142,6 +200,8 @@ a| <<name,name>>
 
 <<spotiq_preference,spotiq_preference>>
 
+<<status,status>>
+
 <<synonyms,synonyms>>
 
 <<table,table>>
@@ -155,10 +215,6 @@ a| <<name,name>>
 <<value,value>>
 
 <<values,values>>
-
-<<model,model>>
-
-<<columns,columns>>
 
 |===
 
@@ -197,11 +253,23 @@ The `id` of the column.
 +
 `column_id` is in the following format: `column_id: <id>::<name>`. `id` comes from `Worksheet.table_path`, and `name` comes from `Table.column`. For example: `column_id: Customer_Dimension::Customer_Name`.
 
+[#column_group_info]
+column_group_info:: Enter the name of the column group. Column group names must be unique.
+
+[#column_groups]
+column_groups:: Create column groups to sort columns in the Search Data panel.
+
 [#column_type]
 column_type::
 The type of data the column represents.
 +
 Possible values: `MEASURE` or `ATTRIBUTE`. The default is: `MEASURE`.
+
+[#columns]
+columns::
+The list of columns available from the data sources in the Model.
++
+Each Model is identified by `name`, `description`, `column_id`, and `properties`.
 
 [#condition]
 condition:: Section header for the rules of the constraint.
@@ -228,6 +296,9 @@ See https://www.iso.org/iso-4217-currency-codes.html[ISO 4217 Currency Codes^] a
 custom_file_guid::
 The GUID for a custom map uploaded by an administrator.
 
+[#data_panel_column_groups]
+data_panel_column_groups:: Define this property in each column to mark which column group(s) the column should be allocated to. When marking a column for multiple column groups, separate the group names using a comma.
+
 [#data_type]
 data_type::
 The data type of the Parameter.
@@ -238,6 +309,9 @@ date_range_condition:: Defines that the condition is based upon a date range. No
 [#default_value]
 default_value::
 The default value for a Parameter in a Model. Specified when xref:parameters-create.adoc[creating a Parameter].
+
+[#default_sort]
+default_sort:: When enabled, the column groups will be sorted alphabetically by group name in the data panel. When disabled, the groups will be sorted in the data panel in the order defined in the TML.
 
 [#description]
 description::
@@ -327,6 +401,9 @@ include_min::
 Indicates if the minimum value in a Parameter range is a valid value. For example, if the range is 0-10, and `include_min` is false, the value `0` is not valid for that Parameter.
 +
 Valid values are `true` and `false`.
+
+[#include_ungrouped_columns]
+include_ungrouped_columns:: Set as true/false for each column group. When defined as true, the defined column group includes all columns not sorted into the other column groups.
 
 [#index_priority]
 index_priority::
@@ -460,6 +537,10 @@ Contains the list of accepted values for a Parameter, if a list was configured w
 list_config::
 Contains the list of accepted values for a Parameter, if a list was configured when xref:parameters-create.adoc[creating a Parameter].
 
+[#model]
+model::
+Top-level container for all object definitions within the Model.
+
 [#name]
 name::
 The name of an object.
@@ -520,6 +601,9 @@ Specify `EXCLUDE`, or this property defaults to include the column in SpotIQ Ana
 +
 Refer to xref:spotiq-data-model-preferences.adoc[Set columns to exclude from SpotIQ analyses].
 
+[#status]
+status:: Use the status property to define whether to enable or disable column groups. When disabled, columns return to the default sort in the data panel, while the column properties in the TML file are unaffected.
+
 [#synonyms]
 synonyms::
 Alternate names for the column, used in search.
@@ -558,15 +642,6 @@ An accepted value for a Parameter, if a list was configured when xref:parameters
 values::
 The values being filtered (excluded or included) in a Model.
 
-[#model
-model::
-Top-level container for all object definitions within the Model.
-
-[#columns]
-columns::
-The list of columns available from the data sources in the Model.
-+
-Each Model is identified by `name`, `description`, `column_id`, and `properties`.
 
 [#limitations]
 == Limitations of working with TML files

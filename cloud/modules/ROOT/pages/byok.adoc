@@ -1,0 +1,156 @@
+= Bring Your Own Key (BYOK) for Thoughtspot on GCP VPT
+:author: Mary
+:last_updated: 12/4/24
+:experimental:
+:linkattrs:
+:page-layout: default-cloud
+:description:
+:jira: SCAL-233879
+
+== Overview
+Bring Your Own Key (BYOK) is a method of key management that allows an organization to use their own encryption keys in cloud-based services instead of relying on the keys provided by the SaaS application or cloud service provider.
+The main purpose of BYOK is to give organizations more control over their data security in the cloud. By using their own encryption keys, organizations can ensure that only authorized services and users have access to their data and can also revoke access to the data by simply revoking the encryption key.
+Additionally, BYOK can help organizations meet compliance requirements by providing them with greater visibility and control over the encryption process.
+
+BYOK is available to ThoughtSpot customers with our GCP-VPT offering. To enable BYOK, contact {support-url}. GCP-VPT architecture allows for greater security and meets stringent compliance requirements by hosting a dedicated and isolated infrastructure and services. BYOK offers an additional level of security and compliance for ThoughtSpot customers to manage access to their data. BYOK allows our GCP-VPT customers to encrypt their data on ThoughtSpot with a customer managed key that is provisioned and managed by the customer on GCP KMS.
+
+== ThoughtSpot data categories
+
+All of the data that ThoughtSpot deals with can be broadly classified into the folowing two categories:
+
+=== Customer data
+* Customer Data Warehouse (CDW) data connected to a ThoughtSpot instance
+* CDW configuration and credentials
+* Customer metadata - that defines ThoughtSpot objects such as table definitions, worksheets, liveboards, answers
+* ThoughtSpot maintained data index (Sage index)
+* Customer auth configuration: Local users, credentials/passwords and SAML/OIDC configuration
+* Customer data backups that can be used to recreate the TS instance
+
+=== Serviceability data
+This data includes logs and performance metrics which allows ThoughtSpot operations to monitor your SaaS instance.
+
+
+== ThoughtSpot data encryption
+ThoughtSpot encrypts all data at rest using encryption keys from GCP Key Management Service. ThoughtSpot, with this setup, owns the key and has full control over key rotation and revocation
+
+
+== Bring Your Own Key (BYOK) or Customer Managed Encryption key (CMEK)
+With BYOK, all of the customer data described above  is encrypted or decrypted using a Key Management Service (KMS) key provisioned by the customer in their GCP account using Google Cloud Key Management (CMEK).
+
+=== CMEK Provisioning and enable encryption
+CMEK is specified per cell and has to be enabled at the time of provisioning of the VPT.
+The access to this key is provided by the customer to ThoughtSpot via fine-grained key policies. This should be the least privilege access to allow permissions to ThoughtSpot GCP IAM principals and service accounts only. This gives full control of the key to the customer, including its lifecycle and access control to all customer data on ThoughtSpot.
+
+=== CMEK rotation and lifecycle management
+Customers can rotate or revoke the encryption key via GCP Cloud Key Management Service (KMS) configurations. Key rotation is configurable in GCP KMS. The customer can see detailed usage logs of the CMEK in their own GCP account.
+
+=== CMEK revocation or deletion
+In the event of the customer revoking access to or deleting the CMEK:
+
+* ThoughtSpot loses the ability to decrypt all of the above elements encrypted with CMEK.
+* All access to the ThoughtSpot instance is removed, including web app, API, and mobile app. There is no access to existing user sessions.
+* Cluster access to the customer's CDW is blocked since the cluster no longer has access to CMEK. All scheduled reports, indexing requisitions, and Embrace functions will fail.
+* All services such as ThoughtSpot VMs and PostgreSQL stop.
+* Access to GCS buckets with the backups is removed and there is no way to restore from the backups.
+* Access to all of the data in the GCS buckets is lost, including customer data, logs etc.
+
+=== CMEK restored
+In the event that the CMEK revocation is temporary and the customer provides access to the same key back to ThoughtSpot within the restore window that is defined by ThoughSpot, ThoughtSpot can restore cluster access back to the customer.
+
+== Setting up GCP-KMS Customer Managed encryption keys
+
+NOTE: This must be done before any ThoughtSpot instances of  GCP-VPT are deployed.
+
+Get the following information from your customer account manager:
+
+* The region in which ThoughtSpot VPT is deployed. For example, `us-east4` which is used as <REGION> in the remaining document.
+
+* The numeric project ID of the project where ThoughtSpot VPT is deployed, which is used as <PROJECT_ID> in the document.
+
+* Get the IAM principal email ID which is used to monitor the Cloud KMS key in your account. This is provided by the customer account manager and is in the following format `ts-resource-monitor@<PROJECT_NAME>.iam.gserviceaccount.com`, where <PROJECT_NAME> is the name of the Google Cloud Project.
+
+=== Create a Google Cloud KMS Key Ring
+
+NOTE: This is only required if you do not already have a key ring in the appropriate region.
+
+. Generate a KMS Key Ring, following the steps here: https://cloud.google.com/kms/docs/create-key-ring[Create a key ring].
+
+NOTE: Make sure the key ring is selected as *Regional KeyRing* during creation.
+
+
+=== Create a Google Cloud KMS Key
+
+. Create a KMS key by following the steps here: https://cloud.google.com/kms/docs/create-key[Create a key].
++
+Use the following settings for the key:
+
+* Protection level - Software
+* Key Material - Generated key
+* Purpose - Symmetric encrypt/decrypt
+* Algorithm - Google Symmetric key
+* Key rotation - Never (manual rotation) (Key rotation is manual because ThoughtSpot should be informed before the key is rotated).
+* Duration of *scheduled for destruction*. This is the duration in which a KMS Key or Key Version which was bound for deletion would get permanently deleted. Before this window expires, it’s possible to recover the KMS Key. By default it’s 30 days, and depends on your policy.
++
+NOTE: Once a key or key version is permanently deleted, there is no way to recover the data in ThoughtSpot VPT which was encrypted using the said key.
+
+=== Add necessary IAM policies to the Key
+
+. For each of the following principals, replace <PROJECT_ID> with the project ID received from the customer account manager.
++
+`serviceAccount:service-<PROJECT_ID>@gcp-sa-bigqueryconnection.iam.gserviceaccount.com`
++
+`serviceAccount:service-<PROJECT_ID>@gcp-sa-bigquerydatatransfer.iam.gserviceaccount.com`
++
+`serviceAccount:service-<PROJECT_ID>@gcp-sa-certificatemanager.iam.gserviceaccount.com`
++
+`serviceAccount:service-<PROJECT_ID>@gcp-sa-cloudscheduler.iam.gserviceaccount.com`
++
+`serviceAccount:service-<PROJECT_ID>@gcp-sa-cloud-trace.iam.gserviceaccount.com`
++
+`serviceAccount:service-<PROJECT_ID>@container-engine-robot.iam.gserviceaccount.com`
++
+`serviceAccount:service-<PROJECT_ID>@containerregistry.iam.gserviceaccount.com`
++
+`serviceAccount:service-<PROJECT_ID>@gcp-sa-monitoring-notification.iam.gserviceaccount.com`
++
+`serviceAccount:service-<PROJECT_ID>@gcp-sa-pubsub.iam.gserviceaccount.com`
++
+`serviceAccount:service-<PROJECT_ID>@cloud-redis.iam.gserviceaccount.com`
++
+`serviceAccount:service-<PROJECT_ID>@serverless-robot-prod.iam.gserviceaccount.com`
++
+`serviceAccount:service-<PROJECT_ID>@gcp-sa-secretmanager.iam.gserviceaccount.com`
++
+`serviceAccount:service-<PROJECT_ID>@gcp-sa-cloud-sql.iam.gserviceaccount.com`
++
+`serviceAccount:<PROJECT_ID>@compute-developer.gserviceaccount.com`
++
+`serviceAccount:service-<PROJECT_ID>@compute-system.iam.gserviceaccount.com`
++
+`serviceAccount:service-<PROJECT_ID>@gs-project-accounts.iam.gserviceaccount.com`
++
+. For each of the above principals, add the principal with role Cloud KMS CryptoKey Encrypter/Decrypter to each of the above principals (if you are using the Google Cloud Console, or roles/cloudkms.cryptoKeyEncrypterDecrypter if you are using the API/terraform/etc.).
++
+Follow the steps here, https://cloud.google.com/kms/docs/iam[Access control with IAM] to add the principal with role Cloud KMS CryptoKey Encrypter/Decrypter to each of the above principals.
++
+For example, for:
++
+`serviceAccount:service-<PROJECT_ID>@cloud-redis.iam.gserviceaccount.com`
+ +
+you would run the following command:
++
+ 'gcloud kms keys add-iam-policy-binding <KEY> \
+    --keyring <KEY_RING> \
+    --location <REGION> \
+    --member serviceAccount:service-<PROJECT_ID>@cloud-redis.iam.gserviceaccount.com \
+    --role roles/cloudkms.cryptoKeyEncrypterDecrypter'
++
+. For the principal
+`serviceAccount:ts-resource-monitor@<PROJECT_NAME>.iam.gserviceaccount.com`, add the following permissions to the KMS Key created for encryption:
+`cloudkms.cryptoKeyVersions.get`
+`cloudkms.cryptoKeyVersions.list`
+`cloudkms.cryptoKeys.getIamPolicy`
+`cloudkms.cryptoKeys.get`
+. After this is done, share the KMS key ID with ThoughtSpot.
+
+
