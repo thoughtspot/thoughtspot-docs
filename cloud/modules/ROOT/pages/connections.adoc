@@ -1,38 +1,35 @@
-= Connections
-:last_updated: 08/10/2021
+= About connections in ThoughtSpot Cloud
+:last_updated: 11/05/2021
 :linkattrs:
-:page-partial:
-:page-aliases: /data-integrate/embrace/embrace-intro.adoc
 :experimental:
+:page-aliases: /admin/ts-cloud/embrace.adoc
+:page-layout: default-cloud
+:description: Using Connections, you can perform live queries on external databases.
 
-NOTE: ThoughtSpot has renamed Embrace to Connections. The functionality remains the same.
+include::partial$liveboards-announcement.adoc[]
 
-Using Connections, you can perform live queries on external databases.
+If your company stores source data externally in data warehouses, you can use ThoughtSpot Connections to directly query that data and use ThoughtSpot's analysis and visualization features.
 
-If your company stores source data externally in data warehouses, you can use ThoughtSpot Connections to directly query that data and use ThoughtSpot's analysis and visualization features, without moving the data into ThoughtSpot.
+On ThoughtSpot Cloud, you can connect to the following external databases:
 
-You can establish direct connections to the following external databases:
-
-[cols="15,~",frame=none,grid=none]
-|===
-a| image::logo-snowflake.png[] .^a|xref:connections-snowflake.adoc[Snowflake]
-a| image::logo-redshift.png[] .^a|xref:connections-redshift.adoc[Amazon Redshift (AWS)]
-a| image::logo-gcp.png[] .^a|xref:connections-gbq.adoc[Google Big Query]
-a| image::logo-synapse.png[]  .^a|xref:connections-synapse.adoc[Azure Synapse]
-a| image::logo-teradata.png[] .^a|xref:connections-teradata.adoc[Teradata]
-a| image::logo-sap.png[] .^a|xref:connections-hana.adoc[SAP HANA]
-a| image::logo-awd.png[] .^a|xref:connections-adw.adoc[Oracle Autonomous Data Warehouse (ADW)]
-a|  image::logo-databricks.png[] .^a|xref:connections-databricks.adoc[Databricks] [.badge.badge-new]#New!#
-a|  image::logo-starburst.png[] .^a|xref:connections-starburst.adoc[Starburst] [.badge.badge-new]#New!#
-|===
+* xref:connections-redshift.adoc[Amazon Redshift]
+* xref:connections-synapse.adoc[Azure Synapse]
+* xref:connections-databricks.adoc[Databricks]
+* xref:connections-gbq.adoc[Google BigQuery]
+* xref:connections-adw.adoc[Oracle ADW]
+* xref:connections-hana.adoc[SAP HANA]
+* xref:connections-snowflake.adoc[Snowflake]
+* xref:connections-starburst.adoc[Starburst]
+* xref:connections-teradata.adoc[Teradata]
 
 == How it works
 
-You create a connection to the external database, choosing the columns from each table that you want to explore in your live query.
-Primary key and foreign key relationships are imported along with the primary and foreign key tables.
-If there are any joins in the tables of your connection, they are also imported.
-After your connection is complete, it becomes a *linked* data source in ThoughtSpot that allows you to query the external database directly.
-It's easy to apply transformations and filter the data also.
+* Create a connection to the external database
+* Choose from each table the columns that you want to explore in your live query.
+* Primary key and foreign key relationships are imported along with the primary and foreign key tables.
+* If there are any joins in the tables of your connection, Connections imports these joins.
+* After your connection is complete, it becomes a *linked* data source in ThoughtSpot, so you can query the external database directly.
+* It's also easy to apply transformations, and filter the data.
 
 == Key benefits
 
@@ -41,97 +38,38 @@ It's easy to apply transformations and filter the data also.
 * Centralize data management and governance in the external database.
 * Save significant time and money by avoiding ETL pipelines.
 * Connect to multiple external databases.
-
-== Recommended instance types
-
-The following sections contain the supported and recommended instance types for direct data connections of ThoughtSpot to deployments in AWS, Azure, and GCP. When setting up your cluster, use the information here to select an instance type, configure the number of instances required for the storage you need, and add data volumes to your cluster.
-
-=== AWS
-==== VMs with EBS-only persistent storage
-
-include::partial$aws-ebs-only-storage-connections.adoc[]
-
-==== VMs with EBS and S3 persistent storage
-
-include::partial$aws-ebs-s3-storage-connections.adoc[]
-
-=== Azure
-
-include::partial$azure-storage-connections.adoc[]
-
-=== GCP
-==== VMs with Persistent Disk-only storage
-
-include::partial$gcp-persistent-only-storage-connections.adoc[]
-
-==== VMs with Persistent Disk and Google Cloud storage
-
-include::partial$gcp-persistent-cloud-storage-connections.adoc[]
+// - Custom calendar available with Snowflake.
 
 == Limitations
 
-IMPORTANT: ThoughtSpot does not support joins across connections.
+IMPORTANT: Connections does not support joins across connections.
 
-=== Feature availability
+== Feature availability in Connections on ThoughtSpot Cloud
 
-The following matrix compares the features that are available in our internal high-performance database, Falcon, and the ones available through Connections:
+Here are the major features that are not currently available in Connections:
 
-[width="100%",cols="8,1,1",options=header]
-|===
-| Feature Name | Falcon | Connections
+////
+- Custom calendar is supported with Snowflake connections.
+- Custom calendar is in beta for Redshift, Teradata, Starburst, Synapse, and SAP HANA connections, and are off by default. Contact ThoughtSpot to enable them.
+////
 
-|Simple Search and Complex searches: Versus, Inline Subquerying, Growth
-| &check;
-| &check;
+* SpotIQ: Instant insights, Did you know?, Liveboard insights, Analyze
+* Monitor
+* Materialized views
 
-| Search Suggestions for column names and values
-| &check;
-| &check;
+== Function availability in Connections on ThoughtSpot Cloud
 
-| Headlines that summarize tables
-| &check;
-| &check;
-
-| All chart types and configurations
-| &check;
-| &check;
-
-| Spot IQ: Analyze
-| &check;
-| &check;
-
-| Spot IQ: Instant insights, Did you know?, Pinboard insights
-| &check;
-| &cross;
-
-| Monitor
-| &check;
-| &cross;
-
-| Table and Column remapping through Scriptability
-| &cross;
-| &check;
-
-| Custom calendar
-| &check;
-| &cross;
-
-| Materialized view
-| &check;
-| &cross;
-|===
-
-=== Function availability
-
-The following matrix compares the specific function support across the different databases you can access through Connections.
+The following matrix compares the specific function support across the different databases of Connections in ThoughtSpot Cloud.
 Functions not listed here have full support.
 
-[width="100%",cols="3,1,1,1,1,1,1",options=header]
 |===
-| Function | Snowflake | Amazon Redshift | Google BigQuery | Azure Synapse | Teradata | SAP HANA
+| Function | Snowflake | Amazon +
+Redshift | Google +
+BigQuery | Azure +
+Synapse | Oracle +
+Autonomous Data Warehouse
 
 | `SOUNDS_LIKE`
-| &cross;
 | &cross;
 | &cross;
 | &cross;
@@ -144,10 +82,8 @@ Functions not listed here have full support.
 | &cross;
 | &cross;
 | &cross;
-| &cross;
 
 | `EDIT_DISTANCE_WITH_CAP`
-| &cross;
 | &cross;
 | &cross;
 | &cross;
@@ -160,10 +96,8 @@ Functions not listed here have full support.
 | &cross;
 | &cross;
 | &cross;
-| &cross;
 
 | `COUNT_NOT_NULL`
-| &cross;
 | &cross;
 | &cross;
 | &cross;
@@ -175,7 +109,6 @@ Functions not listed here have full support.
 | &cross;
 | &cross;
 | &cross;
-| &check;
 | &cross;
 
 | `EDIT_DISTANCE`
@@ -183,49 +116,40 @@ Functions not listed here have full support.
 | &cross;
 | &cross;
 | &cross;
-| &check;
-| &cross;
-
-| `MEDIAN`
-| &check;
-| &check;
-| &cross;
-| &check;
-| &check;
-| &check;
-
-| `PERCENTILE`
-| &check;
-| &check;
-| &cross;
-| &check;
-| &check;
 | &cross;
 |===
 
-=== Data type availability
+== Data type availability in Connections on ThoughtSpot Cloud
 
-The following matrix captures the specific data type support limitations across the different databases accessible through Connections.
+The following matrix captures the specific data type support limitations across the different databases of Connections.
 Data types not listed here have full support.
 
-[width="100%",cols="3,1,1,1,1,1,1",options=header]
 |===
-| Data Type | Snowflake | Amazon Redshift | Google BigQuery | Azure Synapse | Teradata | SAP HANA
+| Data Type +| Snowflake +| Amazon +
+Redshift | Google +
+BigQuery | Azure +
+Synapse | Oracle +
+Autonomous Data Warehouse
 
 | `BINARY`
 | &cross;
 | &check;
 | &check;
 | &cross;
-| &check;
-| &check;
+| &cross;
 
 | `VARBINARY`
 | &cross;
 | &check;
 | &check;
 | &cross;
+| &cross;
+
+| `TIMESTAMPTZ`
 | &check;
+| &cross;
+| &cross;
+| &cross;
 | &cross;
 
 | `GEOMETRY`
@@ -233,63 +157,38 @@ Data types not listed here have full support.
 | &cross;
 | &check;
 | &check;
-| &check;
 | &cross;
-
-| `BYTES`
-| &check;
-| &check;
-| &cross;
-| &check;
-| &cross;
-| &check;
-
-| `DATETIMEOFFSET`
-| &check;
-| &check;
-| &check;
-| &cross;
-| &check;
-| &check;
 |===
 
-=== Additional specific exceptions
+== Additional specific exceptions
 
-The following list captures the specific limitations across the different databases supported through Connections.
+The following list captures the specific limitations across the different databases of Connections.
 Databases not listed here have full support.
 
-General for all databases::
-  Sample values;; ThoughtSpot does not internationalize sample values in tables.
-
-Google BigQuery::
-  Join support;;  Google BigQuery does not support PK-FK joins. Therefore, when using Connections, you must create joins explicitly in ThoughtSpot.
-  Partitioned tables;;  When running a query on a partitioned table with the *Require partition filter option* enabled, you must specify the `WHERE` clause. Without a `WHERE` clause specified, queries generate an error. To ensure that the query on such tables honors the partition condition, you must create a worksheet filter in ThoughtSpot.
-
-Azure Synapse::
-  Azure Synapse supports up to 10 `IF THEN ELSE` statements in a single query.
-+
-Azure Synapse does not support foreign keys, so no PK-FK joins can be defined in Synapse.
-
-Teradata::
-  Teradata does not support the function `AGGREGATE_DISTINCT`.
-+
-Teradata does not support the following data types: `JSON, INTERVAL, VARBYTE, BLOB, CLOB, PERIOD, XML, GEOSPATIAL`.
-
-SAP HANA::
-  SAP HANA does not support the following functions: `PERCENTILE, AGGREGATE_DISTINCT, SPELLS_LIKE, EDIT_DISTANCE`.
-+
-SAP HANA does not support the following data types: `BLOB, CLOB, NCLOB, TEXT, POINT`.
-+
-SAP HANA does not support calculation views with mandatory input parameters. If you need to use calculation views in ThoughtSpot, you must remove the mandatory parameter requirement.
+General: all databases::
+Sample values;; Connections does not internationalize sample values in tables.
+Delayed UI rendering;; For connections with a very large number of tables (on the order of 1000's of tables), UI rendering may take a very long time.
+These connections may time out.
+Deleting columns;; After specifying a connection, columns cannot be deleted from the table.
+Editing a connection makes it possible to add additional columns, but not to remove them.
 
 == Next steps
 
-* xref:connections-snowflake-add.adoc[Add a Snowflake connection]: Create the connection between ThoughtSpot and tables in a Snowflake database.
-* xref:connections-redshift-add.adoc[Add a Redshift connection]: Create the connection between ThoughtSpot and tables in an Amazon RedShift database.
-* xref:connections-gbq-add.adoc[Add a BigQuery connection]: Create the connection between ThoughtSpot and tables in a Google BigQuery database.
-* xref:connections-synapse-add.adoc[Add a Synapse connection]: Create the connection between ThoughtSpot and tables in an Azure Synapse database.
-* xref:connections-teradata-add.adoc[Add a Teradata connection]: Create the connection between ThoughtSpot and tables in a Teradata database.
-* xref:connections-hana-add.adoc[Add an SAP HANA connection]: Create the connection between ThoughtSpot and tables in an SAP HANA database.
-* xref:connections-adw-add.adoc[]: Create the connection between ThoughtSpot and tables in an Oracle Distributed Warehouse (ODW) database.
-* xref:connections-databricks-add.adoc[]: Create the connection between ThoughtSpot and tables in a Databricks database.
-* xref:connections-starburst-add.adoc[]: Create the connection between ThoughtSpot and tables in a Starburst database.
+* *xref:connections-redshift-add.adoc[Add an Amazon Redshift connection]* +
+ Create the connection between ThoughtSpot and tables in an external Amazon RedShift database.
+* *xref:connections-synapse-add.adoc[Add an Azure Synapse connection]* +
+ Create the connection between ThoughtSpot and tables in an external Azure Synapse database.
+* *xref:connections-databricks-add.adoc[Add a Databricks connection]* +
+Create the connection between ThoughtSpot and tables in an external Databricks database.
+* *xref:connections-gbq-add.adoc[Add a Google BigQuery connection]* +
+ Create the connection between ThoughtSpot and tables in an external Google BigQuery database.
+* *xref:connections-adw-add.adoc[Add an Oracle Autonomous Data Warehouse connection]* +
+ Create the connection between ThoughtSpot and tables in an external Oracle Autonomous Data Warehouse database.
+* *xref:connections-hana-add.adoc[Add an SAP HANA connection]* +
+ Create the connection between ThoughtSpot and tables in an external SAP HANA database.
+* *xref:connections-snowflake-add.adoc[Add a Snowflake connection]* +
+ Create the connection between ThoughtSpot and tables in an external Snowflake database.
+* *xref:connections-starburst-add.adoc[Add a Starbust connection]* +
+ Create the connection between ThoughtSpot and tables in an external Starburst database.
+* *xref:connections-teradata-add.adoc[Add a Teradata connection]* +
+ Create the connection between ThoughtSpot and tables in an external Teradata database.

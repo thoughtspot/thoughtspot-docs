@@ -1,11 +1,10 @@
 = Filtered aggregation functions
-:last_updated: 02/03/2021
+:last_updated: tbd
 :linkattrs:
 :experimental:
-:page-partial:
+:page-layout: default-cloud
 :page-aliases: /complex-search/filtered-agg-forms.adoc
-
-You can create a filtered aggregation in the search bar.
+:description: You can create a filtered aggregation in the search bar.
 
 Filters are useful for queries where the results should reflect a new, filtered value.
 On this page you learn about comparative versus derivative filters, and the functions, and the keywords that you can use with them.
@@ -34,7 +33,6 @@ If you plan to create these types of filters, you need to understand how to crea
 
 Filter functions take two arguments, the column ( measure or attribute) to aggregate and the filter condition:
 
-[source]
 ----
 FUNCTION_NAME(condition, <column name>)
 ----
@@ -52,22 +50,21 @@ ThoughtSpot functional library will include the following functions:
 * `vs`
 * `all`
 
-Consideer the following examples of these functions:
+The following table illustrates some examples of these functions in use:
 
-`sum_if(region='west', revenue)`::
-  Aggregates only the revenue for the values that correspond to the _west_ region.
-`count_if(region ='west', region)`::
-  Aggregates only the region for the values that correspond to the _west_ region.
-`count_if(revenue > 100, red)`::
-  Counts the number of times _red_ appears when revenue is greater than `100` (row-level revenue data, not aggregated).
+|===
+| Function | Examples
 
-A condition can have multiple filters, like the two conditions for `region` in the example `sales region = west OR region = east`.
+| `sum_if(region=`'west`', revenue)` | Only aggregate the revenue for the values corresponding to west region.
+| `count_if(region =`'west`', region)` | Only aggregate the region for the values corresponding to west region.
+| `count_if(revenue > 100, red)` | Count the number of times red appears when revenue was greater than 100 (row level revenue data, not aggregated).
 
-You can also just type a value as a filter; here, `east` is the filter in the expression `sales east`.
+|===
 
-If there are no rows matching the filter criteria, the condition returns a `0` (zero). When you use a filter rather than a filter function, ThoughtSpot does not include any zero values in your chart or table. Using a filter function like `sum_if` or `count_if` is the best way to include zero values in your chart or table.
-
-A 0 can result in situations where there are logic errors in the formula, so be sure to verify your work.
+A condition can have multiple filters like `sales region = west OR region = east`.
+You can also just type a value such as `east` as in `sales east` as a filter.
+If there are no rows matching the criteria, the condition returns a 0 (zero).
+A 0 can result in situations where there are logic errors in the formula, so be sure to double-check your work.
 
 image::filtered-agg-forms.png[]
 
@@ -85,7 +82,7 @@ For example:
 
 `revenue region last 10 years vs all`
 
-Try this syntax on using the The link:{attachmentsdir}/superstore.csv[superstore] example data.
+Try this syntax on using the link:{attachmentsdir}/Superstore.csv[Superstore] example data.
 The first `vs` example compares two segments with a single search token:
 
 image::vs-ex-1.png[]

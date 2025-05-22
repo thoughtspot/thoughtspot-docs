@@ -1,44 +1,1335 @@
 = ThoughtSpot Modeling Language
-:last_updated: 08/06/2021
+:last_updated: 11/05/2021
 :linkattrs:
 :experimental:
-:page-partial:
-:page-aliases: /admin/scriptability/tsl.adoc, /admin/ts-cloud/tml.adoc, /admin/ts-cloud/tsl.adoc, /admin/worksheets/yaml-worksheet.adoc, /admin/scriptability/tsl-pinboard.adoc, /admin/scriptability/tsl-answer.adoc, /admin/scriptability/tsl-view.adoc, /admin/scriptability/tml.adoc
+:page-layout: default-cloud
+:page-aliases: /admin/ts-cloud/tml.adoc, /admin/scriptability/tml.adoc, /admin/ts-cloud/tsl.adoc, /admin/scriptability/tsl-table.adoc, /admin/scriptability/tsl-pinboard.adoc, /admin/scriptability/tsl-answer.adoc, /admin/scriptability/tsl-view.adoc, /admin/worksheets/yaml-worksheet.adoc, /admin/scriptability/tml-table.adoc, /admin/scriptability/tml-pinboard.adoc, /admin/scriptability/tml-answer.adoc, /admin/scriptability/tml-view.adoc, /admin/worksheets/tml-worksheet.adoc, /admin/worksheets/tsl-worksheet.adoc, /admin/ts-cloud/tsl-table.adoc, /admin/ts-cloud/tsl-pinboard.adoc, /admin/ts-cloud/tsl-answer.adoc, /admin/ts-cloud/tsl-view.adoc, /admin/ts-cloud/yaml-worksheet.adoc, /admin/ts-cloud/tml-worksheet.adoc, /admin/ts-cloud/tsl-worksheet.adoc
+:description: Use TML to modify a ThoughtSpot object in a flat-file format. Then, migrate the object to a different cluster, or restore it to the same cluster.
 
+include::partial$liveboards-announcement.adoc[]
 
-Use ThoughtSpot Modeling Language to modify a Worksheet, View, Table, Pinboard, SpotIQ result, or Answer in a flat-file format. Then you can migrate the object to a different cluster, or restore it to the same cluster.
+Use TML to modify a ThoughtSpot object in a flat-file format. Then, migrate the object to a different cluster, or restore it to the same cluster.
 
-To work with Scriptable <<syntax-worksheets,Worksheets>>, <<syntax-views,Views>>, <<syntax-tables,Tables>>, <<syntax-answers,Answers>>, <<syntax-pinboards,SpotIQ results>>, and <<syntax-pinboards,Pinboards>> in ThoughtSpot, you can download these objects to a flat file in `.TML` format, modify it, and subsequently upload this file either to the same cluster, or to a different cluster.
-To learn how to export, change, and update Worksheets, Views, Tables, Answers, SpotIQ results, and Pinboards, see xref:scriptability.adoc[Scriptability].
+To work with Scriptable <<syntax-worksheets,worksheets>>, <<syntax-views,views>>, <<syntax-tables,tables>>, <<syntax-answers,answers>>, and <<syntax-pinboards,Liveboards>> in ThoughtSpot, you can download these objects to a flat file in `.TML` format, modify it, and subsequently upload this file either to the same cluster, or to a different cluster.
+To learn how to export, change, and update worksheets, views, tables, answers, and Liveboards, see xref:scriptability.adoc[Scriptability].
 
-In this article, you learn the syntax of the TML files for each Scriptable object. You also learn how to <<syntax-joins,add and modify joins>> for Worksheets, Views, and tables.
+In this article, you learn the syntax of the TML files for each Scriptable object.
+You also learn how to <<syntax-joins,add and modify joins>> for Worksheets, Views, and tables.
 
-NOTE: The syntax examples in this article contain every possible parameter in a TML file. Some of these parameters are not in a TML file by default. If you want to use them, you must add them yourself. For example, the <<fqn,fqn>> parameter is not present in the TML file by default, but you can add it to differentiate a table from another table with the same name.
+NOTE: The syntax examples in this article contain every possible parameter in a TML file.
+Some of these parameters are not in a TML file by default.
+If you want to use them, you must add them yourself. +
+For example, the `fqn` parameter is not present in the TML file by default, but you can add it to differentiate a table from another table with the same name.
 
 [#syntax-worksheets]
-include::partial$tml-syntax-worksheet.adoc[]
+== Syntax of the Worksheet TML file
+
+The `TML` file for Scriptable Worksheets has a specific syntax.
+
+See the <<parameters,Parameters>> section for details about the keywords used in this example.
+
+You may not see each of these parameters in your own TML files, depending on whether each variable is explicitly defined.
+For example, if you do not have any filters on your Worksheet, the `filters` parameter does not appear.
+You can add that variable to the TML file to specify filters for your Worksheet.
+
+Refer to <<syntax-joins,join syntax>> for more information on the functionality and syntax or Worksheet, View, and table joins in TML.
+
+NOTE: If you edit the joins in the Worksheet TML file, you are only editing the joins for that specific Worksheet.
+You are not editing the joins at the table level.
+To modify table-level joins, you must edit the source table's TML file.
+
+....
+
+guid: <worksheet_guid>
+worksheet:
+  name: <worksheet_name>
+  description:
+    This is a multi-line description of the worksheet
+    Description line 2
+  tables:
+  - name: <table_name_1>
+    id : <optional_table_id>
+    fqn : <optional_GUID_of_table_name>
+  - name: <table_name_2>
+  - name: <table_name_n>
+  joins:
+  - name: <join_name_1>
+    source: <source_table_name>
+    destination: <destination_table_name>
+    type: [RIGHT_OUTER | LEFT_OUTER | INNER | OUTER]
+    on: <join_expression_string>
+    is_one_to_one: [ false | true ]
+  - ...
+  table_paths:
+  - id: <table_path_name_1>
+    table: <table_name_1>
+    join_path:
+    - join:
+      - <join_name_1>
+      - <join_name_n>
+  - id: <table_path_name_2>
+    table: <table_name_2>
+    join_path:
+    - join:
+      - <join_name_2>
+  - id: <table_path_name_n>
+    table: <table_name_n>
+    join_path:
+    - join:
+      - <join_name_n>
+  formulas:
+  - name: <formula_name_1>
+    expr: <formula_definition_1>
+    [id]: <optional_unique_identifier>
+  - name: <formula_name_2>
+    expr: <formula_definition_2>
+  - name: <formula_name_3>
+    expr: <formula_definition_3>
+  filters:
+  - column: <filtered_column_name_1>
+    oper: <filter_operator>
+    values: <filtered_values>
+    - value 1
+    - value 2
+    - value n
+  - column: <filtered_column_name_2>
+  worksheet_columns:
+  - name: <column_name_1>
+    description: <optional_column_description>
+    column_id: <column_id_1>
+    properties:
+      column_type: [ MEASURE | ATTRIBUTE ]
+      aggregation: [ SUM | COUNT | AVERAGE | MAX | MIN |
+                     COUNT_DISTINCT | NONE | STD_DEVIATION | VARIANCE]
+      index_type: [ DONT_INDEX | DEFAULT | PREFIX_ONLY |
+                    PREFIX_AND_SUBSTRING | PREFIX_AND_WORD_SUBSTRING ]
+ 	    index_priority: <index_priority>
+      synonyms :
+             <synonym_1>
+             <synonym_2>
+      is_attribution_dimension : [true | false]
+      is_additive : [ true | false ]
+      calendar : [ default | calendar_name ]
+      format_pattern : <format_pattern_string>
+      currency_type :
+        is_browser : true
+          OR
+        column : <column_name>
+          OR
+        iso_code : <valid_ISO_code>
+      is_hidden: [ true | false ]
+      geo_config :
+        latitude : true
+          OR
+        longitude : true
+          OR
+        country : true
+          OR
+        region_name:
+        - country : <name_supported_country>
+        - region_name : <region_name_in_UI>
+      spotiq_preference: <spotiq_preference_string>
+      search_iq_preferred: [ true | false ]
+    name: <column_name_2>
+    description: <column_description>
+    column_id: <column_id_2>
+    ...
+  properties:
+    is_bypass_rls: [ true | false ]
+    join_progressive: [ true | false ]
+  lesson_plans:
+  - lesson_id: <lesson_id_number_1>
+    lesson_plan_string: <lesson_plan_string_1>
+  - lesson_id: <lesson_id_number_2>
+    lesson_plan_string: <lesson_plan_string_2>
+  - lesson_id: <lesson_id_number_n>
+    lesson_plan_string: <lesson_plan_string_n>
+....
 
 [#syntax-views]
-include::partial$tml-syntax-view.adoc[]
+== Syntax of the View TML file
+
+The `TML` file for Scriptable Views has a specific syntax.
+
+See the <<parameters,Parameters>> section for details about the keywords used in this example.
+
+You may not see each of these parameters in your own TML files, depending on whether each variable is explicitly defined.
+For example, if you do not have a description for your View, the `description` parameter does not appear.
+You can add that variable to the TML file to specify a description for your View.
+
+Refer to <<syntax-joins,join syntax>> for more information on the functionality and syntax or Worksheet, View, and table joins in TML.
+
+NOTE: If you edit the joins in the View TML file, you are only editing the joins for that specific View.
+You are not editing the joins at the table level.
+To modify table-level joins, you must edit the source table's TML file.
+
+....
+
+guid: <view_guid>
+view:
+  name: <view_name>
+  description:
+    This is a multi-line description of the View.
+    Description line 2
+  tables:
+  - name: <table_name_1>
+    id : <optional_table_id>
+    fqn : <optional_GUID_of_table_name>
+  - name: <table_name_2>
+  - name: <table_name_n>
+  joins:
+  - name: <join_name_1>
+    source: <source_table_name>
+    destination: <destination_table_name>
+    type: [RIGHT_OUTER | LEFT_OUTER | INNER | OUTER]
+    on: <join_expression_string>
+    is_one_to_one: [ false | true ]
+  table_paths:
+  - id: <table_path_name_1>
+    table: <table_name_1>
+    join_path:
+    - join:
+      - <join_name_1>
+      - <join_name_n>
+  - id: <table_path_name_2>
+    table: <table_name_2>
+    join_path:
+    - join:
+      - <join_name_2>
+  - id: <table_path_name_n>
+    table: <table_name_n>
+    join_path:
+    - join:
+      - <join_name_n>
+  formulas:
+  - id: <formula_id_1>
+    name: <formula_name_1>
+    expr: <formula_definition_1>
+    properties: <formula_properties_1>
+      column_type: [ MEASURE | ATTRIBUTE ]
+      data_type: [ BOOL | VARCHAR | DOUBLE | FLOAT | INT | BIGINT | DATE | DATETIME | TIMESTAMP | TIME ]
+      aggregation: [ SUM | COUNT | AVERAGE | MAX | MIN |
+                         COUNT_DISTINCT | NONE | STD_DEVIATION | VARIANCE]
+  - id: <formula_id_n>
+    name: <formula_name_n>
+    expr: <formula_definition_n>
+    properties: <formula_properties_n>
+  filters:
+  - column: <filtered_column_name_1>
+    oper: <filter_operator>
+    values: <filtered_values>
+    - value 1
+    - value 2
+  - column: <filtered_column_name_n>
+  search_query: <query_string>
+  view_columns:
+  - name: <column_name_1>
+    description: <optional_column_description>
+    column_id: <column_id_1>
+    phrase: <phrase_string_1>
+    properties:
+      column_type: [ MEASURE | ATTRIBUTE ]
+      aggregation: [ SUM | COUNT | AVERAGE | MAX | MIN |
+                     COUNT_DISTINCT | NONE | STD_DEVIATION | VARIANCE]
+      index_type: [ DONT_INDEX | DEFAULT | PREFIX_ONLY |
+                    PREFIX_AND_SUBSTRING | PREFIX_AND_WORD_SUBSTRING ]
+ 	    index_priority: <index_priority>
+      synonyms :
+             <synonym_1>
+             <synonym_2>
+      is_attribution_dimension : [true | false]
+      is_additive : [ true | false ]
+      calendar : [ default | calendar_name ]
+      format_pattern : <format_pattern_string>
+      currency_type :
+        is_browser : true
+          OR
+        column : <column_name>
+          OR
+        iso_code : <valid_ISO_code>
+      is_hidden: [ true | false ]
+      geo_config :
+        latitude : true
+          OR
+        longitude : true
+          OR
+        country : true
+          OR
+        region_name:
+        - country : <name_supported_country>
+        - region_name : <region_name_in_UI>
+      spotiq_preference: <spotiq_preference_string>
+      search_iq_preferred: [ true | false ]
+    name: <column_name_2>
+    description: <column_description>
+    column_id: <column_id_2>
+    ...
+....
 
 [#syntax-tables]
-include::partial$tml-syntax-table.adoc[]
+== Syntax of the table TML file
+
+The `TML` file for Scriptable tables has a specific syntax.
+
+See the <<parameters,Parameters>> section for details about the keywords used in this example.
+
+You may not see each of these parameters in your own TML files, depending on whether each variable is explicitly defined.
+For example, if you did not define an `index_priority` for your table, the `index_priority` parameter does not appear.
+You can add that variable to the TML file to specify an index priority for the table.
+
+Refer to <<syntax-joins,join syntax>> for more information on the functionality and syntax of worksheet, view, and table joins in TML.
+
+....
+
+guid: <table_guid>
+table:
+  name: <table_name>
+  db: <database_name>
+  schema: <schema_name>
+  db_table: <database_table_name>
+  connection:
+    name: <connection_name>
+    type: <connection_type>
+  columns:
+  - name: <column_name_1>
+    db_column_name: <database_column_name>
+    data_type: [ BOOL | VARCHAR | DOUBLE | FLOAT | INT32 | INT64 | DATE | TIME ]
+    properties:
+      column_type: [ MEASURE | ATTRIBUTE ]
+      aggregation: [ SUM | COUNT | AVERAGE | MAX | MIN |
+                     COUNT_DISTINCT | NONE | STD_DEVIATION | VARIANCE]
+      index_type: [ DONT_INDEX | DEFAULT | PREFIX_ONLY |
+                    PREFIX_AND_SUBSTRING | PREFIX_AND_WORD_SUBSTRING ]
+      index_priority: <index_priority>
+      synonyms :
+             <synonym_1>
+             <synonym_2>
+      is_attribution_dimension : [true | false]
+      is_additive : [ true | false ]
+      calendar : [ default | calendar_name ]
+      format_pattern : <format_pattern_string>
+      currency_type :
+        is_browser : true
+          OR
+        column : <column_name>
+          OR
+        iso_code : <valid_ISO_code>
+      is_hidden: [ true | false ]
+      geo_config :
+        latitude : true
+          OR
+        longitude : true
+          OR
+        country : true
+          OR
+        region_name:
+        - country : <name_supported_country>
+        - region_name : <region_name_in_UI>
+      spotiq_preference: <spotiq_preference_string>
+      search_iq_preferred: [ true | false ]
+    db_column_properties:
+      data_type: [ BOOL | VARCHAR | DOUBLE | FLOAT | INT32 | INT64 | DATE | TIME ]
+  - name: <column_name_2>
+  - name: <column_name_n>
+  rls_rules:
+    tables:
+    - name: <table_name_1>
+      id : <optional_table_id>
+      fqn : <optional_GUID_of_table_name>
+    - name: <table_name_2>
+    - name: <table_name_n>
+    joins:
+    - name: <join_name_1>
+      source: <source_table_name>
+      destination: <destination_table_name>
+      type: [RIGHT_OUTER | LEFT_OUTER | INNER | OUTER]
+      on: <join_expression_string>
+      is_one_to_one: [ false | true ]
+    - ...
+    table_paths:
+    - id: <table_path_name_1>
+      table: <table_name_1>
+      join_path:
+      - join:
+        - <join_name_1>
+        - <join_name_n>
+    - id: <table_path_name_2>
+      table: <table_name_2>
+      join_path:
+      - join:
+        - <join_name_2>
+    - id: <table_path_name_n>
+      table: <table_name_n>
+      join_path:
+      - join:
+        - <join_name_n>
+    rules:
+    - name: <rls_rule_name_1>
+      expr: <rls_rule_expression_1>
+    - name: <rls_rule_name_2>
+      expr: <rls_rule_expression_2>
+    - name: <rls_rule_name_n>
+      expr: <rls_rule_expression_n>
+  joins_with:
+  - name: <join_name_1>
+    description: <optional_join_description_1>
+    destination:
+      name: <destination_table_name_1>
+      fqn: <optional_table_guid_1>
+    on: <join_expression_string_1>
+    type: [RIGHT_OUTER | LEFT_OUTER | INNER | OUTER]
+    is_one_to_one: [ false | true ]
+  - name: <join_name_2>
+  - name: <join_name_n>
+....
 
 [#syntax-joins]
-include::partial$tml-syntax-joins.adoc[]
+== Join syntax
+
+The syntax and functionality of joins in the table TML file differs from the syntax and functionality for Worksheet and View TML files.
+
+When you edit the information in the <<joins,joins>> section of the TML for a Worksheet or View, you override the table join(s) from the table the Worksheet or View comes from.
+However, you only override the join(s) for the specific Worksheet or View you are editing, *_not_* for the source table.
+
+When you edit the information in the <<joins_with,joins_with>> section of the TML for a table, you edit the join information for the source table, the destination table, and any dependents, such as Worksheets and Views.
+Note that you can only edit joins for which the table is the source table.
+
+=== Worksheet and View join syntax
+
+For Worksheets and Views, the join syntax is the following:
+
+....
+
+joins:
+- name: <join_name_1>
+  source: <source_table_name>
+  destination: <destination_table_name>
+  type: [RIGHT_OUTER | LEFT_OUTER | INNER | OUTER]
+  on: <join_expression_string>
+  is_one_to_one: [ false | true ]
+table_paths:
+- id: <table_path_name_1>
+  table: <table_name_1>
+  join_path:
+  - join:
+    - <join_name_1>
+    - <join_name_n>
+....
+
+=== Worksheet and View join functionality and limitations
+
+With Worksheet and View joins, you can accomplish the following tasks:
+
+* Add new joins at the Worksheet or View level
+* Modify existing joins at the Worksheet or View level
+* Delete existing joins at the Worksheet or View level
+
+Worksheet and View joins have the following limitation:
+
+* You cannot modify joins at the table level from the Worksheet or View TML file.
+You can only override the joins for that specific Worksheet or View.
+
+=== Table join syntax
+
+....
+
+joins_with:
+- name: <join_name_1>
+  description: <optional_join_description_1>
+  destination:
+    name: <destination_table_name_1>
+    fqn: <optional_table_guid_1>
+  on: <join_expression_string_1>
+  type: [RIGHT_OUTER | LEFT_OUTER | INNER | OUTER]
+  is_one_to_one: [ false | true ]
+- name: <join_name_2>
+- name: <join_name_n>
+....
+
+=== Table join functionality and limitations
+
+With table joins, you can accomplish the following tasks:
+
+* Add new joins at the table level.
+Joins only appear in the table TML file of the source table in a join, or the table on the Many side of a Many to One join.
+You can only add and edit table joins from the TML file of the table on the Many side of the join.
+* Create generic or range joins at the table level.
+Previously, you could only create non-generic joins through the TML, such as `Table1.date = Table2.date`.
+Now, you can create generic joins through the TML, such as `Table1.date = Table2.date AND Table1.date > Table2.start_date AND Table1.date < Table2.end_date`.
++
+Note that you must have an 'equals' clause before you can have a 'greater than/less than' clause.
+`Table1.date = Table2.date AND Table1.date > Table2.start_date AND Table1.date < Table2.end_date` is valid, but `Table1.date < Table2.end_date` is not.
++
+Joins only appear in the table TML file of the source table in a join, or the table on the Many side of a Many to One join.
+You can only add and edit table joins from the TML file of the table on the Many side of the join.
+
+* Edit existing joins by changing the name of the join and modifying it to your specifications.
+Changing the name of the join creates a new join;
+you must then delete the old join in the UI.
+Joins only appear in the table TML file of the source table in a join, or the table on the Many side of a Many to One join.
+You can only add and edit table joins from the TML file of the table on the Many side of the join.
+
+Table joins have the following limitations:
+
+* You cannot delete a join by removing it from the TML.
+You must delete it through the UI.
+* You cannot directly edit an existing join;
+you must rename it, edit it to your specifications, and then delete the old join in the UI.
+* Renaming a join creates a new join with that name and does not delete the old join with the original name.
+* When creating generic or range joins, you must have an 'equals' clause before you can have a 'greater than/less than' clause.
+`Table1.date = Table2.date AND Table1.date > Table2.start_date AND Table1.date < Table2.end_date` is valid, but `Table1.date < Table2.end_date` is not.
+
+=== Generic joins
+
+The functionality for generic joins in TML files allows the following elements:
+
+* Constants: int, double, bool, date, and string
+* Comparison operators: `=`, `!=`, `<`, `>`, `+<=+`, and `>=`
+* Columns
+* Boolean operators: `AND`, `OR`, and `NOT`
 
 [#syntax-answers]
-include::partial$tml-syntax-answer.adoc[]
+== Syntax of the Answer TML file
+
+The `TML` file for Scriptable Answers has a specific syntax.
+
+See the <<parameters,Parameters>> section for details about the keywords used in this example.
+
+You may not see each of these parameters in your own TML files, depending on whether each variable is explicitly defined.
+For example, if you did not define any conditional formatting, the `conditional_formatting` variable does not appear.
+You can add that variable in the TML file to specify conditional formatting.
+
+....
+
+guid: <answer_guid>
+answer:
+  name: <answer_name>
+  description:
+    This is a multi-line description of the answer
+    Description line 2
+  tables:
+  - id: <table_id>
+    name: <table_name_1>
+    fqn : <optional_GUID_of_table_name>
+  formulas:
+  - id: <formula_id_1>
+    name: <formula_name_1>
+    expr: <formula_definition_1>
+    properties: <formula_properties_1>
+      column_type: [ MEASURE | ATTRIBUTE ]
+      data_type: [ BOOL | VARCHAR | DOUBLE | FLOAT | INT | BIGINT | DATE | DATETIME | TIMESTAMP | TIME ]
+      aggregation: [ SUM | COUNT | AVERAGE | MAX | MIN |
+                     COUNT_DISTINCT | NONE | STD_DEVIATION | VARIANCE]
+  - id: <formula_id_2>
+    name: <formula_name_2>
+    expr: <formula_definition_2>
+    properties: <formula_properties_2>
+  - id: <formula_id_3>
+    name: <formula_name_3>
+    expr: <formula_definition_3>
+    properties: <formula_properties_3>
+  search_query: <search_query_string>
+  answer_columns:
+  - id: <column_id_1>
+    name: <column_name_1>
+    custom_name: <custom_name_1>
+  - name: <column_name_2>
+  table:
+    table_columns:
+    - column_id: <column_id_1>
+      conditional_formatting:
+      - range:
+        min: <conditional_formatting_minimum>
+        max: <conditional_formatting_maximum>
+      - rule: <conditional_formatting_rule_1>
+          range:
+            min: <conditional_formatting_minimum>
+            max: <conditional_formatting_maximum>
+          color: <color_string>
+          plotAsBand: [ true | false ]
+      - rule: <conditional_formatting_rule_2>
+      show_headline: [ true | false ]
+      headline_aggregation: <headline_aggregation_string>
+    - column_id: <column_id_2>
+    ordered_column_ids:
+    - column_id: <column_id_1>
+    - column_id: <column_id_2>
+    client_state: <client_state_string>
+  chart:
+    type: <chart_type>
+    chart_columns: <chart_column_1>
+    - column_id: <column_id_1>
+      conditional_formatting:
+      - rule: <conditional_formatting_rule_1>
+          range:
+            min: <conditional_formatting_minimum>
+            max: <conditional_formatting_maximum>
+          color: <color_string>
+          plotAsBand: [ true | false ]
+      - rule: <conditional_formatting_rule_2>
+    - column_id: <column_id_2>
+    axis_configs: <axis_config_1>
+    - x:
+      - column_id: <column_id_x_axis>
+    - y:
+      - column_id: <column_id_y_axis>
+      color:
+      - column_id: <column_id_color>
+    axis_configs: <axis_config_2>
+    locked: [ true | false ]
+    client_state: <client_state_string>
+  display_mode: <display_mode_string>
+....
 
 [#syntax-pinboards]
-include::partial$tml-syntax-pinboard.adoc[]
+== Syntax of the Liveboard TML file
+
+The `TML` file for Scriptable Liveboards has a specific syntax.
+
+See the <<parameters,Parameters>> section for details about the keywords used in this example.
+
+You may not see each of these parameters in your own TML files, depending on whether each variable is explicitly defined.
+For example, if you do not have any filters on your Liveboard, the `filters` parameter does not appear.
+You can add that variable to the TML file to specify filters for your Liveboard.
+
+....
+
+guid: <pinboard_guid>
+pinboard:
+  name: <pinboard_name>
+  description:
+    This is a multi-line description of the Liveboard
+    Description line 2
+  visualizations:
+  - id: <viz_id_1>
+    answer:
+    This section includes all the Answer specification for a visualization, from name to display_mode, in the Answer syntax section above.
+  - id: <viz_id_2>
+    answer:
+    This section includes all the Answer specification for a second visualization. In this case, the visualization is a headline.
+    display_headline_column: <headline_column>
+  filters:
+    - column:
+      - <primary_filter_column_name_1>
+      - <linked_filter_column_name_2>
+      - <linked_filter_column_name_n>
+      oper: <filter_operator>
+      values: <filtered_values>
+      - value 1
+      - value 2
+      - value n
+      excluded_visualizations:
+      - excluded_viz_id_1
+      - excluded_viz_id_2
+    - column: <filtered_column_name_2>
+    ...
+  layout:
+    tiles:
+    - visualization_id: <visualization_id_1>
+      size: <viz_id_1_size>
+    - visualization_id: <visualization_id_2>
+....
 
 [#parameters]
-include::partial$tml-parameters.adoc[]
+== Parameters of TML files
+
+
+[width=“100%”,grid=“none”,options="header"]
+|===
+| a - e | f - o | p - w
+a| <<aggregation,aggregation>>
+
+<<answer,answer>>
+
+<<answer_columns,answer_columns>>
+
+<<axis_configs,axis_configs>>
+
+<<calendar,calendar>>
+
+<<chart,chart>>
+
+<<chart_columns,chart_columns>>
+
+<<client_state,client_state>>
+
+<<color,color>>
+
+<<column,column>>
+
+<<columns,columns>>
+
+<<column_id,column_id>>
+
+<<column_type,column_type>>
+
+<<conditional_formatting,conditional_formatting>>
+
+<<connection,connection>>
+
+<<currency_type,currency_type>>
+
+<<custom_name,custom_name>>
+
+<<data_type,data_type>>
+
+<<db,db>>
+
+<<db_column_name,db_column_name>>
+
+<<db_table,db_table>>
+
+<<description,description>>
+
+<<destination,destination>>
+
+<<display_mode,display_mode>>
+
+<<display_headline_column,display_headline_column>>
+
+<<expr,expr>>
+
+a| <<filters,filters>>
+
+<<format_pattern,format_pattern>>
+
+<<formulas,formulas>>
+
+<<fqn,fqn>>
+
+<<geo_config,geo_config>>
+
+<<guid,guid>>
+
+<<headline_aggregation,headline_aggregation>>
+
+<<id,id>>
+
+<<index_priority,index_priority>>
+
+<<index_type,index_type>>
+
+<<is_additive,is_additive>>
+
+<<is_attribution_dimension,is_attribution_dimension>>
+
+<<is_bypass_rls,is_bypass_rls>>
+
+<<is_hidden,is_hidden>>
+
+<<is_one_to_one,is_one_to_one>>
+
+<<join,join>>
+
+<<join_path,join_path>>
+
+<<join_progressive,join_progressive>>
+
+<<joins,joins>>
+
+<<layout,layout>>
+
+<<locked,locked>>
+
+<<max,max>>
+
+<<min,min>>
+
+<<name,name>>
+
+<<on,on>>
+
+<<oper,oper>>
+
+<<ordered_column_ids,ordered_column_ids>>
+
+a| <<phrase,phrase>>
+
+<<pinboard,pinboard>>
+
+<<properties,properties>>
+
+<<plotAsBand,plotAsBand>>
+
+<<range,range>>
+
+<<rls_rules,rls_rules>>
+
+<<rule,rule>>
+
+<<rules,rules>>
+
+<<schema,schema>>
+
+<<search_query,search_query>>
+
+<<show_headline,show_headline>>
+
+<<size,size>>
+
+<<source,source>>
+
+<<spotiq_preference,spotiq_preference>>
+
+<<synonyms,synonyms>>
+
+<<table,table>>
+
+<<table_columns,table_columns>>
+
+<<table_paths,table_paths>>
+
+<<tables,tables>>
+
+<<type,type>>
+
+<<values,values>>
+
+<<view,view>>
+
+<<view_columns,view_columns>>
+
+<<visualizations,visualizations>>
+
+<<visualization_id,visualization_id>>
+
+<<worksheet,worksheet>>
+
+<<worksheet_columns,worksheet_columns>>
+|===
+
+[#aggregation]
+aggregation::
+The default aggregation of the Worksheet, View, or table column, or the aggregation of the output for a formula.
++
+Aggregation options depend on the data type.
++
+Possible values are `SUM`, `COUNT`, `AVERAGE`, `MAX`, `MIN`, `COUNT_DISTINCT`, `NONE`, `STD_DEVIATION`, and `VARIANCE`
++
+Default: `SUM`.
+
+[#answer]
+answer::
+Top-level container for all object definitions within an Answer.
+
+[#answer_columns]
+answer_columns::
+A list of columns generated by the search query.
+
+[#axis_configs]
+axis_configs::
+Specifies the columns for each axis on a chart.
++
+If you are displaying a column chart with a line chart overlaying it, for example, you would need to specify more than one `axis_config`.
+
+[#calendar]
+calendar::
+Specifies the calendar used by a date column.
++
+Can be the Gregorian calendar (`default`), a fiscal calendar, or any custom calendar.
++
+See xref:connections-cust-cal.adoc[Set up a custom calendar]
+
+[#chart]
+chart::
+Contains configuration for the Answer, if it displays in chart format.
+
+[#chart_columns]
+chart_columns::
+A list of columns in the chart.
+
+[#client_state]
+client_state::
+A JSON string with more advanced chart and table configuration.
+
+[#color]
+color::
+Color to use for conditional formatting or for the columns of an Answer in chart form, in the form of a HEX value.
+
+[#column]
+column::
+The id of the column(s) being filtered on. When a Liveboard contains xref:liveboard-filters-linked.adoc[linked filters], or filters that affect visualizations based on more than one Worksheet, the primary filter column appears first in the list of columns in the TML. The linked filter column appears after the primary filter column.
+
+[#columns]
+columns::
+The columns in the table.
+
+[#column_id]
+column_id::
+The `id` of the Worksheet or View column.
++
+For Answers, `column_id` refers to how the column appears in the query.
+For example, if you sorted by `Quarter` in your search, from the `Commit Date` column, the `column_id` of the column is `Quarter(Commit Date)`.
+
+[#column_type]
+column_type::
+The type of data the column represents.
+For a formula, the `column_type` refers to the output of the formula.
++
+Possible values: `MEASURE` or `ATTRIBUTE`
++
+For Worksheets, the default is: `MEASURE`
++
+For formulas, the default depends on the <<data_type,data_type>>.
++
+If the data type is `INT` or `BIGINT`, the formula output's `column_type` defaults to `Measure`.
++
+If the data type is `BOOL`, `VARCHAR`, `DOUBLE`, `FLOAT`, `DATE`, `DATETIME`, or `TIME`, the formula output's `column_type` defaults to `Attribute`
+
+[#conditional_formatting]
+conditional_formatting::
+Conditional formatting for the chart or table of an Answer.
+
+[#connection]
+connection::
+A way to identify the external data warehouse connection that the table resides in. To add tables or columns to an external connection, you must specify this parameter.
+
+[#currency_type]
+currency_type::
+The source of currency type.
++
+One of:
++
+`is_browser : true`;; infer the currency data from the locale of your browser
+`column : <column_name>`;; extracts the currency information from a specified column
+`iso_code : <valid_ISO_code>`;; applies currency based on the ISO code;
++
+See https://www.iso.org/iso-4217-currency-codes.html[ISO 4217 Currency Codes^] and xref:data-modeling-patterns.adoc#set-currency-type[Set currency type] for more information.
+
+[#custom_name]
+custom_name::
+Optional display name for a column.
+
+[#data_type]
+data_type::
+The data type of the formula output or column.
+If the data type is `INT` or `BIGINT`, the formula output's `column_type` defaults to `Measure`.
+If the data type is `BOOL`, `VARCHAR`, `DOUBLE`, `FLOAT`, `DATE`, `DATETIME`, or `TIME`, the formula output's `column_type` defaults to `Attribute`.
+The possible data types are `Boolean`, `Text`, `Date`, `Datetime`, `Time`, `Numeric`, and `Decimal`.
+
+[#db]
+db::
+The database that a table resides in.
+Note that this is not the same as the data warehouse (Falcon, Amazon Redshift, or Snowflake, for example).
+
+[#db_column_name]
+db_column_name::
+The name of the column in the database.
+Note that this database is not the same as the data warehouse (Amazon Redshift, or Snowflake, for example).
+
+[#db_column_properties]
+db_column_properties::
+The properties of the column in the database. Note that this database is not the same as the data warehouse (Amazon Redshift or Snowflake, for example).
+
+[#db_table]
+db_table::
+The name of the table in the database.
+Note that this database is not the same as the data warehouse (Falcon, Amazon Redshift, or Snowflake, for example).
+
+[#description]
+description::
+The text that describes an object: a `worksheet`, a `worksheet_column`, `answer`, `pinboard`, `view`, `view_column` and so on.
+
+[#destination]
+destination::
+The name of the destination table or View for a join.
+
+[#display_mode]
+display_mode::
+Determines whether the Answer displays as a chart or a table.
+Specify either `CHART_MODE` or `TABLE_MODE`.
+
+[#display_headline_column]
+display_headline_column::
+If the visualization is a headline, this parameter specifies the column the headline comes from.
+
+[#excluded_visualizations]
+excluded_visualizations::
+A list of visualizations the Liveboard editor chose to exclude from the filter. Only appears when using xref:liveboard-filters-selective.adoc[selective filters].
+
+[#expr]
+expr::
+The definition of the formula or, in release 7.1.1 and later, row level security (RLS) rule. For RLS rules, the syntax for variables in TML should be the same as the syntax of the variables in the rule on the table.
+
+[#filters]
+filters::
+Contains specifications for Liveboard, View, and Worksheet filters.
+
+[#format_pattern]
+format_pattern::
+The format pattern string that controls the display of a number, date, or currency column.
++
+See xref:data-modeling-patterns.adoc[Set number, date, and currency formats]
+
+[#formulas]
+formulas::
+The list of formulas in the Worksheet, View, or Answer.
++
+Each formula is identified by `name`, the `expr` (expression), and an optional `id` attribute.
+
+[#fqn]
+fqn::
+The table's GUID.
+You can find this string of letters and numbers at the end of the URL for that table.
++
+For example, in `\https://<company>.thoughtspot.com/#/data/tables/34226aaa-4bcf-4d6b-9045-24cb1e9437cb`, the GUID is `34226aaa-4bcf-4d6b-9045-24cb1e9437cb`.
++
+Use this optional parameter to identify a specific table, if you have multiple tables with the same name.
+
+[#geo_config]
+geo_config::
+Specifies the geographic information of a column.
++
+One of:
++
+`latitude : true`;; for columns that specify the latitude
+`longitude : true`;; for columns that specify the longitude
+`country : true`;; for columns that specify the country
+`region_name`;; for specifying a region in a country
++
+Uses two paired parameters:
+
+- `country: __<country_name>__`
+- `region_name: __<region_name_in_UI>__`; can be State, Postal Code, District, and so on.
+
+See xref:data-modeling-geo-data.adoc[Add a geographical data setting]
+
+[#guid]
+guid::
+The GUID for the Answer, Liveboard, SpotIQ result, Table, Worksheet, or View.
++
+You can find this string of letters and numbers at the end of the URL for an object.
+
+[#headline_aggregation]
+headline_aggregation::
+Specifies the type of headline aggregation.
++
+Can be `COUNT`, `COUNT_DISTINCT`, `SUM`, `MIN`, `MAX`, `AVERAGE`, or `TABLE_AGGR`.
+
+[#id]
+id::
+Specifies the id of an object, such as `table_paths`, `formula`.
++
+For Answers, `id` refers to how the column appears in the query.
+For example, if you sorted by `Quarter` in your search, from the `Commit Date` column, the `id` of the column is `Quarter(Commit Date)`.
++
+Refer to https://developers.thoughtspot.com/docs/?pageid=search-data-api[Components of a Search Query^] to understand syntax.
++
+For formulas within Answers, `id` refers to the display name of the formula.
++
+If you do not give your formula a name, it appears as 'Untitled Formula'.
+
+[#index_priority]
+index_priority::
+A value (1-10) that determines where to rank a column's name and values in the search suggestions
++
+ThoughtSpot prioritizes columns with higher values.
++
+See xref:data-modeling-index.adoc#column-suggestion-priority[Change a column's suggestion priority].
+
+[#index_type]
+index_type::
+The indexing option of the Worksheet, View, or table column.
++
+Possible values: `DONT_INDEX`, `DEFAULT` (see xref:data-modeling-index.adoc#default-indexing[Understand the default indexing behavior]), `PREFIX_ONLY`, `PREFIX_AND_SUBSTRING`, and `PREFIX_AND_WORD_SUBSTRING`
++
+Default: `DEFAULT`
++
+See xref:data-modeling-index.adoc#override-system-default-column[Index Type Values]
+
+[#is_additive]
+is_additive::
+Controls extended aggregate options for attribute columns
++
+For attribute columns that have a numeric data type (`FLOAT`, `DOUBLE`, or `INTEGER`) or a date data type (`DATE`, `DATETIME`, `TIMESTAMP`, or `TIME`)
++
+Possible values: `true` or `false`.
++
+Default: `true`.
++
+See xref:data-modeling-aggreg-additive.adoc#make-attribute-additive[Making an ATTRIBUTE column ADDITIVE].
+
+[#is_attribution_dimension]
+is_attribution_dimension::
+Controls if the column is an attribution dimension.
++
+Used in managing chasm traps.
++
+Possible values: `true` by default, `false` to designate a column as not producing meaningful attributions across a chasm trap
++
+Default: `true`
++
+See xref:data-modeling-attributable-dimension.adoc[Change the attribution dimension]
+
+[#is_bypass_rls]
+is_bypass_rls::
+Specifies if the worksheet supports bypass of Row-level security (RLS)
++
+Possible values: `true` or `false`
++
+Default: `false`
++
+See xref:security-rls-concept.adoc#exempt-rls[Privileges that allow users to set, or be exempt from, RLS]
+
+[#is_hidden]
+is_hidden::
+The visibility of the column
++
+Possible values: `true` to hide the column, `false` not to hide the column +
+Default: `false`
++
+See xref:data-modeling-visibility.adoc[]
+
+[#is_one_to_one]
+is_one_to_one::
+Specifies the cardinality of the join. This is an optional parameter.
++
+Possible values: `true`, `false`
++
+Default: `false`
+
+////
+[#is_primary_key]
+is_primary_key::
+  Determines if the table column is the primary key.
+Can be `true` or `false`.
+
+[#is_foreign_key]
+is_foreign_key::
+  Determines if the table column is the foreign key.
+Can be `true` or `false`.
+////
+
+[#join]
+join::
+Specific join, used in defining higher-level objects, such as table paths
++
+Defined as `name` within `joins` definition
+
+[#join_path]
+join_path::
+Specification of a composite join as a list of distinct `join` attributes.
++
+These `join` attributes list relevant joins, previously defined in the `joins`, by name.
++
+Default: `{}`
+
+[#join_progressive]
+join_progressive::
+Specifies when to apply joins on a worksheet
++
+Possible values: `true` when joins are applied only for tables whose columns are included in the search, and `false` for all possible joins
++
+Default: `true`
++
+See xref:worksheet-progressive-joins.adoc[How the worksheet join rule works]
+
+[#joins]
+joins::
+Contains a list of joins between the tables and Views.
++
+If you edit the joins in the Worksheet or View TML file, you are only editing the joins for that specific Worksheet or View. You are not editing the joins at the table level. To modify table-level joins, you must edit the source table's TML file.
++
+Each join is identified by `name`, and the additional attributes of `source`, `destination`, `type`, and `is_one_to_one.`
+
+[#joins_with]
+joins_with::
+Contains a list of external joins for which this table is the source. +
+Each join is identified by `name` and optional `description`, and the additional attributes of `destination`, `type`, `on`, and `is_one_to_one`.
+
+[#layout]
+layout::
+Specifies the Liveboard layout, in the order that a `visualization_id` is listed.
+
+[#locked]
+locked::
+The 'automatically select my chart' option in the UI.
+If set to `true`, the chart type does not change, even when you add items to the query.
+
+[#max]
+max::
+Maximum value for conditional formatting.
+
+[#min]
+min::
+Minimum value for conditional formatting.
+
+[#name]
+name::
+The name of an object.
+Applies to `worksheet`, `table`,`joins`, `formula`, `rls_rules`, `answer`, `pinboard`, `view`, `table`, `connection`, `destination`, and so on.
++
+For Answers, `name` refers to how the column appears in the query.
+For example, if you sorted by `Quarter` in your search, from the `Commit Date` column, the `name` of the column is `Quarter(Commit Date)`.
+Refer to https://developers.thoughtspot.com/docs/?pageid=search-data-api[Components of a Search Query^] to understand syntax.
+
+[#on]
+on::
+The join expression: the relationship definition, or the keys that your tables are joined on. For example, `[sale::Sale_Last Name] = [employee::Employee_Last Name] AND [sale::Sale_First Name] = [employee::Employee_First Name]`. +
+You cannot directly edit a relationship definition. To alter a relationship definition, you must rename the join or create a new join.
+
+[#oper]
+oper::
+The operator of the Liveboard, View or Worksheet filter.
+Accepted operators are `"in"`, `"not in"`, `"between"`, `=<`, `!=`, `+<=+`, `>=`, `>`, or `<`.
+
+[#ordered_column_ids]
+ordered_column_ids::
+A list of columns, in the order they appear in the table.
+
+[#phrase]
+phrase::
+Phrase associated with a View column.
+
+[#pinboard]
+pinboard::
+Top-level container for all object definitions within the Liveboard or SpotIQ result.
+
+[#properties]
+properties::
+The list of properties of a Worksheet, table, or View column, a Worksheet or View itself, or the properties of the output for a formula within an Answer, Worksheet, or View.
++
+For Worksheets, Views, and tables, each column can have the following properties, depending on its definition: `column_type`, `aggregation`, `index_type`, `is_hidden`, `index_priority`, `synonyms`, `is_attribution_dimension`, `is_additive`, `calendar`, `format_pattern`, `currency_type`, `geo_config`, `spotiq_preference`, and `search_iq_preferred`.
++
+Worksheets and Views themselves can have the following properties that affect query generation: `is_bypass_rls`, and `join_progressive`.
++
+For Answers, each formula's output can have the following properties, depending on its definition: `column_type` and `aggregation`.
+
+[#plotAsBand]
+plotAsBand::
+Specifies whether to plot the chart conditional formatting like a band on the Visualization.
++
+This is the 'fill chart' option in the UI.
+
+[#range]
+range::
+Range for the conditional formatting to apply to, with a specified `min` and `max`.
+
+[#rls_rules]
+rls_rules::
+In release 7.1.1 and later, a container for the full definition of xref:security-rls-concept.adoc[row level security] rules for the table.
+
+[#rule]
+rule::
+A conditional formatting rule.
+
+[#rules]
+rules::
+In release 7.1.1 and later, a container for the names and expressions of xref:security-rls-concept.adoc[row level security] rules for the table.
+
+[#schema]
+schema::
+The schema that the table is a part of.
+
+[#search_query]
+search_query::
+A string that represents the fully disambiguated search query.
+Refer to https://developers.thoughtspot.com/docs/?pageid=search-data-api[Components of a Search Query^] to understand syntax.
+
+[#show_headline]
+show_headline::
+Determines whether to show the headline for this column.
+`true` shows the headline.
+
+[#size]
+size::
+The size of a visualization in a Liveboard.
+The options are `EXTRA_SMALL`, `SMALL`, `MEDIUM`, `LARGE`, `LARGE_SMALL`, `MEDIUM_SMALL`, and `EXTRA_LARGE`.
+
+[#source]
+source::
+Name of the source table or View for a join.
+
+[#spotiq_preference]
+spotiq_preference::
+Specifies whether to include a column in SpotIQ analysis.
+Specify `EXCLUDE`, or this property defaults to include the column in SpotIQ Analysis.
++
+Refer to xref:spotiq-data-model-preferences.adoc[Set columns to exlude from SpotIQ analyses].
+
+[#synonyms]
+synonyms::
+Alternate names for the column, used in search.
+
+[#table]
+table::
+Top-level container for all object definitions within the table.
++
+Specific table, used in defining higher-level objects, such as table paths.
++
+Defined as `name` within `tables` definition.
++
+For Answers, this parameter contains configuration for the Answer, if it displays in table format.
+
+[#table_columns]
+table_columns::
+The columns in an Answer that is being displayed in table format.
+
+[#table_paths]
+table_paths::
+The list of table paths
++
+Each table path is identified by the `id`, and additional attributes of `table` and `join_path`.
+
+[#tables]
+tables::
+List of tables used by the Worksheet, Answer, or table RLS rule.
++
+Each table is identified by `name`.
+
+[#type]
+type::
+For Worksheets and Views, this is the join type. This is an optional parameter.
++
+Possible values: `LEFT_OUTER` for left outer join, `RIGHT_OUTER` for right outer join, `INNER` for inner join, `OUTER` for full outer join.
++
+Default: `INNER`
++
+For tables, this is the connection type.
++
+Possible values: `Snowflake`, `Google BigQuery`, `Microsoft Azure`, or `Amazon Redshift`.
++
+Within the `chart` section of an Answer TML file, this is the chart type.
++
+Possible values: `COLUMN`, `BAR`, `LINE`, `PIE`, `SCATTER`, `BUBBLE`, `STACKED_COLUMN`, `AREA`, `PARETO`, `COLUMN`, `GEO_AREA`, `GEO_BUBBLE`, `GEO_HEATMAP`, `GEO_EARTH_BAR`, `GEO_EARTH_AREA`, `GEO_EARTH_GRAPH`, `GEO_EARTH_BUBBLE`, `GEO_EARTH_HEATMAP`, `WATERFALL`, `TREEMAP`, `HEATMAP`, `STACKED_AREA`, `LINE_COLUMN`, `FUNNEL`, `LINE_STACKED_COLUMN`, `PIVOT_TABLE`, `SANKEY`, `GRID_TABLE`, `SPIDER_WEB`, `WHISKER_SCATTER`, `STACKED_BAR`, or `CANDLESTICK`.
+
+[#values]
+values::
+The values being filtered (excluded or included) in a Liveboard, View, or Worksheet.
+
+[#view]
+view::
+Top-level container for all object definitions within the View.
+
+[#view_columns]
+view_columns::
+The list of columns in the View.
++
+Each column is identified by `name`, `description`, `column_id`, `phrase` and `properties`.
+
+[#visualizations]
+visualizations::
+The visualizations in a Liveboard: tables, charts, and headlines.
+
+[#visualization_id]
+visualization_id::
+The id of a visualization.
++
+Used to specify the Liveboard's <<layout,layout>>.
+
+[#worksheet]
+worksheet::
+Top-level container for all object definitions within the worksheet
+
+[#worksheet_columns]
+worksheet_columns::
+The list of columns in the worksheet
++
+Each worksheet is identified by `name`, `description`, `column_id`, and `properties`.
+
 
 == Limitations of working with TML files
 
-There are certain limitations to the changes you can apply by editing a Worksheet, Answer, Table, View, Pinboard, or SpotIQ result through TML.
+There are certain limitations to the changes you can apply by editing a worksheet, answer, table, view, or Liveboard through TML.
 
-[#limitations]
 include::partial$scriptability-limitations.adoc[]

@@ -1,18 +1,26 @@
 = Apply conditional formatting
-:last_updated: 12/30/2020
+:last_updated: 11/5/2021
 :linkattrs:
 :experimental:
-:page-partial:
+:page-layout: default-cloud
 :page-aliases: /end-user/search/apply-conditional-formatting.adoc
+:description: Apply conditional formatting to add visual cues for values in your data.
 
-NOTE: Certain elements of conditional formatting are part of the xref:answer-experience-new.adoc[new answer experience]. The new answer experience is in [.label.label-beta]#Beta# and off by default, but the option to turn it on or off individually is on by default. These new elements include conditional formatting for table summaries, improved conditional formatting for attributes and measures in table cells and charts, and conditional formatting for measures in pivot tables. If you have the new answer experience on, your user interface and experience may be different from the experience described in this article. You can turn the new answer experience on or off individually from the *Experience manager* panel in xref:user-profile.adoc#new-answer-experience[your profile]. If that option is not available, contact your administrator.
+include::partial$liveboards-announcement.adoc[]
 
 You can apply conditional formatting to tables or charts to highlight values in the data.
 This makes values above, below, or within a particular threshold stand out.
 
+NOTE: Certain elements of table configuration are part of the xref:answer-experience-new.adoc[new answer experience].
+The new answer experience is in Beta and off by default, but the option to turn it on or off individually is on by default.
+These elements include conditional and number formatting for table summaries, improved conditional formatting for attributes and measures in table cells, conditional formatting for measures in pivot tables, content density, and theme (outline, row, or zebra).
+If the new answer experience is off, you do not see these capabilities.
+You can turn it on or off individually from the *Experience manager* panel in your profile.
+If that option is not available, contact your administrator.
+
 == Understand conditional formatting
 
-Many companies create pinboards with key metrics they want to track in daily or weekly staff meetings.
+Many companies create Liveboards with key metrics they want to track in daily or weekly staff meetings.
 Using conditional formatting, they can see at a glance how they are performing relative to these metrics.
 
 You can add visual cues for KPIs (Key Performance Indicators) or threshold metrics to charts and tables, to easily show where you are falling short or exceeding targets.
@@ -23,47 +31,60 @@ For charts, you can add conditional formatting to show the threshold(s) you defi
 [#table]
 == Apply conditional formatting to a table
 
-You can use conditional formatting to show table cells with a background color determined by the value they contain. If you are on the new answer experience, pivot tables follow the same conditional formatting rules as tables, even though they fall under ThoughtSpot’s chart category. If you are on the classic experience, you cannot use conditional formatting on pivot tables.
+You can apply conditional formatting to both table cells and column summaries.
+You can specify a background color, font color, and/ or font style: bold, italics, underlined, or strikethrough.
+You can create conditional formatting rules for both measures and attributes.
+For pivot tables, you can only create conditional formatting rules for measures.
+Pivot tables follow the same conditional formatting rules as tables, even though they fall under ThoughtSpot's chart category.
 
-NOTE: You can only apply conditional formatting to numbers and strings. For example, you can apply conditional formatting to a month of year column, with values such as January, but not to a date column where dates are in the format 1 Jan 2021. For pivot tables, you can only apply conditional formatting to measures, not attributes. Conditional formatting for pivot tables is only available in the xref:answer-experience-new.adoc[new answer experience].
+NOTE: You can only apply conditional formatting to numbers and strings.
+For example, you can apply conditional formatting to a `month of year` column, with values such as `January`, but not to date column where dates are in the format `1 Jan 2021`.
+For pivot tables, you can only apply conditional formatting to measure, not attributes.
 
-To apply conditional formatting to a table:
+If you create multiple conditional formatting rules for one measure or attribute, the first rule you create overrides the others, if there is a conflict.
+To change which rule overrides the others, simply drag and drop the rule to the top of the list of conditional formatting rules.
 
-. In the column header of your table for the column you want to apply formatting to, click the *More* menu icon image:icon-ellipses.png[more options menu icon].
+In the example below, the *christmas* table cell falls under both the `is christmas` rule, and the `not winter` rule.
+Currently, the `not winter` rule overrides the `is christmas` rule, so the *christmas* table cell does not have red text and a green background.
+
+image::conditional-formatting-override.png[Drag and drop the rule you would like to override other rules]
+
+To create a conditional formatting rule:
+
+. Click the *edit table configuration* icon image:icon-gear-10px.png[] to the upper right of your table.
+The *Edit table* panel appears, on the *Configure* menu.
+. Select the measure or attribute you would like to add a conditional formatting rule for.
+. The *Edit* panel for that column appears.
+Under *Conditional formatting*, click *+ Add rule*.
+If you would like to add conditional formatting for a column summary, select *Summary* under the column name, and click *+ Add rule*.
 +
-image::conditional_formatting_table_1.png[]
-
-. Select *Conditional Formatting*.
-. Click *+ ADD FORMATTING* in the *Conditional Formatting* window.
-. Define the sets of values and the color to use for each set.
+NOTE: When you create a rule for a column, it does not automatically apply to the column summary.
+You must create a separate rule for the column summary.
 +
-image::conditional-formatting-table-3.png[]
+image::table-config-conditional-formatting.png[Conditional formatting -- add rule]
 
-. Click *Done* after defining all of your conditional formatting sets.
+. Select an operator.
+The valid options for attributes are `is`, `not`, `contains`, `does not contain`, `starts with`, `ends with`, `empty`, and `not empty`.
+The valid options for measures are `less than`, `greater than`, `less than or equal to`, `greater than or equal to`, `equal to`, `not equal to`, `between`, `empty`, and `not empty`.
+. Specify the column value(s) that the formatting should affect.
+. Choose a background color, font color, and/or font style: bold, italics, underlined, or strikethrough.
 +
-image::conditional_formatting_table_4.png[]
+In this example, if the `selling season` is (=) `christmas`, the background color for the table cell is green, and the font color is red.
++
+image::table-config-conditional-formatting-rule.png[Conditional formatting example]
+
+. Click *Save*.
+The system applies the rule to the column or column summary.
+. You can edit an existing rule from the *Edit* panel for the column by clicking on the rule.
+. You can delete a conditional formatting rule from the *Edit* panel for the column.
+Select the *delete* icon that appears when you hover over a rule.
++
+image::table-config-conditional-formatting-delete.png[Delete a conditional formatting rule]
 
 NOTE: If you change to a chart type, you must apply conditional formatting again.
 Conditional formatting is tied to the specific visualization.
 
-[#chart]
+[#conditional-formatting-chart]
 == Apply conditional formatting to a chart
 
-You can use conditional formatting to show charts with a target value or range drawn as a line in the chart, and the legend colors determined by where values fall relative to the target.
-
-To apply conditional formatting to a chart:
-
-. Click the axis label of your chart.
-Select *Conditional Formatting*.
-. Click *+ ADD FORMATTING* in the Conditional Formatting window.
-. Define the ranges of values and the color to use for each range you want to track.
-To add another range, click the *+* icon and repeat.
-+
-image::set-conditional-formatting.png[]
-
-. Click *Done* after defining all of your conditional formatting ranges.
-+
-image::conditional_formatting_chart.png[]
-
-NOTE: If you change the chart type, you must apply conditional formatting again.
-It is tied to the specific visualization.
+include::partial$conditional-formatting-chart.adoc[]

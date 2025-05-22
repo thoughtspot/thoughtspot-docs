@@ -17,3 +17,40 @@ Do not send the periodic backups or stage files on `/export/sdb1` since it is a 
 It is used internally by Hadoop Distributed File System (HDFS) and if this drive fills up, it can cause serious problems.
 Do not allow backups or data files to accumulate on ThoughtSpot.
 If disk space becomes limited, the system will not function normally.
+
+. Log in to the Linux shell using SSH.
+. Mount the directory to the file system, by issuing the appropriate command:
+ ** For an NFS (Network File System) directory:
++
+----
+tscli nas mount-nfs
+   --server <server_NFS_address>
+   --path_on_server <path>
+   --mount_point <target>
+   --options vers=<version>, sec=<security scheme>, <OPTIONS>
+----
++
+NOTE: Other command-line options are available to forward to the command (default: `noexec`).
+
+ ** For a CIFS (Common Internet File System) directory:
++
+----
+tscli nas mount-cifs
+   --server <server_CIFS_address>
+   --path_on_server <path>
+   --mount_point <target>
+   --username <user>
+   --password <password>
+   --uid <uid>
+   --gid <gid>
+   --options <OPTIONS>
+----
++
+NOTE: Other command-line options are available to forward to the `mount.cifs` command (default: `noexec`).
+
+. Use the mounted file system as you wish, specifying it by referring to its mount point.
+. When you are finished with it, you may optionally unmount the NAS file system:
++
+----
+ tscli nas unmount --dir <directory>
+----
