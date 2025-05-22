@@ -6,7 +6,7 @@
 :page-layout: default-cloud
 :connection: Databricks
 :description: Learn how to add a Databricks connection.
-:jira: SCAL-136661, SCAL-203358, SCAL-214983
+:jira: SCAL-136661, SCAL-203358, SCAL-214983, SCAL-230240, SCAL-248988
 
 == Configuring OAuth
 If you need to use OAuth with {connection}, you must configure OAuth in Microsoft Azure. For details, see xref:connections-databricks-oauth.adoc[OAuth for a {connection} connection] or xref:connections-databricks-oauth-aad.adoc[].
@@ -37,7 +37,33 @@ image::embrace-databricks-connection-type-ts-cloud.png[Add a {connection} connec
 
 . Enter the connection details for your {connection} data source using *Service Account*, *OAuth*, or *OAuth with PKCE*.
 +
+[.bordered]
 image::embrace-databricks-connection-details-service-acct.png[Connection details]
++
+--
+For Personal Access token, do the following:
+
+- Enter Host, HTTP Path, Personal Access Token, and Catalog (optional).
+--
++
+--
+For OAuth authentication, do the following:
+
+- Enter Host, HTTP Path, OAuth Client ID, OAuth Client Secret, Scope, Auth URL, Access token URL, and Catalog (optional).
+--
++
+--
+For OAuth authentication with Service Principal, do the following:
+
+- Enter Host, HTTP Path, Service Principal UUID, and Service Principal OAuth Secret.
+--
+
++
+--
+For OAuth authentication with PKCE, do the following:
+
+- Enter Host, HTTP Path, OAuth Client ID, OAuth Client Secret (optional), Scope, Auth URL, Access token URL, and Catalog (optional).
+--
 +
 --
 For Service Account authentication, do the following:
@@ -49,19 +75,6 @@ For Service Account authentication, do the following:
 *** For username, enter "token".
 *** For password, enter your personal access token.
 --
-+
---
-For OAuth authentication, do the following:
-
-- Enter Host, HTTP Path, OAuth Client ID, OAuth Client Secret, Scope, Auth URL, Access token URL, and Catalog (optional).
---
-
-+
---
-For OAuth authentication with PKCE, do the following:
-
-- Enter Host, HTTP Path, OAuth Client ID, OAuth Client Secret (optional), Scope, Auth URL, Access token URL, and Catalog (optional).
---
 Refer to the xref:connections-databricks-reference.adoc[{connection} connection reference] for more information on each of the specific attributes you must enter for your connection.
 
 . (Optional) Provide additional key-value pairs that you need to set up your connection to {connection} or customize additional JDBC parameters supported by {connection}, by doing the following:
@@ -71,6 +84,10 @@ Refer to the xref:connections-databricks-reference.adoc[{connection} connection 
 +
 NOTE: Any key-value pairs that you enter must be defined in your {connection} data source.
 Key-value pairs are case-sensitive.
+
+.. For OAuth with Service Principal connections, enter the following key-value pair:
+* Key: catalog
+* Value: databricks catalog_name
 . Select *Continue*.
 . Select tables (on the left) and the columns from each table (on the right), and then choose *Create connection*.
 +

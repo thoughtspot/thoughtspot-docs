@@ -5,7 +5,7 @@
 :experimental:
 :page-layout: default-cloud
 :description:
-:jira: SCAL-228500, SCAL-244132
+:jira: SCAL-228500, SCAL-244132, SCAL-245651
 
 
 == What is the challenge in text-to-SQL?
@@ -88,3 +88,26 @@ We recommend that you should reach out to {support-url} for guidance in such cas
 Avoid conflicting coaching:: We have observed that sometimes when two different users are asking the same question, the expected result may be different. For example, the regional head of the East region may define “my region” as region=east while the regional head for North may define “my region” as region=north. +
 At the moment, it is better to coach the users to specify the region explicitly instead of coaching Spotter, as the coaching will end up confusing the LLM more than helping it. +
 The same thing is also observed in coaching for dates. Let’s say your business is accustomed to looking at trends weekly instead of monthly. You may want to add a coaching “trend” to map this to date.weekly. However, if there are multiple date columns, then you cannot provide the same coaching for multiple dates.
+
+=== Permissions
+
+Access to Spotter feedback depends on your access to the underlying data set in the form of Worksheets, Models, tables, and Views. The following table clarifies each permission level, the feedback a user can view, and the actions you can take.
+
+[options="header"]
+|===
+| Permission level | What feedback can you see? | What actions can you take?
+
+| `NO_ACCESS`: User does not have access to a data set. | User cannot see any feedback from this data set, including any feedback they submitted before losing access. | Not applicable. User cannot see the feedback.
+
+| `TABLE_READ_PERMISSION`: User has read access to a data set. a| User can view their own feedback for this data set. +
+User cannot see feedback provided by others for this data set. a| User can *fix the answer* and *delete* the feedback submitted by all the users on the dataset. +
+If the access is changed to *Global*, users cannot change the feedback.
++
+Users cannot *change access* of any feedback submitted on the data set.
+
+| `TABLE_MODIFY_PERMISSION`: User has edit access to a data set. | User can view feedback submitted by all the users on the data set. | User can *change access*, *fix the answer*, and *delete* the feedback submitted by all users on the data set.
+
+| Administrator | User can view feedback submitted by all the users for all the data sets in the selected Org. | User can *change access*, *fix the answer*, and *delete* the feedback submitted by all the users for all the data sets in the selected Org.
+|===
+
+IMPORTANT: For an Org-enabled cluster, only the feedback from the selected Org is visible.

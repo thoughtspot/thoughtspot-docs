@@ -7,7 +7,7 @@
 :page-aliases: /admin/scriptability/tsl-table.adoc, /admin/scriptability/tml-table.adoc, /admin/ts-cloud/tsl-table.adoc
 :description: Use TML to modify tables in a flat-file format. Then, migrate the table to a different cluster, or restore it to the same cluster.
 :object: tables
-:jira: SCAL-158490, SCAL-186188
+:jira: SCAL-158490, SCAL-186188, SCAL-231618, SCAL-220584
 
 include::partial$tml-intro.adoc[]
 
@@ -47,6 +47,8 @@ a| <<aggregation,aggregation>>
 
 <<db_table,db_table>>
 
+<<default_date_bucket,default_date_bucket>>
+
 <<default_value,default_value>>
 
 <<description,description>>
@@ -79,6 +81,8 @@ a| <<format_pattern,format_pattern>>
 
 <<is_one_to_one,is_one_to_one>>
 
+<<is_sage_enabled,is_sage_enabled>>
+
 <<join,join>>
 
 <<join_path,join_path>>
@@ -100,6 +104,8 @@ a| <<name,name>>
 <<rule,rule>>
 
 <<rules,rules>>
+
+<<sage_config,sage_config>>
 
 <<sap_parameter_name,sap_parameter_name>>
 
@@ -195,6 +201,9 @@ The properties of the column in the database. Note that this database is not the
 db_table::
 The name of the table in the database.
 Note that this database is not the same as the data warehouse (Falcon, Amazon Redshift, or Snowflake, for example).
+
+[#default_date_bucket]
+default_date_bucket:: The default date bucket for the column, options include daily, weekly, monthly, quarterly, yearly, hourly, and auto. Hourly is only available for datetime columns. When defined for a column, date bucket will always be included in a search containing that column. For example, if defined as "daily" for Revenue, searching for "revenue order date" will be interpreted as "revenue order date daily".
 
 [#default_value]
 default_value::
@@ -319,6 +328,9 @@ Possible values: `true`, `false`
 +
 Default: `false`
 
+[#is_sage_enabled]
+is_sage_enabled:: Defines whether Sage is enabled on the table.
+
 [#join]
 join::
 Specific join, used in defining higher-level objects, such as table paths.
@@ -377,6 +389,9 @@ A conditional formatting rule.
 [#rules]
 rules::
 A container for the names and expressions of xref:security-rls-concept.adoc[row-level security] rules for the table.
+
+[#sage_config]
+sage_config:: A container for the is_sage_enabled property.
 
 [#sap_parameter_name]
 sap_parameter_name::

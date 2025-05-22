@@ -7,14 +7,16 @@
 :page-aliases:
 :description: Use TML to modify Models in a flat-file format. Then, migrate the Model to a different cluster, or restore it to the same cluster.
 :object: Models
-:jira: SCAL-158490, SCAL-186188, SCAL-206010, SCAL-210659, SCAL-220585
+:jira: SCAL-158490, SCAL-186188, SCAL-206010, SCAL-210659, SCAL-220585, SCAL-231618, SCAL-220584
 
 include::partial$tml-intro-models.adoc[]
 
 include::partial$tml-syntax-mandatory.adoc[]
 
+include::partial$tml-date-bucket.adoc[]
+
 [#column-groups]
-=== Data panel column groups
+== Data panel column groups
 
 Analysts can now set definitions in a Model's TML file to group columns together in the Data panel for Search Data, rather than having them grouped by default, as measures and attributes. You can also use TML properties to enable or disable alphabetical sorting of the groups.
 
@@ -104,6 +106,8 @@ a| <<aggregation,aggregation>>
 
 <<date_range_condition,date_range_condition>>
 
+<<default_date_bucket,default_date_bucket>>
+
 <<default_value,default_value>>
 
 <<default_sort,default_sort>>
@@ -154,6 +158,10 @@ a| <<id,id>>
 
 <<is_one_to_one,is_one_to_one>>
 
+<<is_sage_enabled,is_sage_enabled>>
+
+<<is_time_bucket_restricted,is_time_bucket_restricted>>
+
 <<join,join>>
 
 <<join_path,join_path>>
@@ -195,6 +203,8 @@ a| <<name,name>>
 <<range_min,range_min>>
 
 <<referencing_join,referencing_join>>
+
+<<sage_config,sage_config>>
 
 <<source,source>>
 
@@ -305,6 +315,9 @@ The data type of the Parameter.
 
 [#date_range_condition]
 date_range_condition:: Defines that the condition is based upon a date range. Note that this is curently the only condition that is supported.
+
+[#default_date_bucket]
+default_date_bucket:: The default date bucket for the column, options include daily, weekly, monthly, quarterly, yearly, hourly, and auto. Hourly is only available for datetime columns. When defined for a column, date bucket will always be included in a search containing that column. For example, if defined as "daily" for Revenue, searching for "revenue order date" will be interpreted as "revenue order date daily".
 
 [#default_value]
 default_value::
@@ -474,6 +487,14 @@ Possible values: `true`, `false`
 +
 Default: `false`
 
+[#is_sage_enabled]
+is_sage_enabled:: Defines whether Sage is enabled on the Model.
+
+[#is_time_bucket_restricted]
+is_time_bucket_restricted:: When defined as "true" for a column, only the defined default time bucket is shown in the bucketing menu.
++
+NOTE: To enable this property, contact {support-url}. For time bucket restriction to be enabled, default_date_bucket must be set.
+
 [#join]
 join::
 Specific join, used in defining higher-level objects, such as table paths.
@@ -589,6 +610,8 @@ Global joins are joins created between tables and can be used across multiple wo
 +
 It is not possible to edit or override a Global join in the model but any Global join can be replaced by a Local join in the model. `referencing_joins` field in the model does not require details of the join itself.
 
+[#sage_config]
+sage_config:: A container for the is_sage_enabled property.
 
 [#source]
 source::
