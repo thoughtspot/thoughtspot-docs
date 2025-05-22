@@ -1,5 +1,5 @@
 = TML for tables
-:last_updated: 4/26/2023
+:last_updated: 5/19/2023
 :author: Teresa Killmond
 :linkattrs:
 :experimental:
@@ -7,7 +7,6 @@
 :page-aliases: /admin/scriptability/tsl-table.adoc, /admin/scriptability/tml-table.adoc, /admin/ts-cloud/tsl-table.adoc
 :description: Use TML to modify tables in a flat-file format. Then, migrate the table to a different cluster, or restore it to the same cluster.
 :object: tables
-:jira: SCAL-158490, SCAL-186188
 
 include::partial$tml-intro.adoc[]
 
@@ -18,7 +17,7 @@ include::partial$tml-syntax-table.adoc[]
 == TML parameters for {object}
 These parameters and their definitions are specific to {object}; this list doesn't contain every parameter in every TML file. Similarly, the parameter definitions may vary from object to object, since the parameters may have different roles in different objects.
 
-[width="100%",grid="none",options="header"]
+[width=“100%”,grid=“none”,options="header"]
 |===
 | a - e | f - j | n - t
 a| <<aggregation,aggregation>>
@@ -46,8 +45,6 @@ a| <<aggregation,aggregation>>
 <<db_column_properties,db_column_properties>>
 
 <<db_table,db_table>>
-
-<<default_value,default_value>>
 
 <<description,description>>
 
@@ -91,8 +88,6 @@ a| <<name,name>>
 
 <<on,on>>
 
-<<parameters,parameters>>
-
 <<properties,properties>>
 
 <<rls_rules,rls_rules>>
@@ -100,8 +95,6 @@ a| <<name,name>>
 <<rule,rule>>
 
 <<rules,rules>>
-
-<<sap_parameter_name,sap_parameter_name>>
 
 <<schema,schema>>
 
@@ -196,12 +189,6 @@ db_table::
 The name of the table in the database.
 Note that this database is not the same as the data warehouse (Falcon, Amazon Redshift, or Snowflake, for example).
 
-[#default_value]
-default_value::
-The default value of the parameter.
-+
-NOTE: Only applicable for tables imported from SAP Hana.
-
 [#description]
 description::
 The text that describes an object: a `table`, a `join`, and so on.
@@ -244,7 +231,6 @@ Uses two paired parameters:
 
 - `country: __<country_name>__`
 - `region_name: __<region_name_in_UI>__`; can be State, Postal Code, District, and so on.
-
 `custom_file_guid: <custom map GUID>`;; for columns that use a custom map. Must be followed by `geometryType`.
 `geometryType: <custom_map_geometry_type>`;; for columns that use a custom map. Must be preceded by `custom_file_guid`. Accepts the following values: `POINT`, `LINE_STRING`, `LINEAR_RING`, `POLYGON`, `MULTI_POINT`, `MULTI_LINE_STRING`, `MULTI_POLYGON`, `GEOMETRY_COLLECTION`, `CIRCLE`
 
@@ -356,10 +342,6 @@ The join expression: the relationship definition, or the keys that your tables a
 +
 To alter a relationship definition, edit this parameter.
 
-[#parameters]
-parameters::
-The parameter that corresponds to the input parameter in a Connection. Currently applicable only to tables imported from SAP Hana. For this field, you must fill in the name, data type, default value, and sap parameter name.
-
 [#properties]
 properties::
 The list of properties of a table column.
@@ -377,10 +359,6 @@ A conditional formatting rule.
 [#rules]
 rules::
 A container for the names and expressions of xref:security-rls-concept.adoc[row-level security] rules for the table.
-
-[#sap_parameter_name]
-sap_parameter_name::
-The name of the parameter from the SAP Hana calculated view.
 
 [#schema]
 schema::
@@ -433,7 +411,6 @@ There are certain limitations to the changes you can apply by editing {object} t
 * Columns can either have a new name, or a new expression.
 You can't change both, unless migrating or updating the Worksheet two times.
 * It isn't possible to reverse the join direction in the TML script.
-* TML doesn't support data type modifications.
 * You can't create new tables using TML files.
 You can only update existing tables.
 * You can only change logical tables using TML files.

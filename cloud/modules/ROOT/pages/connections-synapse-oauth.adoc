@@ -5,7 +5,6 @@
 :page-layout: default-cloud
 :connection: Synapse
 :description: ThoughtSpot supports OAuth for a Microsoft Azure Synapse connection.
-:jira: SCAL-160062, SCAL-180837
 
 ThoughtSpot supports OAuth for a Microsoft Azure {connection} connection. This page describes the setup and configuration required for using OAuth2.0 with Azure AD as the IdP for Azure {connection} connections.
 
@@ -17,7 +16,7 @@ Each user in {connection} must have a default warehouse and default role.
 
 The first step in setting up OAuth with Azure AD as an IdP is to create an active directory application in Azure.
 
-. Sign in to the Azure portal and navigate to "Azure Active Directory" resource.
+. Sign in to the Azure portal and navigate to “Azure Active Directory” resource.
 . Under *Manage* in the side navigation bar, select **App registrations** and then **New registration**.
 +
 image::azure-app-registrations.png[Click App registrations > New registration]
@@ -37,8 +36,6 @@ The OAuth client application creation is complete.
 The following image displays example details of an application.
 +
 image::azure-application-complete.png[Example OAuth client application details]
-+
-NOTE: If your IdP supports rotation of refresh tokens with every usage, please ensure that this option is NOT chosen. ThoughtSpot does not support one-time use refresh tokens.
 
 . Make a note of the **Application (client) ID**, which you will use later in the OAuth2.0 authorization workflow.
 +
@@ -89,7 +86,7 @@ Active directory is now linked  with the SQL database.
 +
 `CREATE USER [admin@example.com] FROM EXTERNAL PROVIDER;`
 +
-This is referred to as a "contained user" created in the database mapped to Azure AD identity. For details, see Microsoft's documentation:
+This is referred to as a “contained user” created in the database mapped to Azure AD identity. For details, see Microsoft's documentation:
 https://docs.microsoft.com/en-us/azure/azure-sql/database/authentication-aad-configure?tabs=azure-powershell#create-contained-users-mapped-to-azure-ad-identities[Create contained users mapped to Azure AD identities^].
 +
 You cannot manage database roles for AD users from Azure. You must manage them from the database side.
@@ -112,22 +109,13 @@ As an admin user, you may run into an issue logging in to connections created us
 
 . Search on a table belonging to the connection you are trying to edit. The following error appears:
 +
-image:oauth-error.png[Error reading "Error in loading data. Connection to Snowflake could not be established. OAuth login required. Login"]
+image:oauth-error.png[Error reading “Error in loading data. Connection to Snowflake could not be established. OAuth login required. Login”]
 
 . Click *Login*. You will be directed to the IDP login page.
 
 . Enter your login credentials.
 
 . You will now have access to edit the connection.
-
-== OAuth connection improvements
-
-If you do not have a valid OAuth access token, you can now directly navigate to the OAuth authorization screen when performing one of the following actions on a connection shared with you:
-
-** View sample data
-** Create a custom SQL view
-** Edit the connection
-
 
 '''
 > **Related information**
@@ -141,4 +129,3 @@ If you do not have a valid OAuth access token, you can now directly navigate to 
 > * xref:connections-synapse-reference.adoc[Connection reference for {connection}]
 > * xref:connections-query-tags.adoc#tag-synapse[ThoughtSpot query tags in Synapse]
 > * xref:connections-synapse-passthrough.adoc[]
-> * xref:connections-column-indexing-oauth.adoc[]
