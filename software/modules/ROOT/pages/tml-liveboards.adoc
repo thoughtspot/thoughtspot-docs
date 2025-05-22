@@ -1,25 +1,223 @@
-= Model, migrate, or restore Liveboards
-:last_updated: 01/10/2021
+= TML for Liveboards
+:last_updated: 5/19/2023
+:author: Teresa Killmond
 :linkattrs:
 :experimental:
-:page-partial:
-:page-aliases: tml-pinboards.adoc
-:description: Use ThoughtSpot Modeling Language (TML) to model or update Liveboards in a flat-file format.
+:page-aliases: /admin/scriptability/tsl-pinboard.adoc, /admin/scriptability/tml-pinboard.adoc, /admin/ts-cloud/tsl-pinboard.adoc
+:description: Use TML to modify Liveboards in a flat-file format. Then, migrate the Liveboard to a different cluster, or restore it to the same cluster.
+:object: Liveboards
 
+include::partial$tml-intro.adoc[]
 
-
-Use ThoughtSpot Modeling Language to model or update Liveboards in a flat-file format. You can migrate the object to a different cluster, or restore it to the same cluster.
-
-TIP: ThoughtSpot generates SpotIQ results as a Liveboard, so you should use the Liveboard TML syntax to edit SpotIQ TML files.
-
-To work with scriptable Liveboards in ThoughtSpot, download these objects to a flat file in `TML` format, modify it, and subsequently upload this file either to the same cluster, or to a different cluster.
-To learn how to export, change, and update Liveboards, see xref:scriptability.adoc[Import and export TML files].
-
-[#syntax-pinboards]
+[#syntax-liveboards]
 include::partial$tml-syntax-liveboard.adoc[]
 
-[#tml-parameters]
-include::partial$tml-parameters.adoc[]
+[#liveboard-parameters]
+== TML parameters for {object}
+These parameters and their definitions are specific to {object}; this list doesn't contain every parameter in every TML file. Similarly, the parameter definitions may vary from object to object, since the parameters may have different roles in different objects.
+
+[width=“100%”,grid=“none”,options="header"]
+|===
+| a - i | k - t | v - y
+a| <<answer,answer>>
+
+<<column,column>>
+
+<<description,description>>
+
+<<display_headline_column,display_headline_column>>
+
+<<excluded_visualizations,excluded_visualizations>>
+
+<<filters,filters>>
+
+<<guid,guid>>
+
+<<height,height>>
+
+<<id,id>>
+
+a| <<key,key>>
+
+<<layout,layout>>
+
+<<liveboard,liveboard>>
+
+<<name,name>>
+
+<<oper,oper>>
+
+<<override_value,override_value>>
+
+<<parameter_overrides,parameter_overrides>>
+
+<<size,size>>
+
+<<tabs,tabs>>
+
+a| <<value,value>>
+
+<<values,values>>
+
+<<visualization_id,visualization_id>>
+
+<<visualizations,visualizations>>
+
+<<viz_guid,viz_guid>>
+
+<<width,width>>
+
+<<x,x>>
+
+<<y,"y">>
+
+|===
+
+[#aggregation]
+aggregation::
+The default aggregation of the Worksheet, view, or table column, or the aggregation of the output for a formula.
++
+Aggregation options depend on the data type.
++
+Possible values are `SUM`, `COUNT`, `AVERAGE`, `MAX`, `MIN`, `COUNT_DISTINCT`, `NONE`, `STD_DEVIATION`, and `VARIANCE`
++
+Default: `SUM`.
+
+[#answer]
+answer::
+Top-level container for all object definitions within an answer or visualization within a Liveboard.
+
+[#column]
+column::
+The id of the column(s) being filtered on. When a Liveboard contains xref:liveboard-filters-linked.adoc[linked filters], or filters that affect visualizations based on more than one Worksheet, the primary filter column appears first in the list of columns in the TML. The linked filter column appears after the primary filter column.
+
+[#description]
+description::
+The text that describes an object: a `liveboard`, `tab`, and so on.
+
+[#display_headline_column]
+display_headline_column::
+If the visualization is a headline, this parameter specifies the column the headline comes from.
+
+[#excluded_visualizations]
+excluded_visualizations::
+A list of visualizations the Liveboard editor chose to exclude from the filter. Only appears when using xref:liveboard-filters-selective.adoc[selective filters].
+
+[#filters]
+filters::
+Contains specifications for Liveboard filters.
+
+[#guid]
+guid::
+The GUID for the Liveboard. You can find this string of letters and numbers at the end of the URL for an object.
+
+[#height]
+height::
+The height of the Liveboard visualization.
+
+[#id]
+id::
+Specifies the id of an object, such as `visualizations`.
++
+For Answers, including Answers within Liveboards, `id` refers to how the column appears in the query.
+For example, if you sorted by `Quarter` in your search, from the `Commit Date` column, the `id` of the column is `Quarter(Commit Date)`. Refer to https://developers.thoughtspot.com/docs/?pageid=search-data-api[Components of a Search Query^] to understand syntax.
++
+For formulas within Answers, `id` refers to the display name of the formula. If you do not give your formula a name, it appears as 'Untitled Formula'.
++
+In the <<parameter_overrides,parameter_overrides>> section, `id` refers to the Parameter's GUID.
+
+[#key]
+key::
+Name of the xref:parameters-create.adoc[Parameter] referenced in a formula in an Answer, including an Answer in a Liveboard.
++
+In the <<parameter_overrides,parameter_overrides>> section, `key` refers to the Parameter's GUID.
+
+[#layout]
+layout::
+Specifies the Liveboard layout, in the order that a `visualization_id` is listed.
+
+[#liveboard]
+liveboard::
+Top-level container for all object definitions within the Liveboard or SpotIQ result.
+
+[#name]
+name::
+The name of an object.
+Applies to `liveboard`, `formula`, and so on.
++
+For Answers, including Answers within Liveboards, `name` refers to how the column appears in the query.
+For example, if you sorted by `Quarter` in your search, from the `Commit Date` column, the `name` of the column is `Quarter(Commit Date)`.
+Refer to https://developers.thoughtspot.com/docs/?pageid=search-data-api[Components of a Search Query^] to understand syntax.
++
+In the `parameter_overrides` section for an Answer or Liveboard, `name` refers to the xref:parameters-create.adoc[Parameter] name.
+
+[#oper]
+oper::
+The operator of the Liveboard filter.
+Accepted operators are `"in"`, `"not in"`, `"between"`, `=<`, `!=`, `+<=+`, `>=`, `>`, or `<`.
+
+[#override_value]
+override_value::
+The value a Parameter is set to in a Liveboard or Answer, if different from the default value. Only appears if you change the Parameter value in Liveboard *Edit* mode and save it.
+
+[#parameter_overrides]
+parameter_overrides::
+
+Contains information on the value a Parameter is set to in a Liveboard or Answer, if different from its default value. If there is no `override_value` line, the Parameter is set to the default value.
+
+[#size]
+size::
+The size of a visualization in a Liveboard, if using ThoughtSpot's predetermined sizes.
+The options are `EXTRA_SMALL`, `SMALL`, `MEDIUM`, `LARGE`, `LARGE_SMALL`, `MEDIUM_SMALL`, and `EXTRA_LARGE`.
+
+[#tabs]
+tabs::
+List of tabs in the Liveboard.
+
+[#value]
+value::
+The configured value of the Parameter referenced in a formula in the last saved state of the Liveboard or an Answer within a Liveboard.
+
+[#values]
+values::
+The values being filtered (excluded or included) in a Liveboard.
+
+[#visualization_id]
+visualization_id::
+The id of a visualization.
++
+Used to specify the Liveboard's <<layout,layout>>.
+
+[#visualizations]
+visualizations::
+The visualizations in a Liveboard: tables, charts, and headlines.
+
+[#viz_guid]
+viz_guid::
+
+The GUID for the Liveboard visualization. The GUID provides a distinct way to identify the Liveboard visualization, even if it has the same name as another Liveboard visualization.
++
+You can find this string of letters and numbers at the end of the URL for a Liveboard visualization. Under the visualization's *more* image:icon-more-10px.png[more menu icon] menu, select *Copy link*. The link copies to your clipboard. The second string of letters and numbers in the URL is the visualization GUID.
+
+[#width]
+width::
+The width of the Liveboard visualization.
+
+[#x]
+x::
+The horizontal location of the Liveboard visualization, relative to the upper left of the Liveboard.
+
+[#y]
+"y"::
+The vertical location of the Liveboard visualization, relative to the upper left of the Liveboard.
 
 [#limitations]
-include::partial$scriptability-limitations.adoc[]
+== Limitations of working with TML files
+
+There are certain limitations to the changes you can apply by editing {object} through TML.
+
+* Formulas and columns can either have a new name, or a new expression.
+You can't change both, unless migrating or updating the {object} two times.
+* You can't create or export TML files for R- or Python-powered visualizations.
+* You can't import manually compressed .zip files.
+You can only import .zip files that you exported from ThoughtSpot: a custom set of TML files, an object and its associated data sources, or multiple objects of the same type that you exported from the object list page.

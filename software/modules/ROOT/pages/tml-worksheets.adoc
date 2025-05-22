@@ -1,21 +1,522 @@
-= Model, migrate, or restore worksheets
-:last_updated: 01/10/2021
+= TML for Worksheets
+:last_updated: 5/19/2023
+:author: Teresa Killmond
 :linkattrs:
 :experimental:
-:page-partial:
-:description: Use ThoughtSpot Modeling Language (TML) to model or update worksheets in a flat-file format.
+:page-aliases: /admin/worksheets/yaml-worksheet.adoc, /admin/worksheets/tml-worksheet.adoc, /admin/worksheets/tsl-worksheet.adoc, /admin/ts-cloud/yaml-worksheet.adoc, /admin/ts-cloud/tml-worksheet.adoc, /admin/ts-cloud/tsl-worksheet.adoc
+:description: Use TML to modify Worksheets in a flat-file format. Then, migrate the Worksheet to a different cluster, or restore it to the same cluster.
+:object: Worksheets
 
+include::partial$tml-intro.adoc[]
 
-Use ThoughtSpot Modeling Language to model or update worksheets in a flat-file format. You can migrate the object to a different cluster, or restore it to the same cluster.
-
-To work with scriptable worksheets in ThoughtSpot, download these objects to a flat file in `TML` format, modify it, and subsequently upload this file either to the same cluster, or to a different cluster.
-To learn how to export, change, and update worksheets, see xref:scriptability.adoc[Import and export TML files].
-
-[#syntax-worksheet]
+[#syntax-worksheets]
 include::partial$tml-syntax-worksheet.adoc[]
 
-[#tml-parameters]
-include::partial$tml-parameters.adoc[]
+[#worksheet-parameters]
+== TML parameters for {object}
+These parameters and their definitions are specific to {object}; this list doesn't contain every parameter in every TML file. Similarly, the parameter definitions may vary from object to object, since the parameters may have different roles in different objects.
+
+[width=“100%”,grid=“none”,options="header"]
+|===
+| a - g | i - l | n - w
+a| <<aggregation,aggregation>>
+
+<<calendar,calendar>>
+
+<<column,column>>
+
+<<column_id,column_id>>
+
+<<column_type,column_type>>
+
+<<currency_type,currency_type>>
+
+<<custom_file_guid,custom_file_guid>>
+
+<<data_type,data_type>>
+
+<<default_value,default_value>>
+
+<<description,description>>
+
+<<destination,destination>>
+
+<<display_name,display_name>>
+
+<<expr,expr>>
+
+<<filters,filters>>
+
+<<format_pattern,format_pattern>>
+
+<<formulas,formulas>>
+
+<<fqn,fqn>>
+
+<<geo_config,geo_config>>
+
+<<geometryType,geometryType>>
+
+<<guid,guid>>
+
+a| <<id,id>>
+
+<<include_max,include_max>>
+
+<<include_min,include_min>>
+
+<<index_priority,index_priority>>
+
+<<index_type,index_type>>
+
+<<is_additive,is_additive>>
+
+<<is_attribution_dimension,is_attribution_dimension>>
+
+<<is_bypass_rls,is_bypass_rls>>
+
+<<is_hidden,is_hidden>>
+
+<<is_one_to_one,is_one_to_one>>
+
+<<join,join>>
+
+<<join_path,join_path>>
+
+<<join_progressive,join_progressive>>
+
+<<joins,joins>>
+
+<<joins_with,joins_with>>
+
+<<lesson_id,lesson_id>>
+
+<<lesson_plan_string,lesson_plan_string>>
+
+<<lesson_plans,lesson_plans>>
+
+<<list_choice,list_choice>>
+
+<<list_config,list_config>>
+
+a| <<name,name>>
+
+<<on,on>>
+
+<<oper,oper>>
+
+<<parameters,parameters>>
+
+<<properties,properties>>
+
+<<range_config,range_config>>
+
+<<range_max,range_max>>
+
+<<range_min,range_min>>
+
+<<source,source>>
+
+<<spotiq_preference,spotiq_preference>>
+
+<<synonyms,synonyms>>
+
+<<table,table>>
+
+<<table_paths,table_paths>>
+
+<<tables,tables>>
+
+<<type,type>>
+
+<<value,value>>
+
+<<values,values>>
+
+<<worksheet,worksheet>>
+
+<<worksheet_columns,worksheet_columns>>
+
+|===
+
+[#aggregation]
+aggregation::
+The default aggregation of the Worksheet column.
++
+Aggregation options depend on the data type.
++
+Possible values are `SUM`, `COUNT`, `AVERAGE`, `MAX`, `MIN`, `COUNT_DISTINCT`, `NONE`, `STD_DEVIATION`, and `VARIANCE`
++
+Default: `SUM`.
+
+[#calendar]
+calendar::
+Specifies the calendar used by a date column.
++
+Can be the Gregorian calendar (`default`), a fiscal calendar, or any custom calendar.
++
+See xref:connections-cust-cal.adoc[Custom calendar overview].
+
+[#column]
+column::
+The id of the column(s) being filtered on.
+
+[#column_id]
+column_id::
+The `id` of the Worksheet column.
++
+`column_id` is in the following format: `column_id: <id>::<name>`. `id` comes from `Worksheet.table_path`, and `name` comes from `Table.column`. For example: `column_id: Customer_Dimension::Customer_Name`.
+
+[#column_type]
+column_type::
+The type of data the column represents.
++
+Possible values: `MEASURE` or `ATTRIBUTE`. The default is: `MEASURE`.
+
+[#currency_type]
+currency_type::
+The source of the currency type.
++
+One of:
++
+`is_browser : true`;; infers the currency data from the locale of your browser
+`column : <column_name>`;; extracts the currency information from a specified column
+`iso_code : <valid_ISO_code>`;; applies currency based on the ISO code;
++
+See https://www.iso.org/iso-4217-currency-codes.html[ISO 4217 Currency Codes^] and xref:data-modeling-patterns.adoc#set-currency-type[Set currency type] for more information.
+
+[#custom_file_guid]
+custom_file_guid::
+The GUID for a custom map uploaded by an administrator.
+
+[#data_type]
+data_type::
+The data type of the Parameter.
+
+[#default_value]
+default_value::
+The default value for a Parameter in a Worksheet. Specified when xref:parameters-create.adoc[creating a Parameter].
+
+[#description]
+description::
+The text that describes an object: a worksheet, a worksheet column, or a join.
+
+[#destination]
+destination::
+The name of the destination table or view for a join.
+
+[#display_name]
+display_name::
+The name or value that displays in the Parameter dialog for an accepted value, if a display name was set when xref:parameters-create.adoc[creating a Parameter]. For example, if the Parameter accepts `true` and `false`, the display names might be `yes` and `no`.
+
+[#expr]
+expr::
+The definition of the formula.
+
+[#filters]
+filters::
+Contains specifications for Worksheet filters.
+
+[#format_pattern]
+format_pattern::
+The format pattern string that controls the display of a number, date, or currency column.
++
+See xref:data-modeling-patterns.adoc[Set number, date, and currency formats]
+
+[#formulas]
+formulas::
+The list of formulas in the Worksheet.
++
+Each formula is identified by `name`, the `expr` (expression), and an optional `id` attribute.
+
+[#fqn]
+fqn::
+The table or connection's GUID.
+You can find this string of letters and numbers at the end of the URL for that table or connection.
++
+For example, in `\https://<company>.thoughtspot.com/#/data/tables/34226aaa-4bcf-4d6b-9045-24cb1e9437cb`, the GUID is `34226aaa-4bcf-4d6b-9045-24cb1e9437cb`.
++
+Use this optional parameter to reduce ambiguity and identify a specific table, if you have multiple tables with the same name. When exporting a TML file, you have the option to *Export FQNs of referenced objects*, which ensures that the TML files you export contain FQNs for the underlying tables and connections. If you do not add the `fqn` parameter, and the connection or table you reference does not have a unique name, the file import fails.
+
+[#geo_config]
+geo_config::
+Specifies the geographic information of a column. See xref:data-modeling-geo-data.adoc[Add a geographical data setting]
++
+One of:
++
+`latitude : true`;; for columns that specify the latitude
+`longitude : true`;; for columns that specify the longitude
+`country : true`;; for columns that specify the country
+`region_name`;; for specifying a region in a country
++
+Uses two paired parameters:
+
+- `country: __<country_name>__`
+- `region_name: __<region_name_in_UI>__`; can be State, Postal Code, District, and so on.
+`custom_file_guid: <custom map GUID>`;; for columns that use a custom map. Must be followed by `geometryType`
+`geometryType: <custom_map_geometry_type>`;; for columns that use a custom map. Must be preceded by `custom_file_guid`. Accepts the following values: `POINT`, `LINE_STRING`, `LINEAR_RING`, `POLYGON`, `MULTI_POINT`, `MULTI_LINE_STRING`, `MULTI_POLYGON`, `GEOMETRY_COLLECTION`, `CIRCLE`
+[#geometryType]
+geometryType::
+Specifies the geometry type of the *TopoJSON* file. Required for geographical configuration of Worksheet or table columns that use a custom map. Accepts the following values: `POINT`, `LINE_STRING`, `LINEAR_RING`, `POLYGON`, `MULTI_POINT`, `MULTI_LINE_STRING`, `MULTI_POLYGON`, `GEOMETRY_COLLECTION`, `CIRCLE`
+
+[#guid]
+guid::
+The GUID for the Worksheet. You can find this string of letters and numbers at the end of the URL for an object.
+
+[#id]
+id::
+Specifies the id of an object, such as `table_paths`, `formula`.
+
+[#include_max]
+include_max::
+
+Indicates if the maximum value in a Parameter range is a valid value. For example, if the range is 0-10, and `include_max` is false, the value `10` is not valid for that Parameter.
++
+Valid values are `true` and `false`.
+
+[#include_min]
+include_min::
+
+Indicates if the minimum value in a Parameter range is a valid value. For example, if the range is 0-10, and `include_min` is false, the value `0` is not valid for that Parameter.
++
+Valid values are `true` and `false`.
+
+[#index_priority]
+index_priority::
+A value (1-10) that determines where to rank a column's name and values in the search suggestions
++
+ThoughtSpot prioritizes columns with higher values.
++
+See xref:data-modeling-index.adoc#column-suggestion-priority[Change a column's suggestion priority].
+
+[#index_type]
+index_type::
+The indexing type for the Worksheet column.
++
+Possible values: `DONT_INDEX`, `DEFAULT` (see xref:data-modeling-index.adoc#default-indexing[Understand the default indexing behavior]), `PREFIX_ONLY`, `PREFIX_AND_SUBSTRING`, and `PREFIX_AND_WORD_SUBSTRING`
++
+Default: `DEFAULT`
++
+See xref:data-modeling-index.adoc#override-system-default-column[Index Type Values].
+
+[#is_additive]
+is_additive::
+Controls extended aggregate options for attribute columns.
++
+For attribute columns that have a numeric data type (`FLOAT`, `DOUBLE`, or `INTEGER`) or a date data type (`DATE`, `DATETIME`, `TIMESTAMP`, or `TIME`)
++
+Possible values: `true` or `false`.
++
+Default: `true`.
++
+See xref:data-modeling-aggreg-additive.adoc#make-attribute-additive[Making an ATTRIBUTE column ADDITIVE].
+
+[#is_attribution_dimension]
+is_attribution_dimension::
+Controls if the column is an attribution dimension.
++
+Used in managing chasm traps.
++
+Possible values: `true` by default, `false` to designate a column as not producing meaningful attributions across a chasm trap
++
+Default: `true`
++
+See xref:data-modeling-attributable-dimension.adoc[Change the attribution dimension].
+
+[#is_bypass_rls]
+is_bypass_rls::
+Specifies if the Worksheet supports bypass of Row-level security (RLS) rules.
++
+Possible values: `true` or `false`
++
+Default: `false`
++
+See xref:security-rls-concept.adoc#exempt-rls[Privileges that allow users to set, or be exempt from, RLS].
+
+[#is_hidden]
+is_hidden::
+The visibility of the column.
++
+Possible values: `true` to hide the column, `false` not to hide the column +
+Default: `false`
++
+See xref:data-modeling-visibility.adoc[].
+
+[#is_one_to_one]
+is_one_to_one::
+Specifies the cardinality of the join. This is an optional parameter.
++
+Possible values: `true`, `false`
++
+Default: `false`
+
+[#join]
+join::
+Specific join, used in defining higher-level objects, such as table paths.
++
+Defined as `name` within `joins` definition.
+
+[#join_path]
+join_path::
+Specification of a composite join as a list of distinct `join` attributes.
++
+These `join` attributes list relevant joins, previously defined in the `joins`, by name.
++
+Default: `{}`
+
+[#join_progressive]
+join_progressive::
+Specifies when to apply joins on a Worksheet.
++
+Possible values: `true` when joins are applied only for tables whose columns are included in the search, and `false` for all possible joins
++
+Default: `true`
++
+See xref:worksheet-progressive-joins.adoc[How the Worksheet join rule works].
+
+[#joins]
+joins::
+Contains a list of joins between the tables and views.
++
+If you edit the joins in the Worksheet TML file, you are only editing the joins for that specific Worksheet. You are not editing the joins at the table level. To modify table-level joins, you must edit the source table's TML file.
++
+Each join is identified by `name`, and the additional attributes of `source`, `destination`, `type`, and `is_one_to_one.`
+
+[#joins_with]
+joins_with::
+Contains a list of external joins for which this Worksheet is the source. +
+Each join is identified by `name` and optional `description`, and the additional attributes of `destination`, `type`, `on`, and `is_one_to_one`.
+
+[#lesson_id]
+lesson_id::
+The numeric ID of the xref:search-assist-coach.adoc[] lesson created for the Worksheet. The first lesson shown to users has an ID of 0, the second lesson has an ID of 1, and so on.
+
+[#lesson_plan_string]
+lesson_plan_string::
+The content of the xref:search-assist-coach.adoc[] lesson created for the Worksheet. For example, `"What were [Lo Tax] by [Lo Shipmode] in [Lo Commitdate].'2019' ?"`.
+
+[#lesson_plans]
+lesson_plans::
+Contains a list of xref:search-assist-coach.adoc[] lessons created for the Worksheet.
+
+[#list_choice]
+list_choice::
+Contains the list of accepted values for a Parameter, if a list was configured when xref:parameters-create.adoc[creating a Parameter].
+
+[#list_config]
+list_config::
+Contains the list of accepted values for a Parameter, if a list was configured when xref:parameters-create.adoc[creating a Parameter].
+
+[#name]
+name::
+The name of an object.
+Applies to `worksheet`, `joins`, `formula`, `connection`, `destination`, and so on.
+
+[#on]
+on::
+The join expression: the relationship definition, or the keys that your objects are joined on. For example, `[sale::Sale_Last Name] = [employee::Employee_Last Name] AND [sale::Sale_First Name] = [employee::Employee_First Name]`.
++
+To alter a relationship definition, edit this parameter.
+
+[#oper]
+oper::
+The operator of the Worksheet filter.
+Accepted operators are `"in"`, `"not in"`, `"between"`, `=<`, `!=`, `+<=+`, `>=`, `>`, or `<`.
+
+[#parameters]
+parameters::
+Container for the xref:parameters-create.adoc[Parameters] in a Worksheet.
+
+[#properties]
+properties::
+The list of properties of a Worksheet column, a Worksheet itself, or the properties of the output for a formula within a Worksheet.
++
+Each column can have the following properties, depending on its definition: `column_type`, `aggregation`, `index_type`, `is_hidden`, `index_priority`, `synonyms`, `is_attribution_dimension`, `is_additive`, `calendar`, `format_pattern`, `currency_type`, `geo_config`, and `spotiq_preference`.
++
+Worksheets themselves can have the following properties that affect query generation: `is_bypass_rls`, and `join_progressive`.
+
+[#range_config]
+range_config::
+Contains the minimum and maximum values for the range of values allowed for a Parameter, if a range is specified when xref:parameters-create.adoc[creating a Parameter].
+
+[#range_max]
+range_max::
+The maximum value for the range of values allowed for a Parameter, if a range is specified when xref:parameters-create.adoc[creating a Parameter].
+
+[#range_min]
+range_min::
+The minimum value for the range of values allowed for a Parameter, if a range is specified when xref:parameters-create.adoc[creating a Parameter].
+
+[#source]
+source::
+Name of the source table or view for a join.
+
+[#spotiq_preference]
+spotiq_preference::
+Specifies whether to include a column in SpotIQ analysis.
+Specify `EXCLUDE`, or this property defaults to include the column in SpotIQ Analysis.
++
+Refer to xref:spotiq-data-model-preferences.adoc[Set columns to exclude from SpotIQ analyses].
+
+[#synonyms]
+synonyms::
+Alternate names for the column, used in search.
++
+See xref:data-modeling-visibility.adoc[].
+
+[#table]
+table::
+Specific table, used in defining higher-level objects, such as table paths.
++
+Defined as `name` within `tables` definition.
+
+[#table_paths]
+table_paths::
+The list of table paths. Each table path is identified by the `id`, and additional attributes of `table` and `join_path`.
+
+[#tables]
+tables::
+List of tables used by the Worksheet.
++
+Each table is identified by `name`.
+
+[#type]
+type::
+The join type. This is an optional parameter.
++
+Possible values: `LEFT_OUTER` for left outer join, `RIGHT_OUTER` for right outer join, `INNER` for inner join, `OUTER` for full outer join.
++
+Default: `INNER`
+
+[#value]
+value::
+An accepted value for a Parameter, if a list was configured when xref:parameters-create.adoc[creating a Parameter].
+
+[#values]
+values::
+The values being filtered (excluded or included) in a Worksheet.
+
+[#worksheet]
+worksheet::
+Top-level container for all object definitions within the Worksheet.
+
+[#worksheet_columns]
+worksheet_columns::
+The list of columns in the Worksheet.
++
+Each Worksheet is identified by `name`, `description`, `column_id`, and `properties`.
 
 [#limitations]
-include::partial$scriptability-limitations.adoc[]
+== Limitations of working with TML files
+
+There are certain limitations to the changes you can apply by editing {object} through TML.
+
+* Formulas and columns can either have a new name, or a new expression.
+You can't change both, unless migrating or updating the Worksheet two times.
+* It isn't possible to reverse the join direction in the TML script.
+* You can't import manually compressed .zip files.
+You can only import .zip files that you exported from ThoughtSpot: a custom set of TML files, an object and its associated data sources, or multiple objects of the same type that you exported from the object list page.
+* You can't modify joins at the table level from the Worksheet, view, or Answer TML file.
+You can only override the joins for that specific Worksheet, view, or Answer.
+To modify table-level joins, you must edit the source table's TML file.
+* When deleting columns, you only delete ThoughtSpot's record of the column. You don't delete the column in your external database.
