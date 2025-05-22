@@ -1,12 +1,12 @@
 = TML for Sets
-:last_updated: 8/7/2024
-:author: Mary Scrim
+:last_updated: 4/25/2025
+:author: Mary Scrim, Naomi
 :linkattrs:
 :experimental:
 :page-layout: default-cloud-beta
 :description: Use TML to modify sets in a flat-file format. Then, migrate the sets to a different cluster, or restore it to the same cluster.
 :object: Sets
-:jira: SCAL-230555
+:jira: SCAL-230555, SCAL-238614
 
 include::partial$tml-intro.adoc[]
 
@@ -17,6 +17,138 @@ A single set file or multiple set TML files can be imported using the TML import
 Set owners and ThoughtSpot administrators can edit a set's TML definition in the *Search Data* panel.
 
 NOTE: A set's owner property can only be edited by the ThoughtSpot administrator. Ownership can be changed in the TML using the optional *owner* TML property.
+
+[#syntax-set-passthrough]
+== Passthrough filters for query sets
+
+You can now pass filters from a query into a set definition without needing to remake the set to include the filter.
+
+For example, if you create a query set defined as a list of SKUs that are ranked based on sales, where 1 through 10 are defined as Gold, 11 through 50 are defined as Silver, and the remainder are defined as Bronze, you can now add a filter such as Region. Rather than having to define a static set for each region (North, South, East, West), the filter can be passed into the set. Therefore, the gold clients are calculated based on aggregate sales for the East region, for example.
+
+You can also ensure that the set accepts a date filter, for example, rather than all sales, the set definition could be updated to reflect sales for the last twelve months.
+
+You can configure the set’s filter behavior from the TML, instructing ThoughtSpot to exclude or include specific columns, or to accept all filters by default. This section is not included by default.
+
+.Static customer classification (no passthrough filters)
+[subs=+macros]
+....
+<<guid,guid>>: 9387061c-c5c2-4170-9b7d-93bda549c912
+<<cohort,cohort>>:
+  <<name,name>>: Static Customer Classification
+  <<description,description>>: "Assign label of gold, silver, bronze or other based aggregated sales. No filters have been applied in the set's query. No filters are accepted from outer query."
+  <<answer,answer>>:
+    <<tables,tables>>:
+    - <<id,id>>: Dunder Mifflin Sales
+      <<name,name>>: Dunder Mifflin Sales
+    <<search_query,search_query>>: "[Customer Code] [Amount]"
+    <<answer_columns,answer_columns>>:
+    - name: Customer Code
+    - name: Total Amount
+    <<table,table>>:
+      <<table_columns,table_columns>>:
+      - <<column_id,column_id>>: Customer Code
+        <<show_headline,show_headline>>: false
+      - <<column_id,column_id>>: Total Amount
+        <<show_headline,show_headline>>: false
+      <<ordered_column_ids,ordered_column_ids>>:
+      - Customer Code
+      - Total Amount
+      <<client_state,client_state>>: ""
+    <<display_mode,display_mode>>: TABLE_MODE
+  <<owner,owner>>: name@company.com
+  <<config,config>>:
+    <<null_output_value,null_output_value>>: Other
+    <<combine_non_group_values,combine_non_group_values>>: true
+    <<cohort_type,cohort_type>>: ADVANCED
+    <<anchor_column_id,anchor_column_id>>: Customer Code
+    <<groups,groups>>:
+    - <<name,name>>: Gold
+      <<conditions,conditions>>:
+      - <<operator,operator>>: GT
+        <<value,value>>:
+        - "300000"
+        <<column_name,column_name>>: Total Amount
+      <<combine_type,combine_type>>: ALL
+    - <<name,name>>: Silver
+      <<conditions,conditions>>:
+      - <<operator,operator>>: GT
+        <<value,value>>:
+        - "250000"
+        <<column_name,column_name>>: Total Amount
+      <<combine_type,combine_type>>: ALL
+    - <<name,name>>: Bronze
+      <<conditions,conditions>>:
+      - <<operator,operator>>: EQ
+        <<value,value>>:
+        - "200000"
+        <<column_name,column_name>>: Total Amount
+      <<combine_type,combine_type>>: ALL
+    <<cohort_grouping_type,cohort_grouping_type>>: GROUP_BASED
+    <<hide_excluded_query_values,hide_excluded_query_values>>: true
+    <<group_excluded_query_values,group_excluded_query_values>>: Excluded values
+  worksheet:
+    <<id,id>>: Dunder Mifflin Sales
+    <<name,name>>: Dunder Mifflin Sales
+....
+
+.Customer classification accepting all filters
+[subs=+macros]
+....
+<<guid,guid>>: 9387061c-c5c2-4170-9b7d-93bda549c912
+<<cohort,cohort>>:
+  <<name,name>>: All Filters Customer Classification
+  description: "Assign label of gold, silver, bronze or other based aggregated sales. No filters have been applied in the set's query. Accept all filters from outer query."
+...
+     <<cohort_grouping_type,cohort_grouping_type>>: GROUP_BASED
+    <<hide_excluded_query_values,hide_excluded_query_values>>: true
+    <<group_excluded_query_values,group_excluded_query_values>>: Excluded values
+    <<pass_thru_filter,pass_thru_filter>>:
+      <<accept_all,accept_all>>: true
+  <<worksheet,worksheet>>:
+    <<id,id>>: Dunder Mifflin Sales
+    <<name,name>>: Dunder Mifflin Sales
+....
+
+
+.Customer classification-- accept 'date' and 'category' filters
+[subs=+macros]
+....
+<<guid,guid>>: 9387061c-c5c2-4170-9b7d-93bda549c912
+<<cohort,cohort>>:
+  <<name,name>>: Accept 'date' & 'Category' filters Customer Classification
+  <<description,description>>: "Assign label of gold, silver, bronze or other based aggregated sales. No filters have been applied in the set's query. Accept 'date' & 'Category' filters from outer query."
+...
+    <<cohort_grouping_type,cohort_grouping_type>>: GROUP_BASED
+    <<hide_excluded_query_values,hide_excluded_query_values>>: true
+    <<group_excluded_query_values,group_excluded_query_values>>: Excluded values
+    <<pass_thru_filter,pass_thru_filter>>:
+      <<include_column_ids,include_column_ids>>:
+      - date
+      - Category
+  <<worksheet,worksheet>>:
+    <<id,id>>: Dunder Mifflin Sales
+    <<name,name>>: Dunder Mifflin Sales
+....
+
+.Customer classification-- exclude 'date' and 'category'
+[subs=+macros]
+....
+<<guid,guid>>: 9387061c-c5c2-4170-9b7d-93bda549c912
+<<cohort,cohort>>:
+  <<name,name>>: Accept 'date' & 'Category' filters Customer Classification
+  <<description,description>>: "Assign label of gold, silver, bronze or other based aggregated sales. No filters have been applied in the set's query. Accept 'date' & 'Category' filters from outer query."
+...
+    <<cohort_grouping_type,cohort_grouping_type>>: GROUP_BASED
+    <<hide_excluded_query_values,hide_excluded_query_values>>: true
+    <<group_excluded_query_values,group_excluded_query_values>>: Excluded values
+    <<pass_thru_filter,pass_thru_filter>>:
+      <<exclude_column_ids,exclude_column_ids>>:
+      - date
+      - Category
+  <<worksheet,worksheet>>:
+    <<id,id>>: Dunder Mifflin Sales
+    <<name,name>>: Dunder Mifflin Sales
+....
 
 
 [#syntax-sets]
@@ -115,6 +247,9 @@ a| <<expr,expr>>
 <<owner,owner>>
 
 a|
+
+<<pass_thru_filter,pass_thru_filter>>
+
 //<<parameter_overrides,parameter_overrides>>
 
 //<<parameter_values,parameter_values>>
@@ -366,6 +501,9 @@ The list of the properties of the output for a formula within an Answer.
 +
 Each formula's output can have the following properties, depending on its definition: `column_type` and `aggregation`.
 ////
+
+[#pass_thru_filter]
+pass_thru_filter:: Accept or exclude filters that pass through from the query to the query set.
 
 [#return_column_id]
 return_column_id:: Return column for column-based query sets.

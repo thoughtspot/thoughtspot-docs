@@ -1,9 +1,10 @@
 = Liveboard schedule gating conditions in practice
-:last_updated: 11/05/2021
+:last_updated: 2/20/2025
 :linkattrs:
 :experimental:
 :page-layout: default-cloud
 :page-aliases: /reference/practice/pinboard-gating-condition-example.adoc
+:jira: SCAL-241008
 
 
 
@@ -18,9 +19,9 @@ This article walks you through an example scenario in which you use a gating con
 A gating condition is a statement that returns a single boolean value (`true` or `false`).
 For example, `sum (revenue) > 100` is a valid condition, but `is_weekend (commit_date)` is not, since it returns a result per row of data.
 
-Use any data source (table, Worksheet, or view) that you have access to for the gating condition. However, note that for reports sent to ThoughtSpot users, ThoughtSpot executes the query as that specific user so that it respects row-level security (RLS) and ensures data security.
+Use any data source (table, Worksheet, or view) that you have access to for the gating condition. Please note that you can only use columns from a single data source to create the condition. How this works is that when the formula field is empty, you see column names from all the underlying data sources as you start typing a relevant column name. However, the moment you select a column, the data source associated with that column gets fixed, and all the subsequent suggestions will be shown from only that data source.
 
-If you schedule the Liveboard for 3 users, and 1 user does not have access to the data source in the gating condition, the gating condition fails and ThoughtSpot does not send the Liveboard to that 1 user. It does send the Liveboard to the 2 users who do have data access. For reports sent to people who are not ThoughtSpot users, ThoughtSpot executes the query as the author of the Liveboard schedule.
+However, note that for reports sent to ThoughtSpot users, ThoughtSpot executes the query as that specific user so that it respects row-level security (RLS) and ensures data security. If you schedule the Liveboard for 3 users, and 1 user does not have access to the data source in the gating condition, the gating condition fails and ThoughtSpot does not send the Liveboard to that 1 user. It does send the Liveboard to the 2 users who do have data access. For reports sent to people who are not ThoughtSpot users, ThoughtSpot executes the query as the author of the Liveboard schedule.
 
 The gating condition will still work if you are using passthrough security for your external data warehouse connection. The gating condition formula and any tables you use in it do not need to be related to the Liveboard the gating condition is for. You can use any valid formula in your statement. ThoughtSpot checks the formula syntax, but does not validate if the formula returns a valid single boolean.
 

@@ -1,114 +1,215 @@
 The latest release of ThoughtSpot Cloud contains several new and enhanced features.
 
-* <<10-5-0-cl-first,For the First User>>
-* <<10-5-0-cl-analyst,For the Analyst>>
-* <<10-5-0-cl-business-user,For the Business User>>
-* <<10-5-0-cl-data-engineer,For the Data Engineer>>
-* <<10-5-0-cl-developer,For the Developer>>
+* <<10-6-0-cl-first,For the First User>>
+* <<10-6-0-cl-analyst,For the Analyst>>
+* <<10-6-0-cl-business-user,For the Business User>>
+* <<10-6-0-cl-data-engineer,For the Data Engineer>>
+* <<10-6-0-cl-developer,For the Developer>>
 
-[#10-5-0-cl-first]
+[#10-6-0-cl-first]
 === For the First User
 
 Getting started with ThoughtSpot Cloud::
 The first user on the account has to complete a series of steps before other people can start using ThoughtSpot with your organization's data.
 For these instructions, see xref:ts-cloud-getting-started.adoc[Getting Started with ThoughtSpot Cloud].
 
-[#10-5-0-cl-analyst]
+[#10-6-0-cl-analyst]
 === For the Analyst
 
-// Naomi. jira: SCAL-215669. docs jira: SCAL-?
-Change analysis summary tab [.badge.badge-beta-relnotes]#Beta#::
-When you run change analysis on a chart, ThoughtSpot now surfaces a summary of all changes in significant attributes between the selected points. You can click *View details* to see the changes by attribute, or select *Customize* to change which measures or attributes to analyze. Note that when you run change analysis on a chart created with ratio keywords like `average`, you see the previous change analysis interface, one attribute at a time.
+// Naomi. jira: SCAL-158897. docs jira: SCAL-238614
+Passthrough filters for sets [.badge.badge-early-access-relnotes]#Early Access#:: You can now pass filters from a query into a set definition without needing to remake the set to include the filter. For example, if you create a query set defined as a list of SKUs that are ranked based on sales, where 1 through 10 are defined as Gold, 11 through 50 are defined as Silver, and the remainder are defined as Bronze, you can now add a filter such as Region. You can configure the set's filter behavior from the TML, instructing ThoughtSpot to exclude or include specific columns, or to accept all filters by default. To enable query sets, contact your administrator.
++
+For more information, see
+xref:query-sets.adoc#passthrough[Passthrough filters for query sets].
 
-// Naomi. jira: SCAL-224933. docs jira: SCAL-228737
-Custom comparison point for KPI charts [.badge.badge-early-access-relnotes]#Early Access#::
-Previously, time-series KPI charts had limited options when comparing to past periods. A weekly KPI could be compared against the previous week, the previous month's same week, the previous quarter's same week, or the previous year's same week. Now, you can set a custom point in data against which ThoughtSpot compares the most recent data point, any number of weeks ago. Your chosen comparison point persists for all viewers of the Liveboard. To enable this feature, contact your administrator. For more information, see xref:chart-kpi.adoc#kpi-custom-comparison[KPI charts].
+// Mary. jira: SCAL-194972. docs jira: SCAL-236113
+Advanced conditional formatting::
+Advanced conditional formatting is now available to all users and on by default.
+In addition to using conditional formatting to visually highlight a threshold in a measure (for example, `sales > 10000`), you can now use conditional formatting to compare a column's measures to another column. You can set multiple conditional formatting rules to a single table.
 
-// Mary. jira: SCAL-194093. docs jira: SCAL-226615
-Query set groups [.badge.badge-early-access-whats-new]#Early Access#::
-ThoughtSpot users can now define groups for included query values using conditions in Query sets. Conditions allow you to create groups using operators, to specify the parameters of the group. To enable this feature, contact your administrator. For more information, see xref:query-sets.adoc[Query sets].
-
-
-
-// Mary. jira: SCAL-220512. docs jira:
-Pivot table enhancements [.badge.badge-beta-whats-new]#Beta#::
-We are introducing a new pivot table chart. To access this feature, contact {support-url}. This new chart has improvements in the following areas:
-
-* Performance
-** Faster interaction while expanding rows and columns
-** Pagination
-* Customization
-** Custom sort order support
-** Column widths
-** Slicing with measures and attributes
-** Measure names and values
-* UX
-** Tooltips
-** Legends
-** Zebra mode
-** Decluttered header space
-
-// Mary. JIRA: SCAL-222671
-Org Switcher display [.badge.badge-early-access-whats-new]#Early Access#::
-Administrators can now enable or disable the display of the org name and *Org switcher* for users. By default, the org name and switcher are visible to all users. Cluster administrators can modify this setting so that users with only a single org do not see the org name and switcher. For more information, see xref:orgs-administration-overview.adoc[].
+For more information, see xref:search-conditional-formatting.adoc#advanced-conditional-formatting[Advanced conditional formatting].
 
 
-[#10-5-0-cl-business-user]
+// Naomi. jira: SCAL-224932. docs jira: SCAL-240854
+Custom comparison point for KPI charts:: Custom comparison points for KPI charts are now on by default and available to all users. Previously, time-series KPI charts had limited options when comparing to past periods. For example, a weekly KPI could be compared against the previous week, the previous month's same week, the previous quarter's same week, or the previous year's same week. Now, you can set a custom point in data against which ThoughtSpot compares the most recent data point, any number of weeks ago. This feature is applicable to all KPIs including time keywords like `weekly`, `monthly`, or `quarterly`.  Your chosen comparison point persists for all viewers of the KPI. To enable this feature, contact your administrator.
++
+For more information, see xref:chart-kpi.adoc#kpi-custom-comparison[KPI charts].
+
+// Naomi. docs jira: SCAL-?
+KPI change analysis::
+We made the following changes to change analysis for KPI charts:
++
+--
+* To open change analysis on a KPI chart, click the *Change analysis* button at the bottom of the chart.
+* When opening change analysis on a KPI, users see a summary of all changes.
+* KPI anomalies no longer appear as red points on the sparkline, they are labeled as out of the expected range of values.
+To enable these changes, contact {support-url}.
+--
+
+
+// Naomi. jira: SCAL-196221. docs jira: SCAL-240309
+Group aggregates in change analysis:: You can now run change analysis on queries that contain group aggregate expressions.
+
+Suggest indexing of columns for Spotter::
+In this release, we introduce *Optimize for Spotter*. It is an easier way of indexing the Worksheet and Model attribute columns required for accurate searches on specific column values in Spotter. After enabling Sage on a Worksheet or Model and clicking the *Optimize for Spotter* button, ThoughtSpot detects which columns are not indexed and allows you to index the ones you need for Spotter. For more information, see xref:spotter-worksheet-model.adoc#optimize-spotter[Optimize for Spotter].
+
+// Mary. jira: SCAL-138848. docs jira: SCAL-238563
+Reorder parameters in Liveboards and Answers [.badge.badge-early-access-relnotes]#Early Access#::
+You can now reorder the parameters in Liveboards and Answers, in the same way that you can reorder filters. When you edit a Liveboard or Answer to reorder the parameters and save your changes, the new order is reflected when anyone opens the Liveboard or Answer. To enable this feature, contact your administrator.
++
+For more information, see xref:parameters-use.adoc[Reorder parameters in Liveboards and Answers].
+
+
+Improved error messaging in Data model editor::
+The Data model editor has enhanced error messaging to help you understand and fix errors. Global errors, like a session expiring or an error when saving changes, are now displayed in a pop-up window. Local errors, associated with a specific tab, display a red dot on the tab and a banner under the tab after it is selected.
+
+New security log events for data modeling::
+In this release, we've added new security log events for creating, updating, and deleting the following:
+
+- Tables
+- Imported tables
+- SQL views
+- Worksheets
+
+You can access security logs from ThoughtSpot by pushing the logs to your SIEM server, or by pulling the logs using the Audit Logs API. For more information, see xref:audit-logs.adoc[Collect security logs].
+
+Custom charts::
+Custom charts are now available to all users and on by default. Custom charts allow you to use charts created outside of ThoughtSpot, including from third-party chart libraries. For more information, see xref:chart-custom.adoc[Custom charts].
+
+// Mary. jira: SCAL-224447. doc jira: SCAL-236449
+Pivot table charts [.badge.badge-early-access-relnotes]#Early Access#::
+ThoughtSpot introduces a brand new pivot table chart. The new pivot table charts have the following features:
+
+* Faster load times with pagination.
+* You can now expand and collapse all in pivot tables.
+* We now support custom sort order.
+* You can now adjust column widths.
+* You can now slice with measures and attributes.
+* You can now use values for more granular control in configurations.
++
+To enable this feature, contact your administrator. For more information, see xref:chart-pivot-table.adoc#pivot-table-2-0[Pivot table charts].
+
+[#10-6-0-cl-business-user]
 === For the Business User
 
-// Naomi – jira: SCAL-220304. docs jira: SCAL-?
-Compact Liveboard header::
-We have streamlined the design of Liveboard headers to ensure maximum visibility of Liveboard visualizations no matter the size of the screen. For more information, see
-xref:liveboard.adoc#compact-header[Liveboards].
-
-// Naomi. jira: SCAL-236594, SCAL-236596, SCAL-236598
-Spotter:: We made the following enhancements to Spotter:
-
-* To increase relevance to your search, Spotter now surfaces past global reference questions as sample questions below the search bar in the home page.
-* You can now request specific chart types in Spotter if the data fits the chart requirements. Note that we do not currently support custom charts in Spotter.
-* You can now modify the `is_sage_enabled` flag in a Worksheet's TML file to enable or disable Spotter on the Worksheet.
-
-Enhanced Google Sheets add-on::
-With ThoughtSpot Connected Sheets, a free add-on for Google Sheets, you can now update your existing search results to get the latest data without having to enter the search query again. You can do this for the current sheet or all sheets. For details, see xref:thoughtspot-sheets.adoc[ThoughtSpot Connected Sheets].
-
-// Mary. jira: SCAL-196253. docs jira: SCAL-234580
-Anomaly-based alerts::
-Anomaly-based alerts are now on by default and available to all users. You can receive alerts when data of KPIs you are subscribed to fall outside the predicted value range.
+// Naomi. jira: SCAL-226925. docs jira: SCAL-239972
+Spotter in Slack [.badge.badge-beta-relnotes]#Beta#::
+Where previously you could ask questions in natural language in Slack using the ThoughtSpot app, you can now use Spotter to conversationally search your data in Slack. Follow-up questions remain within the same thread, preserving context. Pin a Worksheet or Model to a channel to ensure quick access to data from that Worksheet or Model. To enable this feature, contact {support-url}.
 +
-When creating an alert, you can specify the time and frequency at which ThoughtSpot checks the KPI’s data against the values predicted by ML models trained on the data. For example, you can create an alert for a `sales weekly` KPI, and specify that ThoughtSpot compare the values every Monday at 5 PM. You may also add individual subscribers to the alert. If the KPI's data falls outside the predicted range, ThoughtSpot sends an alert to your email and, if applicable, your subscribers' emails. For more information, see xref:monitor.adoc#create_an_anomaly_alert[Create an anomaly alert].
+NOTE: Spotter in Slack is not available for TSE and GCP clusters yet.
++
+For more information, see xref:spotter-app-for-slack.adoc[Spotter in Slack].
+
+// Mary. jira: SCAL-175792. docs jira: SCAL-238562
+Show only relevant filters and parameters on Liveboards [.badge.badge-early-access-relnotes]#Early Access#::
+Filters and parameters that are not relevant to a tab are hidden by default when you open and view a Liveboard. You can choose to view all filters and parameters, including those that are not relevant to the tab, so that you can quickly create a new view or download the Liveboard without having to switch tabs and apply filters individually.
+To enable this feature, contact your administrator.
++
+For more information, see xref:liveboard-filters.adoc[Apply filters to specific visualizations or tabs].
+
+// Naomi. jira: SCAL-222545. docs jira: SCAL-236119
+Gradient-based conditional formatting:: Gradient-based conditional formatting is now available to all users and on by default. You can now choose multiple colors to define a gradient in charts that support gradients -- geo heatmap, geo area, heatmap, and treemap charts. You can control the low, mid, and high values, and numerical value points to customize the gradient.
++
+For more information, see xref:chart-color-change.adoc#charts-with-gradients[Change chart colors].
+
+// Mary. jira: SCAL-218966. docs jira: SCAL-238611
+Query set bins [.badge.badge-early-access-relnotes]#Early Access#::
+ThoughtSpot users can now create bins for aggregate results in query sets. This feature allows you to create groups based on bins of specified sizes with minimum and maximum values. To enable this feature, contact your administrator.
++
+For more information see, xref:query-sets.adoc[Query sets].
 
 
-[#10-5-0-cl-data-engineer]
+Improved sorting, filtering, and export of Answers and Liveboards in the new navigation and homepage experience::
+In this release, we provide new options for sorting and filtering Answers and Liveboards, as well as the option to export them to TML. These options are available in the homepage, as well as the Liveboards and Answers pages of the Insights app in the new navigation and homepage experience. The options include the following:
++
+--
+* Sorting Answer and Liveboard lists by "last modified"
+* Filtering Liveboards and Answers by *All* or *Yours*
+* Exporting selected Answers and Liveboards to TML
+--
++
+To confirm you are using the new navigation and homepage, go to your user profile and make sure Navigation and Homepage is set to *New experience*. For more information, see
+xref:thoughtspot-one-homepage.adoc[Home page].
+
+[#10-6-0-cl-data-engineer]
 === For the Data Engineer
 
-// Naomi. jira: SCAL-208829. docs jira: SCAL-230240.
-Databricks service principal with OAuth:: You can now authenticate a Databricks connection using a service principal and OAuth secret.
+// Naomi. jira: SCAL-226052. docs jira: SCAL-239382
+Spotter Conversations Liveboard::
+We’ve introduced the *Spotter Conversations Liveboard* to give you real-time visibility into user interactions with Spotter. With this Liveboard, administrators can:
++
+--
+* Gain insights into user engagement and adoption metrics for Spotter.
+* Track query trends and understand user intent.
+* Monitor follow-up actions, including query refinements and edits within conversations.
+* Analyze feedback to identify training gaps and improve dataset coverage.
+--
++
+For more information, see xref:spotter-conversations-liveboard.adoc[Spotter Conversations Liveboard].
 
-// Naomi. jira: SCAL-227647, SCAL-227649. docs jira: SCAL-?
-OAuth Connections sign-in for Search Data and Answer view:: Admin users now have more control on how users sign in to Connections authenticated using OAuth when the connection authentication has expired. Previously, the *Sign in with OAuth* button appeared only on Liveboards built on the Connection. Now, users can access the sign-in flow from Search Data and Answers as well.
+// Naomi. jira: SCAL-230405. docs jira: SCAL-239421
+ClickHouse connection [.badge.badge-early-access-relnotes]#Early Access#:: You can now create connections from ThoughtSpot to ClickHouse. To enable this feature, contact your administrator. For more information, see
+xref:connections-clickhouse.adoc[ClickHouse].
 
-// Naomi. jira: SCAL-224193. docs jira: SCAL-224199
-Join cardinality change for global joins [.badge.badge-early-access-relnotes]#Early Access#::
-You can now change the cardinality of a join (1:1, 1:Many, Many:1) without needing to delete and remake the join. To enable this feature, contact your administrator.
+// Mark. jira: SCAL-222174. docs jira: SCAL-232768, SCAL-240422
+// PM: Anant
+Suggest indexing of columns for Spotter::
+In this release, we introduce *Optimize for Spotter*. It is an easier way of indexing the Worksheet and Model attribute columns required for accurate searches on specific column values in Spotter. After enabling Sage on a Worksheet or Model and clicking the *Optimize for Spotter* button, ThoughtSpot detects which columns are not indexed and allows you to index the ones you need for Spotter. For more information, see xref:spotter-worksheet-model.adoc#optimize-spotter[Optimize for Spotter].
 
-// Mary. JIRA: SCAL-233879
-Bring your own key (BYOK) for Google Cloud::
-You can now use Bring Your Own Key (BYOK) to use your own encryption keys to give you more control over your data security in the cloud.
-For more information, see xref:byok.adoc[Bring your own key (BYOK)].
+// Naomi. jira: SCAL-147895. docs jira: SCAL-240697
+User-defined ID in TML [.badge.badge-beta-relnotes]#Beta#:: Rather than using a system-generated GUID to identify individual objects in TML files, you can now manually set an object property (`obj_id`) with a uniqueness constraint on the Org level. This allows you to manage content across multiple Orgs without having to manually change the GUID of an object each time you move it between Orgs. To enable this feature, contact {support-url}.
++
+For more information, see xref:tml.adoc#user-defined-id[User-defined ID in TML].
 
-[#10-5-0-cl-it-ops]
+[#10-6-0-cl-it-ops]
 === For the IT/Ops Engineer
 
-// Mary. jira: SCAL-224758. docs jira: SCAL-
-Utilities schema viewer::
-ThoughtSpot's schema viewer connection picker is now on by default and available to all users. You can now use the dropdown or search to select your connection in the schema viewer.
+// Naomi. jira: SCAL-212219. docs jira: SCAL-220587
+Search data mandatory columns [.badge.badge-beta-relnotes]#Beta#:: You can now use TML to define a list of associated columns that must be included in a search if a certain column is added. This allows you to make sure users do not remove necessary context from a search by removing a column. To enable this feature, contact {support-url}.
 +
-NOTE: You can no longer view objects across all connections. You must filter by a specific connection.
+For more information, see xref:tml-worksheets.adoc#is_mandatory[Mandatory columns]  and xref:tml-models.adoc#is_mandatory[Mandatory columns in Models].
+
+// Mary. jira: SCAL-84791. docs jira: SCAL-236084
+Multifactor authentication for customers using local authentication [.badge.badge-beta-relnotes]#Beta#::
+ThoughtSpot now supports multifactor authentication (MFA) for customers using local authentication powered by Enhanced IAM with IAM v2. Use MFA to enable secure access to your ThoughtSpot instance for your local auth users by introducing an additional authentication factor configurable at the cluster level. We support Okta Verify, Google Authenticator, and Email-based time-based one-time passcode (TOTP) authentication with ThoughtSpot MFA.
 +
-For more information, see, xref:schema-viewer.adoc[Schema viewer connection picker].
+For more information, see xref:authentication-local-mfa.adoc[Multifactor authentication for customers using local authentication].
 
+// Mary. JIRA: SCAL-239506
+ThoughtSpot Enterprise Org enablement::
+All ThoughtSpot Enterprise clusters will get enabled with Orgs by default starting with this release. Your environment remains a single-tenant environment until you create an Org. You can delete all the Orgs you created and use only the Primary Org if you want a single-tenant environment with Orgs enabled.
++
+For more information, see xref:orgs-overview.adoc[Multi-tenancy with Orgs].
 
-[#10-5-0-cl-developer]
+////
+// Naomi. jira: SCAL-218237. docs jira: SCAL-239699
+Learnability in conversation: feedback generation in follow-up questions:: You can now give feedback on AI-generated Answers in Spotter without interrupting your searching conversation. When marking an Answer incorrect, you can now edit the underlying search, save, and review the search query tokens making up the Answer. If you mark an Answer correct, you can review and save the underlying search query tokens so Spotter remembers your choices in the future for similar questions.
++
+For more information, see xref:spotter-getting-started.adoc#learnability[Coach Spotter within a conversation].
+////
+////
+// Mary. jira: SCAL-232495. docs jira: SCAL-232812
+Org context for sharing links::
+ThoughtSpot's org context for sharing links is now available to all users and enabled by default. URLs in emails now include Org context so that users are taken directly to the correct Liveboard in the correct Org even if they belong to multiple Orgs. You can also move between different browser tabs that point to different Orgs. To enable this feature, contact your administrator.
++
+For more information, see xref:orgs-overview.adoc[Org context for sharing links].
+//Removed from 10.6.0.cl GA remains EA pending a dependency from TSE.
+////
+
+// Mary. jira: SCAL-216546. docs jira: SCAL-220685
+Import and export users and groups using TML [.badge.badge-early-access-relnotes]#Early Access#::
+Import and export users, groups, roles, and privileges programmatically, using ThoughtSpot Modeling Language. Use this feature to migrate from one environment to another. This feature can be used so that user, group, and role configurations do not need to be recreated.
+To enable this feature, contact your administrator.
++
+For more information, see xref:admin-portal-users.adoc[Managing users], xref:admin-portal-groups.adoc[Managing groups], xref:rbac.adoc[Understand RBAC and privileges].
+
+[#10-6-0-cl-developer]
 === For the Developer
 
 ThoughtSpot Embedded:: For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation^].
+
+// Mary. jira: SCAL-221647. docs jira: SCAL-238896
+Row counts connection configuration [.badge.badge-early-access-relnotes]#Early Access#::
+ThoughtSpot now allows you to assign different configurations when creating a connection, to run row count stats and keep them separate from other process and user queries. Use this feature to help with auditing and tracking your cloud data warehouse usage by user and process. Optimize costs by assigning the right resources to the right process and users.
++
+To enable this feature, contact your administrator.
