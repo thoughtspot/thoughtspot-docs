@@ -1,0 +1,48 @@
+= Discovery Database
+:categories: ["API"]
+:categories_weight: 4
+:date: 2021-04-23
+:description: An overview of Analyst Studio Database
+:ogdescription: An overview of Analyst Studio Database
+:path: /articles/discovery-database
+:product: Analyst Studio
+
+//+++<flag-icon>++++++</flag-icon>+++
+
+== Overview
+
+For qualifying customers, {product}'s Discovery Database provides access to your Workspace's usage data.
+This data is provided via link:https://docs.snowflake.com/en/user-guide/data-sharing-intro.html#what-is-a-share[Secure Data Sharing by Snowflake,window=_blank] which allows {product} to securely share your usage data in a Snowflake database unique to your Workspace.
+
+Usage data is accessible in a Snowflake database that can be connected directly to {product}.
+You can use the Discovery Database to measure what's most important to your Workspace, whether that's understanding adoption, tracking your most popular Reports, assessing database load, or auditing usage for compliance.
+
+In other words, with the Discovery Database, you can use {product} to measure and manage how you use {product}.
+
+See the full documentation for {product}'s Discovery Database link:https://mode.com/developer/discovery-database/introduction/[here,window=_blank].
+
+[#faqs]
+== FAQs
+
+[discrete]
+=== *Q: How to check which Reports are scheduled and viewed*
+
+*API method*
+
+You can loop through every single Report in the Workspace (the ones in public/private Collections, but not other members' personal Collections), and check each individual report to see whether it's scheduled.
+The API documentation on how to get all the Reports in your workspace is link:https://mode.com/developer/api-cookbook/management/get-all-reports/[here,window=_blank].
+
+From there you can see the `view_count` property which will allow you to see the view count for an individual Report.
+
+*Discovery Database method*
+
+You can also use the Discovery Database to obtain the same information for their reporting.
+The documentation for the Discovery Database can be found link:https://mode.com/developer/discovery-database/introduction/[here,window=_blank].
+
+[discrete]
+=== *Q: How often is data in the Discovery Database refreshed?*
+
+The Discovery database is updated overnight each day, specifically at 4:00 am Pacific time.
+Because data is synced to Snowflake on an hourly basis, data from 3am - 4am Pacific will not sync to Snowflake before the 4am daily update.
+In this case, it will not appear in the query results until the next daily update.
+If changes are made to a query via the {product} API, a query run may be needed to reflect those changes in the Discovery Database on the next update.

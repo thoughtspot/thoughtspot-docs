@@ -1,0 +1,1652 @@
+= Supported databases
+:categories: ["Connect your database"]
+:categories_weight: 20
+:date: 2023-12-11
+:description: Connect Analyst Studio to your data.
+:ogdescription: Connect Analyst Studio to your data.
+:path: /articles/supported-databases
+:product: Analyst Studio
+
+== Connectivity policy
+
+{product} currently supports connectivity to customer data using Java Database Connectivity (JDBC) drivers.
+{product} does not write JDBC drivers.
+We contract the use of proprietary JDBC drivers or use established and well-supported open-source JDBC drivers.
+
+For Preferred and Supported databases, {product} ensures functionality for all versions of the database server currently actively maintained by the database vendor.
+{product} does not ensure continued functionality for database server versions that have reached end of life, or for database types that are not explicitly supported.
+
+{product} will usually support or recommend only one driver per database type.
+However, to give customers flexibility during their update process, we will enable customers to use either the recommended or the most recent version until the next update (either 6 or 12 months).
+{product} will usually provide 6 months' notice to customers before driver removal, although we reserve the right to remove drivers with known security issues on less notice.
+
+[discrete]
+=== Driver deprecation
+
+{product} will mark for deprecation and set removal dates for older versions of drivers.
+We generally set removal dates for the oldest drivers 6 months out, when adding new versions of drivers.
+
+Drivers that are past their removal date cannot be used to connect to {product}.
+The removed driver will no longer be available in the Preferred JDBC driver dropdown of the connection's details.
+
+On the removal date, any connections still using that driver will be updated by {product} to use the latest recommended driver.
+This may cause connectivity issues.
+{product} encourages customers to update their preferred drivers shortly following announced updates.
+
+=== Support levels
+
+For the listed database types below, {product} aims to support all versions of the database actively supported by the database vendor or appropriate open-source community.
+
+==== Tier 1: Preferred
+
+These database and integration types are fully supported by {product} and drivers are upgraded at least semi-annually.
+We are committed to improving the experience of users connecting {product} to data sources of these types, and will fix issues based on severity and demand.
+As part of our release process, {product} runs exhaustive integration tests against all types in this tier to ensure quality.
+
+|===
+| Database / Integration Type | Database Version Support | Bridge
+
+a| <<amazon-redshift,Amazon Redshift>>
+|
+| Optional
+
+a| <<postgresql,PostgreSQL>>
+| 9.5, 9.6, 10, 11, 12, 13, 14, 15
+| Optional
+
+a| <<mysql,MySQL>>
+| 5.6, 5.7, 8.0
+| Optional
+
+a| <<google-bigquery,Google BigQuery>>
+|
+| Not supported
+
+a| <<snowflake,Snowflake>>
+|
+| Optional
+
+a| <<amazon-athena,Amazon Athena>>
+|
+| Not supported
+
+a| <<microsoft-sql-server,Microsoft SQL Server>>
+| 2012, 2014, 2016, 2017, 2019
+| Optional
+
+a| <<starburst,Starburst>>
+| versions up to 413
+| Optional
+
+a| <<trino,Trino (formerly PrestoSQL)>>
+| versions up to 413
+| Optional
+
+a| <<hive,Hive>>
+| 1.0.0 - 3.1
+| Optional
+
+a| <<google-alloydb,Google AlloyDB>>
+|
+| Optional
+
+a| <<azure-sql-database,Azure SQL Database>>
+|
+| Optional
+
+a| <<microsoft-sql-server,Azure Synapse SQL>>
+|
+| Optional
+
+a| <<dbt-semantic-layer,dbt Semantic Layer>>
+| 12.0.1
+| Not supported
+
+a| <<looker-sql,Looker SQL>>
+|
+| Not supported
+|===
+
+==== Tier 2: Supported
+
+These database types are fully supported by {product} and drivers are upgraded annually.
+We are committed to improving the experience of users connecting {product} to data sources of these types, and will fix issues based on severity and demand.
+As part of our release process, {product} runs integration tests against all types in this tier to ensure quality.
+
+|===
+| Database Type | Database Version Support | Bridge
+
+a| <<oracle,Oracle>>
+| 11.2, 12.1, 12.2, 18c, 19c, 21c
+| Required
+
+a| <<oracle,Oracle Autonomous Database>>
+|
+| Optional
+
+a| <<clickhouse,ClickHouse>>
+|
+| Optional
+
+a| <<impala,Impala>>
+| 2.8 - 3.2
+| Required
+
+a| <<mysql,Amazon Aurora MySQL>>
+|
+| Optional
+
+a| <<vertica,Vertica>>
+| 7.2 - 10.1.1
+| Required
+
+a| <<databricks,Databricks>>
+|
+| Optional
+
+a| <<postgresql,Amazon Aurora PostgreSQL>>
+|
+| Optional
+
+a| <<treasure-data,Treasure Data>>
+|
+| Optional
+
+a| <<apache-druid,Apache Druid>>
+| 0.20.1
+| Required
+
+a| <<denodo,Denodo>>
+| 8.0
+| Optional
+
+a| <<arrow-flight-sql,Arrow Flight SQL>>
+|
+| Not supported
+|===
+
+==== Tier 3: Works, not Supported
+
+These database types are partially supported by {product}, but the database vendor's recommended driver is not used.
+{product} is able to connect to these database types because of similarities of SQL dialects or shared database servers.
+{product} makes no commitment to improve implementation, fix issues, or regularly run tests against these database types.
+
+|===
+| Database Type | Database Version Support | Bridge
+
+a| <<mysql,MariaDB>>
+|
+| Optional
+
+a| <<amazon-redshift,Tenjin>>
+|
+| Optional
+
+| MemSQL
+|
+| Not supported
+
+a| <<postgresql,Citus>>
+|
+| Not supported
+
+a| <<postgresql,Timescale>>
+|
+| Not supported
+
+a| <<amazon-redshift,mParticle>>
+|
+| Optional
+
+a| <<databricks,Spark>>
+| 1.6, 2.1 - 3.0
+| Optional
+
+a| <<presto,PrestoDB>>
+| up to version 0.240
+| Optional
+|===
+
+[#databases]
+=== Databases
+
+NOTE: If the database supports multiple Drivers, use the xref:studio-managing-database-connections.adoc#update-preferred-jdbc-driver[Manage Connections] page to update to your preferred driver.
+
+[#amazon-athena]
+==== Amazon Athena
+
+===== Supported JDBC drivers and known issues
+
+|===
+| Driver | Driver Release Date | {product} Removal Date
+
+| (Recommended) Simba v 2.0.25.1000
+| 12/22/2022
+|
+
+| Simba v 2.0.27.1001
+| 1/13/2022
+|
+
+| Simba v 2.0.23.1000
+| 6/10/2021
+|
+
+| Simba v 2.0.18.1000
+| 1/29/2021
+|
+
+| Simba v 2.0.13.1000
+| 6/9/2020
+|
+|===
+
+_{product} recommends connecting via the Simba Athena driver because it is the official driver endorsed by Amazon._
+
+The following are known issues with the current supported drivers.
+{product} continues to advocate on our customers' behalf for vendors and open-source communities to resolve these issues.
+
+|===
+| Driver | Known Issue | Further Details
+
+| Simba v 2.0.27.1001
+| Queries with special characters failing
+| Queries with special characters (for example, '`√ß`' and '`√Ö`') are failing with String index out of range error.
+As a workaround, use the previous version of the driver (2.0.23.1000).
+
+
+| Simba v 2.0.13.1000
+| Requires additional IAM permissions for queries
+a| This version of the driver requires that the {product} user's IAM permissions include the `athena:ListDataCatalogs` permission.
+This permission is required for query execution via {product} (not just the Schema Browser). +
+Customers whose {product} user is managed via the AmazonAthenaFullAccess Managed Policy will not experience issues.
+
+| Simba v 2.0.13.1000
+| Schema refreshes fail with Null Pointer Exception for external data sources
+| Attempts to get or update schemas when Athena is connected to non-Hive (PostgreSQL confirmed) external data sources results in a Null Pointer Exception.
+For customers whose Athena instance includes external data sources, automatic refresh of the database's schema data should be disabled and the {product} Schema Browser will be unable to display data.
+|===
+
+===== Database configuration instructions
+
+The {product} user's IAM permissions must include `athena:ListDatabases` and `athena:ListDataCatalogs`.
+In addition, ensure that port 444 is open to outbound traffic.
+
+===== Connecting to {product} via access keys
+
+. Follow the steps to connect a database with xref:studio-connecting-mode-to-your-database.adoc#direct-connect[Direct Connect].
+. Select Amazon Athena from the list of databases.
+. Fill out your AWS region to be formatted like `us-west-2`.
+. Select *Authentication method: Access keys* in the {product} connection form.
+. The AWS Access Key and Access Secret should be for the AWS user you want to connect through.
+When creating an Athena connection, we recommend link:https://docs.aws.amazon.com/athena/latest/ug/setting-up.html[creating a user in AWS,window=_blank] that only has access to the data you want to query through Athena.
+For data you want to query, the AWS user only needs read access.
+. The S3 Results Directory should be a bucket where Athena can write query results.
+For this bucket, the AWS user specified above needs read and write access.
+The bucket should be a full S3 url (for example, `s3://acme/my/athena/bucket`).
+. Click *Connect*.
+You will land on a page that displays your database schema.
+
+===== Connecting to {product} via IAM role
+
+. Follow the steps to connect a database with xref:studio-connecting-mode-to-your-database.adoc#direct-connect[Direct Connect].
+. Select Amazon Athena from the list of databases.
+. Fill out your AWS region to be formatted like `us-west-2`.
+. Select *Authentication method: IAM* role in the {product} connection form.
+. Navigate to *IAM > Roles* in your AWS Console.
++
+image:athena-new-iam-role.png[Athena]
+. Create a new role or choose an existing role and select *Custom trust policy* under *Trusted entity type*.
++
+image:athena-custom-trust-policy.png[Athena]
+. Alternatively, you can choose an existing role and select the *Trust relationships* tab.
++
+image:athena-existing-iam-role.png[Athena]
+. Copy and paste the trust relationship from the {product} connection form into your AWS IAM Role.
++
+image:mode-athena-iam-role-form.png[Athena]
+. Add in the necessary IAM permissions to access your Athena resource (must include `athena:ListDatabases` and `athena:ListDataCatalogs`).
+. Click *Create Role* in AWS and paste the IAM Role ARN into the {product} connection form.
+. The S3 Results Directory should be a bucket where Athena can write query results.
+For this bucket, the AWS user specified above needs read and write access.
+The bucket should be a full S3 url (for example, `s3://acme/my/athena/bucket`).
+. Click *Connect*.
+You will land on a page that displays your database schema.
+
+[#amazon-redshift]
+==== Amazon Redshift
+
+*Additionally supports*: _mParticle Redshift, Tenjin Redshift_
+
+===== Supported JDBC drivers and known issues
+
+|===
+| Driver | Driver Release Date | {product} Removal Date
+
+| (Recommended) Amazon Redshift v 2.1.0.13
+| 3/30/2023
+|
+
+| Amazon Redshift v 2.1.0.3
+| 12/3/2021
+|
+
+| Amazon Redshift v 2.0.0.7
+| 7/23/2021
+|
+
+| Amazon Redshift v 2.0.0.3
+| 2/25/2021
+|
+|===
+
+The following are known issues with the current supported drivers.
+{product} continues to advocate on our customers' behalf for vendors and open-source communities to resolve these issues.
+
+|===
+| Driver | Known Issue | Further Details
+
+| All
+| Date functions not displaying correctly
+| Date functions like DATE_TRUNC do not work as expected due to {product}'s results formatter.
+A workaround is to use a function to convert the date to string.
+
+| All
+| Schema access privileges
+| Redshift shows all schemas to users even if they don't have permissions to them.
+The Redshift team confirmed there is a feature request to restrict access, but currently no ETA.
+|===
+
+===== Database configuration instructions
+
+====== Amazon Redshift
+
+Depending on your Amazon settings, you may need to grant {product} access to your Redshift security group:
+
+. Navigate to the link:https://console.aws.amazon.com/redshift/[Redshift Management Console,window=_blank].
+. Select *Clusters* from the left navigation bar.
+. Click on the cluster you want to connect.
++
+[.bordered]
+image::redshift-select-cluster.png[Redshift]
+
+. Find *Cluster Security Groups* under *Cluster Properties* and click on the cluster's security group.
++
+[.bordered]
+image::redshift-cluster-properties.png[Redshift]
++
+NOTE: If you are using VPC Security Groups, you must also grant {product} access to that security group.
+Please click on your VPC Security Group name and follow <<amazon-web-services,this section of our Amazon RDS guide>>, starting with step 2.
+
+. Click on the name of the security group.
++
+[.bordered]
+image::redshift-security-group.png[Redshift]
+
+. You'll see a list of authorized connections.
+Click the blue *Add Connection Type* button in the upper left.
+. Select *CIDR/IP* from the *Connection Type* dropdown, and paste the address `54.68.30.98/32` in the *CIDR/IP to Authorize* field.
++
+[.bordered]
+image::redshift-connection.png[Redshift]
+
+. Click the blue *Authorize* button.
+. Repeat steps 5 through 7 for each of the addresses listed below:
+ ** `54.68.45.3/32`
+ ** `34.209.23.118/32`
+ ** `54.188.241.100/32`
+ ** `52.43.195.103/32`
+ ** `3.224.146.111/32`
+ ** `54.221.238.89/32`
+ ** `52.20.173.236/32`
+
+====== mParticle Redshift
+
+mParticle supports both mParticle-hosted and client-hosted Redshift clusters.
+If you're using an mParticle-hosted Redshift cluster, log in to the mParticle platform and navigate to the Redshift Configuration tab.
+There, you'll find your connection string and user credentials.
+
+[.bordered]
+image::mparticle-redshift-configuration.png[mParticle Redshift]
+
+You can also xref:studio-connecting-mode-to-your-database.adoc#requirements[allowlist {product}'s servers] by editing the list of allowed IP addresses on mParticle UI, which will update the AWS security group settings associated with your Redshift cluster.
+Once you have your credentials, follow the steps below to connect {product}:
+
+. Log in to {product} and follow to steps to xref:studio-connecting-mode-to-your-database.adoc#direct-connect[connect a database to {product}].
+. Select *mParticle Redshift* from the list of databases.
+. Enter your mParticle credentials and click *Connect*.
+You'll land on a page that displays your database schema.
+. Click *New Query* in the top navigation to start writing queries.
+
+====== Tenjin Redshift
+
+Once you've activated the DataVault feature on your Tenjin account, you can access your DataVault credentials by logging in to the dashboard and navigating to *Menu \-> DataVault Credentials*.
+
+For additional questions about getting your DataVault credentials, please free to contact link:mailto:support@tenjin.io[support@tenjin.io,window=_blank].
+
+[#apache-druid]
+==== Apache Druid
+
+===== Supported JDBC drivers and known issues
+
+|===
+| Driver | Driver Release Date
+
+| Apache Avatica 1.18.0
+| 5/18/2021
+
+| Apache Avatica 1.17.0
+| 6/21/2020
+|===
+
+The following are known issues with the current supported drivers.
+{product} continues to advocate on our customers' behalf for vendors and open-source communities to resolve these issues.
+
+|===
+| Driver | Known Issue | Further Details
+
+| Avatica 1.17.0
+| Druid fetch size limited to 100
+| Druid JDBC driver only returns 100 rows per batch, resulting in longer-than-expected query response times.
+There is a link:https://github.com/apache/druid/pull/10880[server-side fix,window=_blank] that can be applied.
+
+| Avatica 1.17.0
+| Druid Basic Authentication is unsupported
+| {product} currently requires Druid connections over Bridge.
+
+| Avatica 1.17.0
+| Connection context properties are unsupported
+| {product} currently does not support changing the Druid broker's link:https://druid.apache.org/docs/latest/querying/sql.html#connection-context[setting for the connection,window=_blank] via JDBC properties.
+
+| Avatica 1.17.0
+| Only Druid SQL support
+| When connecting to Druid via JDBC, link:https://druid.apache.org/docs/0.20.1/querying/sql.html[only Druid SQL syntax is supported,window=_blank]. Native (json-type) query syntax will result in errors.
+
+| Avatica 1.17.0
+| Druid SQL limitations
+| Not all Druid features are supported via Druid SQL and JDBC connectivity.
+Please see the link:https://druid.apache.org/docs/0.20.1/querying/sql.html#unsupported-features[Druid docs,window=_blank].
+
+| Avatica 1.17.0
+| Single Schema Support
+| {product}'s Schema Browser will surface only tables found in the default `druid` schema.
+
+| Avatica 1.17.0
+| Query cancellation is unsupported
+| Druid supports cancellation for native (json-type) queries, but not for Druid SQL queries.
+If users attempt to cancel a query in the {product} UI, the query run will not be interrupted.
+The driver does not return an error, so {product} is unable to surface anything to the user.
+|===
+
+===== Connecting to {product}
+
+When connecting Druid to {product}, fill out the connection form as follows:
+
+. *Display name:* the name of the connection used in the Schema Browser.
+. *Description:* optional additional context viewable in Connection Management.
+. *Host:* the route of the Druid cluster link:https://druid.apache.org/docs/latest/design/broker.html[Broker,window=_blank], as specified in the link:https://druid.apache.org/docs/latest/configuration/index.html#broker[broker/runtime.properties,window=_blank] file.
+. *Port:* the port of the link:https://druid.apache.org/docs/latest/design/broker.html[Broker,window=_blank].
+The default port is 8082.
+If your cluster is secured by SSL, the default port is 8182.
+. *Preferred JDBC Driver:* the Avatica 1.17.0 driver is the only current driver.
+. *Disable transport encryption:* {product} strongly recommends that transport encryption be enabled and that Druid be configured to use TLS v.1.2.
+If disabled, connections between the Bridge connector and your database will not be encrypted.
+
+*Please note the following link:https://druid.apache.org/docs/latest/querying/sql.html#connection-stickiness[limitation,window=_blank] of broker connection stickiness over JDBC:*
+
+"Druid's JDBC server does not share connection state between Brokers.
+This means that if you're using JDBC and have multiple Druid Brokers, you should either connect to a specific Broker, or use a load balancer with sticky sessions enabled.
+The Druid Router process provides connection stickiness when balancing JDBC requests, and can be used to achieve the necessary stickiness even with a normal non-sticky load balancer."
+
+[#arrow-flight-sql]
+==== Arrow Flight SQL
+
+===== Supported JDBC drivers and known issues
+
+|===
+| Driver | Driver Release Date | {product} Removal Date
+
+| (Recommended) Arrow Flight SQL version 12.0.1
+| 6/13/2023
+|
+|===
+
+There are no known issues with this driver.
+
+[#clickhouse]
+==== ClickHouse
+
+===== Supported JDBC drivers and known issues
+
+|===
+| Driver | Driver Release Date | {product} Removal Date
+
+| (Experimental) Clickhouse-jdbc v0.3.2-patch11
+| 7/28/2022
+|
+|===
+
+There are no known issues with this driver.
+
+[#databricks]
+==== Databricks
+
+*Additionally supports:* _Spark_
+
+===== Supported JDBC drivers and known issues
+
+|===
+| Driver | Driver Release Date | {product} Removal Date
+
+| (Recommended) Simba Spark v 2.6.21.1039
+| 12/24/2021
+|
+
+| Simba Spark v 2.6.17.1023
+| 6/17/2021
+|
+|===
+
+_{product} recommends connecting via the Simba Spark driver because it is the official driver endorsed by Databricks._
+
+The following are known issues with the current supported drivers.
+{product} continues to advocate on our customers' behalf for vendors and open-source communities to resolve these issues.
+
+|===
+| Driver | Known Issue | Further Details
+
+| Simba v 2.6.17.1021
+| Does not support Unity Catalog
+| Please use v 2.6.21.1039 or newer to utilize Unity Catalog.
+
+| Simba v 2.6.17.1021
+| Dates return incorrectly prior to 10/15/1582
+a| When using Spark 2.4.4 to Spark 3.0, DATE and TIMESTAMP data before October 15, 1582 may be returned incorrectly if serializing query results using Apache Arrow. +
+As a workaround, add `EnableArrow=0` in your connection URL to disable the Arrow result set serialization feature.
+
+| Simba v 2.6.17.1021
+| Does not support Spark version 2.1
+| The driver no longer supports servers that run Spark version 2.1.
+
+| Simba v 2.6.17.1021
+| Strings in Binary Columns
+a| Queries return binary results (not strings) for binary datatype columns. +
+For example, if I insert "hi" in a binary column, where I previously would see "hi" returned by the driver, I now see "6869".
+
+| Simba v 2.6.17.1021
+| Deprecated Versions
+| Support for Spark 1.6, 2.1, and 2.2 is deprecated, and will be removed in a future release of this driver.
+The driver only supports connections to Spark Thrift Server instances.
+It does not support connections to Shark Server instances.
+|===
+
+[discrete]
+====== Gather JDBC connection parameters
+
+Connecting to Databricks requires a running Spark cluster configured with SSL enabled and using HTTPS as the underlying thrift protocol (this is the default configuration for new clusters).
+
+===== Connecting to {product}
+
+. Follow these steps to xref:studio-connecting-mode-to-your-database.adoc[connect a Databricks database].
+Change the display name to something that helps you recognize the database behind the connection.
+. Fill in the `host`, `token`, and `HTTP path` fields with the information you gathered above.
+. Click *Connect* to save the new connection.
+
+===== Supported SQL dialect
+
+{product} supports connecting to Databricks clusters via their embedded Hive server using Hive's open-source JDBC driver.
+This restricts the supported SQL dialect to HiveQL;
+we currently do not support querying in Spark SQL, though we may add support for it at a later date.
+
+===== Automatic cluster termination
+
+Databricks "Standard" Spark clusters are configured by default to automatically terminate after 120 minutes of inactivity.
+The Hive JDBC driver cannot trigger the cluster to automatically restart, so you may want to adjust the timeout or disable automatic termination per Databricks' link:https://docs.databricks.com/user-guide/clusters/terminate.html#configuration[documentation,window=_blank].
+If the driver attempts to connect to the server after it's been shut down, the connection attempt will fail until the cluster is restarted manually.
+
+===== Unity Catalog
+
+{product} has added three level namespace support (catalog.schema.table) for Databricks to support Unity Catalog.
+The catalog and schema are now concatenated at the top level in the Schema Browser.
+
+[#dbt-semantic-layer]
+==== dbt semantic layer
+
+===== Supported JDBC drivers and known issues
+
+|===
+| Driver | Driver Release Date | {product} Removal Date
+
+| (Recommended) Arrow Flight SQL version 12.0.1
+| 6/13/2023
+|
+|===
+
+===== Connecting to {product}
+
+You will also need the following to set up the connection in {product}:
+
+* *dbt Cloud Hostname*: The hostname for the instance of dbt cloud.
+* *Environment Id*: The unique identifier for a dbt environment in the dbt Cloud URL, when you navigate to that environment under Deployments.
+* *Service Token*: Service Tokens for dbt Cloud can be created in dbt account settings, and must have at least "Semantic Layer Only" permissions.
+
+Start by xref:studio-connecting-mode-to-your-database.adoc[connecting a database.]
+
+From the dropdown, select *dbt Semantic Layer*.
+
+===== Writing metrics queries in {product}
+
+To write a new metrics query, *navigate to the SQL editor* and select your dbt Semantic Layer connection from the *database dropdown*.
+
+By default, this connection will surface all available schemas and tables.
+*To reference a metric within your query, use the following syntax:*
+
+Note all queries need to be wrapped in `{%raw %} {% endraw %}` tags.
+
+For example:
+
+[source]
+----
+{% raw %}
+select * from {{
+	semantic_layer.metrics()
+}}
+{% endraw %}
+----
+
+[#denodo]
+==== Denodo
+
+===== Supported JDBC drivers and known issues
+
+|===
+| Driver | Driver Release Date | {product} Removal Date
+
+| (Recommended) Denodo Platform version 8.0.20210209
+| 2/9/2021
+|
+|===
+
+_Important: do not use this driver to connect to a Virtual DataPort server with an update previous to 2021/02/09._
+
+[#google-alloydb]
+==== Google AlloyDB
+
+===== Supported JDBC drivers and known issues
+
+|===
+| Driver | Driver Release Date | {product} Removal Date
+
+| (Recommended) PostgreSQL v 42.3.1
+| 2/15/2022
+|
+
+| PostgreSQL v 42.2.23
+| 7/6/2021
+|
+
+| PostgreSQL v 42.2.19
+| 2/18/2021
+|
+
+| PostgreSQL v 42.2.14
+| 6/4/2020
+|
+|===
+
+There are no known issues with this driver.
+
+===== Database configuration instructions
+
+. Log in to {product} and select *connect a Database* in the dropdown menu under your profile in the left panel.
+. Select *Google AlloyDB* from the list of databases.
+. You can utilize xref:studio-connecting-mode-to-your-database.adoc#bridge[Bridge connector] if you have a private IP address.
+. Enter your Google AlloyDB credentials and click *Connect*. +
+.. Host / Port: Host name or IP address and Port of the server hosting AlloyDB.
+.. Database name: The database to connect to for AlloyDB.
+.. Username / Password: The username and password to authenticate with AlloyDB.
+
+[#google-bigquery]
+==== Google BigQuery
+
+===== Supported JDBC drivers and known issues
+
+|===
+| Driver | Driver Release Date | {product} Removal Date
+
+| (Recommended) Simba v 1.3.3.1004
+| 5/25/2023
+|
+
+| Simba v 1.2.23.1027
+| 4/28/2022
+|
+
+| Simba v 1.2.21.1025
+| 10/28/2021
+|
+
+| Simba v 1.2.16.1020
+| 5/7/2021
+|
+
+| Simba v 1.2.12.1015
+| 11/30/2020
+|
+
+| Simba v 1.2.11.1014
+| 8/28/2020
+|
+|===
+
+_{product} recommends connecting via the Simba Big Query driver because it is the official driver endorsed by Google._
+
+The following are known issues with the current supported drivers.
+{product} continues to advocate on our customers' behalf for vendors and open-source communities to resolve these issues.
+
+|===
+| Driver | Known Issue | Further Details
+
+| Simba v 1.3.2.1003 and older
+| Nullpointer exceptions
+| This driver is known to cause null pointer exceptions (for example, when a table has unicode column names) so will be removed and replaced with the newest version where this issue is fixed.
+
+| Simba v 1.2.23.1027 and older
+| Does not support JSON format
+| Please utilize 1.3.0.1001 or newer versions to work with JSON data.
+
+| Simba v 1.2.21.1020
+| Read timed out error
+a| Queries occasionally encounter a read timed out error. +
+The driver introduced this error after changing how timeouts work, but fixed in the subsequent version. +
+{product} is still confirming the fix, and suggests using an older version if issue still persists.
+
+| Simba v 1.2.16.1020
+| DDL/DML commands in comments
+| Null pointer exception when using DDL/DML commands (for example, create, update) in single line comments (for example -- services created and deleted by month).
+As a workaround, use the /* */ format.
+
+| Simba v 1.2.16.1020
+| Large queries need the 'bigquery.readsessions.create' permission
+a| Large queries trigger the Google Storage API, which is free to use for anonymous tables, but requires admins to add the 'bigquery.readsessions.create' to their Google Big Query role associated with the {product} DB connection. +
+----
+java.sql.SQLException: [Simba] BigQueryJDBCDriver 100210 Error initializing the Storage API. +
+Message : io.grpc.StatusRuntimeException: PERMISSION_DENIED: request failed:the user does not have 'bigquery.readsessions.create' permission.
+----
+
+| Simba v 1.2.11.1014
+| Nested rows return as objects vs.
+arrays using {product} driver
+a| Utilize UNNEST and ARRAY_AGG to view nested rows as arrays. +
++++<pre class="preserve">+++select author, ARRAY_AGG(title) as title, +
+ARRAY_AGG(year) as year from testdb, +
+UNNEST(works) group by author+++</pre>+++
+
+| Simba v 1.2.11.1014
+| Batch priority is unsupported
+a| The specification of job priority is unsupported.
+All queries are executed as "interactive" priority, never "batch" priority. +
+Google Big Query batch priority is described here: https://cloud.google.com/bigquery/docs/running-queries#batch.
+
+| Simba v 1.2.11.1014
+| Necessary permissions
+a| To connect via this driver, the service account should have the roles BigQuery Data Viewer and BigQuery Job User. +
+In addition, the {product} GBQ service account must have the `bigquery.jobs.list` permission.
+This permission can be added via several link:https://cloud.google.com/bigquery/docs/access-control[roles,window=_blank].
+{product} recommends either BigQuery Resource Viewer or BigQuery User, although broader access will also function. +
+The {product} user would additionally need BigQuery Data Editor role if the queries users execute from {product} are expected to be able to write to the database (for example, DROP, CREATE, UPDATE).
+Temporary functions use and temporary table creation and deletion do not require this permission.
+|===
+
+===== *Database configuration instructions*
+
+To connect {product} to your BigQuery project, you will need to create a service account for {product} to use.
+
+. Navigate to the link:https://console.developers.google.com[Google Developers Console,window=_blank].
+Before proceeding, click on the dropdown to the right of *Google Cloud* and select the project to which you want to connect.
++
+[.bordered]
+image::GBQ-Setup01.png[BigQuery]
++
+NOTE: If you do not see the project you would like to connect to listed in the dropdown, click on the account switcher in the upper right corner of the window and ensure you are logged in to a Google account that is a member of the project.
+
+. Click on the hamburger menu in the upper left and select *IAM & Admin* and then *Service accounts*.
+Click the *Create service account* button.
++
+[.bordered]
+image::GBQ-Setup02.png[BigQuery]
+
+. Give your new service account a name, pick a unique ID, and add a description.
+Click *Create and continue*.
++
+[.bordered]
+image::GBQ-Setup03.png[BigQuery]
+
+. Grant required roles, for example, BigQuery Job User and BigQuery Data Viewer.
++
+[.bordered]
+image::GBQ-Setup04.png[BigQuery]
+
+. Finally, click *Done* to create your service account.
+Now we create the JSON key file.
+Navigate to *Manage keys* under the *Actions* menu for the service account.
++
+[.bordered]
+image::GBQ-Setup05.png[BigQuery]
+
+. Navigate to *ADD KEY* > *Create new key*.
++
+[.bordered]
+image::GBQ-Setup06.png[BigQuery]
+
+. Click *CREATE* to create and download the JSON key file.
+Save the private key file to a secure place where you can easily retrieve it when setting up the connection in {product}.
++
+[.bordered]
+image::GBQ-Setup07.png[BigQuery]
+
+. Return to {product}, and begin the process to xref:studio-connecting-mode-to-your-database.adoc[connect a BigQuery database].
+When you see the form to enter your BigQuery credentials, first enter a name (internal to {product}) for the new database connection.
+. In the Project ID field, enter the BigQuery project ID.
+It can be found in the URL of your Google Developers Console.
+The URL should be structured like this:
++
+[source]
+----
+ https://console.developers.google.com/apis/library?project=MY_PROJECT_ID
+----
+
+. In the Service Account Email Address field, add your service account's email address that you noted in step 3.
+. Under the Key field, click *Choose File* and select the private key file you downloaded in step 6.
+. Click *Connect* to complete the connection.
+
+===== Standard vs. legacy SQL
+
+When connecting to BigQuery, you will choose either link:https://cloud.google.com/bigquery/docs/reference/legacy-sql/[legacy SQL,window=_blank] or link:https://cloud.google.com/bigquery/docs/introduction-sql[standard SQL,window=_blank] as the link:https://cloud.google.com/bigquery/docs/reference/standard-sql/migrating-from-legacy-sql[default SQL dialect,window=_blank] for that connection.
+Most users choose standard SQL, which is similar to industry standard SQL dialects used by other databases.
+
+Regardless of your choice as the connection's default, users can specify which dialect they would like to use on a query-by-query basis by including either `#standardSQL` or `#legacySQL` in the Query Editor.
+
+A Workspace admin can change the default SQL preference of a BigQuery connection at any time by following these steps:
+
+. Click the app switcher icon in the top navigation bar and select *{product}*.
+. Click on your name in the upper left corner of the window.
+. Click *Workspace Settings*.
+. Under the Data section, click *Connections*.
+. Click on the BigQuery connection you want to update.
+. In the upper right corner of the page, click on *Settings*.
+. Toggle standard SQL on or off.
+. Before your settings are updated, you will need to re-upload your service account's P12 key.
+Learn more about link:https://cloud.google.com/storage/docs/authentication#service_accounts[BigQuery service accounts and P12 keys,window=_blank].
+. Click *Save Changes*.
++
+IMPORTANT: Take care when changing the default SQL dialect for an existing connection, as any queries written using that connection that are written in the previous default SQL dialect may no longer work.
+
+===== Connecting to {product}
+
+. Return to {product}, and begin the process to xref:studio-connecting-mode-to-your-database.adoc[connect a BigQuery database].
+When you see the form to enter your BigQuery credentials, first enter a name for the new database connection.
+. In the *Project ID* field, enter the BigQuery project ID.
+It can be found in the URL of your Google Developers Console.
+The URL should be structured like this: `+https://console.developers.google.com/apis/library?project=MY_PROJECT_ID+`.
+. In the *Service Account Email Address* field, add your service account's email address that you noted in step 4.
+. Under the *Key* field, click *Choose File* and select the private key file you downloaded in step 3.
+. Click *Connect* to complete the connection.
+
+===== Use BigQuery to query Google Sheets
+
+You can use {product} to query Google Sheets in BigQuery.
+The first step, enabling your Google Drive API, only needs to be done once.
+
+. Enable Google Drive API.
++
+Navigate to the link:https://console.developers.google.com/[Google Developer Console,window=_blank] and select your project from the project dropdown menu.
+From the left menu, click on *Library*.
+Under *Google Apps API*, click on *Drive API* to enable the API from that page.
+
+. Create a table in BigQuery from your Google Sheet.
++
+Go to the link:https://bigquery.cloud.google.com/[BigQuery Web UI,window=_blank].
+In the navigation, hover over a schema name and click the down arrow icon next to the name.
+Choose *Create new table*.
++
+[.bordered]
+image::bigquery-google-sheets-1.png[GoogleSheets]
++
+Select *Google Drive* for the new table's location and paste the Google Sheet URL (not the shared link, but the actual URL you use to view the Sheet) into this field.
+Choose *Google Sheets* as the Format.
+Then add all the column names and types from your Google Sheet under *Schema*.
+Click *Create Table* when ready.
++
+[.bordered]
+image::bigquery-google-sheets-2.png[GoogleSheets]
+
+. Enable Google Sheets for {product} Use.
+ ** For {product} to query your new table, share your Google Sheet with the service account email address you used to connect {product} to BigQuery.
+You can also share folders in your drive with this email address, which will allow {product} to query every sheet in that folder.
+ ** To get your service account email address, go to your link:https://console.cloud.google.com/[Google Cloud Console,window=_blank], switch to your Project, and click on *Service Accounts*.
+Copy the service account email address you used to connect {product} to BigQuery.
+ ** To share a sheet or folder, click *Share* on the Google Sheet or in the folder, and paste the service account email address into the Share email field.
+ ** Note that BigQuery schemas don't refresh automatically in {product}.
+To see this table appear in your schema browser, go to Workspace Settings and click *Connections* under the Data section.
+Choose your BigQuery connection, and click the green *Refresh* button in the upper right corner to update the schema browser in {product}.
+
+[#hive]
+==== Hive
+
+===== Supported JDBC drivers and known issues
+
+|===
+| Driver | Driver Release Date | {product} Removal Date
+
+| (Recommended) Simba v 2.6.17.1020
+| 12/24/2021
+|
+
+| Simba v 2.6.14.1017
+| 12/3/2020
+|
+
+| Simba v 2.6.12.1015
+| 9/4/2020
+|
+|===
+
+The following are known issues with the current supported drivers.
+{product} continues to advocate on our customers' behalf for vendors and open-source communities to resolve these issues.
+
+|===
+| Driver | Known Issue | Further Details
+
+| Simba v 2.6.14.1017
+| Deprecated Versions
+| This driver removes support for Hive versions earlier than 1.0.0.
+|===
+
+[#impala]
+==== Impala
+
+===== Supported JDBC drivers and known issues
+
+|===
+| Driver | Driver Release Date | {product} Removal Date
+
+| (Recommended) Simba v 2.6.21.1025
+| 12/31/2020
+|
+
+| Simba v 2.6.18.1021
+| 9/2/2020
+|
+|===
+
+_{product} recommends connecting via the Simba Impala driver because it is the official driver endorsed by Cloudera._
+
+Previously, {product}'s connections flow messaged drivers as versions of Impala even though {product} connected to Impala using Hive drivers according to a compatibility matrix.
+The Impala server versions are noted in the table above as parenthetical notes.
+
+|===
+| Driver | Known Issue | Further Details
+
+| Simba v 2.6.18.1021
+| Leading white space in Queries
+| When attempting to run a query that begins with a space, the driver will fail to execute the query and will return an empty result set with an error.
+In the {product} UI, users will see "`Sorry, your query was successful, but we ran into problems displaying the data.`"
+|===
+
+[#looker-sql]
+==== Looker SQL
+
+===== Supported JDBC drivers and known issues
+
+|===
+| Driver | Driver Release Date | {product} Removal Date
+
+| (Recommended) Avatica Looker version 1.23.4
+| 9/20/2023
+|
+|===
+
+For known limitations, see link:https://cloud.google.com/looker/docs/sql-interface#lookml_limitations[Looker's documentation,window=_blank].
+
+===== Connecting to {product}
+
+You will also need the following to set up the connection in {product}:
+
+* Host: The url of your Looker instance (for example,
+test123.looker.com).
+* Username: The Client ID portion of the link:https://cloud.google.com/looker/docs/admin-panel-users-users#api_keys[Looker API key,window=_blank].
+* Password: The Client Secret portion of the Looker API key.
+
+Start by xref:studio-connecting-mode-to-your-database.adoc[connecting a database].
+
+From the dropdown, select *Looker SQL*.
+
+===== Writing Looker SQL queries in {product}
+
+To write a new Looker SQL query, *navigate to the SQL editor* and select your Looker Open SQL connection from the *database dropdown*.
+
+By default, this connection will surface all available schemas (LookML Models) and tables (Explores). *To reference a field within your query, use the following syntax:*
+
+Note to use backticks around schema, table, and column identifiers.
+Wrap any LookML measures in the special function `AGGREGATE()`, whether it is in a `SELECT` clause, a `HAVING` clause, or an `ORDER BY` clause.
+You cannot use LookML measures in a `GROUP BY` clause.
+
+[source]
+----
+SELECT `view.field`
+  FROM `model`.`explore`
+  LIMIT 10;
+----
+
+[source]
+----
+SELECT `customers.state`, `customers.city`,
+  AGGREGATE(`orders.total_amount`)
+FROM `ecommerce`.`orders`
+GROUP BY `customers.state`, `customers.city`
+HAVING AGGREGATE(`orders.count`) > 10
+ORDER BY 3 DESC LIMIT 5;
+----
+
+[#microsoft-sql-server]
+==== Microsoft SQL Server
+
+*Additionally supports:* _Azure SQL Database, Azure Synapse SQL_
+
+===== Supported JDBC drivers and known issues
+
+|===
+| Driver | Driver Release Date | {product} Removal Date
+
+| (Recommended) Microsoft v 9.4.1
+| 12/7/2021
+|
+
+| Microsoft v 9.2.1
+| 3/2/2021
+|
+
+| Microsoft v 8.2.2
+| 3/24/2020
+|
+|===
+
+There are no known issues for this driver.
+
+===== Database configuration instructions
+
+[#azure-sql-database]
+====== Azure SQL Database
+
+To connect your Microsoft Azure SQL instance, you must grant {product} access to your database.
+
+. Log into your link:https://manage.windowsazure.com/[Azure account,window=_blank] and select *SQL Databases* from the left navigation.
+. Select the SQL database you would like to connect. +
+image:azure-select-db.png[Azure SQL]
+. Click the Dashboard link at the top of the page and click *Manage Allowed IP Addresses*. +
+image:azure-manage-ip-button.png[Azure SQL]
+. Add a new rule for {product}'s IP address using the following information:
+
+ ** Rule Name: Mode 1
+ ** Start IP Address: `54.68.30.98`
+ ** End IP Address: `54.68.30.98`  +
+image:azure-mode-first-ip.png[Azure SQL]
+
+. Add a rule for the remaining seven {product} IP addresses:
+
+ ** `54.68.45.3`
+ ** `34.209.23.118`
+ ** `54.188.241.100`
+ ** `52.43.195.103`
+ ** `3.224.146.111`
+ ** `54.221.238.89`
+ ** `52.20.173.236`
+
++
+[.bordered]
+image::azure-mode-all-ips.png[Azure SQL]
+
+. Click *Save* at the bottom of the screen.
++
+[.bordered]
+image::azure-save.png[Azure SQL]
+
+// #### MemSQL
+
+[#mysql]
+==== MySQL
+
+*Additionally supports:* _Amazon Aurora MySQL, MariaDB_
+
+===== Supported JDBC drivers and known issues
+
+|===
+| Driver | Driver Release Date | {product} Removal Date
+
+| (Recommended) MySQL Connector/J 8.0.33
+| 4/18/2023
+|
+
+| MySQL Connector/J 8.0.28
+| 1/18/2022
+|
+
+| MySQL Connector/J 8.0.26
+| 7/20/2021
+|
+
+| MySQL Connector/J 8.0.23
+| 1/18/2021
+|
+
+| MySQL Connector/J 8.0.20
+| 4/27/2020
+|
+|===
+
+The following are known issues with the current supported drivers.
+{product} continues to advocate on our customers' behalf for vendors and open-source communities to resolve these issues.
+
+|===
+| Driver | Known Issue | Further Details
+
+| MySQL Connector/J 8.0.28
+| Removal of TLS v1 and v1.1 support
+| Connections should be made using the TLSv1.2 and TLSv1.3 protocols, which are more secure.
+
+| MySQL Connector/J 8.0.20
+| Server Timezone Specification is required
+a| Customers without a specified Server Timezone for their databases will see queries fail if any of the time zones (application/database servers) are not in the format `UTC+xx` or `GMT+xx`. +
+Queries will fail with the following error: `java.sql.SQLException: The server time zone value 'PDT' is unrecognized or represents more than one time zone. You must configure either the server or JDBC driver (via the 'serverTimezone' configuration property) to use a more specific time zone value if you want to utilize time zone support.` +
+*Note that the error is directly from the JDBC driver*.
+At this time, {product} does not support customers setting additional configuration properties (such as the suggested 'serverTimezone' property) via the JDBC driver. +
+More details in link:https://stackoverflow.com/questions/26515700/mysql-jdbc-driver-5-1-33-time-zone-issue[this StackOverflow thread,window=_blank].
+|===
+
+[#oracle]
+==== Oracle
+
+*Additionally supports:* _Oracle Autonomous Database_
+
+===== Supported JDBC drivers and known issues
+
+|===
+| Driver | Driver Release Date | {product} Removal Date
+
+| (Recommended) Oracle v 21.1
+| 1/14/2021
+|
+
+| Oracle v 19.11
+| 6/4/2021
+|
+
+| Oracle v 19.7
+| 4/1/2019
+|
+|===
+
+There are no known issues for these drivers.
+
+===== Database configuration instructions
+
+====== Oracle Autonomous Database (Public Endpoint)
+
+. Navigate to your link:https://cloud.oracle.com/db/adb[Oracle Cloud Autonomous Databases page,window=_blank] and click on your instance. +
+image:oadb-main.png[Oracle Autonomous Main]
+. Click on *DB Connection*. +
+image:oadb-dbconnection.png[Oracle Autonomous DB Connection]
+. Click on *Download Wallet* to retrieve the zip file to upload to {product} (instance wallet contains credentials for single DB and regional contains all DBs in that region). +
+image:oadb-wallet.png[Oracle Autonomous Wallet]
+. Scroll down to see the Database Service (TNS) Names to copy into {product}.
+It is usually the database name + "`_`" + low, medium or high.
+These predefined names indicate the amount of resources to each SQL statement;
+high results in the highest performance, but supports only a few concurrent queries.
+To restrict access to certain database service names, you can delete the entries from the tnsnames.ora file in the wallet. +
+image:oadb-tnsname.png[Oracle Autonomous TNS Name]
+
+====== Oracle Autonomous Database (Private Endpoint)
+
+NOTE: mTLS requirement must be relaxed link:https://docs.oracle.com/en/cloud/paas/autonomous-database/adbsa/support-tls-mtls-authentication.html#GUID-6A34B30A-3692-4D1F-8458-FD8F32736199[to allow for TLS,window=_blank] (default for ADB is to require mTLS).
+
+. Navigate to your link:https://cloud.oracle.com/db/adb[Oracle Cloud Autonomous Databases page,window=_blank] and click on your instance. +
+image:oadb-main.png[Oracle Autonomous Main]
+. Click on *DB Connection*. +
+image:oadb-dbconnection.png[Oracle Autonomous DB Connection]
+. Scroll down to select the Connection string to the desired TNS name to copy into {product}. +
+image:oadb-connectionstring.png[Oracle Autonomous TNS Name]
+
+[#postgresql]
+==== PostgreSQL
+
+*Additionally supports:* _Amazon Aurora PostgreSQL, HeapSQL, Timescale, Citus_
+
+===== Supported JDBC drivers and known issues
+
+|===
+| Driver | Driver Release Date | {product} Removal Date
+
+| (Recommended) PostgreSQL v 42.6.0
+| 3/18/2023
+|
+
+| PostgreSQL v 42.3.1
+| 2/15/2022
+|
+
+| PostgreSQL v 42.2.23
+| 7/6/2021
+|
+
+| PostgreSQL v 42.2.19
+| 2/18/2021
+|
+
+| PostgreSQL v 42.2.14
+| 6/4/2020
+|
+|===
+
+There are no known issues with this driver.
+
+===== Database configuration instructions
+
+====== HeapSQL
+
+Once you've signed up for Heap and enabled Heap SQL, your Customer Success Manager will provide you with your Heap credentials for connecting to your database.
+If you need your Heap credentials, please email link:mailto:support@heapanalytics.com[support@heapanalytics.com,window=_blank] for help.
+
+Once you have your credentials, follow the steps below to connect {product}:
+
+. Log in to {product} and follow to steps to xref:studio-connecting-mode-to-your-database.adoc#direct-connect[connect a database to {product}].
+. Select Heap from the list of databases.
+. Enter your Heap credentials and click *Connect*.
+You'll land on a page that displays your database schema.
+. Click *New Query* in the top navigation to start writing queries.
+
+[#presto]
+==== Presto
+
+*Additionally supports:* _PrestoDB_
+
+{product} has separated out Trino and Starburst as two new connectors.
+
+===== Supported JDBC drivers and known issues
+
+|===
+| Driver | Driver Release Date | {product} Removal Date
+
+| (Experimental) PrestoDB v 0.273.3
+| 6/14/2022
+|
+
+| Trino v 364
+| 11/1/2021
+|
+
+| Trino v 356
+| 5/1/2021
+|
+
+| Trino v 350
+| 12/18/2021
+|
+
+| PrestoSQL v 338
+| 8/31/2020
+|
+|===
+
+There are no known issues for these drivers.
+
+[#snowflake]
+==== Snowflake
+
+===== Supported JDBC drivers and known issues
+
+|===
+| Driver | Driver Release Date | {product} Removal Date
+
+| (Recommended) Snowflake v 3.13.29
+| 3/17/2023
+|
+
+| Snowflake v 3.13.27
+| 1/30/2023
+|
+
+| Snowflake v 3.13.14
+| 1/21/2022
+|
+
+| Snowflake v 3.13.6
+| 7/19/2021
+|
+
+| Snowflake v 3.13.1
+| 3/1/2021
+|
+|===
+
+The following are known issues with the current supported drivers.
+{product} continues to advocate on our customers' behalf for vendors and open-source communities to resolve these issues.
+
+|===
+| Driver | Known Issue | Further Details
+
+| All
+| Date functions not displaying correctly
+| Date functions like DATE_TRUNC do not work as expected due to {product}'s results formatter.
+Workaround is to use a function to convert the date to string.
+
+| Snowflake v 3.13.1
+| Timestamps with timezone are not supported
+a| {product} does not display timestamp values with the timezone.
+Instead, convert all timestamps to one timezone for simplicity.
++++<pre>+++SELECT current_timestamp()  AS Date, + cast(convert_timezone('US/Eastern', Date) AS datetime) EST_date;+++</pre>+++
+|===
+
+====== Connecting to {product} via key pair authentication
+
+Please follow the link:https://docs.snowflake.com/en/user-guide/key-pair-auth#configuring-key-pair-authentication[Snowflake documentation,window=_blank] for configuring key pair authentication.
+
+. Generate the private key.
+There is the option to generate encrypted or unencrypted private keys.
+Snowflake recommends encrypting with a passphrase to protect the private key.
+. Generate the public key by referencing the private key and assign the public key to the Snowflake user that will be used to access {product}.
+. Log in to {product} and follow to steps to xref:studio-connecting-mode-to-your-database.adoc#direct-connect[connect a database to {product}].
+. Select *Snowflake* from the list of databases.
+. Select Authentication method: *Key pair* in the {product} connection form.
+. Enter the username of the assigned Snowflake user, upload the private key with a p8 file extension, and include the passphrase if the private key was encrypted.
+. Click *Connect*.
+You will land on a page that displays your database schema.
+
+[#starburst]
+==== Starburst
+
+===== Supported JDBC drivers and known issues
+
+|===
+| Driver | Driver Release Date | {product} Removal Date
+
+| (Recommended) Trino v 413
+| 4/12/2023
+|
+
+| Trino v 364
+| 11/1/2021
+|
+
+| Trino v 356
+| 5/1/2021
+|
+|===
+
+There are no known issues for these drivers.
+
+[#trino]
+==== Trino
+
+===== Supported JDBC drivers and known issues
+
+|===
+| Driver | Driver Release Date | {product} Removal Date
+
+| (Recommended) Trino v 413
+| 4/12/2023
+|
+
+| Trino v 364
+| 11/1/2021
+|
+
+| Trino v 356
+| 5/1/2021
+|
+|===
+
+There are no known issues for these drivers.
+
+// #### SQL Server
+
+[#treasure-data]
+==== Treasure Data
+
+===== Supported JDBC drivers and known issues
+
+|===
+| Driver | Driver Release Date | {product} Removal Date
+
+| PrestoDB v 0.208
+| 8/8/2018
+|
+|===
+
+There are no known issues with this driver.
+
+===== Database configuration instructions
+
+Please follow the steps outlined link:https://docs.treasuredata.com/display/public/INT/Mode+Analytics+Export+Integration[in the Treasure Data documentation,window=_blank] to connect Treasure Data to {product}.
+
+If you need help finding your database credentials, please contact your Treasure Data account manager at link:mailto:info@treasure-data.com[info@treasure-data.com,window=_blank].
+
+[#vertica]
+==== Vertica
+
+===== Supported JDBC drivers and known issues
+
+|===
+| Driver | Driver Release Date | {product} Removal Date
+
+| (Recommended) Vertica v 10.1.1-0
+| 7/13/2021
+|
+
+| Vertica v 10.0.0-0
+| 8/19/2020
+|
+
+| Vertica v 9.3.0-0
+| 10/14/2019
+|
+|===
+
+There are no known issues with this driver.
+
+=== Cloud environments
+
+[#amazon-web-services]
+==== Amazon Web Services
+
+===== Overview
+
+We have two ways of connecting to your RDS instance depending on your AWS settings.
+If your instance is publicly accessible, then {product} can connect directly to it.
+For databases that are not accessible, you can use the xref:studio-connecting-mode-to-your-database.adoc#bridge[Bridge connector].
+We'll start by determining if your database is accessible to us.
+
+===== Accessibility
+
+. Navigate to your link:https://console.aws.amazon.com/rds/home#dbinstances:[RDS Instance Console,window=_blank].
+. Click the arrow and then magnifying glass to view the details of the instance that you want to connect.
++
+[.bordered]
+image::rds-select-instance-201507.png[Amazon RDS Console]
+
+. Look under *Security and Network*.
+Your instance is in a VPC if there's an entry labeled VPC.
+It is typically found below _Availability Zone_ and above _Security Groups_.
+If you don't have an entry here, then your instance is not in a VPC, and you can jump to the *Security Groups* section below.
++
+[.bordered]
+image::rds-with-a-vpc-201507.png[RDS with a VPC]
+
+. Instances in VPCs can be public or private.
+We can find out by looking under *Security and Network* again.
+This time for an entry labeled _Publicly Accessible_.
+If it is followed by a _Yes_, then you can jump to the *Security Groups* section below.
++
+[.bordered]
+image::rds-with-a-public-vpc-201507.png[RDS on a public VPC]
+
+. To connect to instances in a private VPC, you'll need to install our xref:studio-connecting-mode-to-your-database.adoc#bridge[Bridge connector].
+
+===== Security groups
+
+All connections from {product} will come from one of the eight IP addresses below.
+In most cases, you'll need to add these addresses to your RDS instance's Security Group.
+We've broken the steps down into two sections: VPC and No VPC.
+Security Groups in a VPC are managed the same between EC2 and RDS.
+RDS instances outside of a VPC have a different process.
+
+* `54.68.30.98/32`
+* `54.68.45.3/32`
+* `34.209.23.118/32`
+* `54.188.241.100/32`
+* `52.43.195.103/32`
+* `3.224.146.111/32`
+* `54.221.238.89/32`
+* `52.20.173.236/32`
+
+===== VPC
+
+. Under *Security and Network*, click the security group name.
++
+[.bordered]
+image::rds-vpc-security-group-201507.png[Amazon RDS]
+
+. A new tab will be opened.
+Click on the *Inbound* tab and then *Edit*.
++
+[.bordered]
+image::rds-vpc-security-group-edit-201507.png[Amazon RDS]
+
+. Find the RDS type that matches your instance (for example, PostgreSQL), enter each of our addresses, and then click *Save*.
++
+[.bordered]
+image::rds-vpc-security-group-addresses-201507.png[Amazon RDS]
+
+===== No VPC
+
+. Under *Security and Network*, click the security group to which that database belongs.
++
+[.bordered]
+image::rds-security-group.png[Amazon RDS]
+
+. At the bottom of the page, highlight the *Connection Type* selector and choose *CIDR/IP*.
++
+[.bordered]
+image::rds-connection-type.png[Amazon RDS]
+
+. In the *CIDR/IP to Authorize* field, paste address: `54.68.30.98/32`.
++
+[.bordered]
+image::rds-cidr-ip.png[Amazon RDS]
+
+. Click the blue *Authorize* button.
+. Repeat steps 1-4 for each of the addresses listed above.
+
+[#faqs]
+=== FAQs
+
+[discrete]
+==== *Q: How to import {product} results into a Google Sheet*
+
+While we currently do not support the ability to natively export or import data to and from a Google Sheet, we do have a step-by-step <<google-bigquery,guide on how to query Google Sheets using BigQuery in {product}>>.
+You can also follow the instructions below for a custom way to import data from an {product} report to a Google Sheet programmatically.
+
+*To enable this feature in a Google Sheet, you can begin by following these steps:*
+
+. Go to the {product} report and click *View Details*.
+. Click on the query on the left to access the query token in the URL.
+. Copy the query token from the URL `/queries/[QUERY_TOKEN]`.
+. Save the formula below somewhere safe because we will need to use it on our final step.
+
+`+=importModeResult("https://app.mode.com/[WORKSPACE]/reports/[REPORT_TOKEN]/queries/[QUERY_TOKEN]")+`
+
+In the formula above, please be sure to replace "WORKSPACE" with your workspace name as shown in any report URL, "REPORT_TOKEN" with the report token available in the URL, and "QUERY_TOKEN" with the query token that you just copied.
+
+This formula will import the data from the {product} query into the Google Sheet once the following steps are completed.
+It will automatically use the last successful run of the query.
+
+*Setup*
+
+* From a Google Sheet, click *Extensions \-> Apps Script* from the top menu bar.
+* In the code editor, overwrite the existing code and paste the *importModeResults* function below ⬇️ into the code editor.
+Then, save it via the disk file icon.
++
+[source,Javascript]
+----
+function importModeResult(url) {
+
+var USERNAME = PropertiesService.getScriptProperties().getProperty('username');
+var PASSWORD = PropertiesService.getScriptProperties().getProperty('password');
+
+var token = getTokenFromUrl(url);
+var account = getAccountFromUrl(url);
+var query = getQueryFromUrl(url);
+
+var options = {
+  headers: { 'Authorization': 'Basic ' + Utilities.base64Encode(USERNAME + ':' + PASSWORD, Utilities.Charset.UTF_8) }
+};
+
+var reportUrl = 'https://app.mode.com/api/' + account + '/reports/' + token;
+var reportResponse = UrlFetchApp.fetch(reportUrl, options);
+var reportJSON = JSON.parse(reportResponse);
+
+var lastRunPath = reportJSON['_links']['last_successful_run']['href'];
+var queryRunUrl = 'https://app.mode.com' + lastRunPath + '/query_runs'
+var queryRunResponse = UrlFetchApp.fetch(queryRunUrl, options);
+var queryRunJSON = JSON.parse(queryRunResponse);
+
+var queryRuns = queryRunJSON['_embedded']['query_runs']
+
+queryRuns.forEach(function(q) {
+  if (q['query_token'] == query) {
+    resultPath = q['_links']['result']['href']
+  }
+})
+
+if (resultPath) {
+  var csvPath = 'https://app.mode.com' + resultPath + '/content.csv'
+  var csvResponse = UrlFetchApp.fetch(csvPath, options);
+  var csvTextRaw = csvResponse.getContentText();
+  var csvText = csvTextRaw.replace(/(["'])(?:(?=(\\?))\2[\s\S])*?\1/g, function(e){return e.replace(/\r?|\r/g, '') });
+
+  return Utilities.parseCsv(csvText)
+
+} else {
+  return 'Invalid URL!'
+}
+
+
+function getTokenFromUrl(url) {
+  return url.split('/reports/')[1].slice(0,12)
+}
+
+function getAccountFromUrl(url) {
+  return url.split('.com/')[1].split('/')[0]
+}
+
+function getQueryFromUrl(url) {
+  return url.split('/queries/')[1].slice(0,12)
+}
+}
+----
+
+* In the code editor, click the *gear icon \-> Project Settings* in the left-side menu, scroll down to the bottom, and click the *Add Script Property* tab.
+* Add a separate `username` and `password` property.
+The value of the username property should be an {product} API token.
+The value of the password property should be an {product} API secret.
+You can create a token and secret in the API Tokens tab of your {product} settings page.
+Here's our documentation on xref:studio-api-reference.adoc#generating-api-tokens[how to generate API tokens].
+* Once you save these properties, navigate back to your Google Sheet and add the `importModeResult` formula into a cell in your Google Sheet.
+This will populate the query results.
+
+[discrete]
+==== *Q: How to upload data via CSV?*
+
+Currently, we do not offer CSV uploads to private connections.
+{product} only supports uploading CSVs to our public data warehouse, but please note that this data will be publicly accessible.
+You can learn more about uploading CSV to the xref:studio-managing-database-connections.adoc#uploading-data[public warehouse here].

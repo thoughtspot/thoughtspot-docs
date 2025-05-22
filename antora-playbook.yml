@@ -1,19 +1,21 @@
 site:
-  title: ThoughtSpot Software
-  url: http://docs.thoughtspot.com/thoughtspot-docs/
+  title: ThoughtSpot Cloud
+  url: https://analyst-studio-preview.netlify.app
+  start_page: studio::index.adoc
 content:
   sources:
   # embedding empty credentials in the URL disables the Edit this Page link for any page created from this repository
-  - url: .
-    branches: HEAD
-    start_path: home
   - url: git@github.com:thoughtspot/thoughtspot-docs.git
-    branches: ['6.1', '6.2', '6.3']
-    start_paths:
-      - software/
+    # Cloud docs branches
+    branches: [ 'mode-a-studio']
+    start_path: studio/
+urls:
+  html_extension_style: drop
+  latest_version_segment_strategy: redirect:to
+  latest_version_segment: latest
 ui:
   bundle:
-    url: build/ui-bundle.zip
+    url: ui-bundle/ui2-bundle.zip
   supplemental_files:
   - path: .nojekyll
   - path: ui.yml
@@ -21,14 +23,19 @@ ui:
     snapshot: true
 asciidoc:
   attributes:
-    software: true
-    cloud: false
+    page-company: ThoughtSpot
     tabs: tabs
+    product: Analyst Studio
+    support-url: https://community.thoughtspot.com/customers/s/contactsupport[ThoughtSpot Support^]
+    seekwell: SeekWell
+    cl-subscription-agreement: https://www.thoughtspot.com/legal/thoughtspot-cloud-subscription-agreement[subscription agreement^]
   extensions:
-    - "@djencks/asciidoctor-tabset-block"
+    - '@asciidoctor/tabs'
 
 output:
   clean: true
-  dir: build/software
+  dir: build
 runtime:
   fetch: true
+  log:
+    level: error

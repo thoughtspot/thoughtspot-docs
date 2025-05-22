@@ -1,0 +1,147 @@
+= Webhooks
+:categories: ["Integrations"]
+:categories_weight: 5
+:date: 2018-05-17
+:description: An overview of webhooks and how to set them up in Analyst Studio.
+:ogdescription: An overview of webhooks and how to set them up in Analyst Studio.
+:path: /articles/webhooks
+:versions: ["business"]
+:product: Analyst Studio
+
+== Overview
+
+link:https://en.wikipedia.org/wiki/Webhook[Webhooks,window=_blank] let other applications subscribe to be notified when certain events happen in your {product} Workspace.
+You can use webhooks to do automate workflows and trigger other applications.
+For example:
+
+* Trigger a Zap in link:https://zapier.com/[Zapier,window=_blank].
+* Send a customized Slack alert when an {product} Report finishes running.
+* Log usage of your {product} Workspace.
+
+When you set up a webhook, {product} will send a `POST` message to a URL of your choice in real-time.
+The message payload contains the name of the event and a link to the API endpoint associated with that event.
+{product}'s webhooks are designed to be light-weight and secure, since the payload itself does not contain sensitive information.
+
+We'll periodically add support for new webhook events.
+If you have ideas for new events you'd like to see in {product}, please xref:studio-contact-us.adoc[let our success team know].
+You can learn more about what's possible by viewing sample code in our link:https://github.com/mode/webhooks-examples[webhooks example repo,window=_blank] and refer to {product}'s link:https://mode.com/developer/api-reference/introduction/[API documentation,window=_blank].
+
+== Create and subscribe to a webhook
+
+. On the top left of {product} home page, click on your account and select *Workspace Settings*.
+. Select *Webhooks* from the left navigation panel and then click *Add New Webhook*.
+. Add a Target URL, Description, and an event to subscribe to.
+. When you click *Create Webhook*, {product} will send a test event to the target URL to make sure the response is successful.
+
+NOTE: Currently, only admins can enable webhooks. Non-admins will need to contact a workspace admin to initialize Webhooks. Once the webhooks are enabled, any user is able to construct logic that utilizes the data sent by these webhooks to trigger other functions.
+
+== Event types and payload structures
+
+Each subscription will send a simple `POST` message to the subscribed URL containing a JSON object with information about the event.
+The body of each `POST` message is succinct, but varies according to the event type.
+You can access the included URL to learn more about the included resource.
+
+=== A report starts running
+
+[source,json]
+----
+{
+  "event": "report_run_started",
+  "report_run_url": "https://modeanalytics.com/api/[ORG_TOKEN]/reports/[REPORT_TOKEN]/runs/[RUN_TOKEN]"
+}
+----
+
+=== A database is connected
+
+[source,json]
+----
+{
+  "event": "new_database_connection",
+  "connection_url": "https://modeanalytics.com/api/[ORG_TOKEN]/data_sources/[DATA_SOURCE_TOKEN]"
+}
+----
+
+=== A definition is created
+
+[source,json]
+----
+{
+  "event": "definition_created",
+  "definition_url": "https://modeanalytics.com/api/[ORG_TOKEN]/definitions/[DEFINITION_TOKEN]"
+}
+----
+
+=== A definition is updated
+
+[source,json]
+----
+{
+  "event": "definition_updated",
+  "definition_url": "https://modeanalytics.com/api/[ORG_TOKEN]/definitions/[DEFINITION_TOKEN]"
+}
+----
+
+=== Someone joins your Workspace
+
+[source,json]
+----
+{
+  "event": "member_joined_organization",
+  "member_url": "https://modeanalytics.com/api/[ORG_TOKEN]/memberships/[MEMBERSHIP_TOKEN]?embed[user]=1"
+}
+----
+
+=== Someone was removed from your Workspace
+
+[source,json]
+----
+{
+  "event": "member_removed_from_organization",
+  "member_url": "https://modeanalytics.com/api/[ORG_TOKEN]/memberships/[MEMBERSHIP_TOKEN]?embed[user]=1"
+}
+----
+
+=== A new Report is created
+
+[source,json]
+----
+{
+  "event": "report_created",
+  "report_run_url": "https://modeanalytics.com/api/[ORG_TOKEN]/reports/[REPORT_TOKEN]"
+}
+----
+
+=== A Report finishes running
+
+[source,json]
+----
+{
+  "event": "report_run_completed",
+  "report_run_url": "https://modeanalytics.com/api/[ORG_TOKEN]/reports/[REPORT_TOKEN]/runs/[RUN_TOKEN]"
+}
+----
+
+=== A Report is deleted
+
+[source,json]
+----
+{
+  "event": "report_deleted",
+  "report_name": "[REPORT_NAME]",
+  "report_token": "[REPORT_TOKEN]"
+}
+----
+
+[#faqs]
+== FAQs
+
+[discrete]
+=== *Q: How to set up alerts with Webhooks?*
+
+A convenient way to trigger alerts is by utilizing {product}'s Webhooks feature.
+This allows you to set up a webhook that sends notifications when a Report or query finishes running, as outlined in this guide.
+
+Additionally, you can review the data returned from the run, and if a specific value exceeds a set threshold, an alert can be sent to Slack.
+This link:https://github.com/mode/webhooks-examples/blob/master/examples/aws_lambda/post_to_slack.py[example Python script,window=_blank] demonstrates this process.
+The logic is located within the `post_to_slack.py` file, specifically within the `report_run_completed_message` function.
+Feel free to modify the logic as necessary for your specific use case.

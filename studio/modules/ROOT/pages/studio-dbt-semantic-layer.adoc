@@ -1,0 +1,101 @@
+= Semantic layer integrations
+:categories: ["Integrations"]
+:categories_weight: 5
+:date: 2022-11-01
+:description: Analyst Studio’s integration with semantic layers extends metrics defined in dbt and Looker that you can leverage for code-free exploration and reporting.
+:hide_from_nav: false
+:ogdescription: Analyst Studio’s integration with semantic layers extends metrics defined in dbt and Looker so business teams can leverage them for code-free exploration and reporting
+:path: /articles/semantic-layer-integrations
+:product: Analyst Studio
+
+NOTE: {product} will be following dbt's lead in deprecating our integration to the first version of the semantic layer. link:https://mode.com/integrations/get-dbt[Learn about our integration with dbt's Semantic Layer,window=_blank] and please use the xref:studio-supported-databases.adoc#dbt-semantic-layer[new connector].
+
+== Set up a data source connection
+
+To get started, first xref:studio-supported-databases.adoc[set up a new data source connection to the semantic layer].
+
+For the *dbt Semantic Layer* connection in {product}, you will need the following:
+
+* *dbt Cloud Hostname*: The hostname for the instance of dbt Cloud.
+* *Environment ID*: The unique identifier for a dbt environment in the dbt Cloud URL, when you navigate to that environment under Deployments.
+* *Service Token*: Service Tokens for dbt Cloud can be created in dbt account settings, and must have at least "Semantic Layer Only" permissions.
+
+For the *Looker SQL* connection in {product}, leveraging Looker's Open SQL interface, you will need the following:
+
+* *Host*: The url of your Looker instance (for example, test123.looker.com).
+* *Username*: The Client ID portion of the link:https://cloud.google.com/looker/docs/admin-panel-users-users#api_keys[Looker API key,window=_blank].
+* *Password*: The Client Secret portion of the Looker API key.
+
+== Create a Semantic Layer Dataset
+
+Once you've connected your semantic layer, create a Dataset to enable end user visual exploration.
+Navigate to the plus button in the top right, and select *Make a reusable Dataset*.
+You'll be taken to a SQL editor interface.
+
+[.bordered]
+image::dbt-create-dataset.png[Create a dbt Semantic Layer Dataset]
+
+Once you've pulled in your data, you can add additional fields via calculated fields or add descriptions for the existing fields.
+link:https://mode.com/developer/api-reference/analytics/dataset-field-descriptions/[Check out {product}'s API endpoints for creating and updating field descriptions,window=_blank] to programmatically add and update descriptions from your semantic layer documentation.
+
+=== Write a dbt metrics query
+
+To write a new dbt metrics query, select your dbt Semantic Layer connection from the database dropdown in the right panel.
+This connection will surface all available metrics to query.
+To reference a metric within your query, use the following syntax:
+
+[source]
+----
+{% raw %}
+select * from {{
+	semantic_layer.metrics()
+}}
+{% endraw %}
+----
+
+NOTE: All queries need to be wrapped in `{% raw %} {% endraw %}` tags.
+
+link:https://docs.getdbt.com/docs/dbt-cloud-apis/sl-jdbc#querying-the-api-for-metric-values[For more information on how to query the dbt Semantic Layer, see dbt's documentation,window=_blank].
+
+=== Write a Looker SQL query
+
+To write a new Looker SQL query leveraging Looker's Open SQL interface, select your Looker SQL connection from the database dropdown in the right panel.
+This connection will surface all available Models and Explores to query.
+To reference a field within your query, use the following syntax:
+
+[source]
+----
+SELECT `view.field`
+  FROM `model`.`explore`
+  LIMIT 10;
+----
+
+[source]
+----
+SELECT `customers.state`, `customers.city`,
+  AGGREGATE(`orders.total_amount`)
+FROM `ecommerce`.`orders`
+GROUP BY `customers.state`, `customers.city`
+HAVING AGGREGATE(`orders.count`) > 10
+ORDER BY 3 DESC LIMIT 5;
+----
+
+NOTE: Use backticks around schema, table, and column identifiers. Wrap any LookML measures in the special function `AGGREGATE()` whether it is in a `SELECT` clause, a `HAVING` clause, or an `ORDER BY` clause. You cannot use LookML measures in a `GROUP BY` clause.
+
+link:https://cloud.google.com/looker/docs/sql-interface[More information on how to query using Looker's Open SQL interface, see Looker's documentation,window=_blank].
+
+== Share Semantic Layer Datasets
+
+To share Datasets created from the semantic layer, select the dropdown next to the Dataset name to rename the Dataset, set up a schedule, and publish the Dataset to a Collection.
+
+[.bordered]
+image::dbt-share-dataset.png[Share a dbt Semantic Layer Dataset]
+
+Select *Rename* to give the Dataset a name and description.
+Adding a name and description will ensure users can easily discover the Dataset and understand what data is included in the Dataset.
+
+Select *Schedule* to add a new schedule.
+Adding a schedule ensures metrics data is updated for the Dataset on a regular cadence, so users building on top of the Dataset get the freshest data.
+
+Select *Move to...* to move the Dataset into a Collection and make it discoverable to users.
+This will ensure users can find the Dataset when browsing or searching across {product}.

@@ -1,0 +1,212 @@
+= AI Assist
+:categories: ["Query and analyze data"]
+:categories_weight: 9
+:date: 2022-12-05
+:description: Generate SQL using AI assistance
+:ogdescription: Generate SQL using AI assistance
+:path: /articles/ai-assist
+:product: Analyst Studio
+
+== Overview
+
+{product}'s AI Assist helps analysts more efficiently write queries.
+With AI Assist enabled, you'll now see a pane appear to the right side of your SQL editor in both the Report and Dataset contexts.
+Once opened, you can use it to generate new SQL code on the fly for any warehouse you have *Query access* to.
+
+image::AI-assist-example.gif[AI Assist pane]
+
+=== How it works:
+
+* Write and run your SQL in the editor on the left as you would normally.
+* Incorporate natural language into your edits by adding a special AI comment type via the `--!` symbol combination.
+* When you're ready, generate new SQL on the right by clicking the Generate button (`Shift + Opt/Alt + N`).
++
+NOTE: When you generate SQL, {product} pulls the currently selected warehouse's name, column names, and data types for all tables explicitly referenced in your SQL, and sends them and your SQL edits to OpenAI for context. {product} does **not** share any sample column values.
+
+* Once the generated code returns, you can compare it with your original code, insert the SQL in place of your original edits (`Shift + Opt/Alt + I`), or copy and paste manually as needed.
+Alternatively, you can revise your edits on the left and regenerate.
+
+=== Integrating natural language into your edits
+
+We can think of natural language edits like a special AI comment.
+They can be used for AI placeholders and requests, but, similar to traditional SQL comments, will be ignored if the SQL is run.
+
+Let's use an example.
+Imagine we want to spin up a new query and lean on AI assistance to get going more quickly.
+We might start out with something like:
+
+[source]
+----
+SELECT  --!
+total sales by manager
+----
+
+"`Total sales by manager`" is written entirely in natural language.
+Notice we aren't specifying how to calculate total sales, or referring to a column name explicitly.
+These are aspects AI Assist will fill in on our behalf.
+
+Next, we'll add a `FROM` statement to provide some context about the data.
+
+[source]
+----
+SELECT --! total sales by manager
+FROM mode.dunder_mifflin_paper_sales ps
+----
+
+TIP: Always include at least one valid table name in your edits to ensure AI Assist has enough context about what data you'd like to query.
+
+We'll also join in a second table, but let's be a bit vague about the join key.
+Both of these tables include a column for account managers, but we'll look to AI Assist to define the join more explicitly.
+
+[source]
+----
+SELECT --! total sales by manager
+FROM mode.dunder_mifflin_paper_sales ps
+JOIN novaksam.dm_employees e ON --! account manager
+----
+
+Finally, let's add an `ORDER BY` and update the `SELECT` statement to describe a few of the columns we'd like to add from the second, joined table.
+Then, we'll click the generate button to initiate new, AI-generated SQL.
+
+[source]
+----
+SELECT --! total sales by manager, title, years at the company
+FROM mode.dunder_mifflin_paper_sales ps
+JOIN novaksam.dm_employees e ON --! account manager
+----
+
+[source]
+----
+ORDER BY --! best manager
+----
+
+After generating, here's what we get back from AI Assist.
+
+[source]
+----
+SELECT
+    e.account_manager,
+    e.title,
+    e.years_at_dunder_mifflin,
+    SUM(ps.price) AS total_sales
+FROM
+    mode.dunder_mifflin_paper_sales ps
+JOIN
+    novaksam.dm_employees e
+ON
+    ps.account_manager = e.account_manager
+GROUP BY
+    e.account_manager,
+    e.title,
+    e.years_at_dunder_mifflin
+ORDER BY
+    total_sales DESC;
+----
+
+Notice that the explicit column names, join, and sales calculation have all been completed, and that a `GROUP BY` clause has been added.
+We can insert this code to run the SQL and use the results.
+
+=== {product} AI Assist security
+
+Features of {product} AI Assist security, powered by OpenAI:
+
+* {product} leverages link:https://platform.openai.com/docs/api-reference/introduction[OpenAI's GPT API,window=_blank].
+* OpenAI complies with SOC2 Type II for data security and privacy.
+* {product} sends the query syntax along with the additional metadata of the currently selected warehouse name, table column names, and their data types as part of the GPT prompt in order to provide helpful, in-context responses.
+* OpenAI does not use this data or metadata to retrain the model.
+* {product} has a Data Privacy Agreement (DPA) with OpenAI, which protects the privacy of {product} customer metadata shared in the API request. +
+OpenAI does not retain any data sent by {product}.
+* {product} will retain the prompt and associated generation when users voluntarily submit feedback ("Feedback Data").
+Feedback Data is used exclusively for the purposes of improving the product, pursuant to {product}'s form Data Processing Agreement.
+* {product}'s AI Assist does not use ChatGPT.
+We use and test with GPT-3.5T and GPT-4T, also created by Open AI, because they are better suited for natural language translation to SQL.
+As the models progress, we will update the versions if they improve the performance of our features.
+
+=== Use case examples
+
+|===
+| Use case | Description | Example(s)
+
+| Write calculations
+| Describe a new metric or an update to an existing one, have AI Assist write the calculation.
+a| `SELECT --! total sales by rep` +
+`SUM(price) --! update to include discounts and shipping cost`
+
+| Complete join keys
+| Describe the data you want to join on, have AI Assist fill in the specifics.
+a| `JOIN dim.users` +
+`ON --! account rep`
+
+| Refine data scope
+| Describe how you want to limit your data, have AI define the `WHERE` clause.
+a| `--! exclude returns` +
+`WHERE --! email address contains thoughtspot`
+
+| Apply relative date ranges
+| Describe a date range, have AI complete the proper syntax.
+| `WHERE --! sale happened in the past 7 days`
+
+| Format columns with aliasing
+| Give an example of the formatting you'd like applied, have it do the rest.
+| `SELECT --! all fields in title case, ex order_id AS "Order ID"`
+
+| Define window functions
+| Describe functions like rate changes, have AI Assist convert it to proper SQL.
+| `--! add month over month growth by manager`
+
+| Fix broken SQL
+| Prompt AI Assist to fix syntax error and include the error message for context.
+a| `--! update code above to valid Postgres SQL` +
+`--! avoid this error message: "insert your error message here"`
+|===
+
+// [AI Assist use cases](/images/AI-assist-use_cases.png)
+
+=== FAQs
+
+[discrete]
+===== *Q: I don't see the AI Assist feature. How do I get access to it?*
+
+To ensure that we provide the best possible experience for our users, we are enabling AI Assist on an account-by-account basis, by request only.
+To determine if your organization is an ideal fit for this opportunity, we kindly link:https://mode.com/lp/ai-assist-signup-form[request that you fill out this form,window=_blank].
+The information you provide will help us tailor our support, understand your specific needs, and ensure that you receive the most benefit from AI Assist.
+
+[discrete]
+===== *Q: Do I have to know how to write SQL to use AI Assist?*
+
+Using AI Assist does not require you to write full SQL queries from scratch.
+The key requirement is to include the name of the table(s) you're working with in your edits.
+At its core, AI Assist was developed to accelerate the SQL writing process.
+One of the primary benefits of the workflow is the ability to integrate natural language seamlessly into SQL code you've already written to quickly iterate.
+But whether you're just starting out or you're an experienced SQL editor, AI Assist is here to streamline your workflow and assist in crafting proper SQL syntax with ease.
+
+[discrete]
+===== *Q: Does {product} use historical queries/data to train AI Assist?*
+
+No.
+{product} does not share any historical data with OpenAI, or use it to train AI Assist.
+The only code that's shared is code you specifically include in your prompt while generating new SQL, for ex.
+`“SELECT --!
+total sales by rep FROM dim.sales”`.
+
+When you click the generate button, {product} pulls the currently selected warehouse name, column names, and data types for all tables explicitly referenced in your SQL, and sends them and your SQL edits to OpenAI for context.
+{product} does not share any sample column values.
+
+[discrete]
+===== *Q: Can I use AI Assist to write liquid syntax/parameter form code or metrics SQL?*
+
+Currently, AI Assist only supports generating SQL syntax for common warehouse types.
+We don't recommend including liquid syntax or querying your dbt metrics connection while using AI Assist.
+
+[discrete]
+===== *Q: Can I reference Definitions in my SQL when using AI assist?*
+
+Though you can include Definitions in your edits, the code contained within a given Definition won't be included in the context that's sent to OpenAI or used to generate updated syntax.
+We don't recommend referencing Definitions while using AI assist.
+
+[discrete]
+===== *Q: Can I leave feedback on the SQL that's generated by AI Assist?*
+
+Yes, you can mark each generation returned by AI Assist as helpful or unhelpful by using the 👍👎 emojis.
+When you mark a generation as unhelpful, you'll also have the opportunity to provide additional feedback on what went wrong and what you were expecting.
+We'll use this signal to help improve the feature over time.

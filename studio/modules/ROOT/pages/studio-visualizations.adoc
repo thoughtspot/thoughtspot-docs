@@ -1,0 +1,677 @@
+= Visualizations
+:categories: ["Visualize and present data"]
+:categories_weight: 2
+:date: 2021-04-12
+:description: Visualize your data to gain insight.
+:ogdescription: Visualize your data to gain insight.
+:path: /articles/visualizations
+:product: Analyst Studio
+:jira: SCAL-224859
+
+== Overview
+
+After using SQL to gather, structure, and analyze all of the necessary data for your analysis, you can build visualizations on top of that data.
+{product} offers a number of options for building visualizations, including the ability to take your analysis even further using Python / R, or using any type of custom visualization using JavaScript (for example, link:https://d3js.org/[D3,window=_blank]).
+
+[#built-in-charts-and-tables]
+== Quick Charts
+
+Quick Charts are pre-defined templates to quickly create commonly-used chart types in data analysis.
+
+Quick Charts can be added to a Report by clicking the "New Chart" icon located above the query editor to select the desired chart.
+
+[.bordered]
+image::create-a-chart-1.png[Create a chart]
+
+An alternative is to locate the Dataset in the data panel to create a chart from and clicking the "+" button beneath it to select the desired chart.
+
+[.bordered]
+image::create-a-chart-2.png[Create a chart]
+
+{product} supports the following Quick Chart types:
+
+=== Bar and column charts
+
+Bar charts are useful for showing comparisons between categories of data, or for comparing changes for multiple groups over the same time period.
+
+* Stacked bar: Bars are stacked on top of each other, showcasing cumulative data for multiple categories.
+* 100% stacked bar: Bars are displayed as a percentage of the total, emphasizing the relative proportion of each category within the whole.
+* Grouped bar: Bars representing different categories will be displayed side by side, allowing easy visual comparison between groups.
+
+Bar charts require one of the following combinations of fields:
+
+* Exactly one field and one field on the X- and Y-axis and an optional field on color. +
+[.bordered]
+image:bar-chart-1.png[Bar chart]
+* Exactly one field on the X-axis and more than one field on the Y-axis. +
+[.bordered]
+image:bar-chart-2.png[Bar chart]
+
+Format options:
+
+* _Color formatting options_: Refer to the xref:studio-visual-explorer.adoc#building-a-simple-visualizaton[colors section].
+* _Swap axes_: X- and Y-axes can be swapped to create horizontal bar charts using the swap axes option on the toolbar.
++
+[.bordered]
+image::swap-axes.png[Swap axes]
+
+* _Quick sort options_: Quick sort options on the toolbar can be used to sort the chart in descending or ascending order.
++
+[.bordered]
+image::quick-sort-options.png[Quick sort options]
+
+* _Advanced sort options_: Refer to the xref:studio-visual-explorer.adoc#sorting[advanced sort options section].
+* _Table calculation options_: Refer to the xref:studio-visual-explorer.adoc#quick-table-calculations[table calculation options section].
+* _Display label_: The format panel located in the top right corner of the chart editor (see screenshot below) can be used to modify the names of fields in the chart.
+The display label specifically updates the field name within the chart, affecting the axis title, legend title, and tooltip.
+However, the axis title and legend title can be individually customized using the axis and legend title renaming options.
+It's important to note that the display labels are not reflected in CSV data exports or in the summary data displayed in the panel below the chart in the chart editor.
+* _Axes formatting options_: The format panel available in the top right corner of the chart editor (refer screenshot) can be used to update the axis title, toggle on/off axis title, toggle on/off bar labels, update axis label rotation angle, set the axis range, change format of axis labels, precision of axis labels, and axis scale type.
+* _Legend formatting options_: The format panel can be used to toggle on/off legend in the chart, toggle on/off legend title, adjust position of the legend, and update legend title.
++
+[.bordered]
+image::format_panel.png[Legend formatting options]
+
+==== Histograms
+
+Histograms categorize data into intervals, known as bins, and display the number of data points falling into each bin.
+Each bin represents a specific range of values.
+This distribution allows users to quickly observe the concentration or dispersion of data across the entire range.
+
+The histogram Quick Chart requires one field on the X-axis.
+
+image::histogram.gif[Histogram]
+
+Format options:
+
+* _Color formatting options_: Refer to the xref:studio-visual-explorer.adoc#building-a-simple-visualizaton[colors section].
+* _Axes formatting options_: The format panel available in the top right corner of the chart editor can be used to update the axis title, toggle on/off axis title, toggle on/off bar labels, update axis label rotation angle, set axis label type, change format of axis labels, precision of axis labels, and axis scale type.
+
+=== Line chart
+
+Line charts are useful for visualizing trends, highlighting patterns and time series analysis.
+They require one of the following combinations of fields:
+
+* Exactly one field on the X- and one field on the Y-axis and an optional field on color.
+* Exactly one field on X-axis and more than one field on the Y-axis.
+
+Format options:
+
+* _Color formatting options_: Refer to the xref:studio-visual-explorer.adoc#building-a-simple-visualizaton[colors section].
+* _Quick sort options_: Quick sort options on the toolbar can be used to sort the field by the field in either descending or ascending order.
+* _Advanced sort options_: Refer to the xref:studio-visual-explorer.adoc#sorting[advanced sort options section].
+* _Table calculation options_: Refer to the xref:studio-visual-explorer.adoc#quick-table-calculations[table calculation options section].
+* _Display label_: The format panel located in the top right corner of the chart editor can be used to modify the names of fields in the chart.
+The display label specifically updates the field name within the chart, affecting the axis title, legend title, and tooltip.
+However, the axis title and legend title can be individually customized using the axis and legend title renaming options.
+It's important to note that the display labels are not reflected in CSV data exports or in the summary data displayed in the panel below the chart in the chart editor.
+* _Axes formatting options_: The format panel available in the top right corner of the chart editor (refer screenshot) can be used to update the axis title, toggle on/off axis title, toggle on/off bar labels, update axis label rotation angle, set the axis range, change format of axis labels, precision of axis labels, and axis scale type.
+* _Legend formatting options_: The format panel can be used to toggle on/off legend in the chart, toggle on/off legend title, adjust position of the legend, and update legend title.
+
+=== Line + bar charts
+
+The combination of lines and bars in a single chart facilitates easy visual comparisons between different categories or groups of data.
+Bar charts are effective for comparing quantities, while line charts are helpful to visualize trends.
+
+Line + bar charts require exactly one field on the X-axis and two fields on the Y-axis.
+The first field on the Y-axis is represented by a bar (Y1 axis) and the second field on the Y-axis is represented by a line (Y2 axis).
+No additional field can be added to color.
+
+Format options:
+
+* _Quick sort options_: Quick sort options on the toolbar can be used to sort the field by the field in either descending or ascending order.
+* _Advanced sort options_: Refer to the xref:studio-visual-explorer.adoc#sorting[advanced sort options section].
+* _Table calculation options_: Refer to the xref:studio-visual-explorer.adoc#quick-table-calculations[table calculation options section].
+* _Display label_: The format panel located in the top right corner of the chart editor can be used to modify the names of fields in the chart.
+The display label specifically updates the field name within the chart, affecting the axis title, legend title, and tooltip.
+However, the axis title and legend title can be individually customized using the axis and legend title renaming options.
+It's important to note that the display labels are not reflected in CSV data exports or in the summary data displayed in the panel below the chart in the chart editor.
+* _Axes formatting options_: The format panel available in the top right corner of the chart editor (refer screenshot) can be used to update the axis title, toggle on/off axis title, toggle on/off bar labels, update axis label rotation angle, set the axis range, change format of axis labels, precision of axis labels, and axis scale type.
+* _Legend formatting options_: The format panel can be used to toggle on/off legend in the chart, toggle on/off legend title, adjust position of the legend, and update legend title.
+
+=== Area charts
+
+Area charts can effectively convey the distribution of data, allowing easy comparison of trends between different categories.
+In the 100% area chart, the area marks are displayed as a percentage of the total, emphasizing the relative proportion of each category within the whole.
+
+Area charts require one of the following combinations of fields:
+
+* Exactly one field on the X-axis and one field on the Y-axis and an optional field on color.
+* Exactly one field on the X-axis and more than one field on the Y-axis.
+
+Format options:
+
+* _Color formatting options_: Refer to the xref:studio-visual-explorer.adoc#building-a-simple-visualizaton[colors section].
+* _Quick sort options_: Quick sort options on the toolbar can be used to sort the field by the field in either descending or ascending order.
+* _Advanced sort options_: Refer to the xref:studio-visual-explorer.adoc#sorting[advanced sort options section].
+* _Table calculation options_: Refer to the xref:studio-visual-explorer.adoc#quick-table-calculations[table calculation options section].
+* _Display label_: The format panel located in the top right corner of the chart editor can be used to modify the names of fields in the chart.
+The display label specifically updates the field name within the chart, affecting the axis title, legend title, and tooltip.
+However, the axis title and legend title can be individually customized using the axis and legend title renaming options.
+It's important to note that the display labels are not reflected in CSV data exports or in the summary data displayed in the panel below the chart in the chart editor.
+* _Axes formatting options_: The format panel available in the top right corner of the chart editor (refer screenshot) can be used to update the axis title, toggle on/off axis title, toggle on/off bar labels, update axis label rotation angle, set the axis range, change format of axis labels, precision of axis labels, and axis scale type.
+* _Legend formatting options_: The format panel can be used to toggle on/off legend in the chart, toggle on/off legend title, adjust position of the legend, and update legend title.
+
+=== Pie and donut charts
+
+Pie and donut charts are useful for visualizing and communicating proportional relationships within a whole.
+They require exactly one field for color and one field to calculate the angle
+
+Format options:
+
+* _Color formatting options_: Refer to the xref:studio-visual-explorer.adoc#building-a-simple-visualizaton[colors section].
+* _Quick sort options_: Quick sort options on the toolbar can be used to sort the field in either descending or ascending order.
+* _Advanced sort options_: Refer to the xref:studio-visual-explorer.adoc#sorting[advanced sort options section].
+* _Table calculation options_: Refer to the xref:studio-visual-explorer.adoc#quick-table-calculations[table calculation options section].
+* _Display label_: The format panel located in the top right corner of the chart editor can be used to modify the names of fields in the chart.
+The display label specifically updates the field name within the chart, affecting the legend title, and tooltip.
+However, the legend title can be customized using the legend title renaming option.
+It's important to note that the display labels are not reflected in CSV data exports or in the summary data displayed in the panel below the chart in the chart editor.
+* _Legend formatting options_: The format panel can be used to toggle on/off legend in the chart, toggle on/off legend title, adjust position of the legend, and update legend title.
+
+=== Scatter plot chart
+
+Scatter plots are useful to visualize the relationships between variables, patterns and outlier detection.
+They require exactly one field on the X-axis and one field on the Y-axis with optional fields for color and size.
+
+Format options:
+
+* _Color formatting options_: Refer to the xref:studio-visual-explorer.adoc#building-a-simple-visualizaton[colors section].
+* _Quick sort options_: Quick sort options on the toolbar can be used to sort the field by the field in either descending or ascending order.
+* _Advanced sort options_: Refer to the xref:studio-visual-explorer.adoc#sorting[advanced sort options section].
+* _Table calculation options_: Refer to the xref:studio-visual-explorer.adoc#quick-table-calculations[table calculation options section].
+* _Display label_: The format panel located in the top right corner of the chart editor can be used to modify the names of fields in the chart.
+The display label specifically updates the field name within the chart, affecting the axis title, legend title, and tooltip.
+However, the axis title and legend title can be individually customized using the axis and legend title renaming options.
+It's important to note that the display labels are not reflected in CSV data exports or in the summary data displayed in the panel below the chart in the chart editor.
+* _Axes formatting options_: The format panel available in the top right corner of the chart editor (refer screenshot) can be used to update the axis title, toggle on/off axis title, toggle on/off bar labels, update axis label rotation angle, set the axis range, change format of axis labels, precision of axis labels, and axis scale type.
+* _Legend formatting options_: The format panel can be used to toggle on/off legend in the chart, toggle on/off legend title, adjust position of the legend, and update legend title.
+
+=== Big values
+
+Big value visualizations are useful for highlighting key metrics and how those metrics change over time.
+
+You can use the following options to configure your big value.
+You can add any field from either *Dimensions* or *Measures* into each of these dropzones:
+
+[.bordered]
+image::big_values_image.png[Present_Big_Values]
+
+* _Value_: The field with the data you want to display.
+Click on the little arrow to the right of the column name to choose the aggregate type.
+* _Trend By_: The field that you would like to group the dataset by to determine the aggregate values.
+After you've dropped a field in here, the _Value_ we display is the last one in your grouped dataset.
+Note that the default sort order is ascending by the field you have in the *Trend by*.
+* If you would like to alter the sorting, you can do so by clicking on the sort ascending and sort descending buttons in the toolbar above.
+* _Indicator_: Chooses how the inputted value compares to another value.
+Click on the little arrow to the right of the field name to choose the aggregate type, calculation format, and the value for comparing to the _Big Value_.
++
+NOTE: If you want to mirror the functionality of the {product}'s old Big Numbers, add the same field that you have in the _Value_ dropzone to the _Indicator_ dropzone.
+
+* _Format_: use format shortcuts at located in the top toolbar to the right panel's to customize the formats of _Value_ and _Indicator_.
+These options include plain text, currency, number, and percentage.
+
+[.bordered]
+image::big-number.png[Big value]
+
+[#tables]
+=== Tables
+
+Tables present data in a format that is highly adaptable and easily understandable for end users.
+Users have two ways to create new tables.
+One approach involves selecting the table chart from the green *Add Chart* dropdown located above the query editor by clicking on it.
+
+[.bordered]
+image::addtableabovequery.png[add chart]
+
+Another option is to find the query with the data you want to display, click the *+* button under it, and select the table chart.
+
+[.bordered]
+image::addtable.png[add chart]
+
+The initial step for creating a table is to add desired columns from the *Dimensions* and *Measures* fields to the *Columns* section.
+This can be accomplished by using the drag-and-drop method or by using the typeahead search option.
+Additionally, it is possible to include columns that are intended for use as filters within the *Filters* section.
+Column formatting options are available in the toolbar above the table.
+
+[.bordered]
+image::charttoolbar.png[toolbar]
+
+* *Sort settings*
++
+The user can sort any field in the Flat Table by ascending or descending order.
+The sorting hierarchy can be defined by specifying primary and secondary sort fields, or more levels if needed in the chart designer, Report View and Explorations.
++
+Sort settings can be found in the field context menu or on the toolbar for chart designer and Explorations.
+In the Report View, it can be found in the field context menu.
++
+[.bordered]
+image::sort-settings.png[sort settings]
++
+The sorting hierarchy can be rearranged using the grab icon as shown in the demo video below:
++
+image::sort-re-arrangement.gif[sort re-arrangement]
++
+The sorts on fields can be cleared individually using the *Clear sort* option in the field context menu.
++
+[.bordered]
+image::sort-settings-clear-field.png[clear sort on field]
++
+All sorts applied in the table can also be cleared using the *Clear sorts* option in the toolbar.
++
+[.bordered]
+image::sort-settings-clear-table.png[clear sort on table]
+
+* *Conditional Formatting*
++
+Users have the ability to assign colors of different intensities to values, depending on their relative position within a specified range.
+The user can access the color conditional formatting option either through the field context menu or the toolbar in the chart designer and Explorations.
+This functionality is applicable to all measures in the table.
++
+image::Conditional-formatting-in-Flat-Tables.gif[Conditional Formatting]
+
+* Column alignment options left, center, or right can be enabled or disabled.
+* Column text wrapping can be turned on or off.
+If the wrapped content exceeds three lines, the remaining part will be truncated.
+Similarly, the column header will wrap up to two lines before truncation.
+* Decrease the number of decimal places for columns formatted as number, percentage, or currency.
+* Increase the number of decimal places for columns formatted as number, percentage, or currency.
+* Format column as number with commas as thousand separators.
+This format can be customized by navigating to *More formats...* by clicking on the Number button.
+* Format column as currency, with the US dollar currency symbol.
+This format can be customized by navigating to *More formats...* by clicking on the Currency button.
+* Format column as percentage with two decimal places.
+This format can be customized by navigating to *More formats...* by clicking on the Percent button.
+
+==== *Format*
+
+[.bordered]
+image::format-table.png[toolbar2]
+
+The Format button updates to reflect the data type of the column.
+Users can customize the format by navigating to *More formats*.
+The options available under *More formats* change based on the datatype of the column.
+
+*URL formatting*
+
+A field in the Flat Table can be formatted as a URL from the Format options in the top toolbar or using the format option in the field context menu.
+
+[.bordered]
+image::url-format.png[url formatting]
+
+*Basic hyperlink*
+
+A field in the Flat Table can be formatted as a URL and can be displayed as text, text with underline, or as an icon.
+This formatting creates hyperlinks that serve as references to other web pages or resources.
+
+*Custom*
+
+The custom setting offers more advanced options to tailor the display and functionality of hyperlinks.
+
+* The text displayed for the hyperlink can be customized.
+* A reference field can be used as the URL address.
++
+image::url-formatting-reference-field.gif[url formatting]
+
+* A URL can be constructed using a reference field with the field being formatted as the display text.
+For example, the domain and page name fields to generate the complete URL.
++
+image::url-construction-demo.gif[url construction demo]
+
+* The reference field used as the URL address can be any field in the underlying data and has to be added to the Flat Table.
+
+==== *Size to fit*
+
+The columns of the table are optimally sized to fit the chart designer by default.
+This option can be changed to manually size to update the column size based on user preferences.
+
+==== *Export Tables as CSV*
+
+Tables with Report filters, chart filters or sorts applied can be exported as CSV files from the Quick Chart Table designer, Explorations, and the Report View.
+There is a 300,000 row limit on the tables that can be exported.
+Tables that are above this limit will be truncated.
+
+In the Quick Chart Table designer, the *Export to CSV* option is enabled in the toolbar when fields are added to the Flat Table.
+In Quick Chart Table Explorations, the *Export to CSV* option can be found in the toolbar above the Flat Table.
+In the Report View, the *Export to CSV* option can be found in the context menu.
+Clicking on the *Export to CSV* option will start generating the CSV file and add it to the *Recent Downloads* drawer.
+A blue loading icon will appear while the file is being generated, a red X icon will indicate an error, and a green check icon will indicate that the file is ready for download.
+Clicking on the *Download* button next to the file will download the CSV file.
+
+Multiple tables can be exported simultaneously, and the files are organized in order of recency, with the most recent files at the top in the drawer.
+The *Recent Downloads* drawer can be closed using the "x" icon, and can be re-opened by clicking the *Export to CSV* option again.
+The same CSV files will be available in the drawer once re-opened if there were CSV files in the drawer prior to closing it.
+For more detailed instructions, please refer to the gifs provided.
+
+*Export CSV files from the Quick Chart Table chart designer*
+
+image::flat-table-csv-exports-chart-designer.gif[Export CSV chart designer]
+
+*Export CSV files from the Quick Chart Table Explorations*
+
+image::flat-table-csv-exports-explorations.gif[Export CSV explorations]
+
+*Export CSV files from Quick Chart Tables in Report View*
+
+image::flat-table-csv-exports-report-view.gif[Export CSV Report View]
+
+==== *Table formatting options*
+
+Table formatting options can be accessed by clicking on the *Format* section to the right of the *Data* section.
+Formatting options selected will persist beyond the current session and will determine how the Table appears on the Report page.
+The table formatting options available are:
+
+* Alternate row colors options to make tables easier to read for end users.
+* Three row height options: standard, compact, and open, are available.
+Altering row heights on larger tables can make more rows appear at once and reduce the amount of scrolling needed to navigate the table
+* Hide column or row gridlines.
+Column and row gridlines are turned on by default.
+* Show the row numbers.
+The row numbers are turned off by default.
+* Hide legend.
+The color legend is turned on by default when conditional color formatting is applied.
++
+[.bordered]
+image::tableformattingoptions2.png[table formatting options]
+
+==== *Page size customization*
+
+The table is paginated to enhance loading speed.
+The default number of rows per page is 100 rows.
+The number of rows shown per page can be customized by adding any number between 1 and 1000 in the input box located in the bottom right corner.
+The page size can be updated in the chart designer or Explorations.
+
+[.bordered]
+image::table-page-size.png[page size]
+
+==== *Data profiling*
+
+Data profiling provides a summarized overview for each column in a Flat Table, taking into account chart and Report filters.
+Data profiles reflect the total values of the entire table and not just the page in view.
+The summary varies based on the data type of the column:
+
+* Categorical fields: Count of distinct values.
+* Numerical fields: Sum, average, minimum, and maximum values.
+* Boolean fields: Sum (count of true values).
+* Date fields: Minimum and maximum dates.
+* Valid calculated fields will also have data profiles, and the displayed summaries depend on the data type.
+
+By default, data profiling is turned on.
+It can be turned off by checking the *Show data profile* option in the settings gear in the chart designer or the settings menu in the Report Builder.
+In Explorations, the data profile setting is available in the Format panel.
+
+image::data-profile-in-flat-tables.gif[data profiling]
+
+[#pivot-table]
+=== Pivot table
+
+A link:https://en.wikipedia.org/wiki/Pivot_table[pivot table,window=_blank] aggregates and summarizes (for example, using sum, average, count, etc.) query results and presents them in a data table.
+To add a pivot table to a Report:
+
+. On the left side of the Report editor, find the query with the data you want to display and click the *New* image:modal-add.svg[new] button under it.
+. Click *Add Pivot Table* to add a new pivot table to the Report's layout.
+. Add one or more fields to the quadrants on the bottom right to configure.
+This can be done by dragging and dropping fields or by using the typeahead search option.
+Fields should be added to the rows quadrant in the order of nesting.
+
+==== Creating a pivot table
+
+To create a pivot table, start by opening the New Chart menu.
+You can launch the New Chart menu in two places:
+
+. In the left sidebar of the Report editor, find the query with the data you want to work with and click the indented image:modal-add.svg[new] button under the query.
+. While working on a query in the SQL editor, you can access the New Chart menu above the SQL editor.
++
+image::new-chart-entry-points1.gif[creating a pivot table]
++
+Once you have opened the New Chart menu, select Pivot Table.
++
+image::select-ptqc1.gif[creating a pivot table]
+
+To create a pivot table, you will need to take the following actions:
+
+* Drop 1 or more fields to columns.
+* Drop 1 or more fields to rows.
+* Drop 1 or more fields to values.
+
+image::build-ptqc1.gif[build a pivot table]
+
+==== Format axes, columns, rows
+
+Swap axes swaps the fields in the columns and rows in addition to swapping the axis where the measure names are displayed.
+
+Show as column / row changes which axis the measure names are displayed on without altering the fields placed in rows and columns.
+
+Once you have the data you care about, you can use these options to quickly finetune how it is visually represented.
+
+image::swap-axes-and-rows-columns1.gif[swap axes and row columns in a pivot table]
+
+==== Formatting fields
+
+You can individually format fields in pivot tables.
+
+image::add-formatting1.gif[Formatting Fields in a pivot table]
+
+==== Conditional color formatting
+
+Conditional color formatting is added to all measure values in the pivot table by default.
+There are multiple ways to conditionally color format the pivot table:
+
+* Apply color to a single field by adding fields to the color marks channel.
+* Apply color to multiple measure values by adding measures to the measure values shelf and select *Add all* in the color marks channel.
+The color can be removed by using the *Clear* option.
+* Color can be changed by selecting the *Edit Colors* icon in the color marks channel.
+The color can be added to the text instead of background by using the same affordance.
++
+image::PTQC-Conditional-Color-Formatting-2023.gif[Pivot Table Conditional Color Formatting]
+
+==== Quick calculations
+
+xref:studio-visual-explorer.adoc#quick-calculations[Quick calculations] are available in pivot tables.
+
+==== Adding filters
+
+You can add xref:studio-visual-explorer.adoc#filters[filters] to pivot tables by adding fields, including xref:studio-cal-fields.adoc#overview[calculated fields], into the filters drop zone by dragging and dropping or by using the typeahead search.
+You can use calculated fields in all pivot table drop zones.
+
+image::add-filters1.gif[Adding filters]
+
+==== Grand totals and Subtotals
+
+You can toggle on and off either or both Column Grand totals and Subtotals and Row Grand totals and Subtotals using the xref:studio-explorations.adoc#toolbar[Toolbar].
+
+You will need more than one dimension and at least one measure under Columns or Rows in order to toggle on Subtotals. You can also utilize them for Visual Explorer charts.
+
+Grand totals and Subtotals will take on the same aggregation method as the measure, for example, it will sum all the values if your measure is `SUM(field)` or it will average across all the values if your measure is `AVG(field)`.
+
+image::grand-subtotals.gif[Grand Totals]
+
+==== Quick sort
+
+In the xref:studio-explorations.adoc#toolbar[Toolbar], you have the ability to leverage our Quick Sort feature to sort your innermost discrete, categorical data by the outermost measure in either descending or ascending order.
+
+image::sort1.gif[Quick Sort]
+
+==== Advanced sorting
+
+However, you also have the option to define a more granular sorting behavior.
+When you can click on a field in your pivot table to open its context menu, you will see the ability to open the full xref:studio-visual-explorer.adoc#sorting[visual explorer sort] dialogue.
+
+From there, you can specify exactly how you'd like to sort using your selected field.
+We currently support four sorting methods:
+
+. By data value.
+. By field.
+. By manual.
+. By nested.
+
+image::advanced-sort1.gif[Advanced sorting]
+
+For a full breakdown of each of these options, visit our xref:studio-visual-explorer.adoc#sorting[visual explorer sorting] documentation.
+
+=== (Legacy) display table
+
+NOTE: We now no longer actively support display tables, and we will sunset them at some point in the future.
+
+The first time you successfully execute a query, a display table containing the query's results is automatically added to your Report.
+By default, data tables display all columns returned in the underlying query and each column is formatted according to the data type of each column.
+
+Click on *Display Table* under any query in your report to control how that query's display table is formatted and sorted, and to show or hide columns:
+
+* *Columns:* Un-check any columns on the right side to remove them from the table.
+* *Sort:* Click the header of the column you'd like to sort the table by and click the *dropdown* image:action-movedown-hover.svg[drop down] button to choose how you want the table sorted.
+* *Formatting:* Click on the column header for any column to see formatting options for that column on the right side of the window.
+Depending on which format you choose, a number of additional customization options will appear.
+
+'''
+
+To manage Quick Charts in the Report, click on the three vertical dots to access the following options:
+
+* *Duplicate*: Creates a copy of the visualization.
+* *Add to builder*: Adds the visualization to the Report layout.
+* *Remove from builder*: Removes the visualization from the Report layout but does not delete it from the Report.
+* *Copy to {product} clipboard*: Copies the visualization that can be pasted in the same or different Report.
+Read more about <<copy-visualizations-across-reports,copying and pasting visualizations>>.
+* *Delete*: Removes the visualization from your Report layout and deletes it from the editor.
+
+All Quick Charts except tables and big values can be converted to xref:studio-visual-explorer.adoc[Visual Explorer] to access advanced chart options.
+
+=== JavaScript customization
+
+Quick Charts can be customized using the HighCharts JavaScript API or through Alamode by turning on the JS customization setting.
+This setting can be found in the Format panel of the chart editor.
+This is applicable to Quick Charts created on or after October 12, 2023.
+For Quick Charts created prior to this date, users will have the option to disable JS customization to access advanced chart settings available in Visual Explorer.
+
+_Enable/disable JavaScript customization_  image:js-customization-toggle.gif[Enable/disable JavaScript customization]
+
+Enabling JavaScript customization will result in the inability to use certain features in Quick Charts.
+If a Quick Chart has any of the following features in use, the user will not be able to enable JavaScript customization for that particular visualization:
+
+. Color by continuous fields.
+. Nested or manual sorts.
+. Custom table calculations.
+. Display labels to modify field names in charts.
+. Default field settings.
+
+== Notebook visualizations
+
+Every Report contains a built-in xref:studio-notebook.adoc[Notebook] environment where you can take the results of one or more queries, further analyze them in Python or R, and visualize the results using one of the many xref:studio-notebook.adoc#supported-libraries[built-in libraries].
+
+The contents of any xref:studio-notebook.adoc#adding-cell-output-to-your-report[Notebook output cell] can be added to your Report.
+These visualizations will update whenever the Notebook is run and the output changes.
+
+== Custom visualizations
+
+{product} supports the ability to customize {product}'s native visualizations or add custom D3 visualizations to an {product} Report.
+When editing a Report, in the Report Builder's top toolbar, click the icon *</>* to customize the Report's HTML.
+The HTML editor lets you use valid HTML, JavaScript, or CSS in the layout of your Report, allowing you to add interactivity, custom visualizations, and more.
+To help you get started, {product}'s community maintains the link:https://github.com/mode/alamode[Alamode,window=_blank] JavaScript library that makes creating link:https://d3js.org/[D3-powered,window=_blank] visualizations easy.
+
+Check out link:https://mode.com/example-gallery/[{product}'s Gallery,window=_blank] for inspiration, sample Reports, and more information about how to create advanced visualizations in {product}.
+
+[#copy-visualizations-across-reports]
+== Copy visualizations across Reports
+
+Users have the option to copy charts to the {product} clipboard and paste them under the target data source in the same or different Reports.
+This can be accomplished by following the steps outlined below:
+
+*1. Copy chart to {product} clipboard*
+
+The copy to {product} clipboard option is accessible via the kebab menu, located on the left-hand side navigation panel within the chart designer.
+Similarly, in Report View, the kebab menu provides the option to copy a visualization.
+In Explorations, a copy icon is available in the top toolbar.
+The following properties of the chart are copied to the {product} clipboard.
+
+* Rows and columns
+* Reference to calculated fields
+* Chart title and description
+* Chart filters
+* All Layers (Color, Size, Text, Detail) +
+
+*2. Paste chart from {product} clipboard*
+
+The paste from {product} clipboard action is available in the kebab menu for each data source in the chart designer.
+The paste and replace action is also available in the kebab menu for each visualization in the chart designer.
+The replace action can be undone using the back button on the chart toolbar.
+The fields that are required for the copied charts but are missing from the target data source will be displayed as red pills.
+The user can switch out the red pills with relevant fields from the target data source.
+
+
+*3. Replace fields in the pasted chart*
+
+Users can drag fields directly on top of the field to be replaced in Visual Explorer and in Quick Chart dropzones that accept a single field.
+For Quick Chart dropzones that accept more than one field, the new field can be added to the shelf and the old field can be dragged out to be removed.
+The typeahead search in the dropzones can also be used to add the new fields.
+Refer to the gif for more details.
+
+_Copy a chart from the chart designer and paste in a Report_  image:copy-paste-from-chart-designer.gif[Copy Paste from Chart editor]
+
+_Copy a chart from the chart designer and replace another chart in a Report_ image:copy-paste-replace-from-chart-designer.gif[Copy Paste Replace from Chart editor]
+
+_Copy a chart from the Report View and paste in a Report_  image:copy-paste-from-report-view.gif[Copy Paste from Report View]
+
+_Copy a chart from the Report View and replace another chart in a Report_ image:copy-paste-replace-from-report-view.gif[Copy Paste Replace from Report View]
+
+_Copy a chart from Explorations and paste in a Report_ image:copy-paste-from-explorations.gif[Copy Paste from Explorations]
+
+_Copy a chart from Explorations and replace another chart in a Report_ image:copy-paste-replace-from-explorations.gif[Copy Paste Replace from Explorations]
+
+Copy-pasting visualizations is helpful in the following scenarios:
+
+* Re-creating similar charts using different data sources without having to recreate manually each time.
+* Making updates to a chart in a Report in a personal collection instead of editing directly in a Report that is used by others.
+* Moving charts previously created off ad-hoc queries to a reusable Dataset.
+Learn more about Datasets xref:studio-datasets.adoc[here].
+
+NOTE: If users want to copy both the chart and the associated data source, they would need to perform two separate actions. They can first add the required data source for the chart into their Report and then proceed to copy and paste the chart into their Report.
+
+== Default field settings
+
+Default field settings refer to the predefined configurations that are applied to the fields in a Dataset (standalone query or reusable Dataset).
+
+* Default field settings will be applied to all applicable charts created off the Dataset in place of the system default settings (including Quick Charts and Visual Explorer charts).
+* Default field settings are available for queries in a Report and when a reusable Dataset is imported into a Report.
+They are not available when a reusable Dataset is created.
+* Default field settings can be overridden at the visualization level.
+Visualization settings will take precedence over field settings.
+* Default field settings are accessible in the context menu for each field within the fields list.
++
+[.bordered]
+image::defaultfield.png[Default Field Settings]
+
+The following default field settings are available:
+
+* Formatting:
+ ** Users can define default formatting for fields (short numbers, long numbers, percentages, dates, etc.) for each Dataset to avoid repeated manual configurations.
+* Color settings:
+ ** Users can assign specific colors to values within a field for consistent color-coding across charts using the same field.
+ ** Clicking on color settings for Dimensions should open the categorical color assignment modal.
+ ** Colors can be configured for fields other than the specific field for which the modal has been launched by using the field selector at the top of the modal.
+ ** Selecting *Apply* or *Apply and close* in the modal will apply the chosen colors to all charts using the respective field.
+ ** A continuous palette can be chosen for measures.
+The selected palette will be respected only when the measure is applied to the color channel.
+* Default aggregation:
+ ** Users can define the aggregation desired when a field is added to a chart.
+This can be overridden at the chart-level.
+ ** Aggregated calculated fields will not show default aggregate options.
+ ** If a default aggregate is set to a field and the underlying data type changes, that renders aggregate invalid.
+We should unset previously set default and select the appropriate aggregate per the datatype.
+
+[#faqs]
+== FAQs
+
+[discrete]
+=== *Q: Is there a limit to how many visualizations can be added to a Report?*
+
+Our recommendation is to limit the number of visualizations in a single Report to 20.
+This is due to the fact that excessive visualizations can increase the loading time of the Report.
+As the number of visualizations increases, more aggregation needs to be performed on the server, which can lead to slower loading times.
+By limiting the number of visualizations, you can ensure that your Report loads quickly and efficiently.
+
+[discrete]
+=== *Q: Can you visualize a Notebook-generated visualization with {product}'s native chart editor?*
+
+At this time, it is not possible to use our visualization tools, such as Quick Charts and Visual Explorer, to manipulate Python/R dataframes.
+To visualize data from a Notebook, you will need to use a visualization library to create a visualization.
+If you would like to see this functionality added in the future, please contact {support-url}, and they will be happy to add a request on your behalf for future consideration.

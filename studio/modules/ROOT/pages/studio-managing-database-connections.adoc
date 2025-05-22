@@ -1,0 +1,420 @@
+= Managing database connections
+:categories: ["Connect your database"]
+:categories_weight: 30
+:date: 2021-04-26
+:description: Administer Analyst Studio connectivity
+:ogdescription: Administer Analyst Studio connectivity
+:path: /articles/managing-database-connections
+:product: Analyst Studio
+
+== Overview
+
+You can connect as many private databases to your {product} Workspace as you like.
+{product} supports connecting to most popular types of link:https://mode.com/data-sources/[relational databases,window=_blank].
+When you connect a database to your {product} Workspace, by default all members of your Workspace will be able to run queries against that data connection.
+
+All Workspaces are also automatically connected to the <<mode-public-warehouse,{product} Public Warehouse>>.
+
+== Private data connections
+
+=== Connect a new database
+
+To connect your database to your {product} organization:
+
+. Click the app switcher icon in the top navigation bar and select *{product}*.
+. Click on your name in the upper left corner of the screen.
+. Click *Connect a Database*.
+. Follow the instructions to connect your database.
+
+Learn more about xref:studio-connecting-mode-to-your-database.adoc[how {product} connects] to private databases.
+
+IMPORTANT: Any active member of an {product} Workspace can create a new database connection. By default, new database connections may be queried by all members of the Workspace. To restrict non-admin access to a data source, you can <<limit-access-to-a-data-connection-in-mode,limit access to it to specific users>>.
+
+=== Modify or disconnect a connected database
+
+You can only delete or modify the settings and credentials for a database connection if you're an admin or if you were the member who connected it to the Workspace.
+
+. Click the app switcher icon in the top navigation bar and select *{product}*.
+. Click on your name in the upper left, and click *Workspace Settings*.
+. In the Data section, click *Connections*.
+. All the database connections for your Workspace are listed on the right.
+. Click on the connection and then go to the *Connection Properties tab* to adjust the database credentials and configuration.
+Click *Delete* to disconnect this database from {product}.
++
+IMPORTANT: Deleting a database connection from {product} will prevent all Reports built using that connection from running until a new connection is selected. Deleting a database connection will not, however, have any effect on the database itself.
+
+[#update-preferred-jdbc-driver]
+=== Update preferred JDBC driver
+
+To update the driver {product} uses to connect to one of your data sources, you must have the manage data source permission or higher.
+
+. Open the menu beneath your name in the upper left corner and select *Workspace Settings*.
++
+image:organization_settings.jpeg.png[Organization Settings]
+. Scroll down to the *Data* section and select *Manage Connections*.
+In the main panel, select the connection you'd like to update from the list.
++
+image:manage_connections.png[Manage Connections]
+. Review and update the selected driver.
+Details on all driver versions and known issues are documented for each database technology xref:studio-supported-databases.adoc#databases[below].
++
+image:update_driver_manage_connections.png[Update Driver]
+. Re-enter the password of the {product} database user or otherwise re-authenticate the credentials, then *Save changes*.
++
+image:save_driver_update_changes.png[Enter Password]
+. You should see a blue banner at the top of the screen indicating the connection properties have been updated.
++
+image:driver_saved_ribbon.png[Data Source Saved]
+. An error like the following indicates the username and password (or equivalent) must be re-entered before saving the driver changes.
++
+image:driver_update_auth_fail_ribbon.png[Data Source Auth Fail]
+
+=== Disable or enable automatic schema refresh
+
+For admins and users with "manage" permission:
+
+. In the Connections section, select a database connection to navigate to the settings.
+. Toggle *Automatic Schema Refresh* off or on.
+. Confirm and save changes to the connection properties.
+Schema refresh will now be disabled or enabled.
+. Manually refresh the schema with the button at the top of the page.
+
+=== Trigger a schema refresh
+
+{product}'s schema update frequency is daily at 3:05pm UTC (7:05am PST / 8:05am PDT based on daylight savings).
+However, you can trigger a schema refresh at any time.
+
+. In the SQL editor, click on the kebab menu next to your data source and select *Refresh*.
++
+image:schema-browser-refresh.png[Schema Browser Refresh]
+. You can also go to *Workspace Settings* in the menu beneath your name.
++
+image:workplace-settings.png[Workplace Settings] +
+Then go to *Manage Connections* under the Data section to select the data source.
+Select the *Refresh schema* button in the top right corner.
++
+image:manage-connections-refresh-schema.png[Manage Connections Refresh]
+
+== Controlling access
+
+=== Database user permissions
+
+Most databases provide robust permission systems, which let you manage user roles to set detailed schema- and table-level permissions.
+In {product}, your Workspace will access each data connection through a single user, which we recommend you or your database admin create expressly for use with {product}.
+
+Members of your Workspace who use this data connection will be able to access the data source according to the permissions granted to this user in your database.
+You can connect {product} to the same database multiple times via different database users, with varying levels of permissions.
+
+There are various ways you can control the data that members of your Workspace can query in {product}.
+One way is to leverage the permissions granted to the single user your Workspace relies upon to connect to a given database.
+Limiting that user's permissions on the database side will, in turn, restrict the access of all members of your {product} Workspace for that data connection.
+
+[#limit-access-to-a-data-connection-in-mode]
+=== Limit access to a data connection in {product}
+//+++<flag-icon>++++++</flag-icon>+++
+
+Admins can also limit access to a data connection to specific non-admin users or user groups directly in {product}.
+If a non-admin user does not have access to a connected database, that user will not be able to:
+
+* Query the database or create, duplicate, edit, or schedule any Reports that query that database.
+* Write or view any of that data connection's xref:studio-definitions.adoc[Definitions].
++
+IMPORTANT: Admins in an {product} Workspace always have query access to all data connections in that Workspace.
+
+*Setting the default connection access policy*
+
+Connection admins can set the default connection access policy for everyone in their Workspace to have *View* or *Query* access to the connection, or choose to set up access to *None*.
+
+[.bordered]
+image::permissions.png[Connection Access Policy Illustration]
+
+* The access type *View* allows all members to view content built on this connection.
+* The access type *Query* allows all members to view and query this connection.
+
+*Granting access type to groups and individuals*
+
+In addition, you can grant *Query*, *View*, or *Manage* access to groups and individuals.
+
+[.bordered]
+image::Access-Menu.png[Access Menu Illustration]
+
+To set up permissions to a connected database in {product}:
+
+. Click the app switcher icon in the top navigation bar and select *{product}*.
+. Click on your name in the upper left, and click *Workspace Settings*.
+. In the Data section, click *Manage Connections*.
+. Click on the data connection you want to limit.
+. Click the *Permissions* tab.
+. Click on *Connection Access Policy*, to set the default access type to *None*, *View*, or *Query*.
+. To manually add users and user groups, click *Add members*.
+In the pop-up box, click on each user or user group that you want to grant access to this connection.
+. Once you click on the user or user group, you will have the option to grant *Query*, *View*, or *Manage* access.
+. If you change your mind and want to remove that member, click on the user or user group, then click on the *Access Type* and choose *Remove Access*. Then confirm *Remove Access*.
+
+=== How database permissions and {product} permissions interact
+//+++<flag-icon>++++++</flag-icon>+++
+
+Here's an example of how this setup might look for a company with a single database, connected to {product} via two different database user roles.
+
+Note that these permissions only determine query access.
+Users in your Workspace will be able to see a Report created with one of these data connections unless the Report is in a xref:studio-spaces.adoc#personal-space[private Collection].
+
+[.bordered]
+image::data-source-roles-with-query-access.png[Database roles with query access]
+
+. In this simplified example, the company's database contains two tables: a marketing table and a finance table containing sensitive information.
+. There are two user roles (managed at the database level):
+ ** User Role #1 only has access to the marketing table.
+ ** User Role #2 has access to both the marketing table and the finance table.
+. When you xref:studio-connecting-mode-to-your-database.adoc[connect a database] to {product}, you do so using database user roles.
+Each connection will appear as a different database in the schema browser.
+Note that the default name will be the name of the database (for example, Redshift), but you can also name it based on a description of the access level or user role.
+. Workspaces can also specify which {product} users have access to each connection.
+ ** A user with query access to "`Marketing`" will ONLY be able to query the marketing table.
+They will not have access to any sensitive financial information.
+ ** A user with query access to "`All`" will be able to query the marketing and finance tables.
+
+[#query-headers-and-footers]
+== Query headers and footers
+//+++<flag-icon>++++++</flag-icon>+++
+
+{product} enables customers to annotate queries in two ways:
+
+* {product} allows customers to define, using Liquid parameters and SQL, metadata attributes to be sent about each query.
+This metadata can include {product} user or query attributes (for example, username, query runner group, or timestamp of query run).
+{product} calls these query *headers*.
+* {product} automatically appends a SQL comment to each query with the following static {product} user attributes: email, timestamp of query run, {product} query run URL, and a boolean value indicating whether the query was executed manually or scheduled.
+{product} calls these query *footers*.
+
+=== Query headers
+
+Custom query headers allow admins to prepend queries with code that executes every time a query is run against the data connection.
+Using custom query headers you can:
+
+* Manage database load by giving services downstream of {product} context about who is running the query or why it is being run.
+* Automatically set environment variables, such as default schemas and time zones.
+* Add custom logging to each query that will appear in your database's logs.
++
+IMPORTANT: Headers are injected only once per {product} SQL query, even if that query is split into multiple statements. Query headers appear as part of the syntax executed by the database. Query headers are not visible in {product}'s SQL Editor, but are viewable in a historical query run.
+
+=== Modify a data connection's query header
+
+You must be the creator of a data connection or a Workspace admin to modify its query header.
+
+. Click the app switcher icon in the top navigation bar and select *{product}*.
+. Click on your name in the upper left, and click *Workspace Settings*.
+. In the Data section, click *Connections*.
+. Click on the data connection you would like to modify.
+. Go to the *Query Header* tab.
+. In the space provided, add or modify any valid SQL code (including comments and valid Liquid code) that you want {product} to prepend to all queries run against this connection.
+. When you are finished, click *Save*.
+
+==== Variables
+
+Each time a query is executed, {product} automatically defines a number of Liquid variables containing useful audit information.
+You can reference these variables in your custom query headers to add audit information that will appear in your database's logs.
+Both SQL and Liquid parameters are supported.
+See link:https://mode.com/blog/query-headers[our Blog,window=_blank]:
+
+|===
+| Variable | Output
+
+| `{{ query_runner_email }}`
+| Email address of the user running the query.
+
+| `{{ query_runner_username }}`
+| Username of the user running the query.
+
+| `{{ query_runner_groups }}`
+| Array of group tokens* for groups the runner is a part of.
+
+| `{{ run_at }}`
+| A Unix timestamp of when the query was run.
+
+| `{{ is_scheduled }}`
+| True if the query was run as part of a schedule;
+false otherwise.
+
+| `{{ query_run_url }}`
+| URL containing the query token.
+
+| `{{ report_run_url }}`
+| URL containing the run token.
+|===
+
+_*Find a group's token by going to Settings > Groups > click a group. The token is a 12-character string at the end of the URL._
+
+==== Examples
+
+===== Assign scheduled queries to a different group in Redshift
+
+[source,sql]
+----
+{% if is_scheduled == true %}
+SET query_group TO scheduled_queries;
+{% endif %}
+----
+
+===== Set a default schema
+
+[source,sql]
+----
+SET SEARCH_PATH TO 'webapp';
+----
+
+===== Add comments with run date, type, and running user
+
+This example is illustrated with a multi-statement query to show how headers and footers interact.
+
+[source,sql]
+----
+-- Run by {{ query_runner_email }}
+-- Run at {{ run_at }}
+{% if is_scheduled == true %}
+-- Scheduled run
+{% else %}
+-- Manual run
+{% endif %}
+----
+
+Query in SQL Editor ({product}):
+
+[source,SQL]
+----
+SELECT 1;
+SELECT 2
+----
+
+Renders to:
+
+[source,sql]
+----
+-- Executed by hi@modeanalytics.com
+-- Query executed at 1591031089
+-- Manual run
+SELECT 1;
+SELECT 2
+----
+
+In Postgres, we'll see two distinct statement executions.
+The header appears on the first statement only.
+
+[source,sql]
+----
+-- Executed by hi@modeanalytics.com
+-- Query executed at 1591031089
+-- Manual run
+SELECT 1
+----
+
+The footers only appears on the second statement (unless per-statement footers are enabled).
+
+[source,sql]
+----
+SELECT 2
+-- {"user":"@jane_doe","email":"hi@modeanalytics.com","url":"https://modeanalytics.com/modeqa/reports/1820851ba5a0/runs/a85b6da6912d/queries/d7f43f015d70","scheduled":false}
+----
+
+=== Query footers
+
+{product} always appends a non-customizable SQL comment annotation at the end of a query.
+By default, this annotation is made per query.
+For a multi-statement query (see example), the footer is only appended to the second statement by default.
+{product} is able to enable per-statement footers if the Workspace uses multi-statement queries.
+
+Query footers are not visible in {product}'s SQL Editor to the user while editing a query, and query footers do not display in {product}'s UI as a part of the query syntax for a past query run.
+This annotation does appear as part of the syntax executed by the database.
+
+The annotation always includes:
+
+* user: query runner's username.
+* email: email address.
+* url: complete query run url.
+* scheduled: true/false.
+
+==== Examples
+
+In {product}:
+
+[source,SQL]
+----
+SELECT 1;
+SELECT 2
+----
+
+In Snowflake (*two* distinct statement executions;
+*without* per-statement footers, only the second statement show the footer comment):
+
+[source,SQL]
+----
+SELECT 1
+SELECT 2
+-- {"user":"@jane_doe","email":"hi@modeanalytics.com","url":"https://modeanalytics.com/modeqa/reports/1820851ba5a0/runs/a85b6da6912d/queries/d7f43f015d70","scheduled":false}
+----
+
+In Snowflake (two distinct statement executions;
+*with* per-statement footers, both statements show the footer comment):
+
+[source,SQL]
+----
+SELECT 1
+-- {"user":"@jane_doe","email":"hi@modeanalytics.com","url":"https://modeanalytics.com/modeqa/reports/1820851ba5a0/runs/a85b6da6912d/queries/d7f43f015d70","scheduled":false}
+SELECT 2
+-- {"user":"@jane_doe","email":"hi@modeanalytics.com"","url":"https://modeanalytics.com/modeqa/reports/1820851ba5a0/runs/a85b6da6912d/queries/d7f43f015d70","scheduled":false}
+----
+
+[#mode-public-warehouse]
+== {product} Public Warehouse
+
+{product} hosts a public PostgreSQL data warehouse so you can share data and analysis with the entire {product} community.
+The {product} Public Warehouse is a great tool that you can use to:
+
+* Learn SQL by completing {product}'s link:https://mode.com/sql-tutorial[SQL school,window=_blank].
+* Share analysis with or learn from anyone in the {product} community.
+* Experiment with all of {product}'s features.
+
+Anyone with an {product} account has access to the {product} Public Warehouse and can build Reports on top of the data inside it.
+
+[#uploading-data]
+=== Uploading data
+
+IMPORTANT: **All data uploaded into the {product} Public Warehouse is publicly accessible by anyone on the internet, so take care not to upload anything sensitive or confidential.**
+
+. Click the app switcher icon in the top navigation bar and select *{product}*.
+. Locate your name in the upper left corner of the window and ensure it says *{product} Community* above your name.
+(If not, click on your name, click *Switch*, scroll to the bottom of the pop-up, and click the *Switch* button under {product} Community).
+. Click on your name in the upper left corner of the window and then click *Contribute Public Data*.
+. Click *Choose and Upload*.
+. Select a CSV (up to 500 MB) containing the data you'd like to upload.
+. After the data uploads, you will have the opportunity to customize the name of the table and how the columns are stored.
+When querying the table, you will be required to type the namespace first.
+In the example below, the user's account name is "tutorial", so the uploaded table name will include the "tutorial" prefix:
++
+[.bordered]
+image::public-data-customize-columns.png[Adding Public Data]
+
+Table names in the {product} Public Warehouse must:
+
+* Be 4-63 characters in length.
+* Start with a lowercase letter.
+* End with a number or letter.
+* Not contain spaces or special characters (use underscores).
+
+Next, you'll set the column names and types.
+Columns follow the same naming rules as tables.
+If you are unsure about the data type for any particular column or would like a general overview of data types, check out the link:https://mode.com/sql-tutorial/sql-data-types[SQL School lesson on data types,window=_blank].
+
+When you are finished, *check the box* next to "I understand this table will be public to all {product} users", and then click *Finish Import* at the bottom of the Customize Columns screen.
+You can now query this data in {product} by selecting {product} Public Warehouse as the database.
+
+=== Deleting data
+
+To remove a table you've uploaded to {product}'s Public Warehouse:
+
+. Click the app switcher icon in the top navigation bar and select *{product}*.
+. Click on your name in the upper left, and click *My Account*.
+. In the Account Setting section, click *Public Data*.
+. Navigate to your public {product} community page by clicking on the link provided (for example, `+https://app.mode.com/{{mode_username}}+`).
+. Click on the *Public Table* image:table-large-bg.svg[public table] icon.
+. Click on the name of the table you want to delete.
+. Click the *gear* image:settings-mini-hover.svg[gear icon] icon next to the green Query button and choose *Delete table*.
