@@ -1,0 +1,26 @@
+= Microsoft SQL Server (MS SQL)
+:last_updated: 8/15/22
+:author: Naomi
+:linkattrs:
+:experimental:
+:page-layout: default-seekwell
+:description: Set up mixed mode authentication to connect your Microsoft SQL database to SeekWell.
+
+// Getting started
+
+== Windows Authentication
+
+If you currently use Windows Authentication to connect to your database, you need to set up "mixed mode" authentication. See the documentation from Microsoft link:https://docs.microsoft.com/en-us/sql/relational-databases/security/choose-an-authentication-mode?view=sql-server-ver15[here,window=_blank] and https://docs.microsoft.com/en-us/sql/database-engine/configure-windows/change-server-authentication-mode?view=sql-server-ver15[here,window=_blank]. Please note, you can not use your Windows login (for example, `SOMEDOMAIN\username`). You need to create a new user that has "mixed mode" enabled.
+
+We suggest link:https://docs.microsoft.com/en-us/sql/t-sql/statements/create-user-transact-sql?view=sql-server-ver15[creating a read-only username,window=_blank] of "seekwell" for your team to log in with. You or an admin will need to log in to your database and create the user, for example:
+
+[source]
+----
+CREATE USER Mary WITH PASSWORD = '********';
+----
+
+
+This is the solution to most "Adaptive Server connection failed" errors you see when trying to connect with {seekwell}.
+
+
+You also need to safelist our IP address link:https://support.appliedi.net/kb/how-to-whitelist-an-ip-address-for-ms-sql-access-on-a-windows-2012-server/[for SQL Server,window=_blank].

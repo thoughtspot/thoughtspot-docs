@@ -1,0 +1,36 @@
+= SQLite
+:last_updated: 8/26/22
+:author: Naomi
+:linkattrs:
+:experimental:
+:page-layout: default-seekwell
+:description: SeekWell uses SQLite3 as the database engine when you query CSVs, Sheets, and other blocks.
+
+// Compose (SQL editor)
+
+We use link:https://www.sqlite.org/index.html[SQLite3,window=_blank] as the database engine when you query CSVs, Sheets, and other Blocks. Here are a few tips for working with SQLite:
+
+* Most of the columns will come through as `TEXT` by default. If one of the columns is an `INTEGER` you can link:https://www.sqlite.org/lang_expr.html#castexpr[use `CAST` to convert it,window=_blank], for example: +
+[source]
+----
+CAST(text_column AS INTEGER) as integer_column
+----
+
+* link:https://www.w3resource.com/sqlite/sqlite-data-types.php[SQLite,window=_blank] does not have a storage class set aside for storing dates and/or times. Most dates will be converted to a `TEXT` field.
+
+* SQLite does, however, have several link:https://www.sqlitetutorial.net/sqlite-date/[functions,window=_blank] to help manipulate dates. Since the dates are `TEXT`, you can truncate dates using `SUBSTR`. For example, you can convert a timestamp to a month: +
+[source]
+----
+substr('2020-05-21 23:22', 1, 7) as created_on
+-- 2020-05
+----
+
+* To get the first and last day of the month: +
+[source]
+----
+SELECT
+    DATE('now',
+        'start of month',
+        '+1 month',
+        '-1 day');
+----

@@ -1,0 +1,59 @@
+= Email Lists
+:last_updated: 6/29/2022
+:author: Naomi
+:linkattrs:
+:experimental:
+:page-layout: default-seekwell
+:description: Set up email lists as a destination.
+
+// destination
+
+You can use a "List" generated from an existing block as part of your destination. You can use this function for tasks such as:
+
+* Sending an email to a set of users that meet certain criteria in your database or a Google Sheet.
+
+* Triggering a Slack notification or xref:stories.adoc[✍ Stories] for each row of a SQL result.
+
+NOTE: We use the term "*List Block*" to refer to the block you use to get your list and the term "*Action Block*" for the block that's going to "do something", e.g. send an email.
+
+== Demo
+
+video::yNzQMcRgF3M[youtube]
+
+== Email
+
+
+. Within your block, select the current destination and choose *Email* from the drop-down.
++
+image:destination-email.png[Select Email as destination]
+
+. Under *Send from*, enter your email address.
+
+. Select *Enter manually*, and choose *Use a block* from the drop-down.
+
+. Select *Block* and choose the block from the drop-down. You can search to filter the list.
+
+. Add xref:parameters.adoc[Parameters] from the *List Block* into the *Action Block* using the same name as the column name in the List Block. Keep the parameter type as the default "value". Make sure there are no spaces in the column name, for example, `some_column`.
++
+.Email list example
+[source]
+----
+select '{{email}}' as assigned_to, u.channel, u.plan, u.email as user_email
+from dummy.users as u
+where 1=1
+and u.channel = '{{channel}}'
+----
+
+. If you use the "send to" email as a parameter in the query (for example, `{{email}}`), you can set a default email which will send an "audit email". You can use the "audit email" to test if the query ran. To prevent sending this email, set the default to "NA". You can change this setting at any time.
++
+image:sql-default-email.png[Set default email]
++
+image:sql-email-na.png[Remove default email]
+
+. Run the block. Once it completes, check your email for the reports.
+
+NOTE: There is a 500 row limit on Destination Lists. If you need that limit removed, please contact us at link:mailto:contact@seekwell.io[contact@seekwell.io].
+
+== Case study
+
+An apparel company wanted to email a sample of customers who abandoned their cart to three of their product managers daily. Each PM is responsible for a separate channel and should only see customers from their channel.

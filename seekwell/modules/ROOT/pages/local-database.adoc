@@ -1,0 +1,55 @@
+= Local Database
+:last_updated: 8/24/22
+:author: Naomi
+:linkattrs:
+:experimental:
+:page-layout: default-seekwell
+:description: You can connect SeekWell to a local database using ngrok.
+
+// Getting started
+
+
+You can connect {seekwell} to a local database using link:https://ngrok.com/[ngrok,window=_blank]. For more information, see:
+
+* link:https://medium.com/@jotarios/ngrok-secure-tunnels-local-dead8685bd71[https://medium.com/@jotarios/ngrok-secure-tunnels-local-dead8685bd71,window=_blank]
+* link:https://ngrok.com/docs[https://ngrok.com/docs,window=_blank]
+
+== Exposing networked services
+
+TCP tunnels allow you to expose any networked service that runs over TCP. This is commonly used to *expose SSH, game servers (for example, Minecraft), databases and more*.
+
+To start a TCP tunnel, follow these steps:
+
+
+. link:https://dashboard.ngrok.com/user/signup[Sign up,window=_blank]. Ngrok is free to all users.
+. link:https://dashboard.ngrok.com/get-started[Get your authtoken,window=_blank].
+. Install your authtoken.
++
+[source]
+----
+$ ngrok authtoken YOUR_TOKEN_HERE
+----
+
+
+. Create your secure tunnel.
++
+[source]
+----
+$ ngrok tcp port
+----
++
+For example, to expose a MySQL database, with a port 3306, use:
++
+[source]
+----
+$ ngrok tcp 3306
+----
++
+Then, you can see the ngrok UI in your terminal, for example:
++
+[source]
+----
+Session Status        online                                                                                           Account               jotarios (Plan: Free)                                                                          Version               2.2.8                                                                                          Region                United States (us)                                                                               Web Interface         http://127.0.0.1:4041                                                                            Forwarding            tcp://0.tcp.ngrok.io:14563 -> localhost:3306                                                     Connections           ttl     opn     rt1     rt5     p50     p90                                68      0       0.00    0.00    0.89    28.70
+----
+
+In this example, you can access to your database through `0.tcp.ngrok.io:14563`.

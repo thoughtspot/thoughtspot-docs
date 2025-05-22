@@ -1,0 +1,47 @@
+= Query Sheets using SQL
+:last_updated: 8/24/2022
+:author: Naomi
+:linkattrs:
+:experimental:
+:page-layout: default-seekwell
+:description: With SeekWell you can query a Google Sheet using plain SQL and send the results of the query to another Sheet.
+
+// source
+
+== Introduction
+
+With {seekwell} you can query a Google Sheet using plain SQL (xref:sqlite.adoc[SQLite] to be specific) and send the results of the query to another Sheet. You can also send the results using Slack or email.
+
+== Demo
+
+video::x2rQoJVmOus[youtube]
+
+== Steps
+
+. Select *Sheets / CSV / Block* as the source.
++
+image:sql-source-sheets.png[Select Sheets/CSV/Block as source]
+
+. Add a Sheet to your `from` statement by typing `{{NAME}}`. Replace NAME with a one-word short reference to the Sheet or table (for example, `{{users}}`).
+
+. In the *Parameters* section, select *Value* and choose *Sheets* as the type.
++
+image:sql-params.png[Select Sheets under Value]
++
+NOTE: If your data starts in A1 and there is only one table in the sheet, you can use the Sheet name. Otherwise you need to specify the range for your table (e.g. `revenue!A:C`).
+
+. Complete the rest of your SQL statement.
+
+== Tips and tricks
+
+* You must use a SQL alias for the Sheet or table (for example, `from {{users}} as u`).
+* You can use this feature to email a summary of a Sheet via a Story, or a full table as a CSV.
++
+[source]
+----
+select r.email,  u.channel
+from
+{{revenue}} as r inner join
+{{users}} as u on r.email = u.email
+limit 10
+----

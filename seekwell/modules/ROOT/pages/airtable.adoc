@@ -1,0 +1,80 @@
+= Airtable
+:last_updated: 8/22/2022
+:author: Naomi
+:linkattrs:
+:experimental:
+:page-layout: default-seekwell
+:description: With SeekWell you can query your Airtable bases (including across multiple bases) using plain SQL.
+
+// source
+
+With {seekwell} you can query your Airtable bases (including across multiple bases) using plain SQL (link:https://www.sqlite.org/index.html[SQLite flavor,window=_blank]).
+
+NOTE: To test this on an example Base, copy the link:https://www.airtable.com/templates/sales-crm/expvjTzYAZareV1pt[Sales CRM Base in the Airtable Templates,window=_blank].
+
+video::m-uygyDjV0A[youtube]
+
+== Connecting
+
+. In link:https://app.seekwell.io/[{seekwell},window=_blank], select a block or select the plus icon in the top right and select *New SQL* to create a new block.
+
+. Select *Add source* in the top right of the app. If you have a previous connection, select the connection nickname under *Source* and scroll down to select *Add new source*.
++
+image:sql-add-source.png[Add new source]
+
+. Under *Flavor*, select *Airtable*. Enter a nickname under *Nickname*.
+
+. Add your Airtable API key to the source and select *Save*.
++
+image:sql-source-airtable.png[Add Airtable API key]
++
+You can get your API key link:https://airtable.com/account[here,window=_blank] on your account page. If you do not see an existing API key, select *Generate key*.
++
+image:sql-airtable-key.png[Generate an Airtable API key]
+
+. Go to link:https://airtable.com/api[https://airtable.com/api,window=_blank] and select the base you want to connect to. Check the URL for the Base / App ID, it should start with "app". The ID also appears in green on this page in third paragraph.
++
+image:airtable-id-url.png[Airtable ID in URL]
++
+image:airtable-id.png[Airtable ID in paragraph]
+
+. Write a SQL query. Use the Base ID (`appkLTrRdxeM51z0P` in the example above) as the SQL schema name and the table name to test a `SELECT` statement.
++
+.Airtable example
+[source]
+----
+select *
+from appREPLACEWITHYOURID."Opportunities"
+limit 10
+----
+
+NOTE:  Double quotes (`"`) are required for Tables with spaces in the name. For example, a table name of "This Has Spaces" will be `SELECT * FROM appId."This Has Spaces"`.
+
+== Joining tables
+
+. {seekwell} adds two special columns to your Table:
+
+.. `_id` is the unique id for the record in your table. Use `_id` to join to "Linked" records / tables.
+
+.. `_createdTime` is the timestamp for when the record was created.
++
+You can use these like any other column.
+
+. In the link:https://www.airtable.com/templates/sales-crm/expvjTzYAZareV1pt[Sales CRM Base,window=_blank], there is an `Accounts` table and a `Contacts` table. To join them, let's use the first `id` of the first linked `Contact` and get their `Name`.
++
+[source]
+----
+select
+a.__id as account_id,
+a.__createdTime as account_created_on,
+a.Size as size,
+substr(a.Opportunities, 3, 17) as first_op,
+substr(a.Contacts, 3, 17) as primary_contact,
+c.Name as contact_name
+from
+appREPLACEWITHYOURID."Accounts" as a inner join
+appREPLACEWITHYOURID.Contacts as c on substr(a.Contacts, 3, 17) = c.__id
+limit 10
+----
+
+NOTE: This `substr` is necessary because Airtable returns linked records as an array. This substring returns only the `id` of the first item in the array.
