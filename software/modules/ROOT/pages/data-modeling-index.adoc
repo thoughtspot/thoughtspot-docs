@@ -4,6 +4,7 @@
 :experimental:
 :page-partial:
 :page-aliases: /admin/data-modeling/change-index.adoc
+:jira: SCAL-189076
 
 ThoughtSpot dynamically indexes Search bar suggestions for column names and values.
 
@@ -11,8 +12,10 @@ When a user searches in the *Search* bar, ThoughtSpot supplies the user with sug
 The *COLUMN NAME* and any *SYNONYMS* appear in *Search* suggestions.
 For tables, a column's *INDEX TYPE* controls whether and how ThoughtSpot suggests column values. For Worksheets, the **SUGGEST VALUES IN SEARCH** section for a column determines whether ThoughtSpot suggests column values.
 
-Additionally, ThoughtSpot uses a column's *INDEX PRIORITY* value to determine where to rank a column's name and values in the search suggestions.
-These values impact ThoughtSpot's dynamically calculated usage based ranking (UBR).
+Additionally, ThoughtSpot uses a column's *INDEX PRIORITY* value to determine where to rank a column's name.
+These values impact ThoughtSpot's dynamically calculated usage-based ranking (UBR).
+
+IMPORTANT: This setting is not applied to the ranking of column values in the search suggestions.
 
 To configure certain aspects of ThoughtSpot's indexing behavior, refer to xref:admin-portal-search-spotiq-settings.adoc#search[Managing search and SpotIQ settings].
 
@@ -51,28 +54,25 @@ The exceptions are columns with *COLUMN TYPE* of `MEASURE` and columns with *DAT
 WARNING: If a column has a very large free text value, ThoughtSpot recommends you keep `DEFAULT` or set `DONT_INDEX`.
 Otherwise, you may generate confusing suggestions.
 
-* Short strings (like a `firstname` column) are indexed using `PREFIX_AND_SUBSTRING` by default, which indexes both prefix and substrings.
-* If a column has a _cardinality_ &ndash;
-the number of unique column values &ndash;
-greater than 10 million, it is not indexed.
+* Short strings (like a `firstname` column) are indexed using `PREFIX_AND_WORD_SUBSTRING` by default, which indexes prefixes for each individual word in the column value.
+* If a column has a high _cardinality_ -
+the number of unique column values - ThoughtSpot does not index it by default. If your data is in ThoughtSpot's in-memory database, that limit is 10 million. If your data is in an external cloud data warehouse, that limit is 1 million. You can index columns with a greater cardinality than 10 million, but it may impact performance. To index a column with a cardinality greater than 10 million, contact {support-url}.
 
-If a column's *INDEX TYPE* is _not_ *DEFAULT* and the column's cardinality is greater than 30 million, ThoughtSpot does not index the column.
+If a column's *INDEX TYPE* is _not_ *DEFAULT*, ThoughtSpot does not index columns with a cardinality greater than *30 million* if your data is in ThoughtSpot's in-memory database, or *10 million* if your data is in an external cloud data warehouse.
 
-[#high-cardinality]
 === High cardinality and performance
 
 A column's cardinality can impact indexing.
 If you have a column with a very high cardinality and a very high number of rows, indexing these values can impact your ThoughtSpot performance.
-ThoughtSpot Support recommends you turn off indexing of primary key columns on extremely large tables (> 10 million rows) in your cluster.
+ThoughtSpot Support recommends you turn off indexing of primary key columns on extremely large tables (unlimited number of rows but < 1 million unique values) in your cluster.
 
 High cardinality is relative to other considerations.
 In some cases, columns with fewer than 10 million rows but with columns containing long strings can cause performance problems with memory.
-If you have concerns or questions, your ThoughtSpot Customer Success Engineer can help you determine appropriate cardinality thresholds for your ThoughtSpot installation.
+If you have concerns or questions, your ThoughtSpot contact can help you determine appropriate cardinality thresholds for your ThoughtSpot installation.
 
-[#configure-cluster-defaults]
 === Configure your own cluster defaults
 
-If you need to, you can work with ThoughtSpot Support or your Customer Success Engineer to configure new cluster defaults.
+If you need to, you can work with {support-url} to configure new cluster defaults.
 
 Additionally, you can configure certain aspects of ThoughtSpot's indexing behavior from the Admin Console. Refer to xref:admin-portal-search-spotiq-settings.adoc#search[Managing search and SpotIQ settings].
 

@@ -1,12 +1,14 @@
 == Syntax of the Worksheet TML file
 
-The `TML` file for Scriptable Worksheets has a specific syntax.
+The `TML` file for Worksheets has a specific syntax.
 
 See the xref:parameters[TML parameters] for details about the keywords used in this example.
 
 You may not see each of these parameters in your own TML files, depending on whether each variable is explicitly defined.
 For example, if you do not have any filters on your Worksheet, the `filters` parameter does not appear.
 You can add that variable to the TML file to specify filters for your Worksheet.
+
+To reduce ambiguity, you may need to add the optional `fqn` parameter to your TML file when you reference source tables or connections. This is necessary if you have multiple connections or tables with the same name. If you do not add the `fqn` parameter, and the connection or table you reference does not have a unique name, the file import fails.
 
 Refer to <<syntax-joins,join syntax>> for more information on the functionality and syntax of Worksheet, View, and table joins in TML.
 
@@ -40,22 +42,17 @@ NOTE: If you edit the joins in the Worksheet TML file, you are only editing the 
     <<join_path,join_path>>:
     - <<join,join>>:
       - <join_name_1>
+      - <join_name_n>
   - <<id,id>>: <table_path_name_2>
     <<table,table>>: <table_name_2>
     <<join_path,join_path>>:
-    - {}
-  - <<id,id>>: <table_path_name_3>
-    <<table,table>>: <table_name_3>
-    <<join_path,join_path>>:
-    - <<join,join>>:
-      - <join_name_1>
     - <<join,join>>:
       - <join_name_2>
-      - <join_name_3>
+  - <<id,id>>: <table_path_name_n>
+    <<table,table>>: <table_name_n>
+    <<join_path,join_path>>:
     - <<join,join>>:
-      - <join_name_4>
-      - <join_name_5>
-      - <join_name_6>
+      - <join_name_n>
   <<formulas,formulas>>:
   - <<name,name>>: <formula_name_1>
     <<expr,expr>>: <formula_definition_1>
@@ -75,7 +72,7 @@ NOTE: If you edit the joins in the Worksheet TML file, you are only editing the 
   <<worksheet_columns,worksheet_columns>>:
   - <<name,name>>: <column_name_1>
     <<description,description>>: <optional_column_description>
-    <<column_id,column_id>>: <column_id_1>
+    <<column_id,column_id>>: <table_path>::<column_id_1>
     <<properties,properties>>:
       <<column_type,column_type>>: [ MEASURE | ATTRIBUTE ]
       <<aggregation,aggregation>>: [ SUM | COUNT | AVERAGE | MAX | MIN |
@@ -111,7 +108,7 @@ NOTE: If you edit the joins in the Worksheet TML file, you are only editing the 
       <<search_iq_preferred,search_iq_preferred>>: [ true | false ]
     <<name,name>>: <column_name_2>
     <<description,description>>: <column_description>
-    <<column_id,column_id>>: <column_id_2>
+    <<column_id,column_id>>: <table_path>::<column_id_2>
     ...
   <<properties,properties>>:
     <<is_bypass_rls,is_bypass_rls>>: [ true | false ]

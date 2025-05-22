@@ -4,16 +4,17 @@
 :experimental:
 :page-partial:
 :page-aliases: /complex-search/about-cumulative-formulas.adoc
+:description: Cumulative formulas are aggregate formulas.
 
 Cumulative formulas are aggregate formulas.
 
-Cumulative formulas allow you to calculate the average, max, min, or sum or your data over time. Although we usually talk about cumulative formulas over time, you can use them over any other sequential data. Each of the cumulative formulas accepts a measure and one or more optional grouping by an attribute (like region or department):
+Cumulative formulas allow you to calculate the average, max, min, or sum of your data over time. Although we usually talk about cumulative formulas over time, you can use them over any other sequential data. Each of the cumulative formulas accepts a measure and one or more optional grouping by an attribute (like region or department):
 
 [source]
 ----
 formula (measure, [attribute, attribute, ...])
 ----
-Only the measure value is required. If you supply both a measure and attributes, the formula returns the aggregate of the measure accumulated by the attribute(s) in the order specified. You should experiment with only a measure and then with an attribute to see which output best meets your use case.
+Only the measure value is required. If you supply both a measure and attributes, the formula returns the aggregate of the measure accumulated by the attribute(s) in the order specified. You should experiment with only a measure and then with an attribute to see which output best meets your use case. Note that the cumulative formulas reset their results for different values of any attribute in your search that is not part of your cumulative formula.
 
 The cumulative formulas are:
 
@@ -53,9 +54,9 @@ Example:::
 cumulative_sum (revenue, order date)
 ----
 
-You may have attributes in your search that are not part of the cumulative formula. The cumulative formula resets its results for different values of any attribute that is not part of your cumulative formula. For example, with a cumulative formula of `cumulative_sum (revenue, order date)`, if your search includes the attribute `market segment`, the cumulative sum formula aggregates the revenue by date separately for different market segments. For example:
+You may have attributes in your search that are not part of the cumulative formula. The cumulative formula resets its results for different values of any attribute that is not part of your cumulative formula. For example, with a cumulative formula of `cumulative_sum (sales, date)`, if your search includes the attribute `item type`, the cumulative sum formula aggregates the sales by date separately for different item types. For example:
 
-image::cumulative-sum-note-example.png[Cumulative sum example]
+image::cumulative-sum-note-example-new.png[Cumulative sum example]
 
 [#cumulative_sum_example]
 == Calculate a cumulative sum
@@ -83,3 +84,31 @@ The formula appears in the search bar and in the table as its own column.
 image::cumulative_sum_table.png[cumulative sum table]
 +
 A headline box that displays the cumulative sum within the entire table appears at the bottom. You can click it to toggle between different aggregations.
+
+== Calculate a cumulative sum of a unique count
+
+ThoughtSpot doesn't have a purpose-built function for calculating a cumulative sum, or other cumulative formula, for a unique count. However, for many use cases, you can use a `group_aggregate` to facilitate this type of count. Adding a `group_aggregate` to your formula allows you to pass the aggregate function (in this case, `unique count`) in the windowing function (in this case, `cumulative_sum`).
+
+See the following example for the general formula for a cumulative sum of a unique count. In this example, we calculate the cumulative sum of unique customer names, using `monthly date` as our aggregation bucket.
+
+[source,bash]
+----
+cumulative_sum (group_aggregate (unique count (Customer Name ),query_groups (),query_filters ()),start_of_month (Date) )
+----
+
+The result looks something like this:
+
+image::cumulative-unique-example.png[Cumulative sum of a unique count of customers]
+
+You can use this syntax on any cumulative formula: average, maximum, minimum, and sum.
+
+NOTE: This syntax produces a unique count for each individual result, such as *Oct 2021*. However, it doesn't produce a unique count across results. If a customer name appears in both October 2021 and November 2021, for example, that customer would be counted in both those months.
+
+
+'''
+> **Related information**
+>
+> * xref:formulas-moving.adoc[Moving functions]
+> * xref:formulas-aggregation-flexible.adoc[Flexible aggregation functions]
+> * xref:formulas-aggregation-group.adoc[Grouping functions]
+> * xref:formulas-aggregation-filtered.adoc[Filtered aggregation functions]

@@ -1,0 +1,72 @@
+= DataFlow encryption reference
+:last_updated: 6/6/2022
+:linkattrs:
+:experimental:
+:description:
+ 
+[%header,cols="1,1,1,4,3"]
+|===
+| Database Type | Connector | Encryption on by default? | Notes | Supported JDBC options
+| MySQL | JDBC | No | Can be configured through JDBC options a| ----
+clientCertificateKeyStoreUrl=file:///root/work/mysql-ssl/keystore.jks&
+clientCertificateKeyStorePassword=password123&
+trustCertificateKeyStoreUrl=file:///root/work/mysql-ssl/ca-cert.jks&trustCertificateKeyStorePassword=password123
+----
+| Oracle | JDBC | No | Can be configured through JDBC options a| ----
+oracle.net.encryption_client=REQUESTED;
+oracle.net.crypto_checksum_client=REQUESTED;
+oracle.net.encryption_types_client=AES256;
+oracle.net.crypto_checksum_types_client=SHA1
+----
+| MariaDB | JDBC | No | Can be configured through JDBC options a| ----
+useSSL=true&password=password123&
+trustStore=/root/works/mariadb-ssl/certificates/mariaDB_TrustStore.jks&trustStorePassword=pass123&
+keyStore=/root/works/mariadb-ssl/certificates/mariaDB_keystore.jks&
+keyStorePassword=password123
+----
+| PostgreSQL | JDBC | No | Can be configured through JDBC options a| ----
+ssl=true&sslmode=ver ify-ca&sslpassword=password123&sslcert=/root/work/postgress-ssl/postgres_ssl_keys/postgresql.crt&sslkey=/root/work/postgress-ssl/postgres_ssl_keys/postgresql.der&sslrootcert=/root/work/postgress-ssl/postgres_ssl_keys/root.crt
+----
+| MSSQL | JDBC | No | Can be configured through JDBC options a| ----
+trustServerCertificate=false;trustStore=/root/work/sqlserver-ssl/sqlserver_cert/sqlservernew_trust.jks;trustStorePassword=password123;encrypt=true
+----
+| Cassandra | JDBC | No | Can be configured through JDBC options a| ----
+sslclientcert=/root/work/cassandra/keystore.jks;sslclientcertpassword=password123;sslclientcerttype=JKS;usessl=true
+----
+| MongoDB | JDBC | No | Can be configured through JDBC options a| ----
+sslclientcert=/root/work/mongodb/keystore.jks;sslclientcertpassword=password123;sslclientcerttype=JKS;usessl=true
+----
+| Hive | JDBC | No | Available as an authentication type choice |
+| Presto | JDBC | No | Available as an authentication type choice |
+| SAP Adaptive Server Enterprise | JDBC | No | Can be configured through JDBC options a| ----
+Encryption=ssl;TrustedFile='/path/to/the/trusted/roots/file';
+----
+| Netezza | JDBC | No | Can be configured through JDBC options a| ----
+securityLevel=onlySecured;CaCertFile=file:///root/work/netezza-ssl/nz_cert_key/ca-cert.pem
+----
+| IBM DB2 | JDBC | No | Can be configured through JDBC options a| ----
+sslConnection=true;trustStore=/root/work/db2-ssl/db2_cert/db2_trust.jks;trustStorePassword=password123
+----
+| Snowflake | JDBC | Yes | No configuration is required, by default Snowflake encrypts the data in transit. |
+| Amazon Redshift | JDBC | No | Configuration is same as for PostgreSQL. If the server's certificate is CA signed and the CA is already in trusted list, then no need to explicitly set a truststore, just `ssl=true` will do   https://docs.aws.amazon.com/redshift/latest/mgmt/connecting-ssl-support.html |
+| Google BigQuery | Native Java Driver | Yes |  | https://cloud.google.com/security/encryption-in-transit#end_user_internet_to_a_google_cloud_service   https://cloud.google.com/security/encryption-in-transit#encryption_in_transit_by_default
+| Azure Synapse | JDBC | Yes | | https://docs.microsoft.com/en-us/azure/synapse-analytics/security-baseline#44-encrypt-all-sensitive-information-in-transit
+| Teradata | JDBC | No | EncryptData property has to be set to true as suggested here:    https://teradata-docs.s3.amazonaws.com/doc/connectivity/jdbc/reference/current/jdbcug_chapter_2.html#URL_ENCRYPTDATA a| `ENCRYPTDATA=ON`
+| SAP HANA | JDBC | No | Can be configured through JDBC options a| ----
+encrypt=true;trustStore=/<path>/<to>/truststore.jks;trustStoreType=JKS;trustStorePassword=<password of the JKS file>;hostNameInCertificate=<FQDN in the server certificate>
+----
+| SAP SQL Anywhere | JDBC | No | Can be configured through JDBC options a| ----
+ENCRYPTION=TLS(FIPS=OFF;TRUSTED_CERTIFICATE=rsaroot.crt;ALLOW_EXPIRED_CERTS=ON;SKIP_CERTIFICATE_NAME_CHECK=ON;CERTIFICATE_NAME=MyCertificateName)
+----
+| Amazon Aurora | JDBC | No | Can be configured through JDBC options a| ----
+sslMode=VERIFY_IDENTITY&trustCertificateKeyStoreUrl=file:///root/work/mysql-ssl/ca-cert.jks&trustCertificateKeyStorePassword=password123
+----
+| Denodo | JDBC | No | No parameters available for passing truststore explicitly, certificate is expected in the java default cacerts a| `ssl=true`
+| Databricks Delta Lake | JDBC/DBFS CLI | Yes | No configuration is required, the default connection string provided by Databricks is with SSL enabled with its port on 443. The DBFS CLI internally uses REST with https endpoints |
+| Vertica | JDBC | No | Option available in connection to enable SSL and provide trust details |
+| MemSQL | JDBC | Yes for Managed Instance | Option available in connection for on-premise MemSQL. Truststore details should be provided in connection |
+| Splunk | JDBC | No | No additional configuration required from connection as long as the SSL Server certificate is present in the default java truststore.
+For example, use: `JAVA_HOME\lib\security\cacerts` store |
+| Salesforce | JDBC | No | No additional configuration required from connection as long as the SSL Server certificate is present in the default java truststore.
+For example, use: `JAVA_HOME\lib\security\cacerts` store |
+|===

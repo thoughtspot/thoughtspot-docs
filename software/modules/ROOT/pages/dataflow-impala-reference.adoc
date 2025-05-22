@@ -1,0 +1,236 @@
+= Impala connection reference
+:last_updated: 03/08/2022
+:experimental:
+:linkattrs:
+:page-aliases:
+
+Learn about the fields used to create an Impala connection with ThoughtSpot DataFlow.
+
+Here is a list of the fields for an Impala connection in ThoughtSpot DataFlow.
+You need specific information to establish a seamless and secure connection.
+
+[#connection-properties]
+== Connection properties
+
+[#dataflow-impala-conn-connection-name]
+Connection name::
+Name your connection.
++
+Mandatory field.
+
+Example;;
+ImpalaConnection
+
+[#dataflow-impala-conn-connection-type]
+Connection type::
+Choose the Impala connection type.
++
+Mandatory field.
+
+Example;;
+Impala
+
+[#dataflow-impala-conn-host]
+Host::
+Specify the hostname or the IP address of the Impala system
++
+Mandatory field.
+
+Example;;
+www.example.com
+
+[#dataflow-impala-conn-port]
+Port::
+Specify the port associated to the Impala system
++
+Mandatory field.
+
+Example;;
+1234
+
+[#dataflow-impala-conn-authentication]
+Authentication::
+Select the type of Authentication being enabled
++
+Mandatory field.
+
+Example;;
+Kerberos
+
+Valid values;;
+No authentication, Kerberos, LDAP
+Default;;
+Kerberos
+
+[#dataflow-impala-conn-kerberos-realm]
+Kerberos realm::
+Realm of the Impala host.
++
+Mandatory field.
+
+Example;;
+example.com
+
+[#dataflow-impala-conn-kdc-host]
+KDC host::
+Hostname or IP address of the KDC server.
++
+Mandatory field.
+
+Example;;
+node1.example.com
+
+[#dataflow-impala-conn-kerberos-service-name]
+Kerberos service name::
+Kerberos service principal name of the Impala server
++
+Mandatory field.
+
+Example;;
+impala
+
+[#dataflow-impala-conn-user-key-tab]
+User key tab::
+
+Specify the path to the keytab file containing the user principal's credentials.
++
+Mandatory field.
+
+[#dataflow-impala-conn-user-principal]
+User principal::
+Specify the user id that will be used to connect to the Impala system. This user should have necessary privileges to access the data in the databases. For Kerberos it is usually of the form <user>/<service_host>@<kerberos_realm>.
++
+Mandatory field.
+
+
+[#dataflow-impala-conn-password]
+Password::
+Specify the password for the User. Appears when the Authentication type is "LDAP".
++
+Mandatory field.
+
+Example;;
+pswrd234%!
+
+[#dataflow-impala-conn-jdbc-options]
+JDBC options::
+Specify the options associated with the JDBC URL.
++
+Optional field.
+
+Example:;;
++
+[source]
+----
+jdbc:sqlserver://[serverName[instanceName][:portNumber]]
+----
++
+Notes:;;
+Advanced configuration
+
+
+[#sync-properties]
+== Sync properties
+
+[#dataflow-impala-sync-data-extraction-mode]
+Data extraction mode::
+Specify the extraction type.
++
+Optional field.
+
+Example;;
+JDBC
+Valid values;;
+JDBC
+Default;;
+JDBC
+
+[#dataflow-impala-sync-enclosing-character]
+Enclosing character::
+Specify if the text columns in the source data needs to be enclosed in quotes.
++
+Optional field.
+
+Example;;
+DOUBLE
+Valid values;;
+SINGLE, DOUBLE
+Default;;
+DOUBLE
+
+[#dataflow-impala-sync-escape-character]
+Escape character::
+Specify this if the text qualifier is mentioned. This should be the character which escapes the text qualifier character in the source data.
++
+Optional field.
+
+Example;;
+\""
+Valid values;;
+\\, Any ASCII character
+Default;;
+\""
+
+[#dataflow-impala-sync-max-ignored-rows]
+Max ignored rows::
+Abort the transaction after encountering 'n' ignored rows
++
+Optional field.
+
+Example;;
+0
+Valid values;;
+Any numeric value
+Default;;
+0
+
+[#dataflow-impala-sync-column-delimiter]
+Column delimiter::
+Specify the column delimiter character.
++
+Mandatory field.
+
+Example;;
+, (comma)
+Valid values;;
+Any character, (comma, semicolon) or a number. If using a number, system uses its ASCII value as delimiter.
+Default;;
+, (comma)
+
+[#dataflow-impala-sync-ts-load-options]
+TS load options::
+Specifies the parameters passed with the `tsload` command, in addition to the commands already included by the application.
++
+The format for these parameters is:
++
+[source]
+----
+--<param_1_name><optonal_param_1_value>
+--<param_2_name><optonal_param_21_value>
+----
++
+Optional field.
+
+Example;;
++
+[source]
+----
+--max_ignored_rows 0
+----
+Valid values;;
++
+[source]
+----
+--null_value """"
+--escape_character """"
+--max_ignored_rows 0
+----
+Default;;
+--max_ignored_rows 0
+
+'''
+> **Related information**
+>
+> * xref:dataflow-impala-add.adoc[Add a connection]
+> * xref:dataflow-impala-sync.adoc[Sync data]
+

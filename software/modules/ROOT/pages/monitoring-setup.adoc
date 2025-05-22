@@ -14,6 +14,7 @@ Setting up monitoring is a one time operation.  To configure monitoring of your 
 
 '''
 
+== Set up email monitoring
 To set up monitoring, follow these steps:
 
 . Log in to the Linux shell using SSH.
@@ -56,3 +57,46 @@ You should see information like:
 
 . After the heartbeat interval has passed, check your email to verify that emails are being delivered.
 . If you don't receive any emails, xref:relay-host.adoc#verify-email[verify that email is working].
+
+== Alert email structure
+
+This is the general structure of the alert email:
+
+----
+Email Subject: <ALERT_TYPE> <CLUSTER_NAME> <ALERT_CODE> - <ALERT_MESSAGE>
+
+Email Body:
+
+-----------
+Details
+-----------
+<ALERT_DETAILS>
+-----------
+Metadata
+-----------
+Sender: <HOSTNAME>
+Generated at: <ALERT_GENERATED_TIME>
+Cluster Name: <CLUSTER_NAME>
+Cluster Id: <CLUSTER_ID>
+Release: <RELEASE_VERSION>
+Alert Name: <ALERT_NAME>
+Guid: <ALERT_GUID>
+----
+
+=== Parameters
+
+These are the definitions of the parameters in the alert email:
+
+ALERT_TYPE:: Type of alert generated. Can be `CRITICAL`, `ERROR`, or `WARNING`.
+CLUSTER_NAME:: Name of the cluster from which the alert was generated.
+ALERT_CODE:: The ThoughtSpot team uses this code internally. It is useful if you must report the alert to ThoughtSpot.
+ALERT_MESSAGE:: The message of a particular alert. Can be different for each alert. For example, `Task timely.timely terminated 5 times in last 2m42s`.
+ALERT_DETAILS:: Contains the details of a particular alert, why the alert was triggered, and what was the exception. Varies with each alert.
+HOSTNAME:: Hostname of the machine where the alert was generated. Sometimes appears as an IP address.
+ALERT_GENERATED_TIME:: Time when the alert was generated, in UTC.
+CLUSTER_NAME:: Name of the cluster generating the alert.
+CLUSTER_ID:: Id of the cluster generating the alert.
+RELEASE_VERSION:: ThoughtSpot release version on the cluster generating the alert.
+HOSTNAME:: Hostname of the machine where the alert was generated. Sometimes appears as an IP address.
+ALERT_GENERATED_TIME:: Time when the alert was generated, in UTC.
+CLUSTER_NAME:: Name of the cluster generating the alert.
