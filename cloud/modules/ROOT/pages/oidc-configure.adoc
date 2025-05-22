@@ -7,7 +7,12 @@
 
 OpenID Connect (OIDC) is an authentication protocol that adds an identity layer to the OAuth 2.0 protocol. OIDC allows clients to verify a user’s identity based on the authentication performed by an authorization server. Using the OIDC authentication framework, end users can access multiple applications and websites using their single sign-on credentials.
 
-This article explains how to configure OIDC for a non-embedded ThoughtSpot instance. To learn how to configure OIDC for an embedded ThoughtSpot instance, refer to the https://developers.thoughtspot.com/docs/?pageid=configure-oidc[developer documentation^].
+This article explains how to configure OIDC for a non-embedded ThoughtSpot instance. To learn how to configure OIDC for an embedded ThoughtSpot instance, refer to the https://developers.thoughtspot.com/docs/?pageid=oidc-auth#embedConfig[developer documentation^].
+
+[NOTE]
+====
+If your organization uses xref:orgs-overview.adoc[], ThoughtSpot does not support OIDC integration for authentication. You must use xref:authentication-local.adoc[local authentication] or xref:authentication-integration.adoc[SAML authentication].
+====
 
 == OIDC concepts and terms
 
@@ -63,14 +68,14 @@ ThoughtSpot supports the `Authorization code flow` in which an authorization ser
 The OIDC configuration procedure includes the following steps:
 
 * <<clientRegistration,Register your ThoughtSpot instance and the redirect URI in the OpenID provider>>
-* <<configure-ts,Enable OIDC authentication support on ThoughtSpot>> (Requires assistance from ThoughtSpot Support)
+* <<configure-ts,Enable OIDC authentication support on ThoughtSpot>> (Requires assistance from {support-url})
 
 [#clientRegistration]
 === Register ThoughtSpot and set the redirect URI
 
 To register ThoughtSpot as a client in the OpenID provider server:
 
-. Log in to your OpenID provider.
+. Sign in to your OpenID provider.
 . Register your ThoughtSpot instance as a relying party.
 . Specify the redirect URI to which the OpenID authorization server must send the response.
 +
@@ -85,7 +90,7 @@ https://<ThoughtSpot-Host>/callosum/v1/oidc/callback
 +
 ThoughtSpot supports only the `client_secret_post` authentication method. It sends client credentials in the request body in its `POST` requests to the authorization and token endpoints.
 
-After you register ThoughtSpot as a relying party and set the redirect URI, the OpenID provider provides the following information, which you need to send to ThoughtSpot Support later:
+After you register ThoughtSpot as a relying party and set the redirect URI, the OpenID provider provides the following information, which you need to send to {support-url} later:
 
 * Client ID
 +
@@ -108,7 +113,7 @@ The registered redirect URI to which the authorization response will be sent.
 
 NOTE: You must contact {support-url} to enable OIDC authentication support on ThoughtSpot.
 
-To configure ThoughtSpot for OpenID Connect authentication, the following attributes and metadata are required. You must send this information to ThoughtSpot Support.
+To configure ThoughtSpot for OpenID Connect authentication, the following attributes and metadata are required. You must send this information to {support-url}.
 
 * Client ID and client secret
 +
@@ -190,8 +195,14 @@ The OIDC authentication workflow involves the following steps:
 . The OpenID authorization server returns an authorization code.
 . ThoughtSpot sends the authorization code with the ThoughtSpot client credentials in a `POST` request to the OpenID token endpoint.
 . The token endpoint returns an ID and access token in exchange for the authorization code.
-. ThoughtSPot validates the ID token and authenticates the user.
+. ThoughtSpot validates the ID token and authenticates the user.
 . If the authentication is successful, the web browser redirects the user to the requested page.
+
+== Group synchronization
+
+The group synchronization feature reads the Group claim from the ID token provided by the OpenID provider and creates groups in ThoughtSpot. To enable group synchronization in ThoughtSpot, contact {support-url}.
+
+NOTE: If you delete a group from the OpenID provider server, the corresponding group in ThoughtSpot will not be deleted during synchronization. You must manually delete the group(s) in ThoughtSpot.
 
 == Additional resources
 

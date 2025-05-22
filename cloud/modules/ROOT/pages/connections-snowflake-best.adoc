@@ -1,52 +1,67 @@
-= Best practices for Snowflake connections
+= Best practices for {connection} connections
 :last_updated: 03/25/2021
 :experimental:
 :linkattrs:
 :page-partial:
 :page-layout: default-cloud
 :page-aliases: /admin/ts-cloud/ts-cloud-embrace-snowflake-best-practices.adoc, /data-integrate/embrace/embrace-snowflake-best.adoc
+:connection: Snowflake
+:description: This article contains helpful pointers on data modeling when using Snowflake.
 
-This article contains helpful pointers on data modeling when using Snowflake.
+This article contains helpful pointers on data modeling when using {connection}.
 
-After connecting to Snowflake through ThoughtSpot, you may notice that some things don’t work as you expect. This article lists best practices for improving the user experience by making small changes to the Snowflake schema in Snowflake, to optimize it for ThoughtSpot.
+After connecting to {connection} through ThoughtSpot, you may notice that some things don’t work as you expect. This article lists best practices for improving the user experience by making small changes to the {connection} schema in {connection}, to optimize it for ThoughtSpot.
 
 == Keep default collation settings
 
-Collation settings in Snowflake compare strings based on their UTF-8 character representations. For the best query performance, ThoughtSpot recommends using the default setting of `en-cs` (case-sensitive).
+Collation settings in {connection} compare strings based on their UTF-8 character representations. For the best query performance, ThoughtSpot recommends using the default setting of `en-cs` (case-sensitive).
 
-For more information, see https://docs.snowflake.com/en/sql-reference/collation.html[Collation Support, window=_blank] in the Snowflake documentation.
+For more information, see https://docs.snowflake.com/en/sql-reference/collation.html[Collation Support, window=_blank] in the {connection} documentation.
 
-== Change JSON to a relational schema in Snowflake
+== Change JSON to a relational schema in {connection}
 
 ThoughtSpot works with relational data, where data must be in the form of a table, with rows and columns. Relational data is commonly stored as comma separated values, in CSV format, or in tables in a database.
 
-The Snowflake warehouse uses more flexible requirements for storing data, such as the `VARIANT` data type to store JSON. However, the user experience when searching directly on JSON data in ThoughtSpot is not as good as searching over relational data.
+The {connection} warehouse uses more flexible requirements for storing data, such as the `VARIANT` data type to store JSON. However, the user experience when searching directly on JSON data in ThoughtSpot is not as good as searching over relational data.
 
-For example, if you connect to the Snowflake Free Trail sample WEATHER dataset, and search it in ThoughtSpot, the `DAILY_14_TOTAL` table features JSON data.
+For example, if you connect to the {connection} Free Trail sample WEATHER dataset, and search it in ThoughtSpot, the `DAILY_14_TOTAL` table features JSON data.
 
-image::snowflake-jsondata.png[JSON data in Snowflake]
+image::snowflake-jsondata.png[JSON data in {connection}]
 
-To make this data searchable in ThoughtSpot, you must first create a view in Snowflake, which effectively makes the JSON data into relational (table) data. You can then search this data in ThoughtSpot, and generate chart and table results from your searches. This process is called “schema on read”.
+To make this data searchable in ThoughtSpot, you must first create a view in {connection}, which effectively makes the JSON data into relational (table) data. You can then search this data in ThoughtSpot, and generate chart and table results from your searches. This process is called “schema on read”.
 
-== Create a view in snowflake
+== Allow ThoughtSpot to connect only to specific {connection} databases
 
-To create a view from a Snowflake table that contains JSON, follow these steps:
+You may want to access multiple {connection} databases in a single connection, but do not want the connection to access _all_ your Snowflake databases. If you only want to access one {connection} database, you can specify the database in the *Database* text box in *Specify connection details* during setup.
 
-. Log in to your Snowflake instance.
+To allow ThoughtSpot to connect only to specific {connection} databases, follow these steps:
 
-. If necessary, change your role so you can issue `CREATE VIEW` DDL statement in the target schema. See https://docs.snowflake.net/manuals/sql-reference/sql/create-view.html[CREATE VIEW^] in Snowflake.
+. Navigate to step 2 of the connection setup process: *Specify connection details*.
+
+. Select the *Advanced Config* menu to reveal the *Key* and *Value* fields.
+. For each specific database you would like to access, set `database` as the key, and the database name as the value.
+. To add more keys and values, select the plus sign (+), and enter them.
+. Complete the xref:connections-snowflake-add.adoc[connection setup process].
+
+== Create a view in {connection}
+
+To create a view from a {connection} table that contains JSON, follow these steps:
+
+. Sign in to your {connection} instance.
+
+. If necessary, change your role so you can issue `CREATE VIEW` DDL statement in the target schema. See https://docs.snowflake.net/manuals/sql-reference/sql/create-view.html[CREATE VIEW^] in {connection}.
 +
-image:snowflake-switch-role.png[Switch roles in Snowflake]
+image:snowflake-switch-role.png[Switch roles in {connection}]
 
-. Click **Worksheets**.
+. Select **Worksheets**.
 +
-image:snowflake-worksheets.png[Switch to Worksheets in Snowflake]
+image:snowflake-worksheets.png[Switch to Worksheets in {connection}]
 
 . Issue the `CREATE VIEW` statement.
 +
 See https://docs.snowflake.net/manuals/sql-reference/sql/create-view.html#syntax[CREATE VIEW Syntax^].
 +
-The following example uses the sample `WEATHER` data from the **Snowflake Free Trial** sample data:
+The following example uses the sample `WEATHER` data from the **{connection} Free Trial** sample data:
 +
 [source]
 ----
@@ -71,7 +86,7 @@ FROM json_weather_data
 WHERE city_id = 5128638;
 ----
 
-. Query the new view in Snowflake.
+. Query the new view in {connection}.
 +
 The following example demonstrates how you can query the view `json_weather_data_view` created in the previous step:
 +
@@ -82,21 +97,21 @@ WHERE date_trunc('month',observation_time) = '2018-01-01'
 LIMIT 20;
 ----
 
-. Add a connection to Snowflake in ThoughtSpot, specifically to the view you created.
+. Add a connection to {connection} in ThoughtSpot, specifically to the view you created.
 +
-See xref:connect-snowflake[Connect to Snowflake].
+See xref:connect-snowflake[Connect to {connection}].
 
-When you subsequently search in ThoughtSpot against the Snowflake view, you can easily create charts and graphs, as expected.
+When you subsequently search in ThoughtSpot against the {connection} view, you can easily create charts and graphs, as expected.
 
-image::snowflake-view-visualization.png[Visualization on Snowflake view]
+image::snowflake-view-visualization.png[Visualization on {connection} view]
 
 == Add joins between tables
 
 To search more than one table at the same time in ThoughtSpot, you must define joins between these tables by specifying the  columns that contain matching data across two tables. These columns represent the 'primary key' and 'foreign key' of the join.
 
-In Snowflake, you can query the schema to get a list of its existing foreign key constraints with referenced constraints.
+In {connection}, you can query the schema to get a list of its existing foreign key constraints with referenced constraints.
 
-To determine which foreign keys already exist in your Snowflake schema, issue the following `SELECT ... AS` statement:
+To determine which foreign keys already exist in your {connection} schema, issue the following `SELECT ... AS` statement:
 
 [source]
 ----
@@ -136,22 +151,22 @@ The relationship symbol that indicates the direction of the join
 referenced_schema::
 The name of the referenced schema
 
-To search multi-table Snowflake data in ThoughtSpot, you must explicitly create joins.
+To search multi-table {connection} data in ThoughtSpot, you must explicitly create joins.
 
 There are two options for accomplishing this:
 
-* ThoughtSpot recommends that you add the necessary foreign key constraints by creating a join in Snowflake. We demonstrate how you can do in xref:join-snowflake[Create joins in Snowflake].
+* ThoughtSpot recommends that you add the necessary foreign key constraints by creating a join in {connection}. We demonstrate how you can do in xref:join-snowflake[Create joins in {connection}].
 +
-For in-depth information from Snowflake, see https://docs.snowflake.net/manuals/sql-reference/sql/create-table-constraint.html[CREATE or ALTER TABLE … CONSTRAINT^].
+For in-depth information from {connection}, see https://docs.snowflake.net/manuals/sql-reference/sql/create-table-constraint.html[CREATE or ALTER TABLE … CONSTRAINT^].
 
 * Alternatively, if you don't have the necessary permissions, you can create these relationships in ThoughtSpot.
 +
 See xref:relationship-create.adoc[Join a table or view to another data source].
 
 [#join-snowflake]
-=== Create joins in Snowflake
+=== Create joins in {connection}
 
-To add a foreign key constraint in Snowflake, you must issue the following `ALTER TABLE` statement:
+To add a foreign key constraint in {connection}, you must issue the following `ALTER TABLE` statement:
 
 [source]
 ----
@@ -196,9 +211,9 @@ The foreign key in the relationship, with the following definition:
 ----
 
 [#add-fk-snowflake]
-**Example 1: adding a foreign key in Snowflake**
+**Example 1: adding a foreign key in {connection}**
 
-For example, you can add a foreign key to Retail Sales schema in Snowflake by running the following `ALTER TABLE` statement. Also, contrast it with <<add-fk-thoughtspot,Example 2>>:
+For example, you can add a foreign key to Retail Sales schema in {connection} by running the following `ALTER TABLE` statement. Also, contrast it with <<add-fk-thoughtspot,Example 2>>:
 
 [source]
 ----
@@ -223,15 +238,15 @@ TQL> ALTER TABLE "HO_Retail_Sales_Fact"
 ----
 
 [#connect-snowflake]
-== Connect to Snowflake
+== Connect to {connection}
 
-Follow the general steps in xref:connections-snowflake-add.adoc[Add a Snowflake connection].
+Follow the general steps in xref:connections-snowflake-add.adoc[Add a {connection} connection].
 
-In the following screen, the **Account name** is the first part of the URL that you use to access Snowflake.
+In the following screen, the **Account name** is the first part of the URL that you use to access {connection}.
 
-image::snowflake-connectiondetails.png[Snowflake connection details]
+image::snowflake-connectiondetails.png[{connection} connection details]
 
-If you cannot find your **Full account name** in Snowflake, see the following examples for determining your account based on the account name, cloud platform, and region. Assume that the **account name** is `xy12345`.
+If you cannot find your **Full account name** in {connection}, see the following examples for determining your account based on the account name, cloud platform, and region. Assume that the **account name** is `xy12345`.
 
 :table-caption!:
 .Example accounts for connecting, by platform and region
@@ -256,7 +271,7 @@ If you cannot find your **Full account name** in Snowflake, see the following ex
 | xy12345.ap-southeast-1
 
 | Asia Pacific (Sydney)
-| xy12345.ap-sowtheast-2
+| xy12345.ap-southeast-2
 
 | GCP - Preview
 | us-central1 (Iowa)
@@ -281,3 +296,19 @@ If you cannot find your **Full account name** in Snowflake, see the following ex
 | Southeast Asia
 | xy12345.southeast-asia.azure
 |===
+
+'''
+> **Related information**
+>
+> * xref:connections-snowflake-add.adoc[Add a {connection} connection]
+> * xref:connections-snowflake-edit.adoc[Edit a {connection} connection]
+> * xref:connections-snowflake-remap.adoc[Remap a {connection} connection]
+> * xref:connections-snowflake-external-tables.adoc[Query external tables from your {connection} connection]
+> * xref:connections-snowflake-delete-table.adoc[Delete a table from a {connection} connection]
+> * xref:connections-snowflake-delete-table-dependencies.adoc[Delete a table with dependent objects]
+> * xref:connections-snowflake-delete.adoc[Delete a {connection} connection]
+> * xref:connections-snowflake-oauth.adoc[Configure OAuth]
+> * xref:connections-snowflake-azure-ad-oauth.adoc[Configure Azure AD OAuth]
+> * xref:connections-snowflake-private-link.adoc[]
+> * xref:connections-snowflake-reference.adoc[Connection reference for {connection}]
+> * xref:connections-query-tags.adoc#tag-snowflake[ThoughtSpot query tags in Snowflake]

@@ -3,32 +3,34 @@
 
 ////include::7.1@software:ROOT:connections-snowflake-edit.adoc[]
 ////
-= Configure internal OAuth for a Snowflake connection
+= Configure internal OAuth for a {connection} connection
 :last_updated: 11/05/2021
 :experimental:
 :linkattrs:
 :page-layout: default-cloud
 :page-partial:
+:connection: Snowflake
+:description: ThoughtSpot supports Snowflake’s internal OAuth for a Snowflake connection.
 
-include::partial$liveboards-announcement.adoc[]
 
-ThoughtSpot supports Snowflake's internal OAuth for a Snowflake connection.
-With OAuth, each ThoughtSpot user authenticates with Snowflake and authorizes ThoughtSpot to query the database using their Snowflake user account.
 
-For Snowflake connections that use internal OAuth, users must log in when their OAuth tokens expire.
-The amount of time that Snowflake OAuth tokens are valid is set in Snowflake.
+ThoughtSpot supports {connection}'s internal OAuth for a {connection} connection.
+With OAuth, each ThoughtSpot user authenticates with {connection} and authorizes ThoughtSpot to query the database using their {connection} user account.
 
-== Configuring a Snowflake database for internal OAuth with ThoughtSpot
+For {connection} connections that use internal OAuth, users must sign in when their OAuth tokens expire.
+The amount of time that {connection} OAuth tokens are valid is set in {connection}.
 
-To add a Snowflake connection to ThoughtSpot using internal OAuth, you must set up the OAuth integration in Snowflake.
-This requires a Snowflake user account with ACCOUNTADMIN permission.
+== Configuring a {connection} database for internal OAuth with ThoughtSpot
 
-IMPORTANT: Each ThoughtSpot instance requires a unique Snowflake security integration.
-Each user in Snowflake must have a default warehouse and default role.
+To add a {connection} connection to ThoughtSpot using internal OAuth, you must set up the OAuth integration in {connection}.
+This requires a {connection} user account with ACCOUNTADMIN permission.
 
-In your Snowflake database, do the following:
+IMPORTANT: Each ThoughtSpot instance requires a unique {connection} security integration.
+Each user in {connection} must have a default warehouse and default role.
 
-. In the worksheet view, enter the following commands, and click *Run*:
+In your {connection} database, do the following:
+
+. In the Worksheet view, enter the following commands, and select *Run*:
 +
 ----
 SHOW USERS;
@@ -74,11 +76,11 @@ DESCRIBE SECURITY INTEGRATION OAUTH_CONFIG;
 SELECT SYSTEM$SHOW_OAUTH_CLIENT_SECRETS('OAUTH_CONFIG');
 ----
 
-. Click the *Run* button to run the full query.
+. Select the *Run* button to run the full query.
 +
 The Details window appears displaying a JSON object.
 
-. Copy the JSON object and click *Done* to close the window.
+. Copy the JSON object and select *Done* to close the window.
 . Paste the contents into a text editor.
 +
 Example:
@@ -95,19 +97,34 @@ Example: `aOxPzmlRJvCP5eIUMlFxMbu6rJh7mTO=`
 +
 NOTE: Make sure you include the equals sign (=), if it exists.
 
-. In the Snowflake connection details page in ThoughtSpot, paste the OAuth client ID in the *OAuth Client ID* field.
+. In the {connection} connection details page in ThoughtSpot, paste the OAuth client ID in the *OAuth Client ID* field.
 . For OAUTH_CLIENT_SECRET, copy the information between quotes after the colon (:).
 +
 Example: `KdKBb0aOxPzml+RJvMP1/eIEMlFxM/su6rPh2wLZ`
 
-. In the Snowflake connection details page in ThoughtSpot, paste the OAuth client ID in the *OAuth Client Secret* field.
+. In the {connection} connection details page in ThoughtSpot, paste the OAuth client ID in the *OAuth Client Secret* field.
 +
 NOTE: Once a connection is created the token associated with the user login credentials for the connection is stored in ThoughtSpot for 90 days.
 
-== Sharing a worksheet built from tables in a Snowflake connection that uses OAuth
+== Sharing a Worksheet built from tables in a {connection} connection that uses OAuth
 
-When you share a ThoughtSpot object (worksheet, Liveboard, or answer) that references a Snowflake connection that uses OAuth authentication, the user is prompted to log in to Snowflake before they can view any data.
-When viewing the Liveboard, answer, or running a search on the worksheet, ThoughtSpot displays a message telling the user to log in with a button to initiate the login process.
+When you share a ThoughtSpot object (Worksheet, Liveboard, or Answer) that references a {connection} connection that uses OAuth authentication, the user is prompted to sign in to {connection} before they can view any data.
+When viewing the Liveboard, Answer, or running a search on the Worksheet, ThoughtSpot displays a message telling the user to sign in with a button to initiate the login process.
 
-IMPORTANT: In order for a user to access your shared worksheet, they must have a default role assigned to their user in Snowflake.
-////
+IMPORTANT: In order for a user to access your shared Worksheet, they must have a default role assigned to their user in {connection}.
+
+'''
+> **Related information**
+>
+> * xref:connections-snowflake-add.adoc[Add a {connection} connection]
+> * xref:connections-snowflake-edit.adoc[Edit a {connection} connection]
+> * xref:connections-snowflake-remap.adoc[Remap a {connection} connection]
+> * xref:connections-snowflake-external-tables.adoc[Query external tables from your {connection} connection]
+> * xref:connections-snowflake-delete-table.adoc[Delete a table from a {connection} connection]
+> * xref:connections-snowflake-delete-table-dependencies.adoc[Delete a table with dependent objects]
+> * xref:connections-snowflake-delete.adoc[Delete a {connection} connection]
+> * xref:connections-snowflake-azure-ad-oauth.adoc[Configure Azure AD OAuth]
+> * xref:connections-snowflake-best.adoc[Best Practices for {connection} connections]
+> * xref:connections-snowflake-private-link.adoc[]
+> * xref:connections-snowflake-reference.adoc[Connection reference for {connection}]
+> * xref:connections-query-tags.adoc#tag-snowflake[ThoughtSpot query tags in Snowflake]

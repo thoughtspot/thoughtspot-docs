@@ -9,12 +9,13 @@
 You can set number, date, and currency display formats.
 These formats define how these value types display in tables and charts.
 
-NOTE: ThoughtSpot supports number, currency, and percent formatting, at the data source level and at the answer level.
+NOTE: ThoughtSpot supports number, currency, and percent formatting, at the data source level and at the Answer level.
 The `format pattern` option combines number and percent formatting.
-You can override data source ("`custom`" in the UI) formatting at the answer level.
+You can override data source ("`custom`" in the UI) formatting at the Answer level.
 In source level/ custom formatting, you can only define the format pattern (number and percent formatting) or currency option.
 If you set them both, the format pattern overrides your currency formatting.
 
+[#number_formats]
 == Number formats
 
 You can set a format for how numbers are displayed in tables and charts.
@@ -26,11 +27,11 @@ The system has default values which are:
 
 [cols=2*]
 |===
-| `#,###`
+| `\#,###`
 | For integer data types `INT` and `BIGINT`.
 As you can see, these can only contain numbers, alpha characters are not permitted.
 
-| `#,###.00`
+| `\#,###.00`
 | for decimal data types `DOUBLE` and `FLOAT`.
 |===
 
@@ -40,40 +41,55 @@ These are some examples of formats you can use:
 | Stored Value | Format Pattern | Display Value
 
 | 12345.6789
-| `#,##0.##`
+| `\#,\##0.##`
 | 12,345.68
 
 | 12345.6789
-| `#,##0.###`
+| `\#,\##0.\###`
 | 12,345.679
 
 | 12345.6789
-| `#,##0.00000`
+| `\#,##0.00000`
 | 12,345.67890
 
 | 12345.6789
-| `#,##0`
+| `\#,##0`
 | 12,346
 
 | 12345.6789
-| `#,##0.00`
+| `\#,##0.00`
 | 12,345.68
 
 | 12345
-| `#,##0.##`
+| `\#,\##0.##`
 | 12,345
 
 | 12345
-| `#,##0.00`
+| `\#,##0.00`
 | 12,345.00
+
+|.12
+| `#%`
+| 12%
+
+|.12
+| `#.00%`
+| 12.00%
+
+|.1234
+| `\#.##%`
+| 12.34%
+
 |===
+
+NOTE: If you are formatting percentages, you cannot have a space before the percent sign. #.00% is valid, but #.00 % is not.
 
 === Profile-based number formatting
 
-Number formatting is set by default based on your ThoughtSpot profile's *Preferred locale* setting.
+Number formatting is set by default based on your ThoughtSpot profile's *System language* setting.
 You can set this value to accommodate your geographic locations.
 
-image::profile-locale.png[]
+image::profile-locale.png[Set your system language from the profile]
 
 For example, if you are using ThoughtSpot in the US, the number formatting should look like this: `xxx,xxx.xx`.
 And in Europe, it should look like this: `xxx.xxx,xx`.
@@ -107,7 +123,7 @@ For daily dates, ThoughtSpot uses each user's locale to determine whether to dis
 [#set-currency-type]
 == Set currency type
 
-You can set a format for how currencies display in tables and charts when using the ThoughtSpot Data API or embedding.
+You can set a format for how currencies display in tables and charts. This setting affects the ThoughtSpot UI, the Data API, and the UI when embedding ThoughtSpot.
 For example, you can display currencies in a standard European Euro or US Dollar format, based on the data modeling setting *Currency Type*.
 
 You can change the currency format used to display a column's values xref:model-data-ui.adoc[for a single table].
@@ -118,12 +134,12 @@ All users are treated as if they are in `en-US` locale unless they are in embed 
 For example, `100 Polish Zloty` appears as `100zł` to a user in Poland, but without localization enabled, it appears as `PLN 100`.
 
 This subtle difference can be seen when you use the REST API.
-See the ThoughtSpot Application Integration Guide for more information on the API.
+See the https://developers.thoughtspot.com/docs/?pageid=rest-apis[Developer documentation^] for more information on the API.
 
 . Find the *Currency Type* for the column whose display format you want to change.
-. Click it to open the *Specify Currency Type* menu.
+. Select it to open the *Specify Currency Type* menu.
 +
-image::specify_currency_type.png[]
+image::specify_currency_type.png[Specify the currency type]
 
 . Select one of the following ways you would like to change the format.
 +
@@ -141,8 +157,18 @@ This option is disabled if there is no `VARCHAR` column to choose from.
 | Your currency data will be modeled upon your selection from the available currency code choices.
 |===
 
-. Click *Ok* to save your changes.
+. Select *Ok* to save your changes.
 
-== Related information
-
-xref:data-modeling.adoc[Model the data for searching]
+'''
+> **Related information**
+>
+> * xref:data-modeling.adoc[Model the data for searching]
+> * xref:data-modeling-column-basics.adoc[Set column name, description, and type]
+> * xref:data-modeling-aggreg-additive.adoc[Set additive and aggregate values]
+> * xref:data-modeling-visibility.adoc[Hide a column or define a synonym]
+> * xref:data-modeling-index.adoc[Manage suggestion indexing]
+> * xref:data-modeling-geo-data.adoc[Add a geographical data setting]
+> * xref:data-modeling-attributable-dimension.adoc[Change the attribution dimension]
+> * xref:spotiq-data-model-preferences.adoc[Exclude from SpotIQ analyses]
+> * xref:chasm-trap.adoc[Chasm traps]
+> * xref:data-types.adoc[Data types]

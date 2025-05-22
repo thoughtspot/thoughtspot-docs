@@ -1,120 +1,127 @@
-= Configure Azure AD external OAuth for a Snowflake connection
+= Configure Azure AD external OAuth for a {connection} connection
 :last_updated: 11/1/2021
 :linkattrs:
 :experimental:
 :page-layout: default-cloud
 :page-aliases: /admin/ts-cloud/ts-cloud-embrace-snowflake-azure-ad-oauth.adoc
+:connection: Snowflake
+:description: ThoughtSpot supports Microsoft Azure Active Directory (AD) OAuth for a Snowflake connection.
 
-ThoughtSpot supports Microsoft Azure Active Directory (AD) OAuth for a Snowflake connection.
-With Azure AD OAuth, the authorization server generates an access token from Azure AD on behalf of the ThoughtSpot user which authenticates them with Snowflake and authorizes ThoughtSpot to query the database using their Snowflake user account.
+ThoughtSpot supports Microsoft Azure Active Directory (AD) OAuth for a {connection} connection.
+With Azure AD OAuth, the authorization server generates an access token from Azure AD on behalf of the ThoughtSpot user which authenticates them with {connection} and authorizes ThoughtSpot to query the database using their {connection} user account.
+
+NOTE: The steps provided here are an example of how you can configure Azure AD OAuth for external OAuth. You can use any OAuth flow provided that you can get the information required for the security integration. The following steps provide a guide for getting the information required to create the security integration for Snowflake.
+
+IMPORTANT: Be sure to consult your organization's security policies for configuring an authorization server to make sure you meet all requirements.
 
 [#part-1]
 == Creating an external OAuth token using Azure AD on behalf of the user
 
-=== Part 1: Creating a Snowflake OAuth resource
+=== Part 1: Creating a {connection} OAuth resource
 
-To create a Snowflake OAuth resource, do the following:
+To create a {connection} OAuth resource, do the following:
 
 . Sign in to the https://portal.azure.com/[Microsoft Azure Portal^].
 . Navigate to *Azure Active Directory*.
 +
-image::azure-portal-ad.png[]
+image::azure-portal-ad.png[Under Azure services, select Azure Active Directory]
 
-. Click *App registrations*, then *New registration*.
+. Select *App registrations*, then *New registration*.
 +
-image::azure-portal-reg.png[]
+image::azure-portal-reg.png[Select App registrations > New registration]
 
 . For Name, enter a name for your application.
 +
-Example:``Snowflake Oauth User Resource``
+Example:``{connection} Oauth User Resource``
 
 . Make sure Supported account types is set to *Single Tenant*.
-. Click *Register*.
+. Select *Register*.
 +
-image::azure-portal-reg-ten.png[]
+image::azure-portal-reg-ten.png[Click Register]
 
-. After the application is created, click *Expose an API*.
+. After the application is created, select *Expose an API*.
 +
-image::snow-expose-api.png[]
-
-. Next to Application ID URI, click *Set* and change its value from *api://<alphanumeric value>* to *\https://<alphanumeric value>* and click *Save*.
+image::snow-expose-api.png[Click Expose an API]
++
+[#step-8]
+. Next to Application ID URI, select *Set* and change its value from *api://<alphanumeric value>* to *\https://<alphanumeric value>* and select *Save*.#
 +
 // []({{ site.baseurl }}/images/snow-app-uri.png)
 +
-image::snow-app-uri-oauth-client2.png[]
+image::snow-app-uri-oauth-client2.png[Update the App ID URI]
 +
-NOTE: If the Application ID URI is not used, you must create a security integration with audiences using the Snowflake Account URL (i.e.
+NOTE: If the Application ID URI is not used, you must create a security integration with audiences using the Snowflake Account URL (that is,
 `<account_identifier>.snowflakecomputing.com)`.
 +
 IMPORTANT: The Application ID URI must be unique within your organization's directory, such as `\https://your.company.com/4d2a8c2b-a5f4-4b86-93ca-ack45667`.
 
-. Click *Add a scope*.
-. For Scope name, enter the name of the Snowflake role (example: `session:role-any`).
+. Select *Add a scope*.
+. For Scope name, enter the name of the {connection} role (example: `session:role-any`).
 . Select who can consent.
 . Enter an Admin consent display name (example: `Any`).
 . Enter an Admin consent description.
-. Click *Add Scope*.
+. Select *Add Scope*.
 +
-image::snow-add-scope.png[]
+image::snow-add-scope.png[Add a scope modal image]
 
 IMPORTANT: When you create the scope in your Azure AD application, you must set it to "`any`" so that a user can later switch to any of their allowed roles when making a JDBC connection using the obtained token.
 
-=== Part 2: Creating a Snowflake OAuth client app
+=== Part 2: Creating a {connection} OAuth client app
 
-To create a Snowflake OAuth client app, do the following:
+To create a {connection} OAuth client app, do the following:
 
 . Sign in to the https://portal.azure.com/[Microsoft Azure Portal^], and navigate to *Azure Active Directory*, if needed.
-. Click *App registrations*, and then click *New registration*.
-. For Name, enter a name for the client (example: `Snowflake OAuth User`).
+. Select *App registrations*, and then select *New registration*.
+. For Name, enter a name for the client (example: `{connection} OAuth User`).
 . For Supported account types, make sure it is set to *Single tenant*.
-. Click *Register*.
-. Once the app is created, click *Overview*.
+. Select *Register*.
+. Once the app is created, select *Overview*.
 . From the Application (client) ID field, copy the ID.
 This ID is referred to as the `<OAUTH_CLIENT_ID>` in the steps that follow.
 +
-image::sf_oauth_user.png[]
+image::sf_oauth_user.png[Copy the Application (client) ID]
 
-. Click *Authentication*, and under Web, specify the redirect URI using the following format:
+. Select *Authentication*, and under Web, specify the redirect URI using the following format:
 +
 `<\https://<public> url of your ThoughtSpot Instance>/callosum/v1/connection/generateTokens`
 +
-image::redirect_uri.png[]
+image::redirect_uri.png[Add a redirect URI]
 
-. Click *Certificates & secrets* and then *New client secret*.
+. Select *Certificates & secrets* and then *New client secret*.
 +
-image::snow_certs_secr.png[]
+image::snow_certs_secr.png[Create a client secret]
 
 . Copy the *Value* of the secret you just created.
 This is referred to as `<OAUTH_CLIENT_SECRET>` in the steps that follow.
 +
-image::snow_secr.png[]
+image::snow_secr.png[Copy the value of the secret]
 
-. Click *API permissions*, then click *Add a permission*.
+. Select *API permissions*, then click *Add a permission*.
 +
-image::snow_api_perm.png[]
+image::snow_api_perm.png[Add an API permission]
 
-. Click *My APIs*.
-. Click the name of the Snowflake OAuth Resource you created in <<part-1,Part 1>>.
+. Select *My APIs*.
+. Select the name of the {connection} OAuth Resource you created in <<part-1,Part 1>>.
 +
-image::snow_req_api_perm.png[]
+image::snow_req_api_perm.png[Click on the OAuth Resource]
 
 . On the Request API permissions page, click the *Delegated permissions* box, and select the permission related to scope you defined in the application you want to grant to this client.
-. Click *Add permissions*.
+. Select *Add permissions*.
 +
-image::snow_req_api_2_perm.png[]
+image::snow_req_api_2_perm.png[Add permissions]
 
-. Under Configured permissions, click *Grant admin consent for Default Directory*, and then click *Yes* in the confirmation message.
+. Under Configured permissions, select *Grant admin consent for Default Directory*, and then click *Yes* in the confirmation message.
 +
-image::snow_grant_admin.png[]
+image::snow_grant_admin.png[Grant admin consent]
 
-=== Part 3: Collecting Azure AD information for Snowflake
+=== Part 3: Collecting Azure AD information for {connection}
 
-To collect Azure AD information for Snowflake, do the following:
+To collect Azure AD information for {connection}, do the following:
 
 . Sign in to the https://portal.azure.com/[Microsoft Azure Portal^], and navigate to *Azure Active Directory*, if needed.
-. Go back to the Snowflake OAuth Resource App (Snowflake Oauth User Resource) to collect all the info related as mentioned below:
-.. Click *Endpoints* in the *Overview* interface.
-.. On the right-hand side, copy the *OAuth 2.0 token endpoint (v2)* and note the URLs for *OpenID Connect metadata* and *Federation Connect metadata*.
+. Go back to the {connection} OAuth Resource App ({connection} Oauth User Resource) to collect the following information:
+.. Select *Endpoints* in the *Overview* interface.
+.. On the right side, copy the *OAuth 2.0 token endpoint (v2)* and note the URLs for *OpenID Connect metadata* and *Federation Connect metadata*.
 
 ... The *OAuth 2.0 token endpoint (v2)* is referred to as the `<AZURE_AD_OAUTH_TOKEN_ENDPOINT>` in the following configuration steps.
 The endpoint should be similar to `+https://login.microsoftonline.com/<tenant_id>/oauth2/v2.0/token/+`.
@@ -134,19 +141,19 @@ The entityID value should be similar to `+https://sts.windows.net/<tenant_id>/+`
 
 . The *OAuth 2.0 authorization endpoint (v2)* should be similar to  `+https://login.microsoftonline.com/<tenant_id>/oauth2/v2.0/authorize+`.
 +
-image:snow_oauth_user_res_1.png[]
+image:snow_oauth_user_res_1.png[View information in Overview > Endpoints]
 +
-image:snow_oauth_user_res_2.png[]
+image:snow_oauth_user_res_2.png[View the OAuth 2.0 authorization endpoint (v2)]
 
-=== Part 4: Creating an OAuth authorization server in Snowflake
+=== Part 4: Creating an OAuth authorization server in {connection}
 
 In this part you must do the following:
 
-* Create a security integration in Snowflake to ensure that Snowflake can  securely communicate with Microsoft Azure AD.
+* Create a security integration in {connection} to ensure that {connection} can  securely communicate with Microsoft Azure AD.
 * Validate the tokens from Azure AD.
-* Provide the appropriate Snowflake data access to users based on the user role associated with the OAuth token.
+* Provide the appropriate {connection} data access to users based on the user role associated with the OAuth token.
 
-IMPORTANT: If you use _SESSION:ROLE-ANY_ in scope, you must configure the following flag in the security integration: `external_oauth_any_role_mode = ‘ENABLE’`. This is shown in the optional line of the security integration format below.
+IMPORTANT: If you use _SESSION:ROLE-ANY_ in scope, you must configure the following flag in the security integration: `external_oauth_any_role_mode = ‘ENABLE’`. This is shown in the optional line of the security integration format example.
 
 ==== Security integration format
 [source]
@@ -165,12 +172,12 @@ create security integration external_oauth_azure_2
 
 Example:
 
-image::snow-sec-int-example.png[]
+image::snow-sec-int-example.png[Security integration format example]
 
-NOTE: When you create the Snowflake OAuth Resource Application in Azure AD, if you enter an `Application ID URI` that is not the Snowflake Account URL (i.e.
+NOTE: When you create the {connection} OAuth Resource Application in Azure AD, if you enter an `Application ID URI` that is not the {connection} Account URL (that is,
 `<account_identifier>.snowflakecomputing.com`), you must add the `external_oauth_audience_list` parameter to the command with the value `<SNOWFLAKE_APPLICATION_ID_URI>`.
 
-==== Snowflake commands
+==== {connection} commands
 
 ===== Create user as Azure AD user
 
@@ -188,9 +195,12 @@ NOTE: When you create the Snowflake OAuth Resource Application in Azure AD, if y
 
 `ALTER USER testuser SET DEFAULT_ROLE = SYSADMIN;`
 
+[#validate-config]
 === (Optional) Validating your Azure configuration
 
 To ensure your Azure configuration is correct for use with ThoughtSpot, you can generate an access token.
+
+NOTE: This following example is for Azure. The process for other providers is similar.
 
 You can use either of the following methods to generate your access token:
 
@@ -207,7 +217,7 @@ To validate your configuration using Postman, do the following:
 . For Grant Type, select *Authorization Code* from the menu.
 . For Callback URL, select *Authorize using browser*.
 +
-This should be defined in your OAuth User app(Ex: Snowflake OAuthUser).
+This should be defined in your OAuth User app(Ex: {connection} OAuthUser).
 The default is `+https://oauth.pstmn.io/v1/callback+`.
 
 . For Auth URL, enter the OAuth 2.0 authorization endpoint (v2) value from "`Endpoints`" in the app.
@@ -221,28 +231,35 @@ Example: `+https://login.microsoftonline.com/<tenant_id>/oauth2/v2.0/token/+`
 . For Scope, you must provide "`offline_access`" as the scope, along with the actual scope.
 The refresh token is only provided if the offline_access scope was requested.
 +
-image::postman_get_token.png[]
+image::postman_get_token.png[Configure a new token]
 +
 Example: `\https://<application_id>/session:role-any offline_access`
 +
 IMPORTANT: When you create the scope in the Azure AD application setup, it must be set as "`any`" so that a user can later switch to any of his allowed roles when making a JDBC connection using the obtained token.
 
-. Click *Get New Access Token*.
+. Select *Get New Access Token*.
 . Sign in to your Microsoft Azure account.
 +
-image::ms_sign_in.png[]
+image::ms_sign_in.png[Sign in to Microsoft Azure]
 
-. On the Token Details page, click *Use Token*.
+. On the Token Details page, select *Use Token*.
 +
-image:token_det_1.png[]
+image:token_det_1.png[Use token]
 +
-image:token_det_2.png[]
+image:token_det_2.png[Use token more detail]
+
+. Verify the validity of the generated access token by running this SQL in snowflake:
++
+[source]
+----
+select system$verify_external_oauth_token('<access_token>');
+----
 
 ==== Method 2: cURL
 
 To validate your configuration using cURL, do the following:
 
-. Execute below command to get access token with password grant_type:
+. Execute this command to get access token with password grant_type:
 +
 ----
  curl -X POST -H "Content-Type: application/x-www-form-urlencoded;charset=UTF-8" \
@@ -268,9 +285,9 @@ Example:
  `https://login.microsoftonline.com/ <tenant_id>/oauth2/v2.0/token'
 ----
 +
-image::curl_1.png[]
+image::curl_1.png[Image of curl command in terminal]
 
-. Execute below command for getting access token with refresh_token as grant_type:
+. Execute the following command for getting access token with refresh_token as grant_type:
 +
 ----
  curl -X POST -H "Content-Type: application/x-www-form-urlencoded;charset=UTF-8" \
@@ -282,12 +299,34 @@ image::curl_1.png[]
    'https://login.microsoftonline.com/<tenant_id>/oauth2/v2.0/token'
 ----
 +
-image::curl_2.png[]
+image::curl_2.png[Image of additional curl command in terminal]
+. Verify the validity of the generated access token by running this SQL in snowflake:
++
+[source]
+----
+select system$verify_external_oauth_token('<access_token>');
+----
 
-== Related links
 
-* https://docs.snowflake.com/en/user-guide/oauth-azure.html#configure-microsoft-azure-ad-for-external-oauth[Snowflake docs: Configure Microsoft Azure AD for External OAuth^]
-* https://community.snowflake.com/s/article/Create-External-OAuth-Token-Using-Azure-AD-For-The-OAuth-Client-Itself[Snowflake docs: create external OAuth token using Azure AD for the OAuth client itself^]
-* https://community.snowflake.com/s/article/External-oAuth-Token-Generation-using-Azure-AD[Snowflake docs: create external OAuth token using Azure AD on behalf of the user^]
-* https://community.snowflake.com/s/article/Create-Security-Integration-User-To-Use-With-OAuth-Client-Token-With-Azure-AD[Snowflake docs: create security integration & user to use with OAuth client token with Azure AD^]
-* https://jwt.io/[JSON web token debugger]
+'''
+> **Related information**
+>
+> * https://docs.snowflake.com/en/sql-reference/functions/system_verify_ext_oauth_token.html#examples[Snowflake docs: external OAuth token examples^]
+> * https://docs.snowflake.com/en/user-guide/oauth-azure.html#configure-microsoft-azure-ad-for-external-oauth[{connection} docs: Configure Microsoft Azure AD for External OAuth^]
+> * https://community.snowflake.com/s/article/Create-External-OAuth-Token-Using-Azure-AD-For-The-OAuth-Client-Itself[{connection} docs: create external OAuth token using Azure AD for the OAuth client itself^]
+> * https://community.snowflake.com/s/article/External-oAuth-Token-Generation-using-Azure-AD[{connection} docs: create external OAuth token using Azure AD on behalf of the user^]
+> * https://community.snowflake.com/s/article/Create-Security-Integration-User-To-Use-With-OAuth-Client-Token-With-Azure-AD[{connection} docs: create security integration & user to use with OAuth client token with Azure AD^]
+> * https://jwt.io/[JSON web token debugger]
+> * xref:connections-snowflake-add.adoc[Add a {connection} connection]
+> * xref:connections-snowflake-edit.adoc[Edit a {connection} connection]
+> * xref:connections-snowflake-remap.adoc[Remap a {connection} connection]
+> * xref:connections-snowflake-external-tables.adoc[Query external tables from your {connection} connection]
+> * xref:connections-snowflake-delete-table.adoc[Delete a table from a {connection} connection]
+> * xref:connections-snowflake-delete-table-dependencies.adoc[Delete a table with dependent objects]
+> * xref:connections-snowflake-delete.adoc[Delete a {connection} connection]
+> * xref:connections-snowflake-oauth.adoc[Configure OAuth]
+> * xref:connections-snowflake-azure-ad-oauth.adoc[Configure Azure AD OAuth]
+> * xref:connections-snowflake-best.adoc[Best Practices for {connection} connections]
+> * xref:connections-snowflake-private-link.adoc[]
+> * xref:connections-snowflake-reference.adoc[Connection reference for {connection}]
+> * xref:connections-query-tags.adoc#tag-snowflake[ThoughtSpot query tags in Snowflake]
