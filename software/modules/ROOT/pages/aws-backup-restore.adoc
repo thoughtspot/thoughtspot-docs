@@ -1,0 +1,60 @@
+= Back up and Restore an AWS cluster using S3
+:last_updated: 7/9/2020
+
+Learn how to back up or restore your ThoughtSpot cluster hosted in AWS using an S3 bucket.
+
+It is recommended to use a bucket in the same region as your cluster.
+By doing this, you avoid additional cross-region data transfer costs.
+
+NOTE: You can only back up your cluster to an S3 bucket if it is an S3-based cluster.
+You cannot back up an HDFS-based cluster to an S3 bucket.
+
+== Backing up to an Amazon S3 bucket
+
+To back up your cluster to an S3 bucket, use the ThoughtSpot tscli:
+
+. Log in to the Linux shell of your cluster using SSH.
++
+[source,console]
+----
+ $ ssh admin@<cluster-IP>
+----
+
+. Run the backup command using the following syntax:
++
+[source,console]
+----
+`tscli backup create --storage_type=cloud <SNAPSHOT NAME> <PATH TO BACKUP> --bucket_name=<BUCKET NAME>`
+----
++
+Example:
++
+[source,console]
+----
+ $ tscli backup create --storage_type=cloud snapshot_1 my_backup001 --bucket_name=my_bucket
+----
+
+== Restoring from an Amazon S3 bucket
+
+To restore your cluster from an S3 bucket, use the ThoughtSpot tscli:
+
+. Log in to the Linux shell of your cluster using SSH.
++
+[source,console]
+----
+ $ ssh admin@<cluster-IP>
+----
+
+. Run the restore command using the following syntax:
++
+[source,console]
+----
+$ tscli cluster restore <PATH TO BACKUP ON CLOUD> --enable_cloud_storage s3a`
+----
++
+Example:
++
+[source,console]
+----
+ $ tscli cluster restore s3://bucket0001/backup/my_backup001 --enable_cloud_storage s3a
+----

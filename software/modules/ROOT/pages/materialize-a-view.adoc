@@ -1,0 +1,62 @@
+= Materialize a view
+:last_updated: 11/2/2018
+:toc: false
+
+Learn how to materialize a View to improve its performance.
+
+To improve the performance of a View, you can materialize it.
+This operation computes the data for the View and stores it in memory, just like a table.
+You can expect a 3-6 times performance improvement on a Materialized View over a View that is not materialized.
+However, materialized Views take up space in memory, so weigh the tradeoffs and benefits of materializing a View ahead of time.
+
+NOTE: Row Level Security does not apply to Materialized Views.
+All users will see the same data when using the Materialized View as a data source.
+
+To materialize a view:
+
+. To find your View, click *Data* in the top menu, and choose *Views*.
+. Click the name of your View.
+. Click *Schema*.
+. If needed, xref:create-new-relationship.adoc[add joins].
+. Under *Materialization*, click *Materialize*.
++
+image::materialization_dialog_off.png[]
+
+. Fill in the details for xref:constraints.adoc[primary key], xref:sharding.adoc[sharding key, and number of shards].
++
+image::materialize-details.png[]
++
+NOTE: If you do not fill in the sharding details, the View will be replicated on every node of your cluster.
+If you're not sure what to fill in, ask your ThoughtSpot administrator, or follow the links in this step to learn more about sharding.
+
+. Click *Materialize*.
+. In the *Schedule data updates* dialog, select an option for *Repeats* (Monthly, Weekly, or Daily).
++
+image::materialized-view-sched-weekly.png[]
++
+If you don't want to set a schedule now, choose *Setup later* and skip to Step 11.
+
+. Fill in the schedule details:
++
+image::schedule-data-updates-weekly.png[]
+
+. Click *Update*.
+. You can see the status of the materialization as it progresses.
+Click *Update Status* to refresh it.
++
+image::materialization-update-status.png[]
+
+. When it says *Materialized* your Materialized View is ready for search.
++
+image::materialization-dialog-on.png[]
++
+If after some time, the status has not changed to *Materialized*, check the xref:materialized-views.adoc#materialization-status[list of statuses] and corresponding actions to take.
+
+'''
+> **Related information**
+>
+> * xref:about-query-on-query.adoc[Understand views]
+> * xref:create-aggregated-worksheet.adoc[Save a search as a view]
+> * xref:materialized-views.adoc[About materialized views]
+> * xref:constraints.adoc[Constraints]
+> * xref:sharding.adoc[Sharding]

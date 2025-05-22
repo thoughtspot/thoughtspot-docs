@@ -1,0 +1,133 @@
+= Modify a Synapse connection
+:last_updated: 1/30/2020
+
+Learn how to modify a Synapse connection and its tables.
+
+You can modify an Embrace Synapse connection in the following ways:
+
+* Edit a connection: to add or remove tables and columns
+* Remap a connection: to map a table or column to a different table or column
+* Delete a table
+* Delete a connection
+
+== Editing a Synapse connection
+
+You can edit a Synapse connection to add tables and columns.
+
+To edit a connection:
+
+. Click *Data* in the top navigation bar.
+. Click the *Connections* tab at the top of the page.
+. Click the name of the connection you want to edit.
++
+image::synapse-selectconnection.png[Select a connection to edit]
+
+. Click *Edit connection* at the upper-right-hand side of the page.
++
+image::synapse-editconnection.png[Edit connection]
+
+. On the Choose connection type page, change the connection name or description (if needed), and then click *Continue*.
+. On the Synapse connection details page, make any changes needed, and then click *Continue*.
+. Expand the database table drop-down menu, and select the tables and columns you want to add.
++
+image::redshift-edittables.png[Select tables and columns]
+// ![]({{ site.baseurl }}/images/connection-update.png "Edit connection dialog box")
+
+. Click *Update*, and then click *Confirm* to save the updated connection detail.
+
+To remove a table from a connection, delete it from the connection details page.
+For more information, see xref:deleting-a-table-from-a-synapse-connection[Deleting a table].
+
+== Remapping a Synapse connection
+
+Modify the connection parameters by editing the source mapping `yaml` file that was created when you added the connection.
+For example, you can remap the existing table or column to a different table or column in an existing database connection.
+ThoughtSpot recommends that you check the dependencies before and after you remap a table or column in a connection to ensure they display as intended.
+
+To remap a connection:
+
+. Click *Data* in the top navigation bar.
+. Click the *Connections* tab at the top of the page.
+. Click the name of the connection you want to remap.
++
+image::synapse-selectconnection.png[Select a connection to remap]
+
+. Click the *More* icon image:icon-more-10px.png[more options menu icon] and select *Remapping* on the upper-right-hand side of the page.
++
+image::synapse-remapping.png[Remap a connection]
+
+. Click *Download* to download the source mapping file.
++
+image::synapse-downloadyaml.png["Download the source mapping file"]
+
+. Edit the file, as required, and save it.
++
+image::synapse-yaml.png[Edit the yaml file]
+
+. Finally, click *Browse your files*, and upload your edited mapping file to update the mapping of your connection.
+
+[#deleting-a-table-from-a-synapse-connection]
+== Deleting a table from a Synapse connection
+
+ThoughtSpot checks for dependencies whenever you try to remove a table in a connection.
+ThoughtSpot shows a list of dependent objects, and you can click them to delete them or remove the dependency.
+Then you can remove the table.
+
+To delete a table:
+
+. Click *Data* in the top navigation bar.
+. Click the *Connections* tab at the top of the page.
+. Click the name of the connection that contains the table you want to delete.
++
+image::synapse-selectconnection.png[Select a connection]
+
+. Find the table you want to delete in the list, and check the box next to its name.
+. Click *Delete*, and then click *Delete* again to confirm.
++
+image::synapse-deletetable.png[Delete a connection table]
++
+If you attempt to delete a table with dependent objects, the operation is blocked.
+A _Cannot delete_ window appears, with a list of links to dependent objects.
+See xref:deleting-a-table-with-dependent-objects[Deleting a table with dependent objects].
+
+[#deleting-a-table-with-dependent-objects]
+=== Deleting a table with dependent objects
+
+* In the _Cannot delete_ window, click the link for each object to modify or delete it.
++
+When all dependencies are removed, you can delete the table.
++
+image::synapse-demoremapping.png[Dependent objects warning]
+
+You can also click the name of a table and then click the linked objects to see a list of dependent objects with links.
+The list shows the names of the dependent objects (Worksheets, Pinboards or Answers), and the columns they use from that table.
+You can use this information to determine the impact of changing the structure of the data source or to see how widely used it is.
+Click a dependent object to modify or delete it.
+
+== Deleting a Synapse connection
+
+A connection can be used in multiple data sources or visualizations.
+Because of this, you must delete all of the sources and tasks that use that connection, before you can delete the connection.
+
+To delete a connection:
+
+. Click *Data* in the top navigation bar.
+. Click the *Connections* tab at the top of the page.
+. Check the box next to the connection you want to delete.
+. Click *Delete*, and then click *Delete* again to confirm.
++
+image::synapse-deleteconnection.png[Delete a connection]
++
+If you attempt to delete a connection with dependent objects, the operation is blocked, and a "Cannot delete" warning appears with a list of dependent objects with links.
++
+image::connection-delete-warning.png[Dependent objects warning]
+
+. If the "Cannot delete" warning appears, click the link for each object to delete it, and then click *Ok*.
+Otherwise, go to the next step.
+. When all its dependencies are removed, delete the connection by clicking *Delete*, and then click again *Delete* to confirm.
+
+'''
+> **Related information**
+>
+> * xref:embrace-synapse-add.adoc[]
+> * xref:embrace-synapse-reference.adoc[]

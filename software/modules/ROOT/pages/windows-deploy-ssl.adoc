@@ -1,0 +1,88 @@
+= Deploy SSL with ODBC on Windows
+:last_updated: 11/19/2019
+:linkattrs:
+
+Enable SSL for an ODBC connection.
+
+You can configure a secure ODBC connection between your ThoughtSpot cluster and a remote Windows Machine.
+This article explains the SSL resources and ODBC configuration options you need to enable SSL for an ODBC connection.
+
+== Prerequisites
+
+Before configuring SSL over the ThoughtSpot ODBC connection, make sure that your system administrator has created and configured your network's Certificate Authority.
+Additionally, the system administrator should have available both the proper Private Key and Server Certificate.
+
+== Configure the ThoughtSpot cluster nodes
+
+IMPORTANT: Portions of this procedure require that you work with your ThoughtSpot Customer Service or Support Engineer.
+
+The https://www.simba.com/products/SEN/doc/Client-Server_user_guide/content/clientserver/configuringsimbaserver/configurationoptions.htm[SimbaServer Configuration Properties reference,window=_blank] includes full details on https://www.simba.com/products/SEN/doc/Client-Server_user_guide/content/clientserver/configuringsimbaserver/configurationoptions.htm#SSL_Server[SSL Configuration Properties,window=_blank].
+
+Before you change your ODBC configuration, decide on a path where you will store the Private Key and Server Certificate, for example, you could decide to use `/home/admin/Simba_SSL/` as the path.
+
+Then, do the following on _every ThoughtSpot node_ in your cluster.
+
+. Create the path on the node.
+. Copy the SSL certificate and private key to this path.
+. Edit the node's `/etc/thoughtspot/simba.ini` file (Simba server configuration) with your favorite editor.
+. Add the following lines:
++
+----
+ SslCertfile=/home/admin/Simba_SSL/Server-Certificate.pem
+ SslKeyfile=/home/admin/Simba_SSL/Private-Key.pem
+ UseSsl=Required
+----
+
+. Restart the Simba service.
++
+You must work with your ThoughtSpot Customer Success or Support Engineer to do this.
+
+== Deploy the certificate on your windows workstation
+
+Please note that the SSL settings on the server and client are interdependent.
+
+The https://www.simba.com/products/SEN/doc/Client-Server_user_guide/content/clientserver/configuringsimbaclientodbc/simbaclientodbcconfigurationoptions.htm[SimbaClient for ODBC Configuration Properties,window="_blank"] reference describes how to set parameters on the client to use SSL (scroll down to useSsl section at the end).
+The Simba documentation also provides a chart showing https://www.simba.com/products/SEN/doc/Client-Server_user_guide/content/clientserver/configuringssl/configcombinations.htm[configuration properties for SSL,window="_blank"] where you can see how different combinations of SSL settings on client and server will behave.
+For example:
+
+* Setting both server and client to `UseSsl=Enabled` provides the ability for clients to connect with or without SSL.
+* Setting both server and client to `UseSsl=Required` requires that all clients use SSL.
+
+NOTE: Note that the SSL and certificate parameters can be set through the pre-defined options on the options dialog, but customers have reported that these are not always reliable.
+In the following procedure, we recommend using custom properties to define these settings (either preemptively, or as a solution if the ODBC connection over SSL does not work with the pre-defined options).
+There is no harm in setting both.
+Example settings are: `UseSSL = Required` and ``SslCACertfile = C:\ODBC-SSL\CA.pem``
+
+On the workstation you want to use for your ODBC connection, specify the level of SSL you want to use on the client along with the path to the CA certificate, and then test the connection.
+
+. Save the CA certificate to a secure location on the workstation disk.
++
+Choose a location where the certificate is unlikely to be deleted by mistake, for example, `C:\ODBC-SSL\CA.pem` is an example of a full path to such a location.
+
+. Open your ThoughtSpot ODBC connection configuration dialog.
+. Click *Options*.
+. Check the *Require SSL* option and/or add SSL as a custom property.
++
+image::windows-odbc-ssl-options.png[]
++
+image::windows-odbc-custom-SSL-property.png[]
++
+image::windows-odbc-custom-SSL-added.png[]
+
+. Enter the location of the CA certificate in the *SSL Certificate File* field and/or add the CA certificate as a custom property.
+Be sure to provide the full path to the certificate (`+{certificate_directory}\{CA_certificate}.pem+`).
++
+image::windows-odbc-cert-add-custom.png[]
++
+image::windows-odbc-custom-CACert-property.png[]
++
+image::windows-odbc-cert-and-SSL.png[]
+
+. When you are done, click *OK* to save your new properties.
+. Click *Test Connection* to test your database connection.
++
+image::windows-odbc-success.png[]
+
+. Click *Cancel* to close the configuration dialog.
+. Click *OK* to close the *Client Configuration Dialog* the dialog.
+. Click *OK* to close the *ODBC Data Source Administrator (64-bit)* application.
