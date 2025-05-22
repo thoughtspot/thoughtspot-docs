@@ -1,0 +1,225 @@
+= Filters in group_aggregate()
+:last-updated: 11/05/2021
+:experimental:
+:linkattrs:
+
+In this article, we walk through examples of group aggregation using filters. To test for yourself, use the data set we provide in <<prerequisites, prerequisites>>.
+
+[#prerequisites]
+include::partial$group-aggregate-prerequisite.adoc[]
+
+Now let’s see what happens when you use filters in your search. The last argument of group_aggregate() allows you to specify whether ThoughtSpot should apply the filter from the search in the formula.
+
+[#example-4]
+== Adding filters through the search bar
+
+In this example, we apply a filter in the search bar that filters for `activity classification = "call"`.
+
+1. First, let’s look at what our table looks like with no filter. We use the following search:
+
+.. Search for: `account`  `activity classification`   `hours`   `sort by account`.
+.. The following table results:
++
+[options="header"]
+|===
+| Account | Activity Classification | Total Hours
+
+| Amazon | meeting | 11
+
+| Oracle | meeting | 18
+
+| Redshift | meeting | 5
+
+| Redshift | call | 1
+
+| Snowflake | meeting | 2
+
+| Snowflake | call | 5
+|===
+
+2. Now let’s add a filter for `activity classification = "call"`.
+
+.. Search for: `account`    `activity classification`   `hours`   `activity classification = call`    `sort by account`.
+
+.. The following table results:
++
+[options="header"]
+|===
+| Account | Activity Classification | Total Hours
+
+| Redshift | call | 1
+
+| Snowflake | call | 5
+|===
+
+
+3. Finally, let’s add a formula that aggregates hours to the _account_ level of detail.
+.. Click the **more options** icon image:icon-more-10px.png[] and select *Create formula*.
+.. In the formula pop-up window, name your formula. Here, we name the formula *hours per account*.
+.. Enter the following formula and click *Save*:
++
+[source,groovy,linenums]
+----
+average(
+  group_aggregate(
+    sum(hours),
+    {account},
+    {}
+    )
+  )
+----
+
+4. Finally, add the `hours per account` formula to our search bar.
+
+.. Search for: `account` `activity classification`  `hours`  `hours per account`   `activity classification = call`  `sort by account`.
+
+.. The following table results:
++
+[#example-4-1-1]
+.Table 4.1.1
+[options="header"]
+|===
+| Account | Activity classification | Total Hours | Hours per account
+
+| Redshift | call | 1 | 6.00
+
+| Snowflake | call | 5 | 7.00
+|===
++
+This gives us a result which filters our rows to only rows that include "call", but note that `Hours per account` does not match `Total Hours`. `Hours per account` is aggregated without the filter, because the last argument of group_aggregate is {}.
++
+If you want your formula to take into account the filters specified in the search, you can use the query_filters() argument.
++
+5. Select *Formulas* from the left sidebar and click the *edit icon* next to "hours per account".
+6. In the formula window, enter the following formula and click *Save*:
++
+[source,groovy,linenums]
+----
+average(
+  group_aggregate(
+    sum(hours),
+    {account},
+    query_filters()
+    )
+  )
+----
++
+Now your resulting table looks like this:
++
+[#example-4-1-2]
+.Table 4.1.2
+[options="header"]
+|===
+| Account | Activity Classification | Total Hours | Hours per account
+
+| Redshift | call | 1 | 1.00
+
+| Snowflake | call | 5 | 5.00
+|===
+
+== Adding filters to your formula
+
+You can also include filters in your group_aggregate formula which are not in the search bar.
+
+1. Create the following formula if you want your formula to explicitly filter for `activity classification = "call"`, regardless of what you add in the search bar:
++
+*Hours per account*::
++
+[source,groovy,linenums]
+----
+average(
+  group_aggregate(
+    sum(hours),
+    {account},
+    {activity classification = "call"}
+    )
+  )
+----
+
+2. Search for: `account`   `activity classification`  `hours`   `hours per account`   `sort by account`   `sort by activity classification`
++
+The resulting table's `Hours per account` column results in values that are filtered by "call", even though the table itself contains rows for both calls and meetings.
++
+[#example-4-2]
+.Example 4.2
+[options="header"]
+|===
+| Account | Activity Classification  | Total Hours | Hours per account
+
+| Amazon | meeting | 11 | \{null}
+
+| Oracle | meeting | 18 | \{null}
+
+| Redshift | call | 1 | 1
+
+| Redshift | meeting | 5 | 1
+
+| Snowflake | call | 5 | 5
+
+| Snowflake | meeting | 2 | 5
+|===
+
+== Using multiple filters
+
+You can put multiple filters in the filters argument of the group_aggregate function. For example, to filter on both activity classification and activity date:
+
+1. Create the following formula:
+*Hours per account*::
++
+[source,groovy,linenums]
+----
+average(
+  group_aggregate(
+    sum(hours),
+    {account},
+    {activity classification = "call",
+    activity date >= 04/01/2020 and activity date <= 04/14/2020
+    }
+    )
+  )
+----
++
+In the above example, ThoughtSpot adds the activity classification and activity date filters in an `and` condition together.
+
+2. Search for: `account`   `activity classification`  `hours`  `hours per account`    `sort by account`  `sort by activity classification`.
++
+[#example-4-3]
+.Example 4.3
+[options="header"]
+|===
+| Account | Activity Classification | Total Hours | Hours per account
+
+| Amazon | meeting | 11 | \{null}
+
+| Oracle | meeting | 18 | \{null}
+
+| Redshift | call | 1 | 1
+
+| Redshift | meeting | 5 | 1
+
+| Snowflake | call | 5 | 4
+
+| Snowflake | meeting | 2 | 4
+|===
+
+You can also use AND, OR, and parens, to flexibly combine filters as shown in following formula:
+
+*Hours per account*::
++
+[source,groovy,linenums]
+----
+average(
+  group_aggregate(
+    sum(hours),
+    {account},
+    {activity classification = "call" OR (
+      activity date >= 04/01/2020 and activity date <= 04/14/2020
+      )
+     }
+    )
+  )
+----
+
+> Related information:
+>
+> * xref:group-aggregation-inner.adoc[]

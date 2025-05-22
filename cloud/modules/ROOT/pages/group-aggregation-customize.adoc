@@ -1,0 +1,230 @@
+= Customizing your aggregation
+:last-updated: 11/05/2021
+:experimental:
+:linkattrs:
+
+In this article, we walk through examples of group aggregation using customized clauses like "greater than" and "else". To test for yourself, use the data set we provide in <<prerequisites,prerequisites>>.
+
+[#prerequisites]
+include::partial$group-aggregate-prerequisite.adoc[]
+
+In the examples of xref:group-aggregation-basic.adoc#example-1[basic group aggregation], we use an intentionally simple inner aggregation of `sum(hours)` so we can focus on the overall behavior of the `group_aggregate` function. For example, we use the following formula:
+
+Average hours per activity classification::
++
+[source,groovy,linenums]
+----
+average(
+  group_aggregate(
+    sum(hours),
+    query_groups() + {activity classification},
+    {}
+    )
+  )
+----
+
+In line 4 of the formula above, we first specify the level of detail in our inner aggregation (the terms used in the search bar, in addition to _activity classification_), then line 3 of the formula determines the aggregation type, `sum(hours)`. Finally, the formula "aggregates up" to the search bar level of detail by averaging the sums that were calculated from lines 3 and 4.
+
+////
+This formula sums hours to the level of detail specified by the search bar, in addition to _activity classification_, and then aggregates up to the search bar level of detail by averaging the sums that were calculated at the search bar and _activity classification_ level of detail.
+////
+
+[#example-6]
+== Aggregating with a 'greater than' clause
+
+If we only want to look at hours for activity classes that surpassed some minimum amount, we can use a formula with an `IF...THEN...ELSE` clause. For example, suppose we only want to consider activity classes where the sum of hours is greater than 5.
+
+In that case we could use a formula like the following:
+
+1. Create the formula:
++
+hours per activity classification where hours > 5::
++
+[source,groovy,linenums]
+----
+ average(
+   group_aggregate(
+     if (sum(hours) > 5) then sum(hours) else 0,
+     query_groups() + {activity classification},
+     {}
+     )
+   )
+----
++
+Now, instead of summing hours for all accounts, we sum hours only for the accounts where the sum of the hours is greater than 5.
+
+2. Search for: `account`    `activity classification`   `hours`   `activity classification where hours > 5`   `sort by account`
+3. The following table results:
++
+[#example-6-1]
+.Example 6.1
+[options="header"]
+|===
+| Account | Activity classification | Total Hours | Activity classification where hours > 5
+
+| Amazon | meeting | 11 | 11
+
+| Oracle | meeting | 18 | 18
+
+| Redshift | meeting | 5 | 0
+
+| Redshift | call | 1 | 0
+
+| Snowflake | meeting | 2 | 0
+
+| Snowflake | call | 6 | 0
+|===
++
+In the results above, we can see that *hours per activity classification where hours > 5* shows zero hours for the cases where total hours is less than or equal to 5.
+
+Notice in the above formula that the calculation takes place *within* the group aggregate.
+
+== Nesting aggregated formulas
+
+We recommend users do not create an aggregate calculation and then attempt to aggregate further. ThoughtSpot does not support nesting aggregated formulas like the following:
+
+hours by activity classification::
+----
+sum(
+  group_aggregate(
+    sum(hours),
+    query_groups() + {activity classification},
+    {}
+    )
+  )
+----
+
+bad_formula::
+----
+If (
+  sum("hours by activity classification") > 5
+  )
+  then
+   "hours by activity classification" else
+    0
+----
+
+In the second formula, sum is an aggregation function. It attempts to aggregate the column specified in its argument (in this case, `hours by activity classification`) to the level of the search. But the column specified is the result of a group-aggregate formula, so it is already aggregated to the level of detail of the search.
+
+If you try to do this, you find that you cannot create `bad_formula` because the function "sum" will not accept `hours by activity classification` as an argument.
+
+Note that these formulas will not work whether or not you supply the outer aggregation (`sum`) in the `hours by activity classification` formula. If you supply the outer aggregation, as shown above, `hours by activity classification` already aggregates to the level of detail specified by the search.
+
+Similarly, you cannot use these formulas together:
+
+hours by activity classification::
+----
+sum(
+  group_aggregate(
+    sum(hours),
+    query_groups() + {activity classification},
+    {}
+    )
+  )
+----
+
+bad_formula::
+----
+sum(
+  if ("hours by activity classification" > 5
+    )
+    then
+     "hours by activity classification" else
+      0
+    )
+----
+
+Although the argument to sum can be an expression, it must be an expression that is computed from a column that can be aggregated, and in this case `hours by activity classification` is already aggregated to the level of the search and cannot be aggregated further. Again, you cannot create `bad_formula` as ThoughtSpot does not accept its syntax.
+
+As a general rule, always do your calculation as the first argument inside the group_aggregate function.
+
+== Aggregating using 'else'
+
+In this example, we want to only include events in our calculation where the event time is greater than two hours. We use the \{ID} to specify that we want our level of detail to be the finest level of detail possible, the event.
+
+1. Create the following formula:
++
+event hours > 2 hours::
++
+[source,groovy,linenums]
+----
+sum(
+  group_aggregate(
+    if (sum(hours) - 2 > 0) then sum(hours) - 2 else 0,
+    query_groups() + {id},
+    {}
+    )
+  )
+----
++
+This formula calculates an "adjusted" time for each event by subtracting two hours. If the event has less than two hours of time, the event hours are set to 0. We can use this in the search bar in a variety of ways.
+
+2. Search: `account`    `id`   `hours`       `event hours > 2 hours`   `sort by account sort by id`.
+3. The following table results:
++
+[#example-6-2-1]
+.Example 6.2.1
+[options="header"]
+|===
+| Account | ID | Total Hours | Event hours > 2  hours
+
+| Amazon | 10 | 2 | 0
+
+| Amazon | 11 | 3 | 1
+
+| Amazon | 8 | 5 | 3
+
+| Amazon | 9 | 1 | 0
+
+| Oracle | 12 | 5 | 3
+
+| Oracle | 13 | 6 | 4
+
+| Oracle | 14 | 7 | 5
+
+| Redshift | 5 | 4 | 2
+
+| Redshift | 6 | 1 | 0
+
+| Redshift | 7 | 1 | 0
+
+| Snowflake | 1 | 2 | 0
+
+| Snowflake | 2 | 1 | 0
+
+| Snowflake | 3 | 3 | 1
+
+| Snowflake | 4 | 1 | 0
+|===
+
+
+Let's try another search which aggregates up to the account level using the same formula.
+
+1. Search for: `account`   `hours`   `event hours > 2 hours`    `sort by account`.
+2. The following table results:
++
+[#example-6-2-2]
+.Example 6.2.2
+[options="header"]
+|===
+| Account | Total hours | Event hours > 2 hours
+
+| Amazon | 11 | 4
+
+| Oracle | 18 | 12
+
+| Redshift | 3 | 2
+
+| Snowflake | 3.5 | 1
+|===
++
+
+Note that Amazon has a total of four event hours, which reflects the sum of hours for all Amazon events, discounting the first two hours of any event.
+
+ThoughtSpot currently does not support either nested group_aggregate functions, or nesting a group_aggregate function in another aggregation function.
+
+There are business use cases where this type of nested aggregation makes sense; for example, if the inner aggregation specifies a particular level of detail (does not use query_groups() +) and the outer aggregation then aggregates to the search level of detail or to another specified level of aggregation. However, ThoughtSpot's formula language currently does not support this functionality.
+
+> Related information:
+>
+> * xref:group-aggregation-formulas.adoc[]
