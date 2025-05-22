@@ -1,45 +1,94 @@
-= 6.0 Release Notes
-:last_updated: 01/19/2021
+= 6.1 Release Notes
+:last_updated: 06/22/2020
 :linkattrs:
 
-ThoughtSpot version 6.0.5 is now available.
+ThoughtSpot version 6.1.1 is now available.
 These release notes include information about new and enhanced features.
 
-For a complete list of issues that we fixed in this release, see xref:fixed.adoc[Fixed issues]
+For a complete list of issues that we fixed in this release, see xref:fixed.adoc[Fixed issues].
 
-* <<6-0-5-new,6.0.5 New Features>>
-* <<6-0-4-new,6.0.4 New Features>>
-* <<6-0-2-new,6.0.2 New Features>>
-* <<6-new,6.0 New Features>>
+* <<6-1-1-new,6.1.1 New Features>>
+* <<early-access,Early Access Programs>>
 * <<beta-program,Beta Programs>>
 * <<upgrade-paths,Supported Upgrade Paths>>
 
-[#6-0-5-new]
-== 6.0.5 New Features and Functionality
+[#6-1-1-new]
+== 6.1.1 New Features and Functionality
 
-=== Set a relay host for SMTP
+For a complete list of issues that we fixed in this release, see xref:fixed.adoc#6-1-1[6.1.1 Fixed issues].
 
-You can now specify a custom port to connect to the SMTP relay host. If you do not specify a port, the system uses the default recommended port, port 25. Use a custom port if port 25 is blocked in your environment.
+=== Amazon Linux 2
 
-See xref:set-up-relay-host.adoc[Set the relay host for SMTP].
+This release of ThoughtSpot introduces deployment support for https://aws.amazon.com/amazon-linux-2/[Amazon Linux 2,window=_blank].
+This decouples the OS and application files we shipped together in previous releases, and gives you the flexibility to run ThoughtSpot on an Amazon Linux 2 image that your organization manages internally.
+ThoughtSpot certifies Amazon Linux 2 on the AWS platform.
+To deploy ThoughtSpot on Amazon Linux 2, you must have the Ansible tarball;
+you can obtain the tarball through your ThoughtSpot contact.
+For more information, see the xref:al2-overview.adoc[Amazon Linux 2 Deployment Overview].
 
-=== Red Hat Enterprise Linux (RHEL)
+=== Charts and tables with a very large number of data values
 
-Starting with the 6.0.5 release, ThoughtSpot runs with RHEL 7.7 or RHEL 7.8. See https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/7.8_release_notes/index[RHEL 7.8 Release notes,window=_blank].
+ThoughtSpot now supports charts and tables with more than 1000 data values.
+You can easily understand how much of the data your chart or table displays.
 
-=== Disable items in embedded ThoughtSpot
+* Your search in table form can now have more than 1000 rows.
+* Your charts now come with a horizontal scroll bar, to support up to 35,000 data points.
+* You can have up to 250 distinct legend items on a chart.
 
-You can now disable any of the following items when ThoughtSpot is embedded:
+See xref:high-cardinality.adoc[Charts and tables with a very large number of data values].
 
-- Share
-- Copy a link
-- Send feedback
+=== Tsload as a service
 
-Contact ThoughtSpot support to enable this feature.
+This release introduces a new option for loading data in bulk, called tsload as a service.
+The tsload service is a collection of APIs that allow you to directly, and more quickly load your data into the ThoughtSpot Falcon database.
+For more information, see xref:load-with-tsload.adoc[Use the tsload service to load data].
+
+[#6-1-new]
+== 6.1 New Features and Functionality
+
+For a complete list of issues that we fixed in this release, see xref:fixed.adoc#6-1[6.1 Fixed issues].
+
+=== Updating ThoughtSpot UI through CDN
+
+Starting with this release, you can configure automatic updates of the front end of the ThoughtSpot application by uploading from CDN (Amazon Cloudfront).
+This enables your organization to get many new features of ThoughtSpot and get many critical bug fixes without experiencing the traditional upgrade downtime.
+
+UI auto-update is in the Early Access phase.
+Please contact us if you are interested in participating in the mailto:early_access@thoughtspot.com[UI Update Early Access Program,UI Update Early Access Program Request].
+
+=== Back up and restore ThoughtSpot AWS and GCP clusters using cloud storage
+
+With AWS, you can back up and restore an S3-based cluster using an S3 bucket.
+With GCP, you can back up and restore a GCS-based cluster using a GCS bucket.
+
+For details, see:
+
+* xref:aws-backup-restore.adoc[Back up and restore an AWS cluster using S3]
+* xref:gcp-backup-restore.adoc[Back up and restore a GCP cluster using GCS]
+
+=== Geo map support for Norway and Switzerland
+
+For details, see: xref:geomap-reference.adoc[Geo Map reference]
+
+=== New SQL commands for ODBC and JDBC drivers
+
+For developers creating tools to connect to ThoughtSpot through the ODBC or JDBC driver, the following new commands are available:
+
+* `ALTER TABLE`
+* `CREATE DATABASE`
+* `CREATE SCHEMA`
+* `DROP`
+* `SCRIPT`
+* `SHOW`
+* `TRUNCATE`
+
+For details, see: xref:odbc-commands.adoc[Supported SQL commands].
 
 === Embrace advanced configuration
 
-In this release, on the connection details page, you can provide additional key-value pairs that you need to set up the connection to your external data source. Any key-value pairs that you enter must be defined in the external data source. Key-value pairs are case-sensitive.
+In this release, on the connection details page, you can provide additional key-value pairs that you need to set up the connection to your external data source.
+Any key-value pairs that you enter must be defined in the external data source.
+Key-value pairs are case-sensitive.
 
 Some examples of key-value pairs for Snowflake, include the following:
 
@@ -51,226 +100,25 @@ Applying a filter on the schema:
 
 image::snowflake-adv-config-2.png[]
 
-=== Set limits on the number of rows that ThoughtSpot loads
+=== Upgrade to Python 3
 
-In this release, you can now set a limit on the number of rows ThoughtSpot loads initially for visualizations. This can reduce the load time of visualizations that have many rows, and tend to load slowly.
+Starting with this release, ThoughtSpot uses Python 3 packages.
+For example, to invoke the `syncUsersAndGroups.py` script the script, you must now use the `python3` command;
+see xref:sync-users-and-groups-from-ldap.adoc[Sync users and groups from LDAP].
 
-Contact ThoughtSpot support to enable this feature.
+[#early-access]
+== Early Access Programs
 
-=== OpenLDAP authentication
+=== UI update
 
-ThoughtSpot now integrates with OpenLDAP for user authentication. LDAP provides security and makes user management more centralized. To enable user authentication through OpenLDAP, xref:contact.adoc[contact ThoughtSpot Support].
+Please contact us if you are interested in participating in the mailto:early_access@thoughtspot.com[UI Update Early Access Program,UI Update Early Access Program Request].
 
-[#6-0-4-new]
-== 6.0.4 New Features and Functionality
-
-For a complete list of issues that we fixed in this release, see xref:fixed.adoc#6-0-4[6.0.4 Fixed issues].
-
-=== Red Hat Enterprise Linux (RHEL)
-
-This release of ThoughtSpot introduces deployment support for https://www.redhat.com/en/technologies/linux-platforms/enterprise-linux[RHEL 7.7,window=_blank].
-This decouples the OS and application files we shipped together in previous releases, and gives you the flexibility to run ThoughtSpot on an RHEL 7.7 image that your organization manages internally.
-ThoughtSpot certifies RHEL 7.7 on the following platforms:
-
-* ThoughtSpot-configured appliances, both DELL hardware and SMC hardware
-* Cloud deployments: AWS and GCP
-* VMware
+=== RHEL support
 
 RHEL support is in the Early Access phase.
 To deploy ThoughtSpot on RHEL, you must have the Ansible tarball;
 please contact us if you are interested in participating in the mailto:early_access@thoughtspot.com[RHEL Early Access Program,RHEL Early Access Program Request].
 For more information, see xref:rhel.adoc[RHEL Deployment Overview].
-
-[#6-0-2-new]
-== 6.0.2 New Features and Functionality
-
-For a complete list of issues that we fixed in this release, see xref:fixed.adoc#6-0-2[6.0.2 Fixed issues].
-
-=== Embrace for Google BigQuery and Microsoft Azure Synapse
-
-In addition to Snowflake and Redshift, you can now run live queries against Google BigQuery or Microsoft Azure Synapse Analytics, without caching data in ThoughtSpot.
-You can then analyze this data, and create Answers and Pinboards.
-
-See xref:embrace-intro.adoc[Embrace overview].
-
-=== Embrace enhancements
-
-* *Search indexing* Starting with release 6.0.2, we enabled search indexing of columns by default, in all Embrace connections.
-This shows values of columns in the search bar as you type.
-+
-ThoughtSpot re-indexes columns daily;
-this can be changed to an hourly schedule.
-
-* *UI/UX for creating and editing* Embrace connections now include a built-in workflow.
-* *Headline optimization* We changed the behavior for loading headlines with tabular reports.
-The primary table now loads immediately, and headlines appear when the queries that populate them complete.
-
-=== Data Search APIs
-
-To programmatically use the data that we retrieve from a query, you can use ThoughtSpot Search Data API.
-
-See xref:search-data-api.adoc[Search Data API].
-
-[#6-new]
-== 6.0 New Features and Functionality
-
-For a complete list of issues that we fixed in this release, see xref:fixed.adoc#6-0[6.0 Fixed issues].
-
-=== Mobile
-
-You can now download ThoughtSpot Mobile app from the AppStore for both iPhone and iPad devices.
-ThoughtSpot Mobile works for releases 5.1 and later.
-
-Mobile version 1.1.2 now supports auto-redirect Single Sign-On (SSO) for configured clusters.
-
-See xref:use-mobile.adoc[Mobile].
-
-=== Embrace for Snowflake and Amazon Redshift
-
-In addition to Snowflake support, you can now perform live queries against an Amazon Redshift database without caching it in ThoughtSpot.
-You can then analyze this data, and create Answers and Pinboards.
-*Support for Amazon Redshift is in beta in Release 6.0.*
-
-ThoughtSpot now supports the following features for linked tables:
-
-* Search suggestions for column values
-* Indexing of table columns
-* Remapping of tables and columns
-
-*Embrace overview*  +
-+++ <div class="wistia_responsive_padding" style="padding:56.25% 0 0 0;position:relative;"><div class="wistia_responsive_wrapper" style="height:100%;left:0;position:absolute;top:0;width:100%;"><iframe src="https://fast.wistia.net/embed/iframe/1n7ei0tqr4?seo=false&videoFoam=true" title="Embrace in 6.0 Video" allow="autoplay; fullscreen" allowtransparency="true" frameborder="0" scrolling="no" class="wistia_embed" name="wistia_embed" msallowfullscreen width="100%" height="100%"></iframe></div></div>
-<script src="https://fast.wistia.net/assets/external/E-v1.js" async></script>+++
-
-For more information, see xref:embrace-intro.adoc[Embrace overview].
-
-=== Monitor Headlines
-
-The Monitor feature enables you to follow headline metrics, and get daily updates in your mailbox, on your ThoughtSpot home page, and in the SpotIQ Follow management interface.
-
-For more information, see xref:monitor-headlines.adoc[Monitor headlines].
-
-*Support for Monitor is in beta*.
-
-* To monitor headlines, click the *Follow* icon in the top right corner of the insight.
-* The *SpotIQ Follow* interface lists all the headlines you follow, and the changes from last run.
-* Click each headline to see the detailed performance over time, examine each interval, all at the time scale you choose.
-And you can change to table view, or to another chart type to better visualize your changing metric.
-
-=== Chart Configuration
-
-This release introduces a complete new approach that makes chart configuration much easier and more intuitive.
-For more information, see xref:change-the-chart.adoc[Changing Charts].
-
-*Chart configuration overview*  +
-+++<script src="https://fast.wistia.com/embed/medias/y633w03qzm.jsonp" async></script><script src="https://fast.wistia.com/assets/external/E-v1.js" async></script><span class="wistia_embed wistia_async_y633w03qzm popover=true popoverAnimateThumbnail=true popoverBorderColor=4E55FD popoverBorderWidth=2" style="display:inline-block;height:252px;position:relative;width:450px">&nbsp;</span>+++
-
-* *xref:drag-and-drop.adoc[Add drag-and-drop chips]* automatically when adding new elements in search bar.
-These appear on the chart as "Not visualized", and you can move them into the axis area to visualize.
-* *xref:show-data-labels.adoc#labels-one[Improve number formatting]* for data labels on the chart marks (bars, bubbles, lines), and on the axes.
-Can use numbers, percentages, currencies, and specified units, "as is" (auto mode), or change to millions, trillions, and billions (K, M, B).
-Can easily specify the number of decimal places.
-* *Independent control of each measure* in a chart helps you reduce noise by applying labels only where you need it.
-* *xref:change-the-view.adoc#change-the-date-bucketing-grouping[Simple time bucketing]* lets you change granularity of time series.
-* *xref:change-chart-colors.adoc[Intuitive color configuration]* enables you to quickly change color on the element or in the legend.
-* *xref:column-renaming.adoc[Column renaming]* for pivot tables and regular chart tables
-* *xref:about-tables.adoc#clip-wrap-text[Wrapping and clipping]* of text in a table.
-
-=== Scriptable Worksheets
-
-You can now *Export* Worksheets by downloading them to a `*.yaml` file, make changes, and then *Update* the Worksheet from the changed file either to the same cluster, or to a new cluster.
-
-Scriptable Worksheets support metadata migration from development to production environments, enables changes that are not possible within the user interface, and lets you perform bulk changes to the metadata (renaming, duplication).
-
-See xref:worksheet-export.adoc[Migrate or restore Worksheets], and xref:yaml-worksheet.adoc[Worksheet YAML specification].
-
-=== Welcome new users
-
-Administrators can configure a welcoming experience for new users.
-In addition to assigning a user to the most relevant groups and Pinboards, they can customize a Welcome email to introduce them to ThoughtSpot and help them get started.
-
-*Configure new user welcome experience and emails* +
-+++<script src="https://fast.wistia.com/embed/medias/bo6xskh8x0.jsonp" async></script><script src="https://fast.wistia.com/assets/external/E-v1.js" async></script><span class="wistia_embed wistia_async_bo6xskh8x0 popover=true popoverAnimateThumbnail=true popoverBorderColor=4E55FD popoverBorderWidth=2" style="display:inline-block;height:252px;position:relative;width:450px">&nbsp;</span>+++
-
-=== Getting started
-
-To quickly onboard new users and teach them how to effectively use ThoughtSpot, we added in-product guidance and video content.
-
-*Getting started with ThoughtSpot* +
-+++<script src="https://fast.wistia.com/embed/medias/ifwwkmmtk5.jsonp" async></script><script src="https://fast.wistia.com/assets/external/E-v1.js" async></script><span class="wistia_embed wistia_async_ifwwkmmtk5 popover=true popoverAnimateThumbnail=true popoverBorderColor=4E55FD popoverBorderWidth=2" style="display:inline-block;height:252px;position:relative;width:450px">&nbsp;</span>+++
-
-See xref:getting-started.adoc[the Getting Started sidebar].
-
-=== Sharing
-
-We improved the experience of sharing Answers and Pinboards through better email notifications, with embedded links.
-
-*Sharing Pinboards and Answers* +
-+++<script src="https://fast.wistia.com/embed/medias/7heqb1ujsx.jsonp" async></script><script src="https://fast.wistia.com/assets/external/E-v1.js" async></script><span class="wistia_embed wistia_async_7heqb1ujsx popover=true popoverAnimateThumbnail=true popoverBorderColor=4E55FD popoverBorderWidth=2" style="display:inline-block;height:252px;position:relative;width:450px">&nbsp;</span>+++
-
-See xref:sharing-for-end-users.adoc[Overview of Sharing].
-
-=== Access request and grant
-
-To enhance the ease of sharing, we simplified and reinforced the workflow for access request and grant of privileges to Pinboards, Answers, and Data sources.
-
-*Requesting and granting access to Pinboards and Answers* +
-+++<script src="https://fast.wistia.com/embed/medias/34nrrb385a.jsonp" async></script><script src="https://fast.wistia.com/assets/external/E-v1.js" async></script><span class="wistia_embed wistia_async_34nrrb385a popover=true popoverAnimateThumbnail=true popoverBorderColor=4E55FD popoverBorderWidth=2" style="display:inline-block;height:252px;position:relative;width:450px">&nbsp;</span>+++
-
-=== Google Cloud Platform GCS persistent storage
-
-You can now reduce the cost of a GCP deployment by using GCS for storage of major services like the ThoughtSpot database and search engine.
-For more information, see xref:configuration-options-gcp.adoc[GCP configuration options].
-
-=== Streamlined GCP data loading from a GCS bucket
-
-You can now load data from a Google Cloud Storage (GCS) bucket into your ThoughtSpot GCP instance.
-By assigning the _Compute Engine default service account_ and the _Set access for each API_ scope to your instance, you can set read-only access to your GCS bucket.
-This way, you don't have to enter GCS credentials when loading data.
-For more information, see xref:use-data-importer.adoc#loading-data-from-a-gcp-gcs-bucket[Loading data from a GCP GCS bucket].
-
-=== Answer Explorer
-
-This release introduces Answer Explorer, which provides you with AI-guided exploration of Pinboards, at a single click.
-
-*Answer Explorer overview* +
-+++<script src="https://fast.wistia.com/embed/medias/iu2ho8imd3.jsonp" async></script><script src="https://fast.wistia.com/assets/external/E-v1.js" async></script><span class="wistia_embed wistia_async_iu2ho8imd3 popover=true popoverAnimateThumbnail=true popoverBorderColor=4E55FD popoverBorderWidth=2" style="display:inline-block;height:252px;position:relative;width:450px">&nbsp;</span>+++
-
-Answer Explorer includes the following features:
-
-* *Filters* search field accepts any value, including a column name.
-After you enter your value, press *Enter*, or click *Add*.
-* *Comparisons* lets you easily perform a "versus" analysis.
-* *Breakdowns* make it easy to add a new attribute or replace an existing one, and let you change buckets for time series: monthly, weekly, daily, or quarterly.
-* *Metrics* "Also include" feature enables you to add other available metrics, and changing a column replaces a metric.
-* *Navigation*: Column names appear separately from search values.
-Undo steps back to the last change.
-Copy and edit retains all changes.
-Seamlessly switch from Answer Explorer to search.
-
-Refer to xref:answer-explorer.adoc[Answer Explorer].
-
-=== Homepage Insights for everyone
-
-This release of ThoughtSpot leverages existing insights that are generated by the SpotIQ power users, and shares them with everyone on their Homepage, regardless of that person's access to SpotIQ Analyze function.
-
-These insights are diverse, and cover a wider range of data sources and types.
-
-=== Ask an Expert
-
-We improved the Expert feature by adding more email notifications, enriching email content, and directly linking from emails to requests.
-
-* When a user creates a request, both that user and designated experts get an email notification.
-The *Open request* link in the expert's leads directly to ThoughtSpot, to review and manage the request.
-* When an expert resolves the request, both the expert and the user receive an email notification.
-The user can then follow the supplied link to navigate directly to the resolved answer.
-
-=== Geo Maps
-
-ThoughtSpot now supports xref:geomap-reference.adoc[Geo Map] visualizations for these new locales:
-
-* *Austria:* State, District, and Postal
-* *Italy:* Region, Province/Territories, and Postal Code
-* *Poland:* Province/Territories, County, Postal Code
 
 [#beta-program]
 == Beta Programs
@@ -280,20 +128,22 @@ ThoughtSpot is looking for people with all levels of experience: end-users, anal
 We like to have a diversity of experience and perspective, and want to hear from you.
 Because we strive for excellence, we will partner with you to adjust the final details of our offerings based on your feedback.
 
-Please contact us if you are interested in participating in the mailto:BetaProgram@thoughtspot.com[Monitor Beta Program,Montor Beta Program Request], for monitoring selected metrics over time.
+=== Monitor
+
+Please contact us if you are interested in participating in the mailto:BetaProgram@thoughtspot.com[Monitor Beta Program,Monitor Beta Program Request], for monitoring selected metrics over time.
 
 [#upgrade-paths]
 == Supported Upgrade Paths
 
-If you are running one of the following versions, you can upgrade to the 6.0.4 release directly:
+If you are running one of the following versions, you can upgrade to the 6.1.1 release directly:
 
-* 5.3.x to 6.0.4
-* 5.2.x to 6.0.4
+* 5.3.x to 6.1.1
+* 6.0.x to 6.1.1
 
 This includes any hotfixes or customer patches on these branches.
 
 If you are running a different version, you must do a multiple pass upgrade.
-First, upgrade to version 5.2.x, or version 5.3.x, and then to the 6.0.4 release.
+First, upgrade to version 5.3.x, or version 6.0.x, and then to the 6.1.1 release.
 
 NOTE: To successfully upgrade your ThoughtSpot cluster, all user profiles must include a valid email address.
 Without valid email addresses, the upgrade is blocked.

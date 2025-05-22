@@ -1,7 +1,5 @@
 = Sharding
 :last_updated: 10/8/2020
-:permalink: /:collection/:path.html
-:sidebar: mydoc_sidebar
 
 Sharding partitions very large tables into smaller, faster, more easily managed parts called data shards.
 
@@ -57,7 +55,7 @@ This applies even if 60% of your CPU is above 1000.
 If you feel that you need more than 1000 shards for a given table, consult with your ThoughtSpot contact.
 . *The number of shards should be a multiple of the number of nodes*: To ensure equal distribution of data across all nodes, so that none of your nodes sits idle, the number of shards should be a multiple of the number of nodes.
 So, for a 12-node cluster, for example, a table could have 12, 24, 36, or 48 shards, and so on.
-. *Minimum number of shards*: Because the number of shards should be a multiple of the number of nodes, the minimum number of shards is the number of nodes.
+. *Minimum number of shards*: Because the number of shards should be a multiple of the number of nodes, the mininum number of shards is the number of nodes.
 For a 12-node cluster, you should not have fewer than 12 shards.
 +
 This requirement may be difficult to achieve on large clusters with a high number of nodes.
@@ -116,6 +114,7 @@ It is sometimes called _Horizontal partitioning_.
 The term _sharding_ is particular to situations where data is distributed not only among tables, but also across nodes in the system.
 To create a sharded table, add the `PARTITION BY HASH ( )` clause to your `CREATE TABLE` statement.
 
+[source]
 ----
 TQL> CREATE TABLE
 ...
@@ -123,6 +122,7 @@ PARTITION BY HASH (96) KEY ("customer_id");
 ----
 
 Note the following parameters, specified above as `96` and `"customer_id"`:
+
 HASH::
 Determines the number of shards.
 In this case, `96`.
@@ -139,6 +139,7 @@ This increases memory usage, since you are storing multiple copies of the same t
 
 If you want to use a table's primary key as the shard key, specify that the table is to be partitioned by `HASH` on the primary key, as in this example:
 
+[source]
 ----
 TQL> CREATE TABLE "supplier" (
   "s_suppkey" BIGINT,
@@ -199,6 +200,7 @@ Choosing a shard key plays an important role in the number of shards and the siz
 
 Here is a full `CREATE TABLE` statement.
 
+[source]
 ----
 CREATE TABLE "sales_fact"
   ("saleid" int,
@@ -263,8 +265,7 @@ Instead, use `saleid` and `productid` for more variety.
 This guideline ensures better join performance.
 For example, if you have two tables  and the primary keys are:
 +
-`PRIMARY KEY("saleid,vendorid")` on A +
-  `PRIMARY KEY("saleid,customerid")` on B
+`PRIMARY KEY("saleid,vendorid")` on A +  `PRIMARY KEY("saleid,customerid")` on B
 +
 Use `saleid` as the shard key when you shard both tables.
 
@@ -316,6 +317,7 @@ A row count skew ratio higher than 1 may require changes to your data modeling.
 
 This example shows the `CREATE TABLE` statements that meet the criteria for sharding both a fact table and its dimension table:
 
+[source]
 ----
 TQL> CREATE TABLE products_dim (
   "id" int,
@@ -365,14 +367,16 @@ It checks for over- or under-sharded tables on your cluster.
 
  .. Log in to your cluster on the command line.
 +
+[source,console]
 ----
- $ ssh admin@<cluster-IP>
+$ ssh admin@<cluster-IP>
 ----
 
  .. Run the following script to check for over- or under-sharded tables.
 +
+[source,console]
 ----
- $ /usr/local/scaligent/release/bin/sharding_diagnostics.sh 
+$ /usr/local/scaligent/release/bin/sharding_diagnostics.sh 
 ----
 
  .. Adjust your sharding strategy appropriately.

@@ -1,12 +1,9 @@
 = Understand embedding
-:last_updated: 11/18/2019
-:toc: true
+:last_updated: 11/06/2020
 
-This page provides an explanation of what you must consider when embedding ThoughtSpot.
+Embedding allows you to use all or part of ThoughtSpot inside another client application.
 
-Embedding allows you to embed all or part of ThoughtSpot in another client application.
-
-== Decide what to embed and where
+== Decide what to embed, and where
 
 The type of embedding your company requires can help you determine what type of embedding to use.
 For example, you may simply need a single chart displayed as a wallboard or you may want your customers to access reports on their own data.
@@ -16,12 +13,12 @@ Regardless of the simplicity or complexity of your client application, its infra
 This library allows you to authenticate to ThoughtSpot and load specific objects.
 
 There are different methods for embedding ThoughtSpot into a client application:
-Full::
-Embeds the entire ThoughtSpot application including menu bars. Full navigation is supported.
-Page-level::
-Embeds pages without the menus bars or page-level navigation. This is useful where you want to limit the inclusion to a portion of ThoughtSpot. For example, you may only embed the *Search* or the *Answers* page.
-Object-level::
-Embed a single visualization in your application. Content is created in ThoughtSpot and then that content is embedded. The content is rendered within an `iframe`. This returns a JSON object that includes the underlying data.
+
+Full:: Embeds the entire ThoughtSpot application including menu bars. Full navigation is supported.
+Page-level:: Embeds pages without the menus bars or page-level navigation. This is useful where you want to limit the inclusion to a portion of ThoughtSpot.
+For example, you may only embed the *Search* or the *Answers* page.
+Object-level embedding:: Embed a single visualization in your application. Content is created in ThoughtSpot and then that content is embedded. The content is rendered within an `iframe`.
+This returns a JSON object that includes the underlying data.
 
 You can also use the ThoughtSpot data APIs to request data from ThoughtSpot.
 
@@ -39,22 +36,12 @@ When your data includes URLs, they display as clickable links in ThoughtSpot tab
 By default, clicking on a link opens the URL in a separate tab.
 But there is a system-wide setting that can be changed to open the links within the context in which they appear.
 
-Changing this setting opens the links:
+Changing this setting opens the links.
+Consider the possible link types, and how they open:
 
-[cols=2*]
-|===
-| Link type
-| Opens in
-
-| Link in search result table in ThoughtSpot
-| Same browser tab as ThoughtSpot application
-
-| Link in table embedded in an iFrame
-| Same iFrame that contains the table
-
-| Link in full ThoughtSpot application embedded in an iFrame
-| Same iFrame that contains the application
-|===
+Link in search result table in ThoughtSpot:: Same browser tab as ThoughtSpot application
+Link in table embedded in an `<iframe>`::  Same `<iframe>` that contains the table
+Link in full ThoughtSpot application embedded in an `<iframe>` element:: Same `<iframe>` that contains the application
 
 == Choose an authentication methodology
 
@@ -63,14 +50,14 @@ You can control which type of authentication you use between your client applica
 === No Authentication
 
 You can simply not set up authentication.
-This would require the user to _already be logged into ThoughtSpot_ before interacting with your client application.
-This is typically only useful when testing your client.
-You would not use this in your production environment.
+This would require the user to be _already logged into ThoughtSpot_, before interacting with the client application.
+This approach is for testing the client.
+Do not use this in a production environment.
 
 === SAML
 
 Before you can embed all or part of ThoughtSpot, you must authenticate to ThoughtSpot using SAML with the public REST API call.
-After authentication, a URL is provided to call the desired visualization and populate it into an `iframe`.
+After authentication, a URL is provided to call the desired visualization, and populate it into an `<iframe>` element.
 
 You must xref:configure-SAML-with-tscli.adoc[configure SAML] on your ThoughtSpot instance before using this method.
 
@@ -86,19 +73,19 @@ In the following scenario, the trust authenticator forwards requests for Thought
 
 image::authentication.png[]
 
-A user already logged into client-application interacts with a ThoughtSpot embed point which causes the following processes:
+A user who is already logged into client-application interacts with a ThoughtSpot embed point, which initiates the following processes:
 
 . The client-side application requests a user token from the trusted authenticator.
-. The trusted authenticator requests user token from ThoughtSpot.
+. The trusted authenticator requests a user token from ThoughtSpot.
 . ThoughtSpot verifies the authenticator and returns a user token.
 . The authenticator returns the user token to the client.
 . The client forwards the user token to ThoughtSpot.
 . ThoughtSpot validates the token and returns information commensurate with that authenticated user's authorization.
 
-== Plan for Cross-Origin HTTP Requests (CORS)
+== Plan for cross-origin HTTP Requests (CORS)
 
-Collecting user credentials from one application (domain) and sending them to another (such as ThoughtSpot) can present security vulnerabilities such as a phishing attack.
-Cross-origin or cross-domain verification closes this vulnerability.
+Collecting user credentials from one application (domain) and sending them to another application (such as ThoughtSpot) can present security vulnerabilities.
+Cross-origin or cross-domain verification prevents such security risks.
 
 When embedding, you must enable CORS between your client application domain and the ThoughtSpot domain.
 This protects your data, so that another actor cannot use the same URL to embed the visualization in its own Web pages.

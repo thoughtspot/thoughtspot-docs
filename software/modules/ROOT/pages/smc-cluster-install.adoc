@@ -1,4 +1,4 @@
-= Install ThoughtSpot clusters on the SMC appliance
+= Install ThoughtSpot Clusters on the SMC Appliance
 :last_updated: 3/3/2020
 :linkattrs:
 
@@ -23,7 +23,7 @@ Follow the steps in this checklist to install your cluster.
 | <<install-step-2,Step 2: Check cluster health>>
 
 | &#10063;
-| <<install-step-3,Step 3: Finalize installation>>
+| <<step-3-finalize-installation,Step 3: Finalize installation>>
 |===
 
 [#install-step-1]
@@ -38,23 +38,20 @@ Note the following parameters:
  ** `hostname` is your specific hostname.
  ** `file-name` is the name of the tarball file on your local machine.
 +
+[source,console]
 ----
  $ scp <release-number>.tar.gz admin@<hostname>:/export/sdb1/TS_TASKS/install/<file-name>
 ----
-
 +
 NOTE: You can use another secure copy method, if you prefer a method other than the `scp` command.
 
 . Alternatively, use `tscli fileserver download-release` to download the release bundle.
-+
-You must xref:tscli-command-ref.adoc#tscli-fileserver[configure the fileserver] by running `tscli fileserver configure` before you can download the release.
-+
-+
++ You must xref:tscli-command-ref.adoc#tscli-fileserver[configure the fileserver] by running `tscli fileserver configure` before you can download the release.
+[source,console]
 ----
  $ tscli fileserver download-release <release-number> --user <username> --out <release-location>
 ----
-
-
++
 Note the following parameters:
 
  ** `release-number` is the release number of your ThoughtSpot instance, such as 5.3, 5.3.1, 6.0, and so on.
@@ -63,9 +60,9 @@ Note the following parameters:
 For example, `/export/sdb1/TS_TASKS/install/6.0.tar.gz`.
 
 . Verify the checksum to ensure you have the correct release.
++ Run `md5sum -c <release-number>.tar.gz.MD5checksum`.
 +
-Run `md5sum -c <release-number>.tar.gz.MD5checksum`.
-+
+[source,console]
 ----
  $ md5sum -c <release-number>.tar.gz.MD5checksum
 ----
@@ -75,14 +72,15 @@ Your output says `ok` if you have the correct release.
 . Launch a https://linux.die.net/man/1/screen[screen,window=_blank] session.
 Use screen to ensure that your installation does not stop if you lose network connectivity.
 +
+[source,console]
 ----
  $ screen -S DEPLOYMENT
 ----
 
 . Create the cluster.
++ Run `tscli cluster create <release-number>`.
 +
-Run `tscli cluster create <release-number>`.
-+
+[source,console]
 ----
  $ tscli cluster create <release-number>.tar.gz
 ----
@@ -104,6 +102,8 @@ After you install the cluster, check its status using the `tscli cluster status`
 [source,console]
 ----
 $ tscli cluster status
+----
+----
 Cluster: RUNNING
 Cluster name    : thoughtspot
 Cluster id      : 1234X11111
@@ -131,8 +131,11 @@ Number of tables in WILL_NOT_INDEX state: 0
 ----
 
 Ensure that the cluster is `RUNNING` and that the Database and Search Engine are `READY`.
-
+[source,console]
+----
  $ tscli cluster check
+----
+----
  Connecting to hosts...
  [Wed Jan  8 23:15:47 2020] START Diagnosing ssh
  [Wed Jan  8 23:15:47 2020] SUCCESS
@@ -187,14 +190,13 @@ Ensure that the cluster is `RUNNING` and that the Database and Search Engine are
    InsecureRequestWarning)
  [Wed Jan  8 23:16:12 2020] SUCCESS
  ################################################################################
-
+----
 Your output may look something like the above.
 Ensure that all diagnostics show `SUCCESS`.
 
-WARNING: If `tscli cluster check` returns an error, it may suggest you run `tscli storage gc` to resolve the issue.
-If you run `tscli storage gc`, note that it restarts your cluster.
+WARNING: If `tscli cluster check` returns an error, it may suggest you run `tscli storage gc` to resolve the issue. If you run `tscli storage gc`, note that it restarts your cluster.
 
-[#install-step-3]
+[#step-3-finalize-installation]
 == Step 3. Finalize Installation
 
 After the cluster status changes to "`Ready,`" sign in to the ThoughtSpot application on your browser.
@@ -215,15 +217,25 @@ Follow these steps:
 . In the xref:smc-cluster-install.adoc#ts-login[ThoughtSpot sign-in window], enter admin credentials, and click *Sign in*.
 If you do not know the admin credentials, ask your network administrator.
 ThoughtSpot recommends changing the default admin password.
-
++
 [#ts-login]
-image:ts-login-page.png[ThoughtSpot's sign-in window]
+image::ts-login-page.png[ThoughtSpot's sign-in window]
 // {% include image.adoc file="ts-login-page.png" title="ThoughtSpot's sign-in window" alt="Log in to ThoughtSpot. Enter Username, Password, and click Sign in. You may select the Remember me option." caption="ThoughtSpot's sign-in window" %}
 
 == Lean configuration
 
 *(For use with thin provisioning only)* If you have a xref:cloud.adoc#use-small-and-medium-instance-types-when-applicable[small or medium instance type], with less than 100GB of data, advanced lean configuration is required before loading any data into ThoughtSpot.
 After installing the cluster, contact xref:contact.adoc[ThoughtSpot Support] for assistance with this configuration.
+
+== Additional resources
+
+As you develop your expertise in SMC cluster installation, we recommend the following ThoughtSpot U course:
+
+* https://training.thoughtspot.com/create-upgrade-patch-a-thoughtspot-cluster/430642[Create a Cluster, window=_blank]
+
+See other training resources at:
+
+image::ts-u.png[link="https://training.thoughtspot.com/", window=_blank]
 
 == Error recovery
 
@@ -241,29 +253,25 @@ Please retry or contact support.
 ----
 
 Restart the node-scout service with the following command.
-
+[source,console]
+----
  $ sudo systemctl restart node-scout
+----
 
 Ensure that you restarted the node-scout by running `sudo systemctl status node-scout`.
 Your output should specify that the node-scout service is active.
 It may look something like the following:
-
+----
  $ sudo systemctl status node-scout
+----
+----
    ● node-scout.service - Setup Node Scout service
      Loaded: loaded (/etc/systemd/system/node-scout.service; enabled; vendor preset: disabled)
      Active: active (running) since Fri 2019-12-06 13:56:29 PST; 4s ago
-
+----
 Next, retry the set-config command.
-
+[source,console]
+----
  $ cat nodes.config | tscli cluster set-config
-
+----
 The command output should no longer have a warning.
-
-== Additional resources
-
-As you develop your expertise in SMC cluster installation, we recommend the following ThoughtSpot U course:
-
-* https://training.thoughtspot.com/create-upgrade-patch-a-thoughtspot-cluster/430642[Create a Cluster,window=_blank]
-
-See other training resources at
-https://training.thoughtspot.com/[ThoughtSpot U,window=_blank].

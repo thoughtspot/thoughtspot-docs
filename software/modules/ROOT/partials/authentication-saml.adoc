@@ -1,0 +1,53 @@
+You can configure the SAML integration through the Admin Console.
+
+NOTE: If you configure authentication through SAML, you cannot also configure authentication through Active Directory.
+
+Navigate to the Admin Console by clicking on the *Admin* tab from the top navigation bar.
+Select *SAML* from the side navigation bar that appears.
+
+image::admin-portal-saml.png[Admin Console - SAML]
+
+Click the *Configure* button in the middle of the screen.
+
+image::admin-portal-saml-configure.png[Configure SAML]
+
+Fill in the following parameters:
+
+. *ThoughtSpot Service Address*: A fully qualified and resolvable domain name for the ThoughtSpot service.
+For example, _thoughtspot.thoughtspot-customer.com_.
+. *Port*: Port of the server where your ThoughtSpot instance is running.
+For example, port `443`.
+. *Unique Service Name*: The unique key used by your Identity Provider to identify the client.
+For example, _urn:thoughtspot:callosum:saml_.
+. *Skew Time in Seconds*: The allowed skew time, after which the authentication response is rejected and sent back from the IDP.
+_86400_ is a popular choice.
+The default is _3600_.
+. *Protocol*: The authentication mechanism for ThoughtSpot.
+For example, `http` or `https`.
+. *IDP Metadata XML File*: The absolute path to your Identity Provider's metadata file.
+This file is provided by your IDP.
+You need this file so that the configuration persists over upgrades.
+It is a best practice to set it up on persistent/HA storage (NAS volumes) or in the same absolute path on all nodes in the cluster.
+For example, _idp-meta.xml_.
++
+If your IdP does not allow you to import the IdP metadata XML file, you must map values manually. Map the `username` attribute to `NameId` and the `email` attribute to `mail`.
+. *Automatically add SAML users to ThoughtSpot upon first authentication*: Choose whether or not to add SAML users to ThoughtSpot when they first authenticate.
+If you choose 'yes', then new users will be automatically created in ThoughtSpot upon first successful SSO login.
+If you choose 'no', then SAML users will not be added in ThoughtSpot upon first successful SSO login.
+Instead, you must xref:users.adoc[add users manually].
+
+After you fill in all parameters, click *OK*.
+
+NOTE: ThoughtSpot adds external users, or users that authenticate through SAML or Active Directory, to the *all* group by default.
+This group has no privileges.
+You must manually assign users to ThoughtSpot groups to give them privileges, such as *can upload user data*, or *can manage data*.
+
+== Additional resources
+
+As you develop your expertise in authentication and security, we recommend the following ThoughtSpot U course:
+
+* https://training.thoughtspot.com/authentication-security/621450[Single Sign On (SSO), window=_blank]
+
+See other training resources at:
+
+image::ts-u.png[link="https://training.thoughtspot.com/", window=_blank]

@@ -1,5 +1,5 @@
 = Set up ThoughtSpot in Azure
-:last_updated: 5/13/2020
+:last_updated: 9/1/2020
 :linkattrs:
 
 After you determine your configuration options, you must set up your virtual machines using a ThoughtSpot image for Azure.
@@ -19,7 +19,7 @@ Due to security restrictions, the ThoughtSpot Virtual Machine does not have defa
 When you are ready to obtain the password, contact xref:contact.adoc[ThoughtSpot Support].
 
 This guide explains how to deploy ThoughtSpot on Microsoft Azure, using ThoughtSpot's CentOS-based image.
-Starting with version 6.0.4, you can also deploy ThoughtSpot on Azure using Red Hat Enterprise Linux (RHEL), allowing you to run ThoughtSpot on an RHEL image that your organization manages internally.
+You can also deploy ThoughtSpot on Azure using Red Hat Enterprise Linux (RHEL), allowing you to run ThoughtSpot on an RHEL 7.7 or 7.8 image that your organization manages internally.
 To install ThoughtSpot using RHEL, refer to the xref:rhel.adoc[RHEL deployment guide].
 
 == Set up ThoughtSpot in Azure
@@ -48,15 +48,13 @@ In a browser, go to https://portal.azure.com/#home, and log in to your Azure acc
 
 . On the Azure portal homepage, hover over *Virtual machines*, and click *Create*.
 +
-image::azure-createvm.png[Create a virtual machine]
-// {% include image.html file="azure-createvm.png" title="Create a virtual machine" alt="Hover over Virtual machines and click create." caption="Create a virtual machine" %}
+image::azure-createvm.png[]
 
 . Specify information under *Basics*.
 +
 image::azure-basicsettings.png[Specify information under Basics]
-// {% include image.html file="azure-basicsettings.png" title="Specify information under Basics" alt="In the Basics menu, specify your subscription type, resource group, VM name, region, image, size, authentication, and port rules." caption="Specify information under Basics" %}
 +
-[cols=2*]
+[cols="5%,95%"]
 |===
 | *1*
 | Choose a subscription type from the dropdown menu.
@@ -76,15 +74,18 @@ If not, _create new_.
 Choose the https://azuremarketplace.microsoft.com/en-us/marketplace/apps/thoughtspot-inc.thoughtspotvirtualmachine?tab=Overview[ThoughtSpot Search & AI-driven Analytics (BYOL),window=_blank] image.
 
 | *6*
-| Refer to xref:configuration-options-azure.adoc[Azure configuration options] to choose a size for your VM that works for your cluster needs.
+| Refer to xref:configuration-options.adoc[Azure configuration options] to choose a size for your VM that works for your cluster needs.
 
 | *7*
 | Select *SSH public key* and specify a username.
+Note that this user is necessary for Azure VM creation, but the user does not exist in ThoughtSpot.
+You cannot log in to ThoughtSpot, or `ssh` into the command line, with this user.
 
 | *8*
-| Enter your SSH public key.
-xref:contact.adoc[Contact ThoughtSpot support] to obtain a public key, if you do not have one.
+| Enter an SSH public key.
+You can choose *use existing public key* or *generate new key pair*, or xref:contact.adoc[contact ThoughtSpot support] to obtain a public key.
 Note that this SSH public key is different from the SSH private key you use later, to ssh into your VM from the command line.
+This public key is necessary for Azure VM creation, but is not necessary at any later point.
 
 | *9*
 | Choose *allow selected ports*.
@@ -97,7 +98,6 @@ See the <<port-requirements,minimum port requirements>>.
 . Specify information under *Disks*.
 +
 image::azure-disks.png[Specify disk information]
-// {% include image.html file="azure-disks.png" title="Specify disk information" alt="In the Disks menu, choose a disk type, add data disks, and select managed disks" caption="Specify disk information" %}
 +
 [cols=2*]
 |===
@@ -116,7 +116,6 @@ Refer to xref:configuration-options-azure.adoc#thoughtspot-azure-instance-types[
 +
 TIP: The new Standard SSD disk types are only available for particular regions.
 Make sure this disk type is supported in the region you chose for your VM before selecting it.
-
 +
 See https://azure.microsoft.com/en-us/blog/preview-standard-ssd-disks-for-azure-virtual-machine-workloads/[Standard SSD Disks for Virtual Machine workloads,window=_blank] for more on SSD disks.
 ThoughtSpot recommends the Premium SSD disks.
@@ -124,9 +123,8 @@ ThoughtSpot recommends the Premium SSD disks.
 . Specify information under *Networking*.
 +
 image::azure-networking.png[Specify networking information]
-// {% include image.html file="azure-networking.png" title="Specify networking information" alt="Specify your virtual network, and set inbound and outbound ports, if you haven't already" caption="Specify networking information" %}
 +
-[cols=2*]
+[cols="5%,95%"]
 |===
 | *1*
 | Find your company's virtual network and select it, or *create new*.
@@ -181,7 +179,7 @@ NOTE: Nodes purchased from Azure must be reachable to each other so that they ca
 ThoughtSpot requires that these ports be accessible between nodes within a cluster.
 Use your discretion about whether to restrict public access or not for all nodes and all ports.
 
-Refer to xref:firewall-ports.adoc[network policies] for more information.
+Refer to xref:ports.adoc[Network ports] for more information.
 
 [#prepare-for-startup]
 === Prepare for starting up ThoughtSpot
@@ -194,40 +192,33 @@ You can obtain this from your ThoughtSpot contact.
 This will show the public IP of the VM.
  ** To see the private IP, select *more services* from the Microsoft Azure homepage.
 Select *Networking* from the list on the left side of the screen.
-. In a terminal application, connect to the VM through SSH. Enter the private key provided for the admin user.
-** You must file a support ticket to obtain this private key; it is necessary for the first login.
-** This key is different from the credentials, or the public keys supplied in earlier steps, which do not work in this context.
+. In a terminal application, connect to the VM through SSH.
 +
-[source,console]
-----
-   $ ssh -i <path_to_private_key> admin@<public_VM_IP>
-----
+Log in as the admin user, using the private key that your ThoughtSpot contact sent you.
+
+ $ ssh -i <path_to_private_key> admin@<public_VM_IP>
++
+// {% include tip.adoc content="If the SSH key is not accepted or lost, you can reset it by going to <strong>Reset password</strong> under <strong>Support + troubleshooting</strong> on the Azure Virtual Machine page. You can only do this before deploying the cluster." %}
 
 . Update the password for both the `admin` and the `thoughtspot` users.
-+
-The command prompts you to type in a new password, and then to confirm the password.
-+
-[source,console]
-----
-$ sudo passwd admin
-Changing password for user admin
-$ sudo passwd thoughtspot
-Changing password for user thoughtspot
-----
++   The command prompts you to type in a new password, and then to confirm the password.
+
+ $ sudo passwd admin
+ Changing password for user admin
+ $ sudo passwd thoughtspot
+ Changing password for user thoughtspot
 +
 WARNING: If you do not change the password, you cannot log back into your Azure VMs.
 Your private key does not work after initial installation.
 
-+
 . Update the file `/etc/hosts` with all the node IP addresses for the other VMs that will be part of the ThoughtSpot cluster.
 
 === Verify storage disks
 
 Verify the existence of your data disks, created in Step 4 of <<create-instance,create an instance>>, by issuing `lsblk` in your terminal application:
 
-[source,console]
 ----
-$ lsblk
+   $ lsblk
 ----
 
 Your result may look something like the following:
@@ -248,88 +239,70 @@ Your result may look something like the following:
 ----
 
 . Unmount the temporary disk by issuing the following command:
-+
-[source,console]
-----
-$ sudo umount /mnt/resource
-----
+
+ $ sudo umount /mnt/resource
 +
 WARNING: The `/mnt/resource` disk, which is mounted on the `/dev/sdb` disk, is temporary.
 Any data on it will be wiped if the VM is shut down.
 You must unmount the `/mnt/resource` disk.
 
-+
 . Prepare the disks /dev/sdc and /dev/sdd for ThoughtSpot by issuing the following command:
 +
-WARNING: Do not use the disk `/dev/sdb` (the ephemeral disk).
+WARNING: Do not use the disk `/dev/sdb`.
 Any data on it will be wiped if the VM is shut down.
-
 +
-[source,console]
 ----
  $ sudo /usr/local/scaligent/bin/prepare_disks.sh /dev/sdc /dev/sdd
 ----
-+
+
 . Check the disks' status by issuing the following command:
-+
-[source,console]
-----
+
  $ df -h
-----
-+
+
 . Repeat the steps in this section for each node in your cluster.
-
-=== Create network support settings
-
-TIP: All changes in this section must be re-applied each time after a cluster is created or updated.
-If these changes are not present, a reboot of the VMs will not have network access.
-So when updating these files, keep a backup to copy after any subsequent cluster creation or update.
-
-. SSH into one of your VMs, using the new password you created for the _admin_ user in step two of <<prepare-for-startup,Prepare for starting up ThoughtSpot>>.
-+
-[source,console]
-----
- ssh admin@<VM-IP>
-----
-+
-. Update the VM's hostname:
-+
-[source,console]
-----
- $ sudo hostnamectl set-hostname <HOSTNAME>
-----
-+
-If you are using a static name, you can issue:
-+
-[source,console]
-----
-$ sudo hostnamectl set-hostname <HOSTNAME> --static
-----
-+
-. Update `/etc/sysconfig/network-scripts/ifcfg-eth0` with the IP and hostname:
-+
-[source,console]
-----
-$ sudo vi /etc/sysconfig/network-scripts/ifcfg-eth0
-
-DEVICE=eth0 ONBOOT=yes BOOTPROTO=dhcp HWADDR=<Add eth0 MAC> TYPE=Ethernet USERCTL=no PEERDNS=yes IPV6INIT=no
-----
-+
-. Modify permissions for `/etc/sysconfig/network-scripts/ifcfg-eth0`.
-This command allows the root user to retain read/write permissions, and grants read-only permissions to other users.
-+
-[source,console]
-----
- $ sudo chmod 644 /etc/sysconfig/network-scripts/ifcfg-eth0
-----
-+
-. Repeat this process (steps 1 through 4) for each node.
 
 == Additional resources
 
 As you develop your expertise in Azure VM creation, we recommend the following ThoughtSpot U course:
 
-* https://training.thoughtspot.com/node-network-configuration/510569[Node Configuration: Azure,window=_blank]
+* https://training.thoughtspot.com/node-network-configuration/510569[Node Configuration: Azure, window=_blank]
 
-See other training resources at
-https://training.thoughtspot.com/[ThoughtSpot U,window=_blank]
+See other training resources at:
+
+image::ts-u.png[link="https://training.thoughtspot.com/", window=_blank]
+
+////
+### Create network support settings
+
+{% include tip.adoc content="All changes in this section must be re-applied each
+time after a cluster is created or updated. If these changes are not present, a
+reboot of the VMs will not have network access. So when updating these files,
+keep a backup to copy after any subsequent cluster creation or update." %}
+
+1. SSH into one of your VMs, using the new password you created for the *admin* user in step two of [Prepare for starting up ThoughtSpot](#prepare-for-startup).
+```
+    ssh admin@<VM-IP>
+```
+2. Update the VM's hostname:
+
+   ```
+   $ sudo hostnamectl set-hostname <HOSTNAME>
+   ```
+
+   If you are using a static name, you can issue:
+
+   ```
+   sudo hostnamectl set-hostname <HOSTNAME> --static
+   ```
+3. Create `/etc/sysconfig/network-scripts/ifcfg-eth0`:
+
+   ```
+$ sudo sh -c 'echo "DEVICE=eth0" > /etc/sysconfig/network-scripts/ifcfg-eth0'
+   ```
+
+3. Modify permissions for `/etc/sysconfig/network-scripts/ifcfg-eth0`. This command allows the root user to retain read/write permissions, and grants read-only permissions to other users.
+    ```
+    $ sudo chmod 644 /etc/sysconfig/network-scripts/ifcfg-eth0
+    ```
+4. Repeat this process (steps 1 through 4) for each node.
+////

@@ -13,6 +13,7 @@ ThoughtSpot would need to process each version of the table during restoration, 
 There are a few steps you can take to check for a high data version issue and fix it.
 To improve data loading speed, run the following command to find the number of tables that are building and their names
 
+[source]
 ----
 tscli cluster status --mode table
 ----
@@ -22,6 +23,7 @@ This could simply be due to the deceivingly large size of the table.
 There is also the chance it could be due to a high data version issue.
 To determine if this is a high data version issue, check the size of the table by running the following command:
 
+[source]
 ----
 echo 'show statistics for server;' | tql
 ----
@@ -30,6 +32,7 @@ If there is a large number of rows in the table, go on to shard the table.
 If the table has a small number of rows, then the slow loading speed is caused by a high data version issue, and you do not have to shard the table.
 Use the compact table functionality to trim the table down to its actual size:
 
+[source]
 ----
 tql> compact table <table name>;
 ----

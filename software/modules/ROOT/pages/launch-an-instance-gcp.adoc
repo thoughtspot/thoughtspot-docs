@@ -2,7 +2,7 @@
 :last_updated: 5/7/2020
 :linkattrs:
 
-Set up your GCP virtual machines.
+ Set up your GCP virtual machines.
 
 After you determine your configuration options, set up your virtual machines (VMs).
 ThoughtSpot will share the ThoughtSpot base image for booting the VMs and some other aspects of system setup with you on https://console.cloud.google.com[the GCP platform,window=_blank].
@@ -17,7 +17,7 @@ We need the Google account/email ID of the individual who will be signed into yo
 We will share ThoughtSpot's GCP project with them so they can use the contained boot disk image to create ThoughtSpot VMs.
 
 This guide explains how to deploy ThoughtSpot on GCP, using ThoughtSpot's CentOS-based image.
-Starting with version 6.0.4, you can also deploy ThoughtSpot on GCP using Red Hat Enterprise Linux (RHEL), allowing you to run ThoughtSpot on an RHEL image that your organization manages internally.
+You can also deploy ThoughtSpot on GCP using Red Hat Enterprise Linux (RHEL), allowing you to run ThoughtSpot on an RHEL 7.7 or 7.8 image that your organization manages internally.
 To install ThoughtSpot using RHEL, refer to the xref:rhel.adoc[RHEL deployment guide].
 
 == Overview
@@ -38,7 +38,7 @@ Ask your network administrator if you need help filling out the site survey.
 == Setting up your Google Cloud Storage (GCS) bucket
 
 If you are going to deploy your cluster using the GCS-storage option, you must set up that bucket before you set up your cluster.
-Contact xref:contact.adoc[ThoughtSpot Support] to find out if your specific cluster size will benefit from the GCS storage option.
+Contact xref:contact.adoc#[ThoughtSpot Support] to find out if your specific cluster size will benefit from the GCS storage option.
 If you are not using GCS, skip this step and <<create-an-instance,create an instance>>.
 
 . Sign in to the https://console.cloud.google.com/[Google Cloud Console,window=_blank].
@@ -53,8 +53,7 @@ If you are not using GCS, skip this step and <<create-an-instance,create an inst
 . Under *Access Control*, select *Uniform* to ensure uniform access to all objects in the storage bucket.
 . Click *CONTINUE*.
 . Do not edit the advanced settings.
-+
-Leave Encryption set to *Google-managed key* and do not set a retention policy.
++ Leave Encryption set to *Google-managed key* and do not set a retention policy.
 . Click *CREATE*.
 
 When you create your instance, make sure you set Storage to *Read Write* access.
@@ -79,8 +78,7 @@ image::gcp-computeenginedash.png[Go to the Compute Engine Dashboard]
 . Select the zone you are creating your region in.
 . Under *Machine type*, select *custom*.
 . Select the number of vCPU cores you need.
-+
-Refer to xref:configuration-options-gcp.adoc#thoughtspot-gcp-instance-types[ThoughtSpot GCP instance types] to determine the number of vCPU cores your cluster needs.
++ Refer to xref:configuration-options-gcp.adoc#thoughtspot-gcp-instance-types[ThoughtSpot GCP instance types] to determine the number of vCPU cores your cluster needs.
 . Specify your memory requirements and CPU platform.
 Refer to xref:configuration-options-gcp.adoc#thoughtspot-gcp-instance-types[ThoughtSpot GCP instance types] to determine the memory your cluster needs.
 +
@@ -131,19 +129,7 @@ Refer to the chart below to find the image you should use, depending on your rel
 |===
 | Release Number | Image Name
 
-| 6.0
-| thoughtspot-image-20191029-9ff82de0a41-prod
-
-| 6.0.1
-| thoughtspot-image-20191029-9ff82de0a41-prod
-
-| 6.0.2
-| thoughtspot-image-20191029-9ff82de0a41-prod
-
-| 6.0.3
-| thoughtspot-image-20200307-812f10fafca-prod
-
-| 6.0.4
+| 6.2
 | thoughtspot-image-20200307-812f10fafca-prod
 |===
 +
@@ -151,7 +137,6 @@ NOTE: ThoughtSpot updates these base images with patches and enhancements.
 If more than one image is available, select the latest one by looking at the dates of creation.
 Each image will work, but we recommend using the latest image because it typically contains the latest security and maintenance patches.
 Contact ThoughtSpot Support if you are unsure which image to use.
-
 +
 e.
 Configure the boot disk as follows:
@@ -216,7 +201,6 @@ image::gcp-8-advanced-blank-disk-config.png[Configure your disk]
 Under Access scopes, select *Set access for each API*.
 . (For use with GCS only) After you click *Set access for each API*, scroll down to the *Storage* dropdown menu in the Identity and API access section.
 Set it to one of the following options:
-
  ** To use Google Cloud Storage (GCS) as persistent storage for your instance, select *Read Write*.
  ** To only use GCS to load data into ThoughtSpot, select *Read Only*.
 . Under *Networking*, customize the network settings as needed.
@@ -249,7 +233,7 @@ See Google's https://cloud.google.com/vpc/docs/using-firewalls[using firewalls,w
 
 Open the following ports between the User/ETL server and ThoughtSpot nodes.
 This ensures that the ThoughtSpot processes do not get blocked.
-Refer to xref:firewall-ports.adoc#required-ports-for-cluster-communication[Network ports] for more information on what ports to open for intracluster operation, so that your clusters can communicate.
+Refer to xref:ports.adoc#required-ports-for-cluster-communication[Network ports] for more information on what ports to open for intracluster operation, so that your clusters can communicate.
 
 The minimum ports needed are:
 
@@ -296,12 +280,14 @@ To install your ThoughtSpot cluster, complete the installation process outlined 
 
 As you develop your expertise in GCP VM creation, we recommend the following ThoughtSpot U course:
 
-* https://training.thoughtspot.com/node-network-configuration/430736[Node Configuration: GCP,window=_blank]
+* https://training.thoughtspot.com/node-network-configuration/430736[Node Configuration: GCP, window=_blank]
 
-See other training resources at https://training.thoughtspot.com/[ThoughtSpot U,window=_blank]
+See other training resources at:
+
+image::ts-u.png[link="https://training.thoughtspot.com/", window=_blank]
 
 '''
 > **Related information**
 >
-> * link:https://cloud.google.com/compute/docs/disks/gcs-buckets[Connecting to Google Cloud Storage buckets,window=_blank]
-> * link:xref:use-data-importer.adoc#loading-data-from-a-gcp-gcs-bucket[Loading data from a GCP GCS bucket]
+> * link:https://cloud.google.com/compute/docs/disks/gcs-buckets[Connecting to Google Cloud Storage buckets,window=_blank] +
+> * xref:use-data-importer.adoc#loading-data-from-a-gcp-gcs-bucket[Loading data from a GCP GCS bucket]

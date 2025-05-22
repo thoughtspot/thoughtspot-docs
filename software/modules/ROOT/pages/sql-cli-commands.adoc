@@ -1,6 +1,5 @@
 = TQL reference
 :last_updated: 2/25/2020
-:linkattrs:
 
 Learn the TQL commands.
 
@@ -29,51 +28,49 @@ You can use TQL to view and modify schemas and data in tables.
 Remember to add a semicolon after each command.
 Commands are not case sensitive but are capitalized here for readability.
 
-NOTE: Worksheets and Pinboards in ThoughtSpot are dependent upon the data in the underlying tables.
+NOTE: Worksheets and pinboards in ThoughtSpot are dependent upon the data in the underlying tables.
 Use caution when modifying tables directly. If you change or remove a schema on which those objects rely, the objects could become invalid.
 
 == View schemas and data
 [width="100%",options="header",cols="30%,70%"]
-|===
+|====================
 | Syntax  | Description
 a| `SHOW DATABASES` |  Lists all available databases.
 Examples:
 
-`SHOW DATABASES;`
+SHOW DATABASES;
 a| `USE <database>`  | Switches the context to the specified database. This is required if queries do not use fully qualified names (database.schema.table) for specifying tables.
-
 Examples:
 
-`USE "fruit_database";`
+USE "fruit_database";
 a| `SHOW SCHEMAS` | Lists all schemas within the current database. For example:
 
-`SHOW SCHEMAS;`
+SHOW SCHEMAS;
 a| `SHOW TABLES` | Lists all tables within the current database by schema. For example:
 
-`SHOW TABLES;`
+SHOW TABLES;
 a| `SHOW TABLE <table>` | Lists all the columns for a table. For example:
 
-`SHOW TABLE "locations";`
+SHOW TABLE "locations";
 a| `SCRIPT SERVER` |  Generates the TQL schema for all tables in all databases on the server. For example:
 
-`SCRIPT SERVER;`
+SCRIPT SERVER;
 a| `SCRIPT DATABASE <database>`  | Generates the TQL schema for all tables in a database. For example:
 
-`SCRIPT DATABASE "fruit_database";`
+SCRIPT DATABASE "fruit_database";
 a| `SCRIPT TABLE <table>` | Generates the TQL schema for a table. For example:
 
-`SCRIPT TABLE "vendor";`
-a| `SELECT
-<cols_or_expr>`
+SCRIPT TABLE "vendor";
+a| SELECT
+<cols_or_expr>
 
-`FROM <table_list>`
+FROM <table_list>
 
-`+++[WHERE +++<predicates>+++]+++`
++++[WHERE +++<predicates>+++]+++
 
-`+++[GROUP BY +++<expr>]`
++++[GROUP BY +++<expr>]
 
-`++++[ORDER BY <expr>]`
-a| Shows specified set of table data.
+++++[ORDER BY <expr>] a| Shows specified set of table data.
 
 If you do not specify the TOP number of rows to select, the top 50 rows will be returned by default. The number of rows to return can be set using the TQL command line flag:
 
@@ -100,7 +97,7 @@ You can use the following date functions:
 - `time`
 
 For example:
-----
+```
 SELECT TOP 10 "quantity" FROM "sales_fact";
 
 SELECT COUNT(*) FROM "vendor";
@@ -113,12 +110,12 @@ AND "amount" > 100 GROUP BY "vendor" ORDER BY "amount" DESC;
 
 SELECT "vendor", SUM("quantity") FROM "sales_fact"
 GROUP BY "vendor" LIMIT 10;
-----
-|===
+```
+|====================
 
 == Schema creation
 [width="100%",options="header",cols="30%,70%"]
-|===
+|====================
 | Syntax  | Description
 a| `CREATE DATABASE <database>` |  Creates a database. For example:
 
@@ -127,25 +124,26 @@ a| `CREATE DATABASE <database>` |  Creates a database. For example:
 a| `CREATE SCHEMA <schema>`  | Creates a schema within the current database. For example:
 
 `CREATE SCHEMA "fruit_schema";`
+
+USE "fruit_database";
 a| `CREATE TABLE <table> (<column_definitions>
 [<constraints>]) [PARTITION BY HASH (<number>) [KEY
 ("<column>")]])` | Creates a table with the specified column definitions and constraints.
 
-Use `PARTITION BY HASH` to shard a table across all nodes. If no `KEY` is specified, the table will be randomly sharded.
+Use `PARTITION BY HASH` to shard a table across all nodes. If no KEY is specified, the table will be randomly sharded.
 
-Do not specify relationship constraints (`FOREIGN KEY` or `RELATIONSHIP`) in the `CREATE TABLE` statement. Instead, define these using `ALTER TABLE` statements at the end of your TQL script, after creating your tables. This method guarantees that tables are created before they are referenced in the constraint definitions. For example:
+Do not specify relationship constraints (FOREIGN KEY or RELATIONSHIP) in the CREATE TABLE statement. Instead, define these using ALTER TABLE statements at the end of your TQL script, after creating your tables. This method guarantees that tables are created before they are referenced in the constraint definitions. For example:
 
-`CREATE TABLE "vendor" ("vendorid" int, "name" varchar(255));
+`CREATE TABLE "vendor" ("vendorid" int, "name" varchar(255));`
 
-CREATE TABLE "sales_fact" ("saleid" int, "locationid" int, "vendorid" int,
+`CREATE TABLE "sales_fact" ("saleid" int, "locationid" int, "vendorid" int,
 "quantity" int, "sale_amount" double, "fruitid" int,
 CONSTRAINT PRIMARY KEY("saleid")) PARTITION BY HASH(96) KEY ("saleid");`
-
-|===
+|====================
 
 == Schema modification
 [width="100%",options="header",cols="30%,70%"]
-|===
+|====================
 | Syntax  | Description
 a| `DROP DATABASE <database>` a|  Drops a database and all of its schemas and tables. For example:
 
@@ -158,12 +156,11 @@ a| `DROP TABLE <table>` a|  Drops a table. For example:
 `DROP TABLE "location";`
 a| `TRUNCATE TABLE <table>` a|  Removes all data from a table, but preserves its metadata, including all GUIDs, relationships, etc. This can be used to force a new schema for a table without losing the metadata.
 
-However, this operation removes all existing data from the table and must be used with caution. You must reload the data following a `TRUNCATE`, or all dependent objects (Worksheets and Pinboards) in ThoughtSpot will become invalid. For example:
+However, this operation removes all existing data from the table and must be used with caution. You must reload the data following a TRUNCATE, or all dependent objects (worksheets and pinboards) in ThoughtSpot will become invalid. For example:
 
 `TRUNCATE TABLE "location";`
-a| `ALTER TABLE <table> +++ADD\|DROP\|RENAME COLUMN+++
-<column>` a|  Alters a table to add, drop, or rename a column.
-
+a| ALTER TABLE <table> +++ADD\|DROP\|RENAME COLUMN+++
+<column> a|  Alters a table to add, drop, or rename a column.
 When you add a column to an existing table, you must provide a default value to use for existing rows. For example:
 
 `ALTER TABLE "cart" ADD COLUMN "nickname" varchar(255) DEFAULT 'no
@@ -172,26 +169,25 @@ nickname';`
 `ALTER TABLE "cart" DROP COLUMN "nickname";`
 
 `ALTER TABLE "cart" RENAME COLUMN "nickname" TO "shortname";`
-a| `ALTER TABLE <table> DROP CONSTRAINT PRIMARY KEY;` a|  Drops the primary key from a table.
+a| ALTER TABLE <table> DROP CONSTRAINT PRIMARY KEY; a|  Drops the primary key from a table.
 
 Note that if you then add a new primary key, the same upsert behavior will be applied as with adding any primary key. This can result in data deletion, so make sure you understand how the upsert will affect your data ahead of time. For example:
 
 `ALTER TABLE "sales" DROP CONSTRAINT PRIMARY KEY;`
 
 `ALTER TABLE "sales" ADD CONSTRAINT PRIMARY KEY ("PO_number");`
-a| `ALTER TABLE <table> DROP [CONSTRAINT \| RELATIONSHIP]
-<name>;` a|  Drops the named foreign key or relationship between two tables. For example:
+a| ALTER TABLE <table> DROP [CONSTRAINT \| RELATIONSHIP]
+<name>; a|  Drops the named foreign key or relationship between two tables. For example:
 
 `ALTER TABLE "sales_fact" DROP CONSTRAINT "FK_PO_number";`
 
 `ALTER TABLE "fruit_dim" DROP RELATIONSHIP "REL_dates";`
-a| `ALTER TABLE <table> [SET DIMENSION \| SET FACT [PARTITION BY
-HASH [(<shards>)] [KEY(<column>)]]]` a|  Changes the partitioning on a table by doing one of:
+a| ALTER TABLE <table> [SET DIMENSION \| SET FACT [PARTITION BY
+HASH [(<shards>)] [KEY(<column>)]]] a|  Changes the partitioning on a table by doing one of:
 
-- re-sharding a sharded table
-- changing a replicated table to a sharded table
-- changing a sharded table to a replicated (unsharded) table
-
+re-sharding a sharded table
+changing a replicated table to a sharded table
+changing a sharded table to a replicated (unsharded) table
 By default, ThoughtSpot does not shard dimension tables.
 
 To change the partitioning on a table, or to change a dimension table to a sharded table, use `ALTER TABLE...SET FACT PARTITION BY HASH...;`
@@ -203,88 +199,13 @@ Examples of this statement:
 `ALTER TABLE "sales_fact" SET FACT PARTITION BY HASH (96) KEY
 ("PO_number");`
 `ALTER TABLE "fruit_dim" SET DIMENSION;`
-a| `ALTER TABLE <table> MODIFY COLUMN <column>
-<new_data_type>;` a|  Changes the data type of a column. This can have implications on sharding and primary key behavior. See xref:about-data-type-conversion.adoc[About data type conversion]. For example:
+a| ALTER TABLE <table> MODIFY COLUMN <column>
+<new_data_type>; a|  Changes the data type of a column. This can have implications on sharding and primary key behavior. See xref:about-data-type-conversion.adoc[About data type conversion]. For example:
 
 `ALTER TABLE fact100 MODIFY COLUMN product_id int;`
-|===
+|====================
 
-== Modify data
-
-[width="100%",options="header",cols="25%,75%"]
-|===
-| Syntax | Description
-a| `INSERT INTO &lt;table&gt; VALUES ...` a| Inserts values into a table. Only use this for testing. Do not use `INSERT` on a production system. For example:
-
-`INSERT INTO "vendor" VALUES ('helen rose', 'jacob norse', 'eileen ruff',
-'manny gates');`
-a| `ALTER TABLE &lt;table&gt; SET LOAD PRIORITY
-&lt;value&gt;
-&lt;new_data_type&gt;;` a| Sets the load priority for a table. Load priority determines the order in which a table is loaded on a cluster restart. You can set any value from `1-100`. The system default for all tables is `50`. For example:
-
-`ALTER TABLE 'sales_facts' SET LOAD PRIORITY 1;`
-a| `UPDATE &lt;table&gt; ... SET ... [WHERE ...]` a| Updates rows in a table that match optionally provided predicates. Predicates have the form `column = value` connected by the `AND` keyword. Sets the column values to the specified values. For example:
-
-`UPDATE "location" SET "borough" = 'staten island', "city" = 'new york'
-WHERE "borough" = 'staten isl' AND city = 'NY';`
-a| `DELETE FROM &lt;table&gt; [WHERE...]` a|Deletes rows from a table that match optionally provided predicates. Predicates have the form `column = value` connected by the `AND` keyword. When specifying dates, use link:https://www.epochconverter.com/[epoch values]. Other date formats can result in error and unwanted deletion of data from the table.For example:
-
-`DELETE FROM "vendor" WHERE "name" = 'Joey Smith' AND "vendorid" =
-'19463';`
-|===
-
-== Constraints and relationships
-
-Constraints and relationships in ThoughtSpot are used to define the
-relationships between tables (how they can be joined). However, constraints
-are not enforced, as they would be in a transactional database. You can define
-the following constraints when creating a table with `CREATE TABLE`, or add them
-to an existing table using the `ADD CONSTRAINT` syntax:
-
-[width="100%",options="header",cols="25%,75%"]
-|===
-| Syntax | Description
-a| PRIMARY KEY a| Designates a unique, non-null value as the primary key for a table. This can be one column or a combination of columns. If values are not unique, an upsert will be performed if a row includes a primary key that is already present in the data. Some examples:
-
-`CREATE TABLE "schools" ( "schoolID" varchar(15), "schoolName"
-varchar(255), "schoolCity" varchar(55), "schoolState" varchar(55), "schoolNick"
-varchar(55), CONSTRAINT PRIMARY KEY ("schoolID") ) ;`
-
-`ALTER TABLE "cart" ADD CONSTRAINT PRIMARY KEY ("cart_id");`
-
-`ALTER TABLE "cart" DROP CONSTRAINT PRIMARY KEY "cart_id";`
-a| FOREIGN KEY a| Defines a relationship where the value(s) in the table are used to join to a second table. Uses an equality operator. The foreign key must match the primary key of the table that is referenced in number, column type, and order of columns.
-
-When creating a foreign key, give it a name. You can reference the foreign key name later, if you want to remove it.
-
-Examples of this statement:
-
-`ALTER TABLE "batting" ADD CONSTRAINT "FK_player" FOREIGN KEY ("playerID")
-REFERENCES "players" ("playerID");`
-
-`ALTER TABLE "batting" ADD CONSTRAINT "FK_lg_team" FOREIGN KEY ("lgID" ,"teamID")
-REFERENCES "teams" ("lgID" ,"teamID");`
-
-`ALTER TABLE "shipment" ADD CONSTRAINT "FK_PO_vendor" FOREIGN KEY ("po_number",
-"vendor") REFERENCES "orders" ("po_number", "vendor");`
-
-`ALTER TABLE "shipment" DROP CONSTRAINT "FK_PO_vendor";`
-a| RELATIONSHIP a| Defines a relationship where the value(s) in the table can be used to join to a second table, using an equality condition (required) and one or more range conditions (optional). These conditions act like a WHERE clause when the two tables are joined. They are applied using AND logic, such that all conditions must be met for a row to be included.
-
-You may add multiple relationships between tables. When creating a relationship, give it a name. You can reference the relationship name later, if you want to remove it.
-
-Examples of this statement:
-
-`ALTER TABLE "wholesale_buys" ADD RELATIONSHIP "REL_fruit" WITH
-"retail_sales" AS "wholesale_buys"."fruit" = "retail_sales"."fruit" AND
-("wholesale_buys"."date_order" &lt; "retail_sales"."date_sold" AND
-"retail_sales"."date_sold" &lt; "wholesale_buys"."expire_date");`
-
-`ALTER TABLE "wholesale_buys" DROP RELATIONSHIP "REL_fruit";`
-|===
-
-
-=== Permitted joins and necessary permissions
+== Permitted joins and necessary permissions
 
 See this matrix for information about which joins you can create, and what permissions these joins require.
 
@@ -295,7 +216,7 @@ include::partial$joins-matrix.adoc[]
 ThoughtSpot supports a simplified list of data types:
 
 [width="100%",options="header",cols="20%,20%,60%"]
-|===
+|====================
 | Syntax | Description | Examples
 | Character a| VARCHAR(_n_) | 	Specify the maximum number of characters, as in VARCHAR(255). The size limit is 64MB for VARCHAR values.
 | Floating point a| - DOUBLE
@@ -311,4 +232,4 @@ BIGINT holds 64 bits.
 - TIME |  DATETIME, TIMESTAMP, and TIME are stored at the granularity of seconds.
 
 TIMESTAMP is identical to DATETIME, but is included for syntax compatibility.
-|===
+|====================

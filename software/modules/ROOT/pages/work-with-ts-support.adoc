@@ -1,5 +1,7 @@
 = Configure support services
 :last_updated: 3/4/2020
+:permalink: /:collection/:path.html
+:sidebar: mydoc_sidebar
 
 There are several configurations you can set up in your installation to ensure your company's support from ThoughtSpot works smoothly.
 
@@ -9,15 +11,17 @@ There are several configurations you can set up in your installation to ensure y
 You can set up a reverse tunnel to allow ThoughtSpot Support to get access to your ThoughtSpot instance, to perform support-related activities.
 This setup is scalable, more secure, and a much simpler alternative to using a virtual meeting room.
 
-Granting remote support access can streamline troubleshooting activities, because it enables your support agent to work directly on your computer from a secure setting.
+Granting remote support access can streamline troubleshooting activities, because it enables your support agent to work directly on your computer form a secure setting.
 The remote tunnel enables SSH and HTTP access to your ThoughtSpot instance by ThoughtSpot Support.
 This access can be granted and revoked easily, so you can enable it for a troubleshooting session, and then disable it again.
 Before doing this procedure, make sure your company's security policies allow reverse tunneling.
 
-NOTE: Your ThoughtSpot instance must be able to connect to `tunnelrelay.thoughtspot.com` on TCP port 22. To verify connectivity to this port, run: `telnet tunnelrelay.thoughtspot.com 22`. Without connectivity to port 22, the tunnel will not work.
+You can set up a reverse tunnel <<remote-support-tscli,using tscli>>, or <<admin-portal,through the Admin Console>>.
+
+NOTE: Before you set up a reverse tunnel, open port `22` in your firewall outgoing rules to add `tunnelrelay.thoughtspot.com` to your list of allowed domains.
 
 [#remote-support-tscli]
-== Using remote support with tscli
+=== Using remote support with tscli
 
 To enable remote support, follow these steps:
 
@@ -30,36 +34,46 @@ Provide the cluster name of the cluster for which you want to enable remote supp
 You only need to do this one time, when you are enabling the tunnel for the very  first time.
 After that, this setting persists when you start and stop the  remote tunnel.
 +
+[source,console]
 ----
- $ tscli support set-remote --addr tunnelrelay.thoughtspot.com --user ubuntu
+$ tscli support set-remote --addr tunnelrelay.thoughtspot.com --user ubuntu
 ----
 
 . Test that the setting is configured:
 +
+[source,console]
 ----
- $ tscli support show-remote
+$ tscli support show-remote
 ----
 
 . Enable the remote tunnel:
 +
+[source,console]
 ----
- $ tscli support start-remote
+$ tscli support start-remote
 ----
 
 . Contact xref:contact.adoc[ThoughtSpot Support] and test your setup.
 . After your remote session with ThoughtSpot Support is over, turn the remote tunnel off until you need to use it again:
 +
+[source,console]
 ----
- $ tscli support stop-remote
+$ tscli support stop-remote
 ----
 +
 You can repeat the steps to start and stop the remote tunnel as needed for future support operations.
 
 . Ensure that the remote tunnel is disabled:
 +
+[source,console]
 ----
- $ tscli support show-remote
+$ tscli support show-remote
 ----
+
+[#admin-portal]
+=== Configure reverse SSH tunnel with the Admin Console
+
+include::partial$reverse-ssh-tunnel.adoc[]
 
 [#configure-secure-file-server]
 == Configure a secure file server
@@ -80,8 +94,9 @@ To configure the connection to the secure file server, follow these steps:
 . Log in to the Linux shell using SSH.
 . Issue the command to configure the file server:
 +
+[source,console]
 ----
- $ tscli fileserver configure --user <user_name> [--password <password>]
+$ tscli fileserver configure --user <user_name> [--password <password>]
 ----
 +
 If you do not supply the `--password` parameter, you are prompted to enter it.
@@ -101,8 +116,9 @@ You can disable call home in by doing the following:
 . Log in to the ThoughtSpot server as `admin` user.
 . Use the `tscli` command to disable.
 +
+[source,console]
 ----
- $ tscli callhome disable
+$ tscli callhome disable
 ----
 
 [#support-contact]
@@ -117,21 +133,27 @@ To designate the custom support contact, follow these steps:
 . Log in to the Linux shell using SSH.
 . Issue the `tscli` command to set the email address:
 +
+[source,console]
 ----
- $ tscli support set-admin-email <email_address>
+$ tscli support set-admin-email <email_address>
 ----
 
 . Issue the `tscli` command to set the phone number:
 +
+[source,console]
 ----
- $ tscli support set-admin-phone <phone_number>
+$ tscli support set-admin-phone <phone_number>
 ----
 
 . If you need to reset both of these to the default (ThoughtSpot Support), issue these commands:
 +
+[source,console]
 ----
- $ tscli support rm-admin-email
- $ tscli support rm-admin-phone
+$ tscli support rm-admin-email
+----
+[source,console]
+----
+$ tscli support rm-admin-phone
 ----
 
 [#manage-the-feedback-contact]
@@ -148,27 +170,31 @@ To designate the custom feedback contact, follow these steps:
 . Log in to the Linux shell using SSH.
 . To set the feedback email address, issue this command:
 +
+[source,console]
 ----
- $ tscli support set-feedback-email <email_address>
+$ tscli support set-feedback-email <email_address>
 ----
 
 . Verify the email address is set:
 +
+[source,console]
 ----
- $ tscli support show-feedback-email
+$ tscli support show-feedback-email
 ----
 
 To reset the email to the default (ThoughtSpot support), issue this command:
 
+[source,console]
 ----
- $ tscli support rm-feedback-email
+$ tscli support rm-feedback-email
 ----
 
 You can also choose not to send feedback on your system.
 Issue this command:
 
+[source,console]
 ----
- $ tscli support set-feedback-email ' '
+$ tscli support set-feedback-email ' '
 ----
 
 [#find-support-contact]

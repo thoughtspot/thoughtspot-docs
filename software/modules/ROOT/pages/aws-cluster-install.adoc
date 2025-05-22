@@ -8,9 +8,9 @@ Learn how to install ThoughtSpot clusters in AWS.
 
 Before you can install your ThoughtSpot clusters in AWS, complete these prerequisites.
 
-. *Review configuration options* Refer to xref:configuration-options-aws.adoc[AWS configuration options] for detailed instance specs.
-. *Create the instance* Refer to xref:launch-an-instance-aws.adoc[Set up AWS for ThoughtSpot] to create and launch your instance.
-. *Review required ports* Refer to xref:firewall-ports.adoc[Network ports] to view the required ports for successful operation of ThoughtSpot.
+. *Review configuration options* Refer to xref:configuration-options.adoc[AWS configuration options] for detailed instance specs.
+. *Create the instance* Refer to xref:launch-an-instance.adoc[Set up AWS for ThoughtSpot] to create and launch your instance.
+. *Review required ports* Refer to xref:ports.adoc[Network ports] to view the required ports for successful operation of ThoughtSpot.
 . *Configure nodes* Refer to xref:installing-aws.adoc[Configure ThoughtSpot nodes in AWS] to configure your nodes.
 
 [#cluster-install]
@@ -54,14 +54,13 @@ Note the following parameters:
 NOTE: You can use another secure copy method, if you prefer a method other than the `scp` command.
 
 . Alternatively, use `tscli fileserver download-release` to download the release bundle.
-+
-You must xref:tscli-command-ref.adoc#tscli-fileserver[configure the fileserver] by running `tscli fileserver configure` before you can download the release.
++ You must xref:tscli-command-ref.adoc#tscli-fileserver[configure the fileserver] by running `tscli fileserver configure` before you can download the release.
 +
 +
 ----
  $ tscli fileserver download-release <release-number> --user <username> --out <release-location>
 ----
-
++
 Note the following parameters:
 
  ** `release-number` is the release number of your ThoughtSpot instance, such as 5.3, 5.3.1, 6.0, and so on.
@@ -70,8 +69,7 @@ Note the following parameters:
 For example, `/export/xvdb1/TS_TASKS/install/6.0.tar.gz`.
 
 . Verify the checksum to ensure you have the correct release.
-+
-Run `md5sum -c <release-number>.tar.gz.MD5checksum`.
++ Run `md5sum -c <release-number>.tar.gz.MD5checksum`.
 +
 ----
  $ md5sum -c <release-number>.tar.gz.MD5checksum
@@ -87,25 +85,22 @@ Use screen to ensure that your installation does not stop if you lose network co
 ----
 
 . Create the cluster.
-+
-Run `tscli cluster create` to create the cluster.
-+
-If you are using an s3 bucket for object storage, include the flag `--enable_cloud_storage s3a`.
++ Run `tscli cluster create` to create the cluster.
++ If you are using an s3 bucket for object storage, include the flag `--enable_cloud_storage s3a`.
 +
 ----
  $ tscli cluster create <release-number>.tar.gz --enable_cloud_storage s3a
 ----
 
 . Edit the output with your specific cluster information.
-+
-For more information on this process, refer to xref:cluster-create.adoc[Using the tscli cluster create command] and xref:parameters-cluster-create.adoc[Parameters of the `cluster create` command].
++ For more information on this process, refer to xref:cluster-create.adoc[Using the tscli cluster create command] and xref:parameters-cluster-create.adoc[Parameters of the `cluster create` command].
 
 The cluster installer automatically reboots all the nodes after a successful install.
 The `firewalld` service automatically turns on.
 At this time, the system is rebooting, which may take approximately 15 minutes.
 +
 Log in to any node to check the current cluster status:
-
++
 ----
     $ tscli cluster status
 ----
@@ -147,7 +142,7 @@ Number of tables in WILL_NOT_INDEX state: 0
 ----
 
 Ensure that the cluster is `RUNNING` and that the Database and Search Engine are `READY`.
-
+----
  $ tscli cluster check
  Connecting to hosts...
  [Wed Jan  8 23:15:47 2020] START Diagnosing ssh
@@ -203,7 +198,7 @@ Ensure that the cluster is `RUNNING` and that the Database and Search Engine are
    InsecureRequestWarning)
  [Wed Jan  8 23:16:12 2020] SUCCESS
  ################################################################################
-
+----
 Your output may look something like the above.
 Ensure that all diagnostics show `SUCCESS`.
 
@@ -243,10 +238,11 @@ After installing the cluster, contact xref:contact.adoc[ThoughtSpot Support] for
 
 As you develop your expertise in AWS cluster installation, we recommend the following ThoughtSpot U course:
 
-* https://training.thoughtspot.com/create-upgrade-patch-a-thoughtspot-cluster/430642[Create a Cluster,window=_blank]
+* https://training.thoughtspot.com/create-upgrade-patch-a-thoughtspot-cluster/430642[Create a Cluster, window=_blank]
 
-See other training resources at
-https://training.thoughtspot.com/[ThoughtSpot U].
+See other training resources at:
+
+image::ts-u.png[link="https://training.thoughtspot.com/", window=_blank]
 
 '''
 > **Related information**

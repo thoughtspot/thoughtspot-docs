@@ -1,6 +1,5 @@
 = Embrace overview
-:last_updated: 10/21/2019
-
+:last_updated: 06/18/2020
 
 Using Embrace, you can perform live queries on external databases.
 
@@ -12,6 +11,8 @@ Embrace supports the following external databases:
 * Amazon Redshift
 * Google BigQuery
 * Microsoft Azure Synapse
+* Teradata
+* SAP HANA [.label.label-beta]#Beta#
 
 To enable Embrace, contact ThoughtSpot support.
 
@@ -31,59 +32,25 @@ It's easy to apply transformations and filter the data also.
 * Save significant time and money by avoiding ETL pipelines.
 * Connect to multiple external databases.
 
-== New features in 6.0
-
-+++<script src="https://fast.wistia.com/embed/medias/1n7ei0tqr4.jsonp" async>++++++</script>+++
-+++<script src="https://fast.wistia.com/assets/external/E-v1.js" async>++++++</script>+++
-+++<span class="wistia_embed wistia_async_1n7ei0tqr4 popover=true popoverAnimateThumbnail=true popoverBorderColor=4E55FD popoverBorderWidth=2" style="display:inline-block;height:252px;position:relative;width:450px">++++++&nbsp;++++++</span>+++
-
 == Limitations
 
 === Feature availability in Embrace
 
 The following matrix compares the features that are available in our internal high-performance database, Falcon, and the ones available in Embrace:
-[cols="80%,10%,10%,options="header"]
-|===
+[width="100%",cols="60%,20%,20%" options="header"]
+|====================
 | Feature Name | Falcon | Embrace
-
-| Simple Search and Complex searches: +
-Versus, Inline Subquerying, Growth
-| &check;
-| &check;
-
-| Search Suggestions for column names and values
-| &check;
-| &check;
-
-| Headlines that summarize tables
-| &check;
-| &check;
-
-| All chart types and configurations
-| &check;
-| &check;
-
-| Spot IQ: Instant insights, Did you know?, +
-Pinboard insights, Analyze
-| &check;
-| &cross;
-
-| SpotIQ Monitor Headlines
-| &check;
-| &cross;
-
-| Table and Column remapping through Scriptability
-| &cross;
-| &check;
-
-| Custom calendar
-| &check;
-| &cross;
-
-| Materialized View
-| &check;
-| &cross;
-|===
+| Simple Search and Complex searches:
+Versus, Inline Subquerying, Growth| &check; | &check;
+| Search Suggestions for column names and values | &check; | &check;
+| Headlines that summarize tables | &check; | &check;
+| All chart types and configurations | &check; | &check;
+| Spot IQ: Instant insights, Did you know?,
+Pinboard insights, Analyze | &check; | &cross;
+| SpotIQ Monitor Headlines | &check; | &cross;
+| Table and Column remapping through Scriptability | &cross; | &check;
+| Custom calendar | &check; | &cross;
+|====================
 
 === Function availability in Embrace
 
@@ -91,12 +58,11 @@ The following matrix compares the specific function support across the different
 Functions not listed here have full support.
 
 |===
-| Function | Snowflake | Amazon +
- Redshift | Google +
- BigQuery | Azure +
- Synapse
+| Function | Snowflake | Amazon Redshift | Google BigQuery | Azure Synapse | Teradata | SAP HANA
 
 | `SOUNDS_LIKE`
+| &cross;
+| &cross;
 | &cross;
 | &cross;
 | &cross;
@@ -107,8 +73,12 @@ Functions not listed here have full support.
 | &cross;
 | &cross;
 | &cross;
+| &cross;
+| &cross;
 
 | `EDIT_DISTANCE_WITH_CAP`
+| &cross;
+| &cross;
 | &cross;
 | &cross;
 | &cross;
@@ -119,8 +89,12 @@ Functions not listed here have full support.
 | &cross;
 | &cross;
 | &cross;
+| &cross;
+| &cross;
 
 | `COUNT_NOT_NULL`
+| &cross;
+| &cross;
 | &cross;
 | &cross;
 | &cross;
@@ -131,11 +105,15 @@ Functions not listed here have full support.
 | &cross;
 | &cross;
 | &cross;
+| &check;
+| &cross;
 
 | `EDIT_DISTANCE`
 | &check;
 | &cross;
 | &cross;
+| &cross;
+| &check;
 | &cross;
 
 | `MEDIAN`
@@ -143,12 +121,16 @@ Functions not listed here have full support.
 | &check;
 | &cross;
 | &check;
+| &check;
+| &check;
 
 | `PERCENTILE`
 | &check;
 | &check;
 | &cross;
 | &check;
+| &check;
+| &cross;
 |===
 
 === Data type availability in Embrace
@@ -157,37 +139,36 @@ The following matrix captures the specific data type support limitations across 
 Data types not listed here have full support.
 
 |===
-| Data Type | Snowflake | Amazon +
- Redshift | Google +
- BigQuery | Azure +
- Synapse
+| Data Type | Snowflake | Amazon Redshift | Google BigQuery | Azure Synapse | Teradata | SAP HANA
 
 | `BINARY`
 | &cross;
 | &check;
 | &check;
 | &cross;
+| &check;
+| &check;
 
 | `VARBINARY`
 | &cross;
 | &check;
 | &check;
 | &cross;
-
-| `TIMESTAMPTZ`
 | &check;
 | &cross;
-| &check;
-| &check;
 
 | `GEOMETRY`
 | &check;
 | &cross;
 | &check;
 | &check;
+| &check;
+| &cross;
 
 | `BYTES`
 | &check;
+| &check;
+| &cross;
 | &check;
 | &cross;
 | &check;
@@ -197,6 +178,8 @@ Data types not listed here have full support.
 | &check;
 | &check;
 | &cross;
+| &check;
+| &check;
 |===
 
 === Additional specific exceptions
@@ -205,30 +188,38 @@ The following list captures the specific limitations across the different databa
 Databases not listed here have full support.
 
 General: all databases::
-Sample values;;
-Embrace does not internationalize sample values in tables.
-Delayed UI rendering;;
-For connections with a very large number of tables (on the order of 1000's of tables), UI rendering may take a very long time. These connections may time out.
-Deleting columns;;
-After specifying a connection, columns cannot be deleted from the table. Editing a connection makes it possible to add additional columns, but not to remove them.
-
+Sample values::: Embrace does not internationalize sample values in tables.
+Delayed UI rendering::: For connections with a very large number of tables (on the order of 1000's of tables), UI rendering may take a very long time. These connections may time out.
+Deleting columns::: After specifying a connection, columns cannot be deleted from the table. Editing a connection makes it possible to add additional columns, but not to remove them.
 Google BigQuery::
-Join support;;
-Google BigQuery does not support PK-FK joins. Therefore, when using Embrace, you must create joins explicitly in ThoughtSpot.
-Partitioned tables;;
-When running a query on a partitioned table with the *Require partition filter option* enabled, you must specify the `WHERE` clause. Omitting the `WHERE` clause throws an error. +
+Join support::: Google BigQuery does not support PK-FK joins. Therefore, when using Embrace, you must create joins explicitly in ThoughtSpot.
+Partitioned tables::: When running a query on a partitioned table with the *Require partition filter option* enabled, you must specify the `WHERE` clause.
+Without a `WHERE` clause specified, queries generate an error.
++
 To ensure that the query on such tables honors the partition condition, you must create a worksheet filter in ThoughtSpot.
 
-Azure Synapse::
-Azure Synapse supports up to 10 `IF THEN ELSE` statements in a single query.
+Azure Synapse:: Azure Synapse supports up to 10 `IF THEN ELSE` statements in a single query.
++
+Azure Synapse does not support foreign keys, so no PK-FK joins can be defined in Synapse.
+
 
 == Next steps
 
-* *xref:embrace-snowflake-add.adoc[Add a Snowflake connection]* +
-Create the connection between ThoughtSpot and tables in an external Snowflake database.
-* *xref:embrace-redshift-add.adoc[Add a Redshift connection]* +
-Create the connection between ThoughtSpot and tables in an external Amazon RedShift database.
-* *xref:embrace-gbq-add.adoc[Add a BigQuery connection]* +
- Create the connection between ThoughtSpot and tables in an external Google BigQuery database.
-* *xref:embrace-synapse-add.adoc[Add a Synapse connection]* +
-Create the connection between ThoughtSpot and tables in an external Azure Synapse database.
+* *xref:embrace-snowflake-add.adoc[Add a Snowflake connection]*
++
+Create the connection between ThoughtSpot and tables in a Snowflake database.
+* *xref:embrace-redshift-add.adoc[Add a Redshift connection]*
++
+Create the connection between ThoughtSpot and tables in an Amazon RedShift database.
+* *xref:embrace-gbq-add.adoc[Add a BigQuery connection]*
++
+Create the connection between ThoughtSpot and tables in a Google BigQuery database.
+* *xref:embrace-synapse-add.adoc[Add a Synapse connection]*
++
+Create the connection between ThoughtSpot and tables in an Azure Synapse database.
+* *xref:embrace-teradata-add.adoc[Add a Teradata connection]*
++
+Create the connection between ThoughtSpot and tables in a Teradata database.
+* *xref:embrace-hana-add.adoc[Add an SAP HANA connection]*
++
+Create the connection between ThoughtSpot and tables in an SAP HANA database.

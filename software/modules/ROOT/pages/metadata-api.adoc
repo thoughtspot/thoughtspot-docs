@@ -4,12 +4,12 @@
 The Metadata APIs allow you to fetch metadata for ThoughtSpot objects.
 
 The Metadata APIs enable you to fetch metadata details for various objects in the ThoughtSpot system.
-For example, you may want to see the visualization headers of a particular answer or a Pinboard.
+For example, you may want to see the visualization headers of a particular answer or a pinboard.
 
 == Get visualization headers
 
 Use this API to list the visualization headers from the ThoughtSpot system.
-The expected output includes a list of objects, each with information about the visualizations of the given Pinboard or an Answer.
+The expected output includes a list of objects, each with information about the visualizations of the given pinboard or an answer.
 
 === Resource URL
 
@@ -19,23 +19,26 @@ The expected output includes a list of objects, each with information about the 
 [width="100%",options="header",cols="20%,15%,75%"]
 |====================
 | Query Parameter | Data Type | Description
-| `id` | string | ID of a particular Answer or a Pinboard.
+| id | string | ID of a particular answer or a pinboard.
 |====================
 
 === Request Example
 
 .cURL
+[source]
 ----
 curl -X GET --header 'Accept: application/json' --header 'X-Requested-By: ThoughtSpot' 'https://<instance>/callosum/v1/tspublic/v1/metadata/listvizheaders?id=97begg839e-71b6-42ad-a980-20c38b4d6db5'
 ----
 
 .Request URL
+[source]
 ----
 https://<instance>/callosum/v1/tspublic/v1/metadata/listvizheaders?id=97be839e-71b6-42ggad-a980-20c38b4d6db5
 ----
 
 === Response Example
 
+[source]
 ----
 [
   {
@@ -82,47 +85,44 @@ Use this API to fetch a comprehensive list of metadata headers of a specific obj
 | Query Parameter | Data Type | Description
 | `type` | string a| Specifies the metadata object type. Valid values are:
 
-* `QUESTION_ANSWER_BOOK`
-* `PINBOARD_ANSWER_BOOK`
-* `QUESTION_ANSWER_SHEET`
-* `PINBOARD_ANSWER_SHEET`
-* `LOGICAL_COLUMN`
-* `LOGICAL_TABLE`
-* `LOGICAL_RELATIONSHIP`
-* `TAG`
-* `DATA_SOURCE`
+* QUESTION_ANSWER_BOOK
+* PINBOARD_ANSWER_BOOK
+* QUESTION_ANSWER_SHEET
+* PINBOARD_ANSWER_SHEET
+* LOGICAL_COLUMN
+* LOGICAL_TABLE
+* LOGICAL_RELATIONSHIP
+* TAG
+* DATA_SOURCE
 | `subtypes` | string | Specifies the sub-types of metadata object. Valid values are:
 
-* `ONE_TO_ONE_LOGICAL`
-* `WORKSHEET`
-* `PRIVATE_WORKSHEET`
-* `USER_DEFINED`
-* `AGGR_WORKSHEET`
-
-NOTE: This parameter only applies to the `LOGICAL_TABLE` type.
-
+* ONE_TO_ONE_LOGICAL
+* WORKSHEET
+* PRIVATE_WORKSHEET
+* USER_DEFINED
+* AGGR_WORKSHEET
 | `category` | string | Specifies the metadata object category. Valid values are:
 
-* `ALL`
-* `MY`
-* `FAVORITE`
-*` REQUESTED`
+* ALL
+* MY
+* FAVORITE
+* REQUESTED
 | `sort` | string | Sort order of returned headers. Valid values are:
 
-* `DEFAULT`
-* `NAME`
-* `DISPLAY_NAME`
-* `AUTHOR`
-* `CREATED`
-* `MODIFIED`
+* DEFAULT
+* NAME
+* DISPLAY_NAME
+* AUTHOR
+* CREATED
+* MODIFIED
 | `sortascending` | boolean | A flag to specify the sort order. A null value defines the default order.
 
-* Choose `true` to set ascending order
-* Choose `false` to set descending order
-| `offset` | integer | The batch offset to fetch the page headers. The system default is `-1` that implies first page.
-| `batchsize` | integer | The batch size of the object. A value of `-1` implies no pagination.
+* Choose true to set ascending order
+* Choose false to set descending order
+| `offset` | integer | The batch offset to fetch the page headers. The system default is -1 that implies first page.
+| `batchsize` | integer | The batch size of the object. A value of -1 implies no pagination.
 | `tagname` | string | A JSON array containing a set of tag names to filter headers by.
-| `pattern` | string | A pattern to match for object name. Use `%` for wildcard match.
+| `pattern` | string | A pattern to match for object name. Use % for wildcard match.
 | `skipids` | string | IDs of metadata objects to fetch.
 | `fetchids` | string | IDs of metadata objects to fetch.
 | `auto_created` | boolean | A flag that indicates whether to list auto-created objects only. A value of null signifies return all.
@@ -131,17 +131,20 @@ NOTE: This parameter only applies to the `LOGICAL_TABLE` type.
 === Request Example
 
 .cURL
+[source]
 ----
 curl -X GET --header 'Accept: application/json' --header 'X-Requested-By: ThoughtSpot' 'https://<instance>/callosum/v1/tspublic/v1/metadata/listobjectheaders?type=PINBOARD_ANSWER_BOOK&subtypes=WORKSHEET&category=ALL&sort=CREATED&offset=-1'
 ----
 
 .Request URL
+[source]
 ----
 https://<instance>/callosum/v1/tspublic/v1/metadata/listobjectheaders?type=PINBOARD_ANSWER_BOOK&subtypes=WORKSHEET&category=ALL&sort=CREATED&offset=-1
 ----
 
 === Response Example
 
+[source]
 ----
 [
   {
