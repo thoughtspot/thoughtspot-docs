@@ -1,0 +1,150 @@
+= Managing search and SpotIQ settings
+:last_updated: 6/28/2022
+:linkattrs:
+:experimental:
+:page-layout: default-cloud
+:page-aliases: /admin/ts-cloud/search-spotiq-settings.adoc, admin-portal-search-spotiq-settings.adoc
+:description: Manage indexing and SpotIQ settings for your organization from the Admin Console.
+
+
+You can manage certain advanced settings for your organization from the Admin Console.
+This includes enabling, disabling, and configuring the following features: SpotIQ, column indexing, summaries, the new Answer, SpotIQ, and Liveboard experiences, and the footer for downloaded Answers and Liveboards.
+
+NOTE: If your organization uses xref:orgs-overview.adoc[multi-tenancy with Orgs], you must be a cluster administrator to manage these settings, not an Org administrator. You manage these settings for the whole cluster. You cannot set them separately for each Org.
+
+Navigate to the Admin Console by selecting the *Admin* tab from the top navigation bar.
+Select *Search & SpotIQ* from the side navigation bar that appears.
+
+If your organization uses xref:orgs-overview.adoc[multi-tenancy with Orgs], ensure that you are in the Primary Org, in the *All orgs* section of the Admin Console. You manage Search and SpotIQ settings for the whole cluster. You cannot set them separately for each Org.
+
+image::admin-portal-search-settings.png[Admin Console - Search & SpotIQ settings]
+
+You can update the <<search,search>>, <<spotiq,SpotIQ>>, <<thoughtspot-experience,Answer, SpotIQ, and Liveboard experiences>>, and <<visualization-footer,footer>> settings from this page.
+
+NOTE: Changing these settings results in a service interruption for all users for approximately 2 minutes.
+To minimize disruption, consider making your changes during a scheduled maintenance window.
+
+[#search]
+== Search settings
+
+Under *Search settings*, you can configure ThoughtSpot's indexing behavior, and enable or disable summaries.
+
+To learn more about ThoughtSpot's default indexing behavior, refer to xref:data-modeling-index.adoc[Manage suggestion indexing].
+
+To manage search settings, follow these steps:
+
+. Select the *Edit* button in the *Search Settings* section.
+. *Index columns*: Select the toggle to enable or disable ThoughtSpot's indexing of columns in new connections.
+If you disable this feature, all columns from new connections are set to `DONT_INDEX`.
+Note that this change only applies to columns from _new_ connections.
+You must manually set columns that already exist to `INDEX` or `DONT_INDEX`.
+. *Index frequency*: Select a frequency for column indexing from the dropdown list.
+The options are 8, 16, or 24 hours. To further customize your indexing frequency and the index start time, contact {support-url}.
+. *Table summaries in ad hoc search*: Select the toggle to enable or disable the display of summaries in ad hoc search.
+This setting only affects the display of summaries for users on the xref:answer-experience-new.adoc[new Answer experience], not the classic experience.
++
+NOTE: This setting does not affect the display of summaries in saved objects, such as saved Answers, pinned tables, or metric tiles in Liveboards.
+
+. Select *Save*.
+Alternatively, you can select *Reset configuration* to reset to the default.
+By default, ThoughtSpot indexes new columns at a frequency of 24 hours, and enables summaries.
+
+[#spotiq]
+== SpotIQ settings
+
+Under *SpotIQ settings*, you can enable or disable xref:spotiq-custom.adoc[SpotIQ analyze] or xref:monitor.adoc[Monitor], as well as define the upper limit frequency for monitoring KPIs.
+
+To enable or disable SpotIQ Analyze or Monitor, follow these steps:
+
+. Select the *Edit* button in the *SpotIQ Settings* section.
+. Select the toggle to enable or disable the feature.
+. Select *Save*.
+Alternatively, you can select *Reset configuration* to reset to the default.
+By default, SpotIQ and Monitor are both enabled.
+
+=== KPI monitoring frequency
+
+Use the *shortest time period to check alerts* option to define the upper-limit frequency for monitoring KPIs. For example, if you define the upper-limit frequency as "weekly", users in your organization will not see "hourly" or "daily" options when they create KPI alerts.
+
+To change the shortest time period to check alerts for your cluster, follow these steps:
+
+. Select the *Edit* button in the *SpotIQ Settings* section.
+. Open the *shortest time period to check alerts* dropdown menu and select one of the following time periods:
+
+* hourly
+* daily
+* weekly
+* monthly
+. Select *Save changes*.
+Alternatively, you can *Reset to default*. The default frequency is "hourly".
+
+[#thoughtspot-experience]
+== ThoughtSpot experience settings
+Under *ThoughtSpot experience*, you can manage availability of the new xref:answer-experience-new.adoc[Answer], xref:liveboard-experience-new.adoc[Liveboard], and xref:spotiq-custom.adoc[SpotIQ] experiences for all users.
+
+NOTE: The new Liveboard and SpotIQ experiences are dependent on the new Answer experience. To enable the new Liveboard or SpotIQ experience, ensure that you first enable the xref:answer-experience-new.adoc[new Answer experience].
+
+There are two different toggles for each new experience in this section. The first toggle, *New [ Answer | SpotIQ | Liveboard ] experience*, turns on the ability to opt into the new experience for any user. The second toggle, *Make new [ Answer | SpotIQ | Liveboard ] experience default*, turns the new experience on by default.
+
+You can turn the new Answer, SpotIQ, or Liveboard experience on or off globally, and specify the default experience for all users. For example, you can turn the new Liveboard experience on globally, but keep the classic experience the default, allowing users to opt into the new experience.
+
+To manage the new experiences, follow these steps:
+
+. Select the *Edit* button in the *ThoughtSpot experience* section.
+
+. Select the relevant toggle to enable or disable the new experience[s].
+
+. After you enable a new experience, you can specify whether it should be on by default for all users, or if they should have to opt in.
++
+To display the new experience to all users, enable the *new [ Answer | SpotIQ | Liveboard ] experience* toggle, then enable the *Make new [ Answer | SpotIQ | Liveboard ] experience default* toggle.
++
+To display the classic Answer, SpotIQ, or Liveboard, experience to all users, but allow them to turn the new experience on for themselves in their profile, enable the *new [ Answer | SpotIQ | Liveboard ] experience* toggle, then disable the corresponding *Make new [ Answer | SpotIQ | Liveboard ] experience default* toggle.
+
+[#visualization-footer]
+== Visualization footer settings
+
+NOTE: The visualization footer feature is part of the xref:answer-experience-new.adoc[new Answer experience] and the xref:liveboard-experience-new.adoc[new Liveboard experience]. The new Answer and Liveboard experiences are both on by default. If you are using the classic experiences, you cannot set a standard download footer. If you are using only the new Answer experience and not the new Liveboard experience, you can only set a standard download footer for Answers, *_not_* Liveboards.
+
+Specify the footer that appears in all downloaded Answers and Liveboards. Use this functionality to add a confidentiality disclaimer, for example. You can also allow your users to add their own footers to downloaded Liveboards.
+
+Note that this standard footer does not apply to Liveboards downloaded with the https://developers.thoughtspot.com/docs/?pageid=liveboard-export-api[Liveboard export API^]. Liveboards downloaded with the API use the footer specified by the `footer_text` API parameter.
+
+To edit the standard footer, follow these steps:
+
+. Select the *Edit* button in the *Visualization* section.
+
+. Edit the text box next to *Downloaded file instructions* with the text you would like to appear in the footer, up to 700 characters.
++
+The default footer is *Disclaimer: The information downloaded is confidential*.
++
+To allow your users to add their own footers to downloaded Liveboards, remove all content from the text box.
+
+. Select *Save*.
+
+=== Footer behavior
+
+This footer replaces the *Footer text* option that appears when you xref:liveboard-download-pdf.adoc[download a Liveboard as a PDF]. Instead, if you are on the xref:liveboard-experience-new.adoc[new Liveboard experience], you see a note under the footer text box: *Footer text was set by your admin*. You cannot edit the footer text for a specific Liveboard; you can only edit it for all Liveboards from the *Admin Console*.
+
+image::liveboard-download-footer-disabled.png[The footer text box is disabled]
+
+The placement and behavior of the footer differs, depending on the format in which you download an object.
+
+Answer PNG or PDF:: Text appears at the bottom of the page.
+
+Answer CSV or XLSX:: Text appears between the *Data extracted information* row and the *Filter* rows.
+
+Liveboard PDF:: Text appears at the bottom of every page in the PDF.
+
+'''
+> **Related information**
+>
+> * xref:admin-console-orgs-page.adoc[]
+> * xref:admin-portal-users-orgs.adoc[]
+> * xref:admin-portal-groups-orgs.adoc[]
+> * xref:authentication-local.adoc[]
+> * xref:authentication-saml.adoc[]
+> * xref:user-adoption.adoc[]
+> * xref:performance-tracking.adoc[]
+> * xref:onboarding-email-settings.adoc[]
+> * xref:style-customization.adoc[]
+> * xref:scheduled-maintenance.adoc[]
