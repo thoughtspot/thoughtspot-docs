@@ -15,6 +15,8 @@ This article contains instructions for managing SAML authentication if your comp
 If the *SAML* section of the Admin Console is called *Authentication: SAML*, your company is *_not_* using IAMv2. Refer to xref:authentication-integration.adoc[].
 ====
 
+
+
 == SAML SSO authentication
 
 ThoughtSpot supports the Single Sign-On (SSO) authentication method with the Security Assertion Markup Language (SAML) authentication and authorization framework.
@@ -22,6 +24,19 @@ With SAML SSO, users can authenticate to the SAML identity provider (IDP) at you
 It also allows them to navigate seamlessly between different application interfaces with their existing credentials.
 
 By default, xref:authentication-local.adoc[local authentication] is enabled. After you configure SAML authentication, you can configure the ThoughtSpot login page to default to SSO login by contacting {support-url}. Note that if you change the default login experience to SSO, local users cannot authenticate.
+
+.SAML and Local authentication at the Org level [.badge.badge-beta]#Beta#
+****
+If your organization uses xref:orgs-overview.adoc[multi-tenancy with Orgs] with SAML using IAMv2, ThoughtSpot allows customers to enable or disable local authentication at the Org and cluster levels.
+
+To enable local authentication at the Org level, contact {support-url}. Org level settings override cluster level settings.
+
+To disable local authentication on a cluster or Org, at least one SAML or OIDC connection must be active. The *Local* tab is found under *Authentication* in the *Admin* portal. It is only present in Orgs with the *SAML/SSO* tab under *Authentication*. If only one active SSO connection is configured, and local authentication is disabled, you can't delete the SSO connection because users will have no way to log in to the application.
+
+By default, local authentication is enabled for new Orgs. Local authentication is also visible in the *All Orgs* section. With per-Org URLs configured, disabling local authentication only disables it for the specific Org's URL.
+
+
+****
 
 Use this article to learn how to configure a SAML integration with an external IDP.
 To configure SAML in an embedded environment, refer to https://developers.thoughtspot.com/docs/?pageid=saml-sso[SAML SSO authentication^].
@@ -101,7 +116,17 @@ You need admin privileges to enable SAML SSO authentication.
 . Configure the ThoughtSpot application instance on your IDP server.
 .. For the *Single sign on URL* and the *Audience URI* in your IDP provider, you must enter dummy values. You return to these fields in step 15, after completing SAML configuration in ThoughtSpot.
 .. Make a note of the names you use when you map your IDP's version of the `mail` and `username` attributes. You must use these names to map the email and username attribute in ThoughtSpot later. The `display name` attribute is optional; if you would like to map it as well, make a note of the name you use.
-. Sign in to your ThoughtSpot application instance.
+. Sign in to your ThoughtSpot application instance and select the primary Org.
++
+.SAML authentication at the Org level [.badge.badge-beta]#Beta#
+****
+To configure SAML authentication at the Org level, select the Org that you want to configure.
+
+NOTE: Org names cannot have spaces when configuring SAML authentication at the Org level.
+
+NOTE: Custom URLs are not supported for SAML authentication at the Org level.
+****
+
 . From the top navigation bar, select the *Admin* tab.
 . Expand *Authentication* and select *Identity Providers* from the side navigation bar.
 . Click the *+ Add identity provider* button.
