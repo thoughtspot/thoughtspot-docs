@@ -12,6 +12,8 @@ You may not see each of these parameters in your own TML files, depending on whe
 For example, for scheduled alerts, the `condition` parameter does not appear. The `condition` parameter only appears for threshold alerts.
 You can add that section to the TML file to change a Monitor alert to a threshold alert.
 
+To reduce ambiguity, you may need to add the optional `fqn` parameter to your TML file when you reference source tables. This is necessary if you have multiple tables with the same name. If you do not add the `fqn` parameter, and the table you reference does not have a unique name, the file import fails.
+
 NOTE: We rebranded Pinboards to Liveboards. However, some of the parameters in the alerts.tml file still use Pinboard, not Liveboard. Ensure that you use the correct syntax.
 
 [subs=+macros]
@@ -46,11 +48,38 @@ NOTE: We rebranded Pinboards to Liveboards. However, some of the parameters in t
     <<pinboard_viz_id,pinboard_viz_id>>:
       <<pinboard_id,pinboard_id>>: <alert_1_liveboard_guid>
       <<viz_id,viz_id>>: <alert_1_vizualization_guid>
+    <<personalised_view_id,personalised_view_id>>: <alert_1_personalised_view_id>
   <<subscribed_user,subscribed_user>>:
   - <<username,username>>: <alert_1_subscribed_user_1_username>
   - <<user_email,user_email>>: <alert_1_subscribed_user_1_email>
   - <<username,username>>: <alert_1_subscribed_user_2_username>
   - <<user_email,user_email>>: <alert_1_subscribed_user_2_email>
+<<personalised_view_info,personalised_view_info>>:
+    <<tables,tables>>:
+      - <<id,id>>: <optiona_table_id>
+        <<name,name>>: <table_name_1>
+        <<fqn,fqn>>: <optional_GUID_of_table_name>
+    <<filters,filters>>:
+      - <<column,column>>:
+         - <table_name>::<column_name>
+        <<oper,oper>>: <filter_operator>
+        <<values,values>>: <filtered_values>
+        - value 1
+        - value 2
+        - value n
+        <<is_mandatory,is_mandatory>>: [ false | true ]
+        <<is_single_value,is_single_value>>: [ false | true ]
+        <<display_name, display_name>>: ""
+      - <<column, column>>:
+        - <table_name>::<column_name>
+        <<is_mandatory,is_mandatory>>: [ false | true ]
+        <<date_filter,date_filter>>:
+          <<type,type>>: EXACT_DATE_RANGE
+          <<oper,oper>>: between
+          <<date_range,date_range>>:
+            <<start_date,start_date>>: <start_date>
+            <<end_date,end_date>>: <end_date>
+        <<display_name,display_name>>: ""
 - <<guid,guid>>: <alert_2_guid>
   <<name,name>>: <alert_2_name>
   <<frequency_spec,frequency_spec>>:
