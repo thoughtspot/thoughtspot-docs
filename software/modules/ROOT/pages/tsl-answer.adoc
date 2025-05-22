@@ -1,5 +1,5 @@
 = Answer TSL specification
-:last_updated: 7/20/2020
+:last_updated: 8/13/2021
 
 Use ThoughtSpot Scripting Language to modify an Answer in a flat-file format. Then you can migrate the object to a different cluster, or restore it to the same cluster.
 
@@ -8,6 +8,8 @@ To enable Scriptable Answers and Pinboards, contact ThoughtSpot Support.
 
 To work with Scriptable Answers in ThoughtSpot, you can download Answers to a flat file in `TSL`, ThoughtSpot's Scripting Language, modify it, and subsequently upload this file either to the same cluster, or to a different cluster.
 To learn how to export, change, and update Answers, see xref:scriptability-answer.adoc[Migrate or restore Answers].
+
+include::partial$tml-note.adoc[]
 
 [#syntax-answers]
 == Syntax of the Answer TSL file
@@ -20,229 +22,266 @@ You may not see each of these parameters in your own TSL files, depending on whe
 For example, if you did not define any conditional formatting, the `conditional_formatting` variable does not appear.
 You can add that variable in the TSL file to specify conditional formatting.
 
-....
-
-answer:
-  name: <answer_name>
-  description:
+[subs=+macros]
+[source]
+----
+<<answer,answer>> :
+  <<name,name>> : <answer_name>
+  <<description,description>> :
     This is a multi-line description of the answer
     Description line 2
   tables:
-  - id: <table_id>
-  - name: <table_name_1>
-  - [alias] : <optional_table_alias>
-  - [fqn] : <optional_GUID_of_table_name>
-  joins:
-  - name: <join_name_1>
-    source: <source_table_name>
-    destination: <destination_table_name>
-    type: [RIGHT_OUTER | LEFT_OUTER | INNER | OUTER]
-    on: <on_string>
-    is_one_to_one: [ false | true ]
+  - <<id,id>> : <table_id>
+  - <<name,name>> : <table_name_1>
+  - <<id,id>> : <optional_table_id_1>
+  - <<fqn,fqn>> : <optional_GUID_of_table_name_1>
+  <<joins,joins>> :
+  - <<name,name>> : <join_name_1>
+    <<source,source>> : <source_table_name>
+    <<destination,destination>> : <destination_table_name>
+    <<type,type>> : [RIGHT_OUTER | LEFT_OUTER | INNER | OUTER]
+    <<on,on>> : <on_string>
+    <<is_one_to_one,is_one_to_one>> : [ false | true ]
   - ...
-  table_paths:
-  - id: <table_path_name_1>
-    table: <table_name_1>
-    join_path:
+  <<table_paths,table_paths>> :
+  - <<id,id>> : <table_path_name_1>
+    <<table,table>> : <table_name_1>
+    <<join_path,join_path>> :
     - {}
-  formulas:
-  - id: <formula_id_1>
-    name: <formula_name_1>
-    expr: <formula_definition_1>
-    properties: <formula_properties_1>
-      column_type: [ MEASURE | ATTRIBUTE ]
-      data_type: [ Boolean | Text | Date | Datetime | Time
+  <<formulas,formulas>> :
+  - <<id,id>> : <formula_id_1>
+    <<name,name>> : <formula_name_1>
+    <<expr,expr>> : <formula_definition_1>
+    <<properties,properties>> : <formula_properties_1>
+      <<column_type,column_type>> : [ MEASURE | ATTRIBUTE ]
+      <<data_type,data_type>> : [ Boolean | Text | Date | Datetime | Time
       | Numeric | Decimal ]
-      aggregation: [ SUM | COUNT | AVERAGE | MAX | MIN |
+      <<aggregation,aggregation>> : [ SUM | COUNT | AVERAGE | MAX | MIN |
                      COUNT_DISTINCT | NONE | STD_DEVIATION | VARIANCE]
-  - id: <formula_id_2>
-    name: <formula_name_2>
-    expr: <formula_definition_2>
-    properties: <formula_properties_2>
-  - id: <formula_id_3>
-    name: <formula_name_3>
-    expr: <formula_definition_3>
-    properties: <formula_properties_3>
-  search_query: <search_query_string>
-  answer_columns:
-  - id: <column_id_1>
-    name: <column_name_1>
-    custom_name: <custom_name_1>
-  - name: <column_name_2>
-  table:
-    table_columns:
-    - column_id: <column_id_1>
-      conditional_formatting:
-      - range:
-        min: <conditional_formatting_minimum>
-        max: <conditional_formatting_maximum>
-      - rule: <conditional_formatting_rule_1>
-          range:
-            min: <conditional_formatting_minimum>
-            max: <conditional_formatting_maximum>
-          color: <color_string>
-          plotAsBand: [ true | false ]
-      - rule: <conditional_formatting_rule_2>
-      show_headline: [ true | false ]
-      headline_aggregation: <headline_aggregation_string>
-    - column_id: <column_id_2>
-    ordered_column_ids:
-    - column_id: <column_id_1>
-    - column_id: <column_id_2>
-    client_state: <client_state_string>
-  chart:
-    type: <chart_type>
-    chart_columns: <chart_column_1>
-    - column_id: <column_id_1>
-      conditional_formatting:
-      - rule: <conditional_formatting_rule_1>
-          range:
-            min: <conditional_formatting_minimum>
-            max: <conditional_formatting_maximum>
-          color: <color_string>
-          plotAsBand: [ true | false ]
-      - rule: <conditional_formatting_rule_2>
-    - column_id: <column_id_2>
-    axis_configs: <axis_config_1>
+  - <<id,id>> : <formula_id_2>
+    <<name,name>> : <formula_name_2>
+    <<expr,expr>> : <formula_definition_2>
+    <<properties,properties>> : <formula_properties_2>
+  - <<id,id>> : <formula_id_3>
+    <<name,name>> : <formula_name_3>
+    <<expr,expr>> : <formula_definition_3>
+    <<properties,properties>> : <formula_properties_3>
+  <<search_query,search_query>> : <search_query_string>
+  <<answer_columns,answer_columns>> :
+  - <<id,id>> : <column_id_1>
+    <<name,name>> : <column_name_1>
+    <<custom_name,custom_name>> : <custom_name_1>
+  - <<name,name>> : <column_name_2>
+  <<table,table>> :
+    <<table_columns,table_columns>> :
+    - <<column_id,column_id>> : <column_id_1>
+      <<conditional_formatting,conditional_formatting>> :
+      - <<range,range>> :
+        <<min,min>> : <conditional_formatting_minimum>
+        <<max,max>> : <conditional_formatting_maximum>
+      - <<rule,rule>> : <conditional_formatting_rule_1>
+          <<range,range>> :
+            <<min,min>> : <conditional_formatting_minimum>
+            <<max,max>> : <conditional_formatting_maximum>
+          <<color,color>> : <color_string>
+          <<plotAsBand,plotAsBand>> : [ true | false ]
+      - <<rule,rule>> : <conditional_formatting_rule_2>
+      <<show_headline,show_headline>> : [ true | false ]
+      <<headline_aggregation,headline_aggregation>> : <headline_aggregation_string>
+    - <<column_id,column_id>> : <column_id_2>
+    <<ordered_column_ids,ordered_column_ids>> :
+    - <<column_id,column_id>> : <column_id_1>
+    - <<column_id,column_id>> : <column_id_2>
+    <<client_state,client_state>> : <client_state_string>
+  <<chart,chart>> :
+    <<type,type>> : <chart_type>
+    <<chart_columns,chart_columns>> : <chart_column_1>
+    - <<column_id,column_id>> : <column_id_1>
+      <<conditional_formatting,conditional_formatting>> :
+      - <<rule,rule>> : <conditional_formatting_rule_1>
+          <<range,range>> :
+            <<min,min>> : <conditional_formatting_minimum>
+            <<max,max>> : <conditional_formatting_maximum>
+          <<color,color>> : <color_string>
+          <<plotAsBand,plotAsBand>> : [ true | false ]
+      - <<rule,rule>> : <conditional_formatting_rule_2>
+    - <<column_id,column_id>> : <column_id_2>
+    <<axis_configs,axis_configs>> : <axis_config_1>
     - x:
-      - column_id: <column_id_x_axis>
+      - <<column_id,column_id>> : <column_id_x_axis>
     - y:
-      - column_id: <column_id_y_axis>
-      color:
-      - column_id: <column_id_color>
-    axis_configs: <axis_config_2>
-    locked: [ true | false ]
-    client_state: <client_state_string>
-  display_mode: [ CHART_MODE | TABLE_MODE ]
-....
+      - <<column_id,column_id>> : <column_id_y_axis>
+      <<color,color>> :
+      - <<column_id,column_id>> : <column_id_color>
+    <<axis_configs,axis_configs>> : <axis_config_2>
+    <<locked,locked>> : [ true | false ]
+    <<client_state,client_state>> : <client_state_string>
+  <<display_mode,display_mode>> : [ CHART_MODE | TABLE_MODE ]
+----
 
 [#parameters]
 == Parameters of the Answer TSL file
-aggregation:: The aggregation of the output for a formula within an Answer.
-+
-Aggregation options depend on the data type.
-+
-Possible values: `SUM`, `COUNT`, `AVERAGE`, `MAX`, `MIN`, `COUNT_DISTINCT`, `NONE`, `STD_DEVIATION`, and `VARIANCE` + Default: `SUM`
+[#aggregation]
+aggregation:: The aggregation of the output for a formula within an Answer. +
+Aggregation options depend on the data type. +
+Possible values:;; `SUM`, `COUNT`, `AVERAGE`, `MAX`, `MIN`, `COUNT_DISTINCT`, `NONE`, `STD_DEVIATION`, and `VARIANCE` +
+Default:;; `SUM`
 
-alias:: An alternate name for the table.
 
+[#answer]
 answer:: Top-level container for all object definitions within an Answer.
 
+[#answer_columns]
 answer_columns:: A list of columns generated by the search query.
 
+[#axis_configs]
 axis_configs:: Specifies the columns for each axis on a chart. If you are displaying a column chart with a line chart overlaying it, for example, you would need to specify more than one `axis_config`.
 
+[#chart]
 chart:: Contains configuration for the Answer, if it displays in chart format.
 
+[#chart_columns]
 chart_columns::  A list of columns in the chart.
 
+[#client_state]
 client_state::  A JSON string with more advanced chart and table configuration.
 
+[#color]
 color::  Color to use for conditional formatting or for the columns of an Answer in chart form, in the form of a HEX value.
 
+[#column_id]
 column_id:: Specifies the way the column appears in the query.
 For example, if you sorted by `Quarter` in your search, from the `Commit Date` column, the `column_id` of the column is `Quarter(Commit Date)`.
 Refer to xref:search-data-api.adoc#components[Components of a Search Query] to understand syntax.
 
+[#column_type]
 column_type:: The type of data the column represents. For a formula in an Answer, the `column_type` refers to the output of the formula.
 +
-Possible values: `MEASURE` or `ATTRIBUTE`
+Possible values:;; `MEASURE` or `ATTRIBUTE`
 +
 The default depends on the <<data_type,data_type>>. If the data type is `Numeric` or `Decimal`, the formula output's `column_type` defaults to `Measure`. If the data type is `Boolean`, `Text`, `Date`, `Datetime`, or `Time`, the formula output's `column_type` defaults to `Attribute`.
-+
+
+[#conditional_formatting]
 conditional_formatting:: Conditional formatting for the chart or table of an Answer.
 
+[#custom_name]
 custom_name::  Optional display name for a column.
 
 [#data_type]
-data_type:: The data type of the formula output. If the data type is `Numeric` or `Decimal`, the formula output's `column_type` defaults to `Measure`. If the data type is `Boolean`, `Text`, `Date`, `Datetime`, or `Time`, the formula output's `column_type` defaults to `Attribute`. The possible data types are `Boolean`, `Text`, `Date`, `Datetime`, `Time`, `Numeric`, and `Decimal`.+++</dlentry>++++++<dlentry id="description">+++description::::  The text that describes an object: a `worksheet`, a `worksheet_column`, `answer`, `pinboard`, and so on.
+data_type:: The data type of the formula output. If the data type is `Numeric` or `Decimal`, the formula output's `column_type` defaults to `Measure`. If the data type is `Boolean`, `Text`, `Date`, `Datetime`, or `Time`, the formula output's `column_type` defaults to `Attribute`. The possible data types are `Boolean`, `Text`, `Date`, `Datetime`, `Time`, `Numeric`, and `Decimal`.
 
+[#description]
+description::  The text that describes an object: a `worksheet`, a `worksheet_column`, `answer`, `pinboard`, and so on.
+
+[#destination]
 destination::  Name of destination table or view of the join
 
+[#display_mode]
 display_mode:: Determines whether the Answer displays as a chart or a table. Specify either `CHART_MODE` or `TABLE_MODE`.
 
+[#expr]
 expr::  The definition of the formula
 
-formulas:: The list of formulas in the Answer.
-+
+[#formulas]
+formulas:: The list of formulas in the Answer. +
 Each formula is identified by `name`, the `expr` (expression), and an optional `id` attribute.
 
-fqn::  A GUID for the table name
+[#fqn]
+fqn::  The table's GUID. You can find this string of letters and numbers at the end of the URL for that table. For example, in https://<company>.thoughtspot.com/#/data/tables/34226aaa-4bcf-4d6b-9045-24cb1e9437cb, the GUID is 34226aaa-4bcf-4d6b-9045-24cb1e9437cb.
 
-headline_aggregation:::: Specifies the type of headline aggregation. Can be `COUNT`, `COUNT_DISTINCT`, `SUM`, `MIN`, `MAX`, `AVERAGE`, or `TABLE_AGGR`.
+[#headline_aggregation]
+headline_aggregation:: Specifies the type of headline aggregation. Can be `COUNT`, `COUNT_DISTINCT`, `SUM`, `MIN`, `MAX`, `AVERAGE`, or `TABLE_AGGR`.
 
+[#id]
 id:: Specifies the way the column appears in the query. For example, if you sorted by `Quarter` in your search, from the `Commit Date` column, the `id` of the column is `Quarter(Commit Date)`.
-Refer to xref:search-data-api.adoc#components[Components of a Search Query] to understand syntax.
-+
+Refer to xref:search-data-api.adoc#components[Components of a Search Query] to understand syntax. +
 For formulas within Answers, `id` refers to the display name of the formula. If you do not give your formula a name, it appears as 'Untitled Formula'.
 
+[#is_one_to_one]
 is_one_to_one::  Specifies the cardinality of the join
-+
-Possible values: `true`, `false` + Default: `false`
+Possible values:;; `true`, `false` +
+Default:;; `false`
 
-join_path:: Specification of a composite join as a list of distinct `join` attributes + These `join` attributes list relevant joins, previously defined in the `joins`, by name.
-+
-Default: `{}`
+[#join_path]
+join_path:: Specification of a composite join as a list of distinct `join` attributes +
+These `join` attributes list relevant joins, previously defined in the `joins`, by name.
+Default:;; `{}`
 
+[#join_progressive]
 join_progressive:: Specifies when to apply joins on a worksheet
-+
-Possible values: `true` when joins are applied only for tables whose columns are included in the search, and `false` for all possible joins + Default: `true`
-+
+Possible values:;; `true` when joins are applied only for tables whose columns are included in the search, and `false` for all possible joins +
+Default:;; `true` +
 See xref:progressive-joins.adoc[How the worksheet join rule works]
 
-joins:: List of joins between tables and views, used by the data source, if it is a Worksheet.
-+
+[#joins]
+joins:: List of joins between tables and views, used by the data source, if it is a Worksheet. +
 Each join is identified by `name`, and the additional attributes of `source`, `destination`, `type`, and `is_one_to_one.`
 
+[#layout]
 layout:: Specifies the Pinboard layout, in the order that a `visualization_id` is listed.
 
+[#locked]
 locked:: The 'automatically select my chart' option in the UI. If set to `true`, the chart type does not change, even when you add items to the query.
 
+[#max]
 max:: Maximum value for conditional formatting.
 
+[#min]
 min::  Minimum value for conditional formatting.
 
-name:: The name of an object. Applies to `worksheet`, `table`,`join`, `formula`, `answer`, `pinboard` and so on.
-+
+[#name]
+name:: The name of an object. Applies to `worksheet`, `table`,`join`, `formula`, `answer`, `pinboard` and so on. +
 For Answers, `name` refers to how the column appears in the query. For example, if you sorted by `Quarter` in your search, from the `Commit Date` column, the `name` of the column is `Quarter(Commit Date)`. Refer to xref:search-data-api.adoc#components[Components of a Search Query] to understand syntax.
 
+[#on]
 on:: The keys that your tables are joined on.
 
+[#ordered_column_ids]
 ordered_column_ids::  A list of columns, in the order they appear in the table.
 
-properties:: The properties of the output for a formula within an Answer.
-+
+[#properties]
+properties:: The properties of the output for a formula within an Answer. +
 For Answers, each formula's output can have the following properties, depending on its definition: `column_type` and `aggregation`.
 
+[#plotAsBand]
 plotAsBand:: Specifies whether to plot the chart conditional formatting like a band on the Visualization. This is the 'fill chart' option in the UI.
 
+[#range]
 range:: Range for the conditional formatting to apply to, with a specified `min` and `max`.
 
+[#rule]
 rule::  A conditional formatting rule.
 
+[#search_query]
 search_query:: A string that represents the fully disambiguated search query. Refer to xref:search-data-api.adoc#components[Components of a Search Query] to understand syntax.
-+
+
+[#show_headline]
 show_headline:: Determines whether to show the headline for this column. `true` shows the headline.
-+
+
+[#source]
 source:: Name of source table or view of the join
 
-table:: Specific table, used in defining higher-level objects, such as table paths.
-+
-Defined as `name` within `tables` definition.
-+
+[#table]
+table:: Specific table, used in defining higher-level objects, such as table paths. +
+Defined as `name` within `tables` definition. +
 This parameter can also refer to the configuration for the Answer, if it displays in table format.
 
+[#table_columns]
 table_columns::  The columns in an Answer that is being displayed in table format.
 
-table_paths::  The list of table paths + Each table path is identified by the `id`, and additional attributes of `table` and `join_path`.
+[#table_paths]
+table_paths::  The list of table paths +
+Each table path is identified by the `id`, and additional attributes of `table` and `join_path`.
 
-tables:: List of tables used by the Answer.
-+
+[#tables]
+tables:: List of tables used by the Answer. +
 Each table is identified by `name`.
 
-type:: This refers to both the join type and the chart type.
-+
-Possible values for the join type: `LEFT_OUTER` for left outer join, `RIGHT_OUTER` for right outer join, `INNER` for inner join, `OUTER` for full outer join + Default: `INNER` + Possible values for the chart type: `COLUMN`, `BAR`, `LINE`, `PIE`, `SCATTER`, `BUBBLE`, `STACKED_COLUMN`, `AREA`, `PARETO`, `COLUMN`, `GEO_AREA`, `GEO_BUBBLE`, `GEO_HEATMAP`, `GEO_EARTH_BAR`, `GEO_EARTH_AREA`, `GEO_EARTH_GRAPH`, `GEO_EARTH_BUBBLE`, `GEO_EARTH_HEATMAP`, `WATERFALL`, `TREEMAP`, `HEATMAP`, `STACKED_AREA`, `LINE_COLUMN`, `FUNNEL`, `LINE_STACKED_COLUMN`, `PIVOT_TABLE`, `SANKEY`, `GRID_TABLE`, `SPIDER_WEB`, `WHISKER_SCATTER`, `STACKED_BAR`, or `CANDLESTICK`.+++</dlentry>+++
+[#type]
+type:: This refers to both the join type and the chart type. +
+Possible values for the join type:;; `LEFT_OUTER` for left outer join, `RIGHT_OUTER` for right outer join, `INNER` for inner join, `OUTER` for full outer join +
+Default:;; `INNER` +
+Possible values for the chart type:;; `COLUMN`, `BAR`, `LINE`, `PIE`, `SCATTER`, `BUBBLE`, `STACKED_COLUMN`, `AREA`, `PARETO`, `COLUMN`, `GEO_AREA`, `GEO_BUBBLE`, `GEO_HEATMAP`, `GEO_EARTH_BAR`, `GEO_EARTH_AREA`, `GEO_EARTH_GRAPH`, `GEO_EARTH_BUBBLE`, `GEO_EARTH_HEATMAP`, `WATERFALL`, `TREEMAP`, `HEATMAP`, `STACKED_AREA`, `LINE_COLUMN`, `FUNNEL`, `LINE_STACKED_COLUMN`, `PIVOT_TABLE`, `SANKEY`, `GRID_TABLE`, `SPIDER_WEB`, `WHISKER_SCATTER`, `STACKED_BAR`, or `CANDLESTICK`.
 
 [#limitations]
 == Limitations of working with TSL files
@@ -255,6 +294,6 @@ You cannot change both, unless migrating or updating the Answer two times.
 * You cannot create Scriptable representations of R- or Python-powered visualizations.
 
 '''
-> **Related information**
+> **Related Information**
 >
 > * xref:scriptability-answer.adoc[Migrate or restore Answers]

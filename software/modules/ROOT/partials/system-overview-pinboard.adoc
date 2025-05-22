@@ -17,7 +17,7 @@ When you *edit* the Answer, you see the query that ThoughtSpot built the Answer 
 You can also copy the Answer's embed link, use xref:answer-explorer.adoc[Answer Explorer] on the Answer, or interact with the Answer by xref:drill-down.adoc[drilling down].
 While you can interact with and change a copied version of the Answer, you cannot save changes to the underlying query.
 
-The following charts, tables, and panels are available on the *System Overview Pinboard*: <<cluster-summary,cluster summary>>, <<relational-data-cache,relational data cache>>, <<relational-search-engine,relational search engine>>, <<critical-alerts,critical alerts>>, <<space-utilization,space utilization>>, <<mau,monthly active users>>, <<monthly-searches,monthly ad-hoc searches>>, <<monthly-pb-views,monthly Pinboard views,>>, <<top-users,top users last month>>, <<top-pinboards,top Pinboards last month>>, <<searches-user,ad-hoc search by user>>, and <<users-today,today's users>>.
+The following charts, tables, and panels are available on the *System Overview Pinboard*: <<cluster-summary,cluster summary>>, <<relational-data-cache,relational data cache>>, <<relational-search-engine,relational search engine>>, <<critical-alerts,critical alerts>>, <<space-utilization,space utilization>>, <<mau,monthly active users>>, <<monthly-searches,monthly ad-hoc searches>>, <<monthly-pb-views,monthly Pinboard views,>>, <<top-users,top users last month>>, <<top-pinboards,top Pinboards last month>>, <<search-users,ad-hoc search by user>>, and <<users-today,today's users>>.
 
 [#cluster-summary]
 == Cluster Summary
@@ -29,34 +29,35 @@ This doesn't reflect the active nodes which may be more or less.
 This summary includes the *LAST SNAPSHOT TIME* it reflects whether regular snapshots of your cluster are collected.
 This value should update regularly in real time.
 If you do not see it change or empty, you should check your cluster snapshot policy using the `tscli` command:
-
 [source,console]
 ----
 $ tscli snapshot-policy show
-schedule {
- period {
-   number: 1
-   unit: HOUR
- }
- retention_policy {
-   bucket {
-     time {
-       number: 1
-       unit: HOUR
-     }
-     capacity: 3
+----
+----
+ schedule {
+   period {
+     number: 1
+     unit: HOUR
    }
-   bucket {
-     time {
-       number: 4
-       unit: HOUR
+   retention_policy {
+     bucket {
+       time {
+         number: 1
+         unit: HOUR
+       }
+       capacity: 3
      }
-     capacity: 2
+     bucket {
+       time {
+         number: 4
+         unit: HOUR
+       }
+       capacity: 2
+     }
    }
+   offset_minutes_from_sunday_midnight: 0
  }
- offset_minutes_from_sunday_midnight: 0
-}
-enabled: false
+ enabled: false
 ----
 
 You can see this policy is disabled, which is a problem.
@@ -136,69 +137,20 @@ Worksheet data is not included.
 Displays critical and warning alerts.
 This includes when an alert was generated and from which service and machine.
 Administrators can get a custom report by issuing a `tscli alert list` on the appliance:
-
-[source,console]
+[source]
 ----
 tscli alert list --since 4w
 ----
 
 The critical alerts you can encounter in this display are the following:
 
-=== TASK_FLAPPING
+{% for item in site.data.extract-alerts.alerts %} +   {% if item.type == "CRITICAL" %}
 
-*Msg*: `Task {{.Service}}.{{.Task}} terminated {{._actual_num_occurrences}} times in last {{._earliest_duration_str}}`
-
-*Type*: CRITICAL
-
-This alert is raised when a task is crashing repeatedly. The service is evaluted across the whole cluster. So, if a service crashes 5 times in a day across all nodes in the cluster, this alert is generated.
-
-=== OREO_TERMINATED
-
-*Msg*: `Oreo terminated on machine {{.Machine}}`
-
-*Type*: CRITICAL
-
-This alert is raised when the Oreo daemon on a machine terminates due to an error. This typically happens due to an error accessing Zookeeper, HDFS, or a hardware issue.
-
-=== HDFS_DISK_SPACE
-
-*Msg*: `HDFS has less than {{.Perc}}% space free`
-
-*Type*: CRITICAL
-
-Raised when a HDFS cluster is low on total available disk space.
-
-=== ZK_INACCESSIBLE
-
-*Msg*: `Zookeeper is not accessible`
-
-*Type*: CRITICAL
-
-aised when Zookeeper is inaccessible.
-
-=== PERIODIC_BACKUP_FLAPPING
-
-*Msg*: `Periodic backup failed {{._actual_num_occurrences}} times in last {{._earliest_duration_str}}`
-
-*Type*: CRITICAL
-
-This alert is raised when a periodic backup failed repeatedly.
-
-=== PERIODIC_SNAPSHOT_FLAPPING
-
-*Msg*: `Periodic snapshot failed {{._actual_num_occurrences}} times in last {{._earliest_duration_str}}`
-
-*Type*: CRITICAL
-
-This alert is raised when periodic snapshot failed repeatedly.
-
-=== APPLICATION_INVALID_STATE_EXTERNAL
-
-*Msg*: `{{.Service}}.{{.Task}} on {{.Machine}} at location {{.Location}}`
-
-*Type*: CRITICAL
-
-Raised when Application raises invalid state alert.
+* `{{item.id}}`
++
+*Msg*: `{{item.msg}}`
++
+{{item.description}}  {% endif %}  {% unless forloop.last %}  {% endunless %} {% endfor %}
 
 The possible alert types are `CRITICAL`, `WARNING`, `ERROR`, and `INFO`.
 For a full reference, see the xref:alerts-reference.adoc[Alert code reference].

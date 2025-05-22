@@ -47,16 +47,16 @@ You need a computer you can run Linux commands on, and a recent version of _open
 
 . `ssh` into one of your ThoughtSpot nodes.
 +
-[source,console]
+[source]
 ----
-ssh admin@<node_IP>
+ ssh admin@<node_IP>
 ----
 
 . Run the command to generate a CSR and private key pair:
 +
-[source,console]
+[source]
 ----
-openssl req -new -newkey rsa:2048 -nodes -out csr.pem -keyout pk.key[-subj "/key1=value1/key2=value with space/"]
+ openssl req -new -newkey rsa:2048 -nodes -out csr.pem -keyout pk.key[-subj "/key1=value1/key2=value with space/"]
 ----
 +
 Note the following parameters:
@@ -74,16 +74,16 @@ Follow these steps to generate a CSR with an existing private key:
 
 . `ssh` into one of your ThoughtSpot nodes.
 +
-[source,console]
+[source]
 ----
-ssh admin@<node_IP>
+ ssh admin@<node_IP>
 ----
 
 . Run the command to generate a CSR and private key pair:
 +
-[source,console]
+[source]
 ----
-openssl req -new -key <private_key_file> -nodes -out csr.pem[-subj "/key1=value1/key2=value with space/"]
+ openssl req -new -key <private_key_file> -nodes -out csr.pem[-subj "/key1=value1/key2=value with space/"]
 ----
 +
 Specify the existing private key file.
@@ -104,8 +104,7 @@ It cannot be password-protected, or passphrase-protected.
 NOTE: Do not use a passphrase when creating certificates with ThoughtSpot.
 
 If you are prompted to specify a passphrase, first check if it exists by invoking the following command:
-
-[source,console]
+[source]
 ----
 openssl rsa -check -in pk.key`
 ----
@@ -158,7 +157,7 @@ To ensure support for TLS version 1.2:
 This can be done in your browser's advanced settings.
 . Log in to the Linux shell using SSH and run command:
 +
-[source,console]
+[source]
 ----
 tscli ssl tls-status
 ----
@@ -202,7 +201,11 @@ The cipher string would be as follows:
 EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH
 ----
 
-You can retrieve these from the ThoughtSpot web server (not against the load balancer) by running the following command on any ThoughtSpot node:     `     nmap --script ssl-enum-ciphers -p 443 <ThoughtSpot_node_IP_address>    `
+You can retrieve these from the ThoughtSpot web server (not against the load balancer) by running the following command on any ThoughtSpot node:
+
+----
+nmap --script ssl-enum-ciphers -p 443 <ThoughtSpot_node_IP_address>
+----
 
 You must ensure that your load balancer supports these ciphers.
 If your load balancer cannot support these ciphers, xref:contact.adoc[contact ThoughtSpot Support].

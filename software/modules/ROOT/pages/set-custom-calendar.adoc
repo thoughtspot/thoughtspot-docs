@@ -1,4 +1,5 @@
 = Set up custom calendars
+:page-aliases: /admin/setup/set-custom-calendar.adoc
 
 With a custom calendar, you can choose when the year, quarter, or week starts, and search using date-related keywords.
 
@@ -65,7 +66,6 @@ Example:
 ----
 tscli calendar generate --name my_calendar --start_date 07/01/2019 --end_date 06/30/2020 --username tsadmin
 ----
-+
 This generates a calendar template file in .csv format.
 In the previous example: *my_calendar.csv*.
 
@@ -79,16 +79,15 @@ To use the template you generated as your custom calendar, some editing is requi
 +
 [source]
 ----
-scp admin@<cluster-ip-address>:/home/admin/<calendar_name>.csv /<Local directory on your computer>/.
+scp admin@<cluster-ip-address>:/home/admin/<calendar_name>.csv /<Local directory on your computer>/
 ----
 +
 Example (on Mac OS):
 +
 [source]
 ----
-scp admin@172.18.144.217:/home/admin/my_calendar.csv /Users/john.smith/Desktop/.
+scp admin@172.18.144.217:/home/admin/my_calendar.csv /Users/john.smith/Desktop/
 ----
-
 . Open the .csv file in a text editor or spreadsheet program and edit the file to ensure the date and quarter columns are formatted correctly:
  ** The Date column must use the format: *MM/DD/YYYY*.
 No other formats are supported.
@@ -118,28 +117,20 @@ To use your edited calendar template as a custom calendar, you must upload it to
 
 . Upload the .csv file to your ThoughtSpot cluster using the following syntax:
 +
-[source]
-----
-scp /<Local directory on your computer>/<calendar_template_name>.csv admin@<cluster-ip-address>:/home/admin/
-----
+`scp /<Local directory on your computer>/<calendar_template_name>.csv admin@<cluster-ip-address>:/home/admin/`
 +
-Example (on Mac OS):
-+
-[source]
-----
-scp /Users/john.smith/Desktop/my_calendar.csv admin@172.18.144.217:/home/admin
-----
+Example (on Mac OS):    `scp /Users/john.smith/Desktop/my_calendar.csv admin@172.18.144.217:/home/admin`
 
 . SSH as admin into your ThoughtSpot cluster: `ssh admin@<cluster-ip-address or hostname>`.
 . Run the `tscli calendar create` command using the following syntax:
 +
 [source]
 ----
-`tscli calendar create --file_path /home/admin/<calendar_template_name>.csv --name <calendar name> --username tsadmin`
+tscli calendar create --file_path /home/admin/<calendar_template_name>.csv --name <calendar name> --username tsadmin
 ----
 +
 Example:
-
++
 [source]
 ----
 tscli calendar create --file_path /home/admin/my_calendar.csv --name my_calendar --username tsadmin

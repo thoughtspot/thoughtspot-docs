@@ -22,8 +22,9 @@ You may not see each of these parameters in your own TSL file, depending on whet
 For example, if you do not have any filters on your Worksheet, the `filters` parameter does not appear.
 You can add that variable to the TSL file to specify filters for your Worksheet.
 
-[source]
-----
+[subs=+macros]
+....
+
 <<worksheet,worksheet>> :
   <<name,name>> : <worksheet_name>
   <<description,description>> : |-
@@ -72,6 +73,14 @@ You can add that variable to the TSL file to specify filters for your Worksheet.
     <<expr,expr>> : <formula_definition_2>
   - <<name,name>> : <formula_name_3>
     <<expr,expr>> : <formula_definition_3>
+  <<filters,filters>> :
+  - <<column,column>> : <filtered_column_name_1>
+    <<oper,oper>> : <filter_operator>
+    <<values,values>> : <filtered_values>
+    - value 1
+    - value 2
+    - value n
+  - <<column,column>> : <filtered_column_name_2>
   <<worksheet_columns,worksheet_columns>> :
   - <<name,name>> : <column_name_1>
     <<description,description>> : <column_description>
@@ -83,7 +92,7 @@ You can add that variable to the TSL file to specify filters for your Worksheet.
       <<index_type,index_type>> : [ DONT_INDEX | DEFAULT | PREFIX_ONLY |
                     PREFIX_AND_SUBSTRING | PREFIX_AND_WORD_SUBSTRING ]
       <<is_hidden,is_hidden>> : [ true | false ]
- 	    <<index_priority,index_priority>> : <index_priority>
+ 	        <<index_priority,index_priority>> : <index_priority>
       <<synonyms,synonyms>> :
              <synonym_1>
              <synonym_2>
@@ -114,32 +123,28 @@ You can add that variable to the TSL file to specify filters for your Worksheet.
   <<properties,properties>> :
     <<is_bypass_rls,is_bypass_rls>> : [ true | false ]
     <<join_progressive,join_progressive>> : [ true | false ]
-----
+....
 
 [#parameters]
 == Parameters of the Worksheet TSL file
 [#aggregation]
 aggregation::
-The default aggregation of the worksheet column +
- Aggregation options depend on the data type. +
-Possible values:;; `SUM`, `COUNT`, `AVERAGE`, `MAX`, `MIN`, `COUNT_DISTINCT`, `NONE`, `STD_DEVIATION`, and `VARIANCE` +
+The default aggregation of the worksheet column + Aggregation options depend on the data type. +
+Possible values:;;
+ `SUM`, `COUNT`, `AVERAGE`, `MAX`, `MIN`, `COUNT_DISTINCT`, `NONE`, `STD_DEVIATION`, and `VARIANCE` +
  Default:;; `SUM`
-
 [#calendar]
 calendar:: Specifies the calendar used by a date column +
 Can be the Gregorian calendar (`default`), a fiscal calendar, or any custom calendar. See xref:set-custom-calendar.adoc[Set up a custom calendar]
-////
-6.2 parameters
 [#column]
 column::  The name of the column being filtered on.
-////
 [#column_type]
 column_type::  The type of data the column represents +
- Possible values:;; `MEASURE` or `ATTRIBUTE` +
- Default:;; `MEASURE`
+Possible values:;; `MEASURE` or `ATTRIBUTE` +
+Default:;; `MEASURE`
 [#currency_type]
 currency_type::  The source of currency type +
- One of: +
+One of: +
 
 * `is_browser : true` infer the currency data from the locale of your browser
 * `column : <column_name>` extracts the currency information from a specified column
@@ -163,18 +168,18 @@ formula_id::  The `id` of the formula that defines the worksheet column
 formulas::  The list of formulas in the worksheet +
 Each formula is identified by `name`, the `expr` (expression), and an optional `id` attribute.
 [#fqn]
-fqn::  The table's GUID.You can find this string of letters and numbers at the end of the URL for that table. For example, in https://<company>.thoughtspot.com/#/data/tables/34226aaa-4bcf-4d6b-9045-24cb1e9437cb, the GUID is 34226aaa-4bcf-4d6b-9045-24cb1e9437cb.
+fqn::  The table's GUID. You can find this string of letters and numbers at the end of the URL for that table. For example, in https://<company>.thoughtspot.com/#/data/tables/34226aaa-4bcf-4d6b-9045-24cb1e9437cb, the GUID is 34226aaa-4bcf-4d6b-9045-24cb1e9437cb.
 [#geo_config]
 geo_config::  Specifies the geographic information of a column +
 One of: +
 
-* `latitude : true` for columns that specify the latitude
+* `latitue : true` for columns that specify the latitude
 * `longitude : true` for columns that specify the longitude
 * `country : true` for columns that specify the country
 * `region_name` for specifying a region in a country +
-   Uses two paired parameters:
-** `country: <country_name>`
-** `region_name: <region_name_in_UI>`, which can be State, Postal Code, District, and so on.
+Uses two paired parameters:
+ ** `country: <country_name>`
+ ** `region_name: <region_name_in_UI>`, which can be State, Postal Code, District, and so on.
 See xref:model-geo-data.adoc[Add a geographical data setting]
 
 [#id]
@@ -185,7 +190,8 @@ ThoughtSpot prioritizes columns with higher values. See xref:change-index.adoc#c
 [#index_type]
 index_type::  The indexing option of the worksheet column +
 Possible values:;; `DONT_INDEX`, `DEFAULT` (see xref:change-index.adoc#understand-the-default-indexing-behavior[Understand the default indexing behavior]), `PREFIX_ONLY`, `PREFIX_AND_SUBSTRING`, and `PREFIX_AND_WORD_SUBSTRING` +
-Default:;; `DEFAULT` See xref:change-index.adoc#index-type[Index Type Values]
+Default:;; `DEFAULT` +
+See xref:change-index.adoc#index-type[Index Type Values]
 [#is_additive]
 is_additive::  Controls extended aggregate options for attribute columns +
 For attribute columns that have a numeric data type (`FLOAT`, `DOUBLE`, or `INTEGER`) or a date data type (`DATE`, `DATETIME`, `TIMESTAMP`, or `TIME`) +
@@ -210,7 +216,8 @@ Possible values:;; `true` to hide the column, `false` not to hide the column +
 Default:;; `false` See xref:change-visibility-synonym.adoc#hide-a-column[Hide a column]
 [#is_one_to_one]
 is_one_to_one::  Specifies the cardinality of the join +
-Possible values: `true`, `false` + Default: `false`
+Possible values:;; `true`, `false` +
+Default:;; `false`
 [#join]
 join::  Specific join, used in defining higher-level objects, such as table paths +
 Defined as `name` within `joins` definition
@@ -220,49 +227,45 @@ Specification of a composite join as a list of distinct `join` attributes +
 These `join` attributes list relevant joins, previously defined in the `joins`, by name. +
 Default:;; `{}`
 [#join_progressive]
-join_progressive:: Specifies when to apply joins on a worksheet +
-Possible values: `true` when joins are applied only for tables whose columns are included in the search, and `false` for all possible joins +
- Default:;; `true` + See xref:progressive-joins.adoc[How the worksheet join rule works]
+join_progressive::  Specifies when to apply joins on a worksheet +
+Possible values:;; `true` when joins are applied only for tables whose columns are included in the search, and `false` for all possible joins +
+Default:;; `true` +
+ See xref:progressive-joins.adoc[How the worksheet join rule works]
 [#joins]
-joins:: List of joins between tables and views, used by the worksheet +
+joins::  List of joins between tables and views, used by the worksheet +
  Each join is identified by `name`, and the additional attributes of `source`, `destination`, `type`, and `is_one_to_one.`
 [#name]
 name:: The name of an object.
 Applies to `worksheet`, `table`,`join`, `formula`, and so on.
-////
-6.2 parameters
 [#oper]
 oper::
 The operator of the Worksheet filter.
 Accepted operators are `"in"`, `"not in"`, `"between"`, `=<`, `!=`, `+<=+`, `>=`, `>`, or `<`.
-////
 [#properties]
-properties:: The list of properties of the worksheet column +
-Each column can have the following properties, depending on its definition: `column_type`, `aggregation`, `index_type`, `is_hidden`, `index_priority`, `synonyms`, `is_attribution_dimension`, `is_additive`, `calendar`, `format_pattern`, `currency_type`, and `geo_config`.
+properties::  The list of properties of the worksheet column + Each column can have the following properties, depending on its definition: `column_type`, `aggregation`, `index_type`, `is_hidden`, `index_priority`, `synonyms`, `is_attribution_dimension`, `is_additive`, `calendar`, `format_pattern`, `currency_type`, and `geo_config`.
 [#source]
-source:: Name of source table or view of the join
+source::  Name of source table or view of the join
 [#synonyms]
-synonyms:: Alternate names for the column, used in search +
+synonyms::  Alternate names for the column, used in search +
 See xref:change-visibility-synonym.adoc#create-synonyms-for-a-column[Create synonyms for a column]
 [#table]
-table:: Specific table, used in defining higher-level objects, such as table paths +
- Defined as `name` within `tables` definition
+table::  Specific table, used in defining higher-level objects, such as table paths +
+Defined as `name` within `tables` definition
 [#table_paths]
-table_paths:: The list of table paths +
- Each table path is identified by the `id`, and additional attributes of `table` and `join_path`.
+table_paths::  The list of table paths +
+Each table path is identified by the `id`, and additional attributes of `table` and `join_path`.
 [#tables]
-tables:: List of tables used by the worksheet +
- Each table is identified by `name`.
+tables::  List of tables used by the worksheet + Each table is identified by `name`.
 [#type]
-type:: Join type +
- Possible values:;; `LEFT_OUTER` for left outer join, `RIGHT_OUTER` for right outer join, `INNER` for inner join, `OUTER` for full outer join +
-  Default:;; `RIGHT_OUTER`
+type::  Join type +
+Possible values:;; `LEFT_OUTER` for left outer join, `RIGHT_OUTER` for right outer join, `INNER` for inner join, `OUTER` for full outer join +
+Default:;; `RIGHT_OUTER`
 [#values]
-values:: The values being filtered (excluded or included) in a Worksheet.
+values::  The values being filtered (excluded or included) in a Worksheet.
 [#worksheet]
-worksheet:: Top-level container for all object definitions within the worksheet
+worksheet::  Top-level container for all object definitions within the worksheet
 [#worksheet_columns]
-worksheet_columns:: The list of columns in the worksheet +
+worksheet_columns::  The list of columns in the worksheet +
  Each worksheet is identified by `name`, `description`, `formula_id`, and `properties`.
 
 [#limitations]

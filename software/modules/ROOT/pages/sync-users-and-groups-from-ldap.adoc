@@ -2,6 +2,7 @@
 :last_updated: 8/12/2021
 :linkattrs:
 
+
 Use this procedure to synchronize your ThoughtSpot system with an LDAP server through Active Directory.
 
 == Prerequisites
@@ -52,7 +53,7 @@ To run the LDAP sync script in interactive mode:
 . Log in to the Linux shell using SSH.
 . Run the command to start the script:
 +
-[source,python3]
+[source]
 ----
 python3 syncUsersAndGroups.py interactive
 ----
@@ -95,7 +96,7 @@ This prompt is asking if you would like to include group members even if they do
 +
 Issue the Python script commands, supplying all this information, following this format example:
 +
-[source,python3]
+[source]
 ----
  python3 syncUsersAndGroups.py script \
  –-ts_hostport <ts_hostport> \
@@ -120,6 +121,7 @@ It also deletes any other entities created in the ThoughtSpot system from this L
 
 . When the ThoughtSpot search engine finishes indexing, your new users should appear in the ThoughtSpot application. To check if the ThoughtSpot search engine is indexing, run the following command:
 
+[source]
 ----
  tscli cluster status
 ----
@@ -130,20 +132,20 @@ The following table provides a description of each command-line switch available
 [width="100%",options="header",cols="40%,60%"]
 |====================
 |Switch|Description
-|--ts_hostport <ts_hostport>|ThoughtSpot cluster host port. Default port is 8088.
-|--disable_ssl|Controls the communication between the sync script and the ThoughtSpot cluster. It disables SSL communications between the script and the cluster ONLY, and prevents the need to provide SSL certs during the script execution in order to create users and groups.
-|--ts_uname|ThoughtSpot cluster username. The admin user is usually used.
-|--ts_pass|ThoughtSpot cluster password.
-|--ldap_hostport|AD/LDAP server port that is queried. Default is 389.
-|--ldap_uname|Username for the LDAP/AD server.
-|--ldap_pass <ldap_password>|Password for the LDAP/AD server.
-|--sync|Syncs users and groups which match the basedn and filter_str queries to your ThoughtSpot cluster.
-|--purge|Purges any users that exist in ThoughtSpot, but not in AD.
-|--basedn|Place in the directory that will be searched for users.
-|--filter_str|Further filters results from your base DN.
-|--include_nontree_members|Includes group members from LDAP/AD even if they do not belong to the current subtree that is being synced.
-|--user_identifier <user_identifier>|User name identifier key for user creation or sync.
-|--authdomain_identifier <authdomain_identifier>|Override domain name to be appended to user identifier in user name.
-|--email_identifier <email_identifier>|Email identifier key for user creation or sync.
-|--debug|Provides additional logs in case of failure or other errors.
+|`--ts_hostport <ts_hostport>`|ThoughtSpot cluster host port. Default port is 8088.
+|`--disable_ssl`|Controls the communication between the sync script and the ThoughtSpot cluster. It disables SSL communications between the script and the cluster ONLY, and prevents the need to provide SSL certs during the script execution in order to create users and groups.
+|`--ts_uname`|ThoughtSpot cluster username. The `admin` user is usually used.
+|`--ts_pass`|ThoughtSpot cluster password.
+|`--ldap_hostport`|AD/LDAP server port that is queried. Default is 389.
+|`--ldap_uname`|Username for the LDAP/AD server.
+|`--ldap_pass <ldap_password>`|Password for the LDAP/AD server.
+|`--sync`|Syncs users and groups which match the `basedn` and `filter_str` queries to your ThoughtSpot cluster.
+|`--purge`|Purges any users that exist in ThoughtSpot, but not in AD.
+|`--basedn`|Place in the directory that will be searched for users.
+|`--filter_str`|Further filters results from your base DN.
+|`--include_nontree_members`|Includes group members from LDAP/AD even if they do not belong to the current subtree that is being synced.
+|`--user_identifier <user_identifier>`|User name identifier key for user creation or sync.
+|`--authdomain_identifier <authdomain_identifier>`|Override domain name to be appended to user identifier in user name.
+|`--email_identifier <email_identifier>`|Email identifier key for user creation or sync.
+|`--debug`|Provides additional logs in case of failure or other errors.
 |====================

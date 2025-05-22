@@ -11,7 +11,7 @@ Before you can install a ThoughtSpot cluster in Azure, you must configure your n
 
 Ensure the successful creation of the virtual machines (VMs) before you install the ThoughtSpot cluster in Azure.
 
-. *Review configuration options* Refer to xref:configuration-options.adoc[Azure configuration options] for detailed instance specs.
+. *Review configuration options* Refer to xref:configuration-options-azure.adoc[Azure configuration options] for detailed instance specs.
 . *Create the instance* Refer to xref:launch-an-instance-azure.adoc[Set up Azure for ThoughtSpot] to create and launch your instance.
 . *Change the admin password* Refer to xref:launch-an-instance-azure.adoc#prepare-for-startup[Prepare for starting up ThoughtSpot] to learn how to log in to your VM with the private key, and change the admin password.
 You must change the admin password on first login, or you will not be able to log back into your VMs.
@@ -57,10 +57,12 @@ To log in to your cluster, run `ssh admin@<public_VM-IP>`.
 
 Run the `tscli cluster get-config` command to get a template for network configuration for the new cluster.
 Redirect it to the file `nodes.config`.
-+
-You can find more information on this process in the xref:nodesconfig-example.adoc[`nodes.config` file reference].
 
- $ tscli cluster get-config |& tee nodes.config
+You can find more information on this process in the xref:nodesconfig-example.adoc[`nodes.config` file reference].
+[source,console]
+----
+$ tscli cluster get-config |& tee nodes.config
+----
 
 [#node-step-3]
 === Step 3: Prepare node configuration
@@ -72,8 +74,9 @@ If you specify different values during this step, it can create a temporary mism
 . Add your specific network information for the nodes in the `nodes.config` file, as demonstrated in the xref:nodesconfig-example.adoc#autodiscovery-of-one-node-example[autodiscovery of one node example].
 Run `vim nodes.config` to edit the file.
 +
+[source,console]
 ----
- $ vim nodes.config
+$ vim nodes.config
 ----
 +
 NOTE: Some of the information in the `nodes.config` file may be pre-populated from earlier steps.
@@ -94,35 +97,43 @@ Configure the nodes in the `nodes.config` file using the `set-config` command.
 The `firewalld` service is a Linux firewall that must be off for ThoughtSpot installation.
 After the cluster installer reboots the nodes, `firewalld` automatically turns back on.
 +
+[source,console]
 ----
- $ sudo systemctl stop firewalld
+$ sudo systemctl stop firewalld
 ----
 
 . To make sure you temporarily disabled `firewalld`, run `sudo systemctl status firewalld`.
 Your output should specify that `firewalld` is inactive.
 It may look something like the following:
 +
+[source,console]
 ----
- $ sudo systemctl status firewalld
-   ● firewalld.service - firewalld - dynamic firewall daemon
-     Loaded: loaded (/usr/lib/systemd/system/firewalld.service; disabled; vendor preset: enabled)
-     Active: inactive (dead)
+$ sudo systemctl status firewalld
+----
++
+----
+ ● firewalld.service - firewalld - dynamic firewall daemon
+   Loaded: loaded (/usr/lib/systemd/system/firewalld.service; disabled; vendor preset: enabled)
+   Active: inactive (dead)
 ----
 
 . Run the configuration command: `$ cat nodes.config | tscli cluster set-config`.
 + If the command returns an error, refer to <<set-config-error-recovery,set-config error recovery>>.
 +  After you run the node configuration command, your output appears similar to the following:
 +
+[source,console]
 ----
- $ cat nodes.config | tscli cluster set-config
-
- Connecting to local node-scout
- Setting up hostnames for all nodes
- Setting up networking interfaces on all nodes
- Setting up hosts file on all nodes
- Setting up NTP Servers
- Setting up Timezone
- Done setting up ThoughtSpot
+$ cat nodes.config | tscli cluster set-config
+----
++
+----
+Connecting to local node-scout
+Setting up hostnames for all nodes
+Setting up networking interfaces on all nodes
+Setting up hosts file on all nodes
+Setting up NTP Servers
+Setting up Timezone
+Done setting up ThoughtSpot
 ----
 
 [#node-step-5]
@@ -134,7 +145,8 @@ Use the `get-config` command to confirm node configuration.
 [source,console]
 ----
 $ tscli cluster get-config
-
+----
+----
 {
   "ClusterId": "",
   "ClusterName": "",
@@ -170,7 +182,7 @@ Next, xref:azure-cluster-install.adoc[install your ThoughtSpot clusters].
 
 As you develop your expertise in network configuration, we recommend the following ThoughtSpot U course:
 
-* https://training.thoughtspot.com/node-network-configuration/437249[Network Configuration, window=_blank]
+* https://training.thoughtspot.com/node-network-configuration/437249[Network Configuration,window=_blank]
 
 See other training resources at:
 
@@ -187,4 +199,6 @@ include::partial$install-cluster-error-recovery.adoc[]
 > * xref:parameters-nodesconfig.adoc[Parameters of the nodes.config file]
 > * xref:cluster-create.adoc[Using the tscli cluster create command]
 > * xref:parameters-cluster-create.adoc[Parameters of the cluster create command]
+> * xref:launch-an-instance-azure.adoc[Set up ThoughtSpot in Azure]
+> * xref:azure-cluster-install.adoc[Install ThoughtSpot clusters in Azure]
 > * xref:contact.adoc[Contact Support]

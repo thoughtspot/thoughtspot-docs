@@ -1,5 +1,5 @@
 = Install the ThoughtSpot application on offline clusters that use RHEL
-:last_updated: 8/18/2020
+last_updated: 8/18/2020
 Install ThoughtSpot on RHEL offline clusters
 ---
 Before starting the install, make sure that you completed the xref:rhel-prerequisites.adoc[pre-installation steps].
@@ -18,13 +18,12 @@ Before you build the ThoughtSpot cluster and install the ThoughtSpot application
    - checks that the partitions meet minimum size requirements
 
 [width="100%",cols="5%,95%"]
-|===
+|====================
 | &#10063; | xref:configure-ansible[1. Configure the Ansible Playbook]
 | &#10063; | xref:redirect-mirror[2. Redirect the mirror repository]
 | &#10063; | xref:run-ansible[2. Run the Ansible Playbook]
 | &#10063; | xref:install-thoughtspot[3. Install ThoughtSpot]
-|===
-
+|====================
 [#configure-ansible]
 == Configure the Ansible Playbook
 
@@ -64,15 +63,15 @@ GCP::: The `ssh_user` is the user who runs the playbook, and who is connected to
 ssh_private_key:: Add the private key for ssh access to the hosts.yaml file. You can use an existing key pair, or generate a new key pair in the Ansible Control server.
 Run the following command to verify that the Ansible Control Server can connect to the hosts over `ssh`:
 +
-----
+```
 ansible -m ping -i hosts.yaml all
-----
+```
 ssh_public_key:: Add the public key to the ssh authorized_keys file for each host, and add the private key to the hosts.yaml file. You can use an existing key pair, or generate a new key pair in the Ansible Control server.
 Run the following command to verify that the Ansible Control Server can connect to the hosts over ssh:
 +
-----
+```
 ansible -m ping -i hosts.yaml all
-----
+```
 extra_admin_ssh_key:: [Optional] An additional or extra key may be required by your security application, such as Qualys, to connect to the hosts.
 http(s)_proxy:: If the hosts must access public repositories through an internal proxy service, provide the proxy information.
 This release of ThoughtSpot does not support proxy credentials to authenticate to the proxy service.
@@ -90,15 +89,15 @@ Alternatively, you can manually update the repository URLs in the `yum.repos.d` 
 
 First, to allow installation of the Yum, Python, and R packages, you must run the `run_offline` script on your local machine. Run the following command on all nodes:
 
-----
+```
 run_offline.sh
-----
+```
 
 Now you can run the Ansible Playbook from your local machine by entering the following command:
 
-----
+```
 ansible-playbook -i hosts.yaml ts.yaml
-----
+```
 
 As the Ansible Playbook runs, it will perform these tasks:
 
@@ -111,9 +110,9 @@ As the Ansible Playbook runs, it will perform these tasks:
 
 After the Ansible Playbook finishes, run the `prepare_disks` script on every node, if you did not include it in the `customize.sh` file. Specify the data drives by adding the full device path for all data drives, such as `/dev/sdc`, after the script name. Separate data drives with a space.
 
-----
+```
 sudo /usr/local/scaligent/bin/prepare_disks.sh /dev/sdc /dev/sdd
-----
+```
 
 Your hosts are ready for installing the ThoughtSpot application.
 
@@ -135,3 +134,13 @@ Follow these general steps to install ThoughtSpot on the prepared hosts:
 . Upload the release artifact to your organization's mirror repository.
 . Run the `tscli cluster create` command. This script prompts for user input.
 . Check the cluster health by running health checks and logging into the application.
+
+'''
+> **Related information**
+>
+> * xref:rhel-prerequisites.adoc[RHEL prerequisites]
+> * xref:rhel-ts-artifacts.adoc[ThoughtSpot deployment artifacts for RHEL]
+> * xref:rhel-install-online.adoc[Online RHEL install]
+> * xref:rhel-upgrade.adoc[RHEL upgrade]
+> * xref:rhel-add-node.adoc[Add new nodes to clusters on RHEL]
+> * xref:rhel-packages.adoc[Packages installed with RHEL]

@@ -18,14 +18,14 @@ The instances act as a distributed cluster of nodes to serve query responses.
 |  | AWS | Azure | GCP
 
 | *Compute*****
-| Virtual machines deployed in your + AWS VPC
-| Virtual machines in your + Azure VNET
-| Virtual machines in your + GCP VPC
+| Virtual machines deployed in your AWS VPC
+| Virtual machines in your Azure VNET
+| Virtual machines in your GCP VPC
 
 | *Persistent + storage*****
-| Deployment options: + 1.
-Elastic Block Storage + 2.
-S3 + Elastic Block Storage
+| Deployment options: +
+- Elastic Block Storage +
+- S3 + Elastic Block Storage
 | Premium SSD Managed Disks
 | Zonal SSD persistent disk
 |===
@@ -38,9 +38,9 @@ To determine the number of instances and the persistent storage requirements to 
 
 Refer to the following guidelines for how to set up ThoughtSpot on each cloud service:
 
-* xref:configuration-options-aws.adoc#ts-aws-instance-types[AWS instance types]
-* xref:configuration-options-azure.adoc#thoughtspot-azure-instance-types[Azure instance types]
-* xref:configuration-options-gcp.adoc#thoughtspot-gcp-instance-types[GCP instance types]
+* xref:configuration-options.adoc#ts-aws-instance-types[AWS instance types]
+* xref:configuration-options-azure.adoc#ts-azure-instance-types[Azure instance types]
+* xref:configuration-options-gcp.adoc#ts-gcp-instance-types[GCP instance types]
 
 == Reducing your cloud infrastructure costs
 
@@ -62,28 +62,53 @@ If you do not need your ThoughtSpot cluster to be up and running 24/7, you can s
 
 To shut down and restart your cluster, do the following in the tscli:
 
-. Ensure there are no issues with the cluster by running: `$ tscli cluster check`
+. Ensure there are no issues with the cluster by running:
++
+[source,console]
+----
+$ tscli cluster check
+----
 +
 The above command should return no failure messages.
 
-. Stop the cluster by running: `$ tscli cluster stop`
+. Stop the cluster by running:
++
+[source,console]
+----
+$ tscli cluster stop
+----
 +
 Wait until you see the message: "`Done stopping cluster`"
 
 . Go to your cloud provider's console and shut down all of the ThoughtSpot VMs in your cluster.
 . When you are ready to use ThoughtSpot again, start up your node VMs.
-. Restart your cluster by running:  `$ tscli cluster start`
+. Restart your cluster by running:
 +
-You should see the message: `"Started pre-existing cluster`"
+[source,console]
+----
+$ tscli cluster start
+----
++
+You should see the message: `"Started pre-existing cluster"`
 +
 Depending on the size of your cluster, you may need to wait several minutes before the system is fully usable again.
 For massive clusters with hundreds of GBs of data, this time to readiness may be several hours.
 Assess time to readiness on a per-cluster basis.
 Make sure you budget for this startup time to ensure that the system is fully operational before advertising it as ready and usable.
 
-. Ensure that your cluster is ready for use by running:  `$ tscli cluster status`
+. Ensure that your cluster is ready for use by running:
 +
-The following messages are displayed to indicate your cluster is up and running: + `+...+`   `Cluster: RUNNING` +   `Database: READY` +   `Search Engine: READY`
+[source,console]
+----
+$ tscli cluster status
+----
++
+The following messages are displayed to indicate your cluster is up and running: +
+`...`   `Cluster: RUNNING`
++
+`Database: READY`
++
+`Search Engine: READY`
 
 == Automating your cloud deployment
 

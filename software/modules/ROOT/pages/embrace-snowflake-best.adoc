@@ -29,22 +29,19 @@ To make this data searchable in ThoughtSpot, you must first create a view in Sno
 To create a view from a Snowflake table that contains JSON, follow these steps:
 
 . Log in to your Snowflake instance.
-
-. If necessary, change your role so you can issue `CREATE VIEW` DDL statement in the target schema. See https://docs.snowflake.net/manuals/sql-reference/sql/create-view.html[CREATE VIEW] in Snowflake.
+. If necessary, change your role so you can issue `CREATE VIEW` DDL statement in the target schema. See https://docs.snowflake.net/manuals/sql-reference/sql/create-view.html[CREATE VIEW,window=_blank] in Snowflake.
 +
-image:snowflake-switch-role.png[Switch roles in Snowflake]
-
+image::snowflake-switch-role.png[Switch roles in Snowflake]
 . Click **Worksheets**.
 +
-image:snowflake-worksheets.png[Switch to Worksheets in Snowflake]
-
+image::snowflake-worksheets.png[Switch to Worksheets in Snowflake]
 . Issue the `CREATE VIEW` statement.
 +
-See https://docs.snowflake.net/manuals/sql-reference/sql/create-view.html#syntax[CREATE VIEW Syntax^].
+See https://docs.snowflake.net/manuals/sql-reference/sql/create-view.html[CREATE VIEW Syntax,window=_blank].
 +
 The following example uses the sample `WEATHER` data from the **Snowflake Free Trial** sample data:
-
-[source]
++
+[source,Snowflake]
 ----
 CREATE json_weather_data_view as
 SELECT
@@ -68,19 +65,18 @@ WHERE city_id = 5128638;
 ----
 
 . Query the new view in Snowflake.
-
-   The following example demonstrates how you can query the view *`json_weather_data_view`* created in the previous step:
-
++
+The following example demonstrates how you can query the view `*json_weather_data_view*` created in the previous step:
++
+[source,Snowflake]
 ----
-   SELECT * FROM json_weather_data_view
+SELECT * FROM json_weather_data_view
 WHERE date_trunc('month',observation_time) = '2018-01-01'
 LIMIT 20;
 ----
-
 . In ThoughtSpot Embrace, add a connection to Snowflake, specifically to the view you created.
-
-   See <<connect-snowflake,Connect to Snowflake through Embrace>>.
-
++
+See xref:connect-snowflake[Connect to Snowflake through Embrace].
 
 When you subsequently search in ThoughtSpot against the Snowflake view, you can easily create charts and graphs, as expected.
 
@@ -95,7 +91,7 @@ In Snowflake, you can query the schema to get a list of its existing foreign key
 
 To determine which foreign keys already exist in your Snowflake schema, issue the following `SELECT ... AS` statement:
 
-[source]
+[source,Snowflake]
 ----
 select
   fk_tco.table_schema as foreign_schema,
@@ -118,51 +114,43 @@ join
 order by
   fk_tco.table_schema,
   fk_tco.table_name;
-
 ----
 
 The system returns the results of this query as a table that represents all foreign keys in the database, ordered by schema name and by name of the foreign table. The table has the following columns:
 
-
-foreign_schema::
-The name of the foreign schema
-foreign_table::
-The name of the foreign table
-foreign_constraint::
-The name of the foreign key constraint
-rel::
-The relationship symbol that indicates the direction of the join
-referenced_schema::
-The name of the referenced schema
-referenced_schema::
-The name of the referenced schema
-referenced_schema::
-The name of the referenced schema
-
+foreign_schema:: The name of the foreign schema
+foreign_table:: The name of the foreign table
+foreign_constraint:: The name of the foreign key constraint
+rel:: The relationship symbol that indicates the direction of the joi
+referenced_schema:: The name of the referenced schema
 
 To search multi-table Snowflake data in ThoughtSpot, you must explicitly create joins.
 
 There are two ways to do this:
 
-. ThoughtSpot recommends that you add the necessary foreign key constraints by creating a join in Snowflake. We demonstrate how you can do in xref:embrace-snowflake-best.adoc#join-snowflake[Create joins in Snowflake]. +
-For in-depth information from Snowflake, see https://docs.snowflake.net/manuals/sql-reference/sql/create-table-constraint.html[CREATE or ALTER TABLE … CONSTRAINT].
+. ThoughtSpot recommends that you add the necessary foreign key constraints by creating a join in Snowflake. We demonstrate how you can do in xref:embrace-snowflake-best.adoc#join-snowflake[Create joins in Snowflake].
++
+For in-depth information from Snowflake, see https://docs.snowflake.net/manuals/sql-reference/sql/create-table-constraint.html[CREATE or ALTER TABLE … CONSTRAINT,window=_blank].
 
 . Alternatively, if you don't have the necessary permissions, you can create these relationships in ThoughtSpot.
-
-   See xref:create-new-relationship.adoc[Join a table or view to another data source] and xref:constraints.adoc[Constraints].
++
+See xref:create-new-relationship.adoc[Join a table or view to another data source] and xref:constraints.adoc[Constraints].
 
 [#join-snowflake]
 === Create joins in Snowflake
 
 To add a foreign key constraint in Snowflake, you must issue the following `ALTER TABLE` statement:
 
+[source,Snowflake]
 ----
 ALTER TABLE <table_name> ADD { outoflineUniquePK | outoflineFK }
 ----
 
 outoflineUniquePK:: The primary key in the relationship, with the following definition:
+
+[source,Snowflake]
 ----
-    outoflineUniquePK ::=
+outoflineUniquePK ::=
   [ CONSTRAINT <constraint_name> ]
   { UNIQUE | PRIMARY KEY } ( <col_name> [ , <col_name> , ... ] )
   [ [ NOT ] ENFORCED ]
@@ -174,28 +162,30 @@ outoflineUniquePK:: The primary key in the relationship, with the following defi
 ----
 
 outoflineFK:: The foreign key in the relationship, with the following definition:
+
+[source,Snowflake]
 ----
-    outoflineFK :=
-  [ CONSTRAINT <constraint_name> ]
-  FOREIGN KEY ( <col_name> [ , <col_name> , ... ] )
-  REFERENCES <ref_table_name> [ ( <ref_col_name> [ , <ref_col_name> , ... ] ) ]
-  [ MATCH { FULL | SIMPLE | PARTIAL } ]
-  [ ON [ UPDATE { CASCADE | SET NULL | SET DEFAULT | RESTRICT | NO ACTION } ]
-       [ DELETE { CASCADE | SET NULL | SET DEFAULT | RESTRICT | NO ACTION } ] ]
-  [ [ NOT ] ENFORCED ]
-  [ [ NOT ] DEFERRABLE ]
-  [ INITIALLY { DEFERRED | IMMEDIATE } ]
-  [ ENABLE | DISABLE ]
-  [ VALIDATE | NOVALIDATE ]
-  [ RELY | NORELY ]
+outoflineFK :=
+    [ CONSTRAINT <constraint_name> ]
+    FOREIGN KEY ( <col_name> [ , <col_name> , ... ] )
+    REFERENCES <ref_table_name> [ ( <ref_col_name> [ , <ref_col_name> , ... ] ) ]
+    [ MATCH { FULL | SIMPLE | PARTIAL } ]
+    [ ON [ UPDATE { CASCADE | SET NULL | SET DEFAULT | RESTRICT | NO ACTION } ]
+         [ DELETE { CASCADE | SET NULL | SET DEFAULT | RESTRICT | NO ACTION } ] ]
+    [ [ NOT ] ENFORCED ]
+    [ [ NOT ] DEFERRABLE ]
+    [ INITIALLY { DEFERRED | IMMEDIATE } ]
+    [ ENABLE | DISABLE ]
+    [ VALIDATE | NOVALIDATE ]
+    [ RELY | NORELY ]
 ----
 
 [#add-fk-snowflake]
 **Example 1: adding a foreign key in Snowflake**
 
-For example, you can add a foreign key to Retail Sales schema in Snowflake by running the following `ALTER TABLE` statement. Also, contrast it with <<add-fk-thoughtspot,Example 2>>:
+For example, you can add a foreign key to Retail Sales schema in Snowflake by running the following `ALTER TABLE` statement. Also, contrast it with [Example 2](#add-fk-thoughtspot):
 
-[source]
+[source,Snowflake]
 ----
 ALTER TABLE "HO_RETAIL"."PUBLIC"."HO_Retail_Sales_Fact"
   ADD FOREIGN KEY ("Date_Key" )
@@ -208,8 +198,9 @@ ALTER TABLE "HO_RETAIL"."PUBLIC"."HO_Retail_Sales_Fact"
 [#add-fk-thoughtspot]
 **Example 2: adding a foreign key in ThoughtSpot**
 
-To add the foreign key in ThoughtSpot (an alternative to the process outlined in <<add-fk-snowflake,Example 1>>, you can issue the following TQL `ALTER TABLE` statement:
+To add the foreign key in ThoughtSpot (an alternative to the process outlined in [Example 1](#add-fk-snowflake)), you can issue the following TQL `ALTER TABLE` statement:
 
+[source,Snowflake]
 ----
 TQL> ALTER TABLE "HO_Retail_Sales_Fact"
    ADD CONSTRAINT FOREIGN KEY ("Date_Key")
@@ -223,14 +214,13 @@ Follow the general steps in xref:embrace-snowflake-add.adoc[Add a Snowflake conn
 
 In the following screen, the **Account name** is the first part of the URL that you use to access Snowflake.
 
-image:snowflake-connectiondetails.png[Snowflake connection details]
+image::snowflake-connectiondetails.png[Snowflake connection details]
 
 If you cannot find your **Full account name** in Snowflake, see the following examples for determining your account based on the account name, cloud platform, and region. Assume that the **account name** is `xy12345`.
 
 === Example accounts for connecting, by platform and region
 
 See https://docs.snowflake.com/en/user-guide/admin-account-identifier.html#account-identifier-formats-by-cloud-platform-and-region[Account Identifier Formats by Cloud Platform and Region, window=_blank] in Snowflake's documentation.
-
 
 '''
 > **Related information**
