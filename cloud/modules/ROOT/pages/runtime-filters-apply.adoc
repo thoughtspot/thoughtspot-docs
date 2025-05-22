@@ -1,0 +1,82 @@
+= Apply a Runtime Filter
+:last_updated: 2/25/2022
+:linkattrs:
+:experimental:
+:page-layout: default-cloud
+:page-aliases: /admin/ts-cloud/apply-runtime-filter.adoc
+:description: Learn how to apply a runtime filter.
+
+
+
+Before you apply a filter, make sure you xref:runtime-filters.adoc#limitations-of-runtime-filters[understand their limitations].
+
+To apply runtime filters to a Liveboard or visualization, you must complete one of the following steps:
+
+* Embed a https://developers.thoughtspot.com/docs/?pageid=embed-a-viz[visualization] and https://developers.thoughtspot.com/docs/?pageid=embed-pinboard[Liveboard] using the Visual Embed SDK.
+* Use the https://developers.thoughtspot.com/docs/?pageid=liveboard-data-api[Liveboard Data API] to retrieve and embed a Liveboard or visualization.
+
+To add a runtime filter to your API call or the embedded object:
+
+. Construct the URL for embedding the visualization or making a REST API call.
+. Paste the URL into a text editor.
+. Append the runtime filter to the URL, using the xref:runtime-filters-operators.adoc[runtime filter operators].
+The format for the runtime filter is:
+
+ ** To apply runtime filters to an embedded Liveboard:
++
+----
+http://<thoughtspot_server>:<port>/
+?col1=<column_name\>&op1=<operator\>&val1=<value\>
+#/pinboard/<pinboard_id>
+----
+
+
+ ** To apply runtime filters to an embedded visualization:
++
+----
+http://<thoughtspot_server>:<port>/
+?col1=<column_name\>&op1=<operator\>&val1=<value\>
+#/pinboard/<pinboard_id>/<visualization_id>
+----
+
+
+ ** When embedding a Liveboard using REST API:
++
+----
+http://<thoughtspot_server>:<port>
+/callosum/v1/tspublic/v1/pinboarddata
+?id=<pinboard_id>
+&col1=<column_name\>&op1=<operator\>&val1=<value\>
+----
+
+
+ ** When embedding a visualization using REST API:
++
+----
+http://<thoughtspot_server>:<port>
+/callosum/v1/tspublic/v1/pinboarddata
+?id=<pinboard_id>&vizid=%5B<visualization_id>%5D
+&col1=<column_name\>&op1=<operator\>&val1=<value\>
+----
+. To add additional filters on a particular column, you can specify multiple values by separating them with `&` (ampersand) as in the example:
++
+----
+ val1=foo&val1=bar
+----
++
+You can also use the `IN` operator for multiple values, as shown in this example:
+
++
+----
+ col1=<column_name>&op1=IN&val1=<value>&val1=<value>
+----
+
+. Add additional filters by incrementing the number at the end of each parameter in the *Runtime Filter* for each filter you want to add, for example, `col2`, `op2`, `val2` and so on.
++
+This example passes multiple variables to a single column as well as multiple columns.
+It shows that the date values are returned as epoch.
++
+----
+  col1=region&op1=IN&val1=midwest&val1=south&val1=northeast
+  &col2=date&op2=BET&val2=<epoch_start>&val2=<epoch_end>
+----

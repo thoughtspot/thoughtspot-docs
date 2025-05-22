@@ -1,0 +1,92 @@
+= {spotapp}
+:last_updated: 6/13/2022
+:experimental:
+:linkattrs:
+:page-layout: default-cloud
+:description: Deploy the ServiceNow Incident Management SpotApp, an out-of-the-box solution template built specifically for ServiceNow.
+:spotapp: ServiceNow Incident Management SpotApp
+:application: ServiceNow
+
+include::partial$spotapps-intro.adoc[]
+
+This is a sample Liveboard, created after you deploy the {spotapp}:
+
+image::spotapp-servicenow-liveboard.png[ServiceNow SpotApp Liveboard]
+
+Use the {spotapp} for incident management. You can track the number of tickets submitted, and understand the efficiency of how those tickets are resolved.
+
+[#prerequisites]
+== Prerequisites
+Before you can deploy the {spotapp}, you must complete the following prerequisites:
+
+include::partial$spotapp-prereqs-general.adoc[]
+
+* Developer account in {application}
+* {application} data loaded into your cloud data warehouse. ThoughtSpot partners with https://www.matillion.com/[Matillion^] to make this ETL process easier with a custom Matillion job. Refer to <<matillion-etl,Matillion ETL job>>.
+* Access to the following {application} tables in your cloud data warehouse. Refer to <<schema,{spotapp} schema>> for more details.
+** INCIDENT
+** CMN_LOCATION
+** SYS_USER
+** SYS_USER_GROUP
+** TASK_SLA
+** CONTRACT_SLA
+** SERVICE_OFFERING
+** SERVICES
+** CONFIG_ITEM
+** CORE_COMPANY
+
+include::partial$spotapp-deploy-individual.adoc[]
+
+[#schema]
+== {spotapp} schema
+
+The following table describes the schema for the {spotapp}.
+
+|===
+| Table |Column | Column type | Required column
+
+| INCIDENT| NUMBER| VARCHAR | Y
+| INCIDENT| CATEGORY| VARCHAR | Y
+| INCIDENT| CLOSED_AT | DATE_TIME | Y
+| INCIDENT| STATE | VARCHAR | Y
+| INCIDENT| ACTIVE| VARCHAR | Y
+| INCIDENT| CLOSE_CODE| VARCHAR | N
+| INCIDENT| REASSIGNMENT_COUNT| VARCHAR | Y
+| INCIDENT| REOPEN_COUNT| VARCHAR | N
+| INCIDENT| OPENED_BY | VARCHAR | N
+| INCIDENT| OPENED_AT | DATE_TIME | Y
+| INCIDENT| PRIORITY| VARCHAR | Y
+| INCIDENT| ESCALATION| VARCHAR | Y
+| INCIDENT| ASSIGNED_TO | VARCHAR | Y
+| INCIDENT| CLOSED_BY | VARCHAR | N
+| INCIDENT| RESOLVED_BY | VARCHAR | N
+| INCIDENT| SYS_UPDATED_ON| DATE_TIME | N
+| INCIDENT| SYS_ID| VARCHAR | N
+| INCIDENT| LOCATION| VARCHAR | N
+| INCIDENT| SYS_UPDATED_BY| VARCHAR | N
+| INCIDENT| SYS_CREATED_ON| DATE_TIME | N
+| INCIDENT| MAJOR_INCIDENT_STATE| VARCHAR | Y
+| SYS_USER| TITLE | VARCHAR | Y
+| SYS_USER| NAME| VARCHAR | Y
+| SYS_USER| SYS_ID| VARCHAR | N
+| CMN_LOCATION| NAME| VARCHAR | Y
+| CMN_LOCATION| COUNTRY | VARCHAR | Y
+| CMN_LOCATION| STATE | VARCHAR | Y
+| CMN_LOCATION| SYS_ID| VARCHAR | Y
+| TASK_SLA| HAS_BREACHED| VARCHAR | Y
+| TASK_SLA| END_TIME| DATE_TIME | Y
+| TASK_SLA| TASK| VARCHAR | Y
+| CONTRACT_SLA| SYS_ID| VARCHAR | Y
+| CONTRACT_SLA| TYPE| VARCHAR | Y
+| CONTRACT_SLA| TARGET| VARCHAR | Y
+| CONTRACT_SLA| SYS_NAME| VARCHAR | N
+| CONTRACT_SLA| DURATION| DATE_TIME | N
+| SYS_USER_GROUP| SYS_ID| VARCHAR | Y
+| SYS_USER_GROUP| NAME| VARCHAR | Y
+|===
+
+[#matillion-etl]
+== Matillion ETL job
+To deploy the {spotapp}, you must load your ServiceNow data into your cloud data warehouse. ThoughtSpot partners with https://www.matillion.com/[Matillion^] to make the ETL process easier with a custom Matillion job. This job loads your ServiceNow data into your *Snowflake* environment. If you use a different cloud data warehouse, you cannot use this job.
+
+You can access the job https://exchange.matillion.com/s/exchange-job/a074G00001LQjBiQAL/service-now-incremental-load-for-thoughtspot-spotapp-on-snowflake[here^].
