@@ -17,13 +17,13 @@ The following steps detail the configuration of IdP with Okta as an example. You
 
 To configure the IdP with Okta, do the following:
 
-. Log in to the Okta console with a user having administrator privileges. Navigate to the *Applications* page in the console and click *Create App Integration*.
+. Sign in to the Okta console with a user having administrator privileges. Navigate to the *Applications* page in the console and select *Create App Integration*.
 +
 image::dremio-oauth1.png[Select Create App Integration]
 +
 . For sign-in method, choose *OIDC - OpenID Connect*.
 . For application type, choose *Web Application*
-. Click *Next*.
+. Select *Next*.
 . Under Grant type, make sure *Authorization Code* is selected.
 +
 image::dremio-oauth2.png[Select Authorization Code]
@@ -61,9 +61,9 @@ For Okta, it should follow this format:
 
 To add an external token provider in {connection}, do the following:
 
-. Log in to the {connection} cloud console and navigate to Organization Settings.
-. From the menu, click *External Token Providers*.
-. Click *Add Provider* and fill in the details of your IdP.
+. Sign in to the {connection} cloud console and navigate to Organization Settings.
+. From the menu, select *External Token Providers*.
+. Select *Add Provider* and fill in the details of your IdP.
 +
 image::dremio-oauth7.png[Click Add Provider and specify details]
 +
@@ -83,14 +83,31 @@ Example connection string:
 ----
 "jdbc:dremio:direct=sql.dremio.cloud:443;ssl=true;PROJECT_ID=732b5f6d-d2f6-4d3d-b3b6-0dc68bc778f5;token_type=jwt;password=<access_token_from_IdP>;username=;";
 ----
+
+== Logging in to a connection created by another user using OAuth
+
+As an admin user, you may run into an issue logging in to connections created using OAuth. To resolve this issue, complete the following steps:
+
+. Search on a table belonging to the connection you are trying to edit. The following error appears:
++
+image:oauth-error.png[Error reading “Error in loading data. Connection to Snowflake could not be established. OAuth login required. Login”]
+
+. Click *Login*. You will be directed to the IDP login page.
+
+. Enter your login credentials.
+
+. You will now have access to edit the connection.
+
+
 '''
 > **Related information**
 >
-> * https://docs.dremio.com/cloud/security/authentication/external-token/[External Token Providers^] (Dremio documentation)
-> * xref:connections-dremio-add.adoc[Add a {connection} connection]
-> * xref:connections-dremio-edit.adoc[Edit a {connection} connection]
-> * xref:connections-dremio-remap.adoc[Remap a {connection} connection]
-> * xref:connections-dremio-delete-table.adoc[Delete a table from a {connection} connection]
-> * xref:connections-dremio-delete-table-dependencies.adoc[Delete a table with dependent objects]
-> * xref:connections-dremio-delete.adoc[Delete a {connection} connection]
-> * xref:connections-dremio-reference.adoc[Connection reference for {connection}]
+> * xref:connections-dremio-add.adoc[]
+> * xref:connections-dremio-edit.adoc[]
+> * xref:connections-dremio-remap.adoc[]
+> * xref:connections-dremio-delete-table.adoc[]
+> * xref:connections-dremio-delete-table-dependencies.adoc[]
+> * xref:connections-dremio-delete.adoc[]
+> * xref:connections-dremio-private-link.adoc[]
+> * xref:connections-dremio-reference.adoc[]
+> * xref:connections-dremio-passthrough.adoc[]

@@ -1,91 +1,133 @@
 The latest release of ThoughtSpot Cloud contains several new and enhanced features.
 
-* <<8-9-0-cl-first,For the First User>>
-* <<8-9-0-cl-analyst,For the Analyst>>
-* <<8-9-0-cl-business-user,For the Business User>>
-* <<8-9-0-cl-data-engineer,For the Data Engineer>>
-* <<8-9-0-cl-it-ops-engineer,For the IT Ops Engineer>>
-* <<8-9-0-cl-developer,For the Developer>>
+* <<9-0-0-cl-first,For the First User>>
+* <<9-0-0-cl-analyst,For the Analyst>>
+* <<9-0-0-cl-business-user,For the Business User>>
+* <<9-0-0-cl-data-engineer,For the Data Engineer>>
+* <<9-0-0-cl-it-ops-engineer,For the IT Ops Engineer>>
+* <<9-0-0-cl-developer,For the Developer>>
 
-[#8-9-0-cl-first]
+[#9-0-0-cl-first]
 === For the First User
 
 Getting started with ThoughtSpot Cloud::
 The first user on the account has to complete a series of steps before other people can start using ThoughtSpot with your organization's data.
 For these instructions, see xref:ts-cloud-getting-started.adoc[Getting Started with ThoughtSpot Cloud].
 
-[#8-9-0-cl-analyst]
+[#9-0-0-cl-analyst]
 === For the Analyst
 
-Custom sizes for visualizations in Liveboards GA::
-Custom tile sizes for visualizations within Liveboards are now generally available. In addition to the 5 predetermined visualization sizes, you can now customize your Liveboard visualizations to be any size. See xref:liveboard-layout-edit.adoc#size[Edit the layout of a Liveboard].
-
-Visualization GUID support in TML files::
-Liveboard ThoughtSpot Modeling Language (TML) files now contain distinct GUIDs for each visualization in the Liveboard by default. This ensures that the GUID for the visualization stays the same after you import or export it. See the xref:tml#viz_guid[TML viz_guid] parameter.
-
-Pinboard to Liveboard change in TML::
-ThoughtSpot changed the `pinboard` parameter in Liveboard TML files to `liveboard`, consistent with our rebrand of pinboards as Liveboards.
+Parameters [.badge.badge-beta-relnotes]#Beta#::
+Create Worksheet Parameters to optimize your data inquiries. Use Parameters to run different scenarios with adjustable values, without creating or modifying the constants in formulas for each new value. For more information, refer to xref:parameters-create.adoc[] and xref:parameters-use.adoc[].
 +
-For more information, see xref:tml.adoc#syntax-liveboards[Syntax of the Liveboard TML file].
+This feature is in Beta and off by default. To enable it, contact {support-url}.
 
-[#spotapps-8-9]
-SpotApps::
+Upload custom geo maps [.badge.badge-early-access-relnotes]#Early Access#::
+Upload your own custom maps and visualize data on xref:chart-geo.adoc[geo charts] with regions that are specific to you and your organization. This feature must be enabled by your administrator.
++
+For more information about custom geo maps, see xref:geomaps-custom.adoc[].
 
-The following SpotApps are now available:
-* xref:spotapps-google-ad-analysis.adoc[Google Ad Analysis]: Use this SpotApp to get invaluable insight into your Google Ads performance, from high-level usage to identifying popular campaigns.
-* xref:spotapps-linkedin-ads.adoc[LinkedIn Ads]: Use this SpotApp to get invaluable insight into your LinkedIn Ads performance, from high-level usage to identifying popular projects.
-* xref:spotapps-procurement-vulnerability.adoc[Procurement Vulnerability Analysis for SAP]: Use this SpotApp quickly identify where disruptions could occur in your global supply chain, reducing risk and building resilience.
+Data labels on a dark background [.badge.badge-early-access-relnotes]#Early Access#::
+Labels that appear on a dark background can be displayed in a lighter text color, making them easier to read. This feature must be enabled by your administrator.
++
+For more information about data labels on a dark background, see xref:chart-data-labels.adoc[Show data labels].
 
-[#8-9-0-cl-business-user]
+Show measures in pivot table rows::
+By default, ThoughtSpot displays measures in columns in pivot tables. With this release, choose whether to display measures in rows or columns in your pivot tables. For more information, see xref:chart-pivot-table.adoc#reorder[Reorder your pivot table].
+
+Apply multiple changes at once [.badge.badge-early-access-relnotes]#Early Access#::
+When a user drags and drops the fields in the chart configuration panel, the chart reloads. When a user has multiple fields, they need to rearrange a lot of them to reach a desired chart. Now users can make multiple configurations, and apply them all at once, rather than waiting in between each configuration. This feature must be enabled by your administrator.
++
+For more information, see xref:chart-x-axis.adoc[Reorder labels on the axis or legend,window=_blank].
+
+TML for Monitor alerts [.badge.badge-beta-relnotes]#Beta#::
+Export, edit, and import xref:monitor.adoc[KPI Monitor alerts] programmatically, using ThoughtSpot Modeling Language. For more information, see xref:tml.adoc#syntax-alerts[Syntax of the Monitor alert TML file].
++
+This feature is in Beta and off by default. To enable it, contact {support-url}.
+
+Delete joins and RLS rules through TML::
+When you edit and import table TML files, ThoughtSpot now supports deletion of joins at the table level and RLS rules. Refer to xref:tml.adoc[].
+
+Export FQNs when exporting TML files::
+To reduce ambiguity when exporting TML files, export the fully qualified names (FQNs) for the objects' data sources. If you select this option, the TML file contains FQNs for the underlying tables and connections.
++
+For more information, see xref:tml.adoc#fqn[ThoughtSpot Modeling Language].
+
+Group aggregation enhancement: filters [.badge.badge-beta-relnotes]#Beta#::
+Previously, when using group_aggregate formulas, users could use query_filters to include filters entered in the search bar in the formula's value, but it was difficult to write a formula that accepted filters from only a single column. Starting with this release, you can specify column names within the ‘filters’ section of a group_aggregate formula, and any filter in your search bar referencing that column will be added to the formula. Filters entered in the search bar that are not on columns specified in the third argument of the group_aggregate formula will be ignored.
++
+For example:
+Say that you search for `group formula` `color= ‘blue’` `ship mode != ‘car’`, where `group formula = group_aggregate (sum(Revenue), {ship mode}, {color, quantity})`. In this case, the formula will adopt the color = blue filter but ignore the ship mode filter, evaluating to `group_aggregate(sum(Revenue), {ship mode}, {color = ‘blue’})`. For details, see xref:formulas-aggregation-flexible.adoc#groupagg-filters-enhancement[Group aggregation filters].
+
+
+[#9-0-0-cl-business-user]
 === For the Business User
 
-ThoughtSpot Sync Salesforce connection [.badge.badge-beta-relnotes]#Beta#::
-
-You can now sync data directly from an Answer or custom SQL view to Salesforce. Using ThoughtSpot Sync, you can push insights directly to Salesforce, notify your teams, and view data in context. ThoughtSpot Sync automatically establishes a secure pipeline to the destination app and thus eliminates the need for building custom connectors. For more information, see xref:sync-salesforce.adoc[Sync data to Salesforce]
-
-Discoverable Answers and Liveboards:: The discoverable Answers and Liveboards feature is now GA and on by default. You can now make content easily available to your team members. Use the *Make this [answer | Liveboard] discoverable* checkbox that appears when you save or share an Answer or Liveboard to grant _view_ access to your teammates.
+Mandatory Liveboard filters [.badge.badge-early-access-relnotes]#Early Access#::
+Mark certain filters in your Liveboard as mandatory. If you add mandatory filters to a Liveboard, the visualizations will only load after Liveboard viewers select values for the mandatory filters. Use mandatory filters for Liveboards that contain data that may not be relevant for everyone who must view and consume the Liveboard. Mandatory filters also lower query and performance costs. This feature must be enabled by your administrator.
 +
-Select this checkbox to publish your content in the list of relevant results when a teammate uses the *Search Answers* feature, or de-select to keep your content private.
+For more information about mandatory filters, see xref:liveboard-filters-mandatory.adoc[].
 
-Edit your display name::
-You can now edit your display name by clicking the profile icon in the upper-right corner of the screen. For more information, see xref:user-profile.adoc[Edit display name].
+ThoughtSpot Sync::
+You can now sync data directly from an Answer or custom SQL view to the following apps:
++
+--
+* xref:sync-servicenow.adoc[ServiceNow]
+* xref:sync-hubspot.adoc[HubSpot]
+--
++
+Using ThoughtSpot Sync, you can push insights directly to your selected app, notify your teams, and view data in context. ThoughtSpot Sync automatically establishes a secure pipeline to the destination app and thus eliminates the need for building custom connectors.
 
-[#8-9-0-cl-data-engineer]
+
+Explain change for KPI charts [.badge.badge-beta-relnotes]#Beta#::
+You can now use SpotIQ analysis to directly identify the key drivers for recent change in your KPIs. KPI change analysis allows you to drill down into the causes of change in your KPIs and customize the insights generated by SpotIQ.
++
+To access this feature, go to your KPI chart and select the caret icon to the right of the percent change label. The *Run change analysis* pop-up allows you to customize the columns ThoughtSpot analyzes. Note that ThoughtSpot runs change analysis between the two most recent data points defined by the KPI’s time bucket (for example, `daily` or `weekly`).
++
+For more information on change analysis,
+see xref:spotiq-change.adoc[Comparative analysis].
+
+
+
+Chinese (Traditional) or 中文 (繁體) localization::
+Set your ThoughtSpot locale to Chinese (Traditional), or 中文 (繁體). ThoughtSpot changes your data format settings, such as currency and number formatting, and translates keywords, ThoughtSpot menu and navigation items, operators, and error messages. To try it out, navigate to your profile, and edit your system language. For more information, see
+xref:keywords-zh-HANT.adoc[中文 (繁體) keyword reference,window=_blank] and xref:user-profile.adoc#language[Change language and data format settings,window=_blank].
+
+Delete or make a copy of objects from the details page::
+Delete or make a copy of Worksheets and Views from an object's details page. To try it out, open any Worksheet or View, and select the more menu image:icon-more-10px.png[more menu icon image]. For more information, see
+xref:worksheet-edit.adoc[Edit or rename Worksheet,window=_blank] and xref:sql-views.adoc[SQL based Views,window=_blank].
+
+Rename Liveboards and visualizations without entering edit mode::
+Change the name or description of a Liveboard or visualization without entering *Edit* mode. The more image:icon-more-10px.png[more menu icon] menu for Liveboards and Liveboard visualizations now includes a *Rename* option, where you can edit the object name and description. For more information, see xref:liveboard-layout-edit.adoc#other-edits[Other Liveboard edits].
+
+
+[#9-0-0-cl-data-engineer]
 === For the Data Engineer
 
-Tag enhancements::
+[#9-0-0-cl-snowflake-csv]
+Snowflake CSV upload::
 
-This release includes the following updates to the xref:tags.adoc[tags] feature in the xref:data-workspace.adoc[]:
-+
---
-* Add tags to multiple objects at a time
-* Administrators can create new tags from the *Edit tags* modal
---
-+
-For more information, see xref:tags#data-workspace-apply[Apply a tag] and xref:tags#data-workspace-create[Create a tag].
+Snowflake CSV upload is GA in this release. Now you have a quick and easy way to complete one-time data loads of small files that are not present in your cloud data warehouse. You can now upload a CSV file to the database of your Snowflake connection that can be joined to other tables or Worksheets in your connection. Once your administrator enables this feature, go to *Data* > *Utilities*, and click *Upload CSV*. See xref:connections-snowflake-csv-upload-config.adoc[Configure CSV upload for your Snowflake connection].
 
-Query banding with Teradata connections::
+PostgreSQL connection:: You can now create connections from ThoughtSpot to PostgreSQL. For details, see xref:connections-postgresql.adoc[PostgreSQL].
 
-With query banding, Teradata connections now support the trust SQL feature in Teradata. This provides additional permissions to a ThoughtSpot user for accessing specific tables in Teradata to execute queries. The user must be configured as an application proxy user in Teradata. Query banding also allows tracking of statistics for queries executed by a user. Refer to xref:connections-teradata-add.adoc[Add a Teradata connection].
+Redshift Partner Connect:: Redshift Partner Connect allows you to try out ThoughtSpot connected to Redshift for free. For details, see xref:connections-redshift-partner.adoc[ThoughtSpot in Redshift Partner Connect].
 
-SQL Server with Synapse connections::
 
-In this release, ThoughtSpot officially certifies and provides support for Microsoft SQL Server used with Synapse connections. Refer to xref:connections-synapse-add.adoc[Add a Synapse connection].
+dbt metadata tags for table and Worksheet column properties and table joins::
 
-[#8-9-0-cl-it-ops-engineer]
+Manage your ThoughtSpot table and Worksheet column properties and table joins in dbt by using metadata tags to define column properties and joins within your dbt model schema. dbt stays the source of truth, and you don't have to manually update the columns in ThoughtSpot when you make changes to your dbt model. For more information, see xref:dbt-integration-metadata-tags.adoc[Metadata tags for dbt].
+
+Sharing connections::
+You can now share connections with other users or groups. Once granted access to a connection, users can add, remove, and modify tables in that connection. For more information, see xref:connections.adoc[].
+
+[#9-0-0-cl-it-ops-engineer]
 === For the IT/Ops Engineer
 
-[#high-availability]
-High Availability::
-ThoughtSpot now supports High Availability through deployment spanning multiple Availability Zones. This ensures that the ThoughtSpot Cloud application experiences near-zero downtime in the case of AWS Availability Zone (AZ) failures. To learn how to enable High Availability in your environment, see xref:high-availability.adoc[].
+Early Access features::
+In this release, administrators can selectively enable or disable Early Access features for all users, using the Admin Console. For more information, see xref:early-access-enable.adoc[]. Early Access features are new in this release. For more information about them, see xref:release-lifecycle.adoc[].
 
-[#8-9-0-cl-query-based-pricing]
-Query Stats Liveboard::
-
-The new Query Stats Liveboard allows administrators of customers who have signed up for a query-based usage subscription, to track the number of queries of their users. To view the Query Stats Liveboard, go to *Liveboards* and select *Query Stats Liveboard*. Query-based usage is part of consumption-based pricing. For more information, see xref:consumption-pricing-query-based.adoc[Query-based usage].
-
-
-[#8-9-0-cl-developer]
+[#9-0-0-cl-developer]
 === For the Developer
 
 ThoughtSpot Everywhere:: For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation^].

@@ -10,7 +10,7 @@
 To configure OAuth for {connection}, you create an app in the Identity Provider and use the app’s credentials to register it in {connection} as an external token provider. Once these steps are completed, {connection} will allow connections coming in with the JWT issued by the IdP.
 
 == Okta OAuth
-These steps are an example of how you can configure Okta for external OAuth.
+The following steps are an example of how you can configure Okta for external OAuth.
 
 [#azure-ad-oauth]
 == Azure AD OAuth
@@ -27,13 +27,13 @@ The following steps detail the configuration of IdP with Okta as an example. You
 
 To configure the IdP with Okta, do the following:
 
-. Log in to the Okta console with a user that has administrator privileges. Navigate to the *Applications* page in the console and click *Create App Integration*.
+. Sign in to the Okta console with a user that has administrator privileges. Navigate to the *Applications* page in the console and select *Create App Integration*.
 +
 image::dremio-oauth1.png[Click Create App Integration]
 +
 . For sign-in method, choose *OIDC - OpenID Connect*.
 . For application type, choose *Web Application*
-. Click *Next*.
+. Select *Next*.
 . Under Grant type, make sure *Authorization Code* and *Refresh Token* are selected.
 +
 image::starburst-oauth2.png[Select Authorization Code and Refresh Token]
@@ -82,16 +82,31 @@ http-server.authentication.jwt.required-audience=<value of audience frmo open id
 http-server.authentication.jwt.principal-field=<value of the claim containing the user name>
 ----
 +
-These details should be obtained from the well known open id configuration URL obtained from Okta authorization server (e.g. *\https://example.okta.com/oauth2/abc1234xyz/.well-known/oauth-authorization-server*).
+These details should be obtained from the well known open id configuration URL obtained from Okta authorization server (for example, *\https://example.okta.com/oauth2/abc1234xyz/.well-known/oauth-authorization-server*).
 +
 The value for the principal-field configuration should be the claim name in the JWT that contains the username matching the username created in Starburst. This can be found from the token payload. In the following example, the username is in the claim “sub.”
 +
 image::dremio-oauth8.png[Sample external token provider code]
 
+== Logging in to a connection created by another user using OAuth
+
+As an admin user, you may run into an issue logging in to connections created using OAuth. To resolve this issue, complete the following steps:
+
+. Search on a table belonging to the connection you are trying to edit. The following error appears:
++
+image:oauth-error.png[Error reading “Error in loading data. Connection to Snowflake could not be established. OAuth login required. Login”]
+
+. Click *Login*. You will be directed to the IDP login page.
+
+. Enter your login credentials.
+
+. You will now have access to edit the connection.
+
+
 '''
 > **Related information**
 >
-> * https://docs.starburst.io/latest/security/jwt.html[JWT authenticaion^] in Starburst documentation
+> * https://docs.starburst.io/latest/security/jwt.html[JWT authentication^] in Starburst documentation
 > * xref:connections-starburst-add.adoc[Add a {connection} connection]
 > * xref:connections-starburst-edit.adoc[Edit a {connection} connection]
 > * xref:connections-starburst-remap.adoc[Remap a {connection} connection]
@@ -99,3 +114,5 @@ image::dremio-oauth8.png[Sample external token provider code]
 > * xref:connections-starburst-delete-table-dependencies.adoc[Delete a table with dependent objects]
 > * xref:connections-starburst-delete.adoc[Delete a {connection} connection]
 > * xref:connections-starburst-reference.adoc[Connection reference for {connection}]
+> * xref:connections-starburst-private-link.adoc[]
+> * xref:connections-starburst-passthrough.adoc[]
