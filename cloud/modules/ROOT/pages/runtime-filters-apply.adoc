@@ -1,5 +1,5 @@
 = Apply a Runtime Filter
-:last_updated: 11/05/2021
+:last_updated: 2/25/2022
 :linkattrs:
 :experimental:
 :page-layout: default-cloud
@@ -8,24 +8,21 @@
 
 include::partial$liveboards-announcement.adoc[]
 
-Learn how to apply a runtime filter.
-
-Runtime filters allow you to apply filters to the data returned by the APIs or the visualization or Liveboard you're embedding.
 Before you apply a filter, make sure you xref:runtime-filters.adoc#limitations-of-runtime-filters[understand their limitations].
 
-The filters are specified in the request URL as parameters.
-Before you can use runtime filter(s), you need to do these procedures:
+To apply runtime filters to a Liveboard or visualization, you must complete one of the following steps:
 
-. Embed a https://developers.thoughtspot.com/docs/?pageid=embed-a-viz[visualization] and https://developers.thoughtspot.com/docs/?pageid=embed-pinboard[Liveboard] using the Visual Embed SDK and authenticate to ThoughtSpot.
-. Use the xref:rest-api.adoc[Data API] to https://developers.thoughtspot.com/docs/?pageid=embed-data-restapi[retrieve a search answer or Liveboard].
+* Embed a https://developers.thoughtspot.com/docs/?pageid=embed-a-viz[visualization] and https://developers.thoughtspot.com/docs/?pageid=embed-pinboard[Liveboard] using the Visual Embed SDK.
+* Use the https://developers.thoughtspot.com/docs/?pageid=liveboard-data-api[Liveboard Data API] to retrieve and embed a Liveboard or visualization.
 
-To add a runtime filter to your API call or the  embedded object:
+To add a runtime filter to your API call or the embedded object:
 
 . Construct the URL for embedding the visualization or making a REST API call.
 . Paste the URL into a text editor.
 . Append the runtime filter to the URL, using the xref:runtime-filters-operators.adoc[runtime filter operators].
 The format for the runtime filter is:
- ** For Embedding a Liveboard:
+
+ ** To apply runtime filters to an embedded Liveboard:
 +
 ----
 http://<thoughtspot_server>:<port>/
@@ -33,7 +30,8 @@ http://<thoughtspot_server>:<port>/
 #/pinboard/<pinboard_id>
 ----
 
- ** For Embedding a visualization:
+
+ ** To apply runtime filters to an embedded visualization:
 +
 ----
 http://<thoughtspot_server>:<port>/
@@ -41,7 +39,8 @@ http://<thoughtspot_server>:<port>/
 #/pinboard/<pinboard_id>/<visualization_id>
 ----
 
- ** For the REST API with a Liveboard:
+
+ ** When embedding a Liveboard using REST API:
 +
 ----
 http://<thoughtspot_server>:<port>
@@ -50,7 +49,8 @@ http://<thoughtspot_server>:<port>
 &col1=<column_name\>&op1=<operator\>&val1=<value\>
 ----
 
- ** For the REST API with a visualization:
+
+ ** When embedding a visualization using REST API:
 +
 ----
 http://<thoughtspot_server>:<port>
@@ -65,16 +65,17 @@ http://<thoughtspot_server>:<port>
 ----
 +
 You can also use the `IN` operator for multiple values, as shown in this example:
+
 +
 ----
  col1=<column_name>&op1=IN&val1=<value>&val1=<value>
 ----
 
 . Add additional filters by incrementing the number at the end of each parameter in the *Runtime Filter* for each filter you want to add, for example, `col2`, `op2`, `val2` and so on.
-
++
 This example passes multiple variables to a single column as well as multiple columns.
-It shows that data values are returned as epoch.
-
+It shows that the date values are returned as epoch.
++
 ----
   col1=region&op1=IN&val1=midwest&val1=south&val1=northeast
   &col2=date&op2=BET&val2=<epoch_start>&val2=<epoch_end>

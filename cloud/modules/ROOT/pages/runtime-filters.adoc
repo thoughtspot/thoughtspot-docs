@@ -1,5 +1,5 @@
 = About Runtime Filters
-:last_updated: 11/05/2021
+:last_updated: 2/25/2022
 :linkattrs:
 :experimental:
 :page-layout: default-cloud
@@ -8,27 +8,23 @@
 
 include::partial$liveboards-announcement.adoc[]
 
-Runtime filters allow you to apply filters to the data returned by the APIs, or the visualizations and Liveboard you're embedding.
+Runtime filters allow you to apply filters to the data returned by the APIs, or the visualizations and Liveboard you are embedding in another app.
 
 == Capabilities of Runtime Filters
 
 Runtime Filters provide the ability to apply filters on embedded objects at the time of retrieval.
-You can pass the filter criteria as URL query parameters on Liveboard or visualizations.
-ThoughtSpot supports applying runtime filters to objects embedded using the xref:visual-embed-sdk.adoc[Visual Embed SDK] or the xref:rest-api.adoc[REST APIs].
+You can pass the filter criteria as URL query parameters on a Liveboard or its visualizations.
+ThoughtSpot supports applying runtime filters to objects embedded using the xref:visual-embed-sdk.adoc[Visual Embed SDK] and the xref:rest-api.adoc[REST APIs].
 
-This example shows how to define RuntimeFilter parameters when rendering a visualization or Liveboard using the Visual Embed SDK.
+This example shows how to apply runtime filters when rendering a visualization or Liveboard using the Visual Embed SDK.
 Here, the RuntimeFilter is operating on the `Revenue` column and will return values equal to `100000`.
 
 ----
-pinboardEmbed.render({
-    pinboardId: '133e6c5f-e522-41a0-b0ad-b9c3b066e276',
-    vizId: '28b73b4a-1341-4535-ab71-f76b6fe7bf92',
       runtimeFilters: [{
       columnName: 'Revenue',
       operator: EQ,
-      values: [ 100000 ]
+      values: [100000]
       }]
-  });
 ----
 
 This example shows the URL to access a Liveboard with a filter.
@@ -39,7 +35,7 @@ http://<your.thoughtspot.com>/?col1=Color&op1=EQ&val1=red#
 /pinboard/e36ee65e-64be-436b-a29a-22d8998c4fae
 ----
 
-This example shows the URL for a REST API call with a filter.
+This example shows the URL for a REST API call with a runtime filter.
 Here the Runtime Filter is operating on the column `Category` and returning values that are equal to `mfgr%2324`.
 
 ----
@@ -50,7 +46,7 @@ id=e36ee65e-64be-436b-a29a-22d8998c4fae&col1=Category
 
 ThoughtSpot will try to find a matching column from the Liveboard or visualization being accessed, using the `col` field as `name`.
 You can add any number of filter sets by incrementing the parameters (e.g.
-`col2`, `op2`, and `val2`, etc.) For operators that support more than one value you can pass `val1=foo&val1=bar`, etc.
+`col2`, `op2`, and `val2`, etc.) For operators that support more than one value, you can pass `val1=foo&val1=bar`, etc.
 
 If the Liveboard or answer you're filtering already has one or more filters applied, the Runtime Filter(s) will act as an `AND` condition.
 This means that the data returned must meet the conditions of all filters - those supplied in the runtime filter, and those included in the Liveboard or visualization itself.
