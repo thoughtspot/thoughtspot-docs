@@ -1,15 +1,16 @@
 = Known issues
 :keywords: known issues
-:last_updated: 2/1/2023
+:last_updated: 12/12/2023
 :author: Mark Plummer
 :experimental:
 :page-layout: default-cloud
 :linkattrs:
+:jira: SCAL-177532, SCAL-185857
 
 These are the known issues in this release of ThoughtSpot Cloud.
 
 [#releases-9-6-x]
-== 9.6.0.cl known issues
+== 9.7.0.cl known issues
 
 [cols="17%,39%,38%"]
 |===
@@ -19,39 +20,13 @@ These are the known issues in this release of ThoughtSpot Cloud.
 |Updates to runtime filters in a Liveboard do not appear in the downloaded Liveboard.
 a|*Symptoms*:
 
-Runtime filter updates do not appear in a downloaded Liveboard.
+When you update a runtime filter, and then download a Liveboard, the PDF artifact doesn't reflect the pre-applied filters.
 
 *Conditions*:
 
 Update a runtime filter in a Liveboard and then download it.
 
-*Workaround*:
-
-None.
-
-|SCAL-182610
-|No fragments are shown when feedback is given to an AI-generated answer.
-a|*Symptoms*:
-
-No fragments are shown.
-
-*Conditions*:
-
-When feedback is given to an AI-generated answer when the Cloud instance is hosted on GCP.
-
-*Workaround*:
-
-None.
-
-|SCAL-182316
-|Errors in PDF exported from Liveboard.
-a|*Symptoms*:
-
-Extra page and distorted footer appear in exported PDF.
-
-*Conditions*:
-
-Exporting from a Liveboard.
+ThoughtSpot version 9.3.0.cl
 
 *Workaround*:
 
@@ -61,55 +36,125 @@ None.
 |The group_aggregate function works differently with null values between ThoughtSpot Cloud and Software versions.
 a|*Symptoms*:
 
-Using an "if" statement in a formula to determine if a number is NULL generates a different result with ThoughtSpot Software compared to ThoughtSpot Cloud.
+Using an `if` statement in a formula to determine if a number is `NULL` generates a different result with ThoughtSpot Software compared to ThoughtSpot Cloud.
 
 *Conditions*:
 
-Using ThoughtSpot 9.5.0.cl.
+ThoughtSpot version 9.5.0.cl
 
 *Workaround*:
 
 None.
 
-|SCAL-174571
-|Configuration inconsistent in pivot tables.
+|SCAL-173808
+|A filter created for the max date function does not apply to the result set, based on the underlying SQL query.
+a|*Symptoms*:
+A filter created in an Answer for the max date function does not apply to the result set, even when applied in the Answer's search bar.
+
+*Conditions*:
+
+The underlying sql query.
+
+ThoughtSpot version 9.5.0.cl.
+
+*Workaround*:
+
+None.
+
+|SCAL-172622
+|Requesting access to a filter in an Answer does not work.
 a|*Symptoms*:
 
-If you specify data fields below, the data is aggregated:
-
-- Rows: B, E
-- Measure: D
-- Columns: A, C
-
-However, if you move C to “Rows” section, the following error is displayed:
-
-"This configuration is invalid for the current chart type."
-
-Moreover, if you configure data fields the following way, empty cells are displayed:
-
-- Rows: B, E
-- Measure: D
-- Columns: C, A
+Clicking *Request Access* in the filter of an Answer does not work.
 
 *Conditions*:
 
-Using a pivot table.
+. User creates an Answer with a filter applied to any column.
+. They save the answer and share it with another user who doesn't have access to the underlying data.
+. The other user clicks the filter chip in the Answer and clicks the *Request Access* button.
++
+ThoughtSpot version 9.7.0.cl.
+
 
 *Workaround*:
 
 None.
 
-|SCAL-162316
-|Menu options are displayed for broken visualizations.
+|SCAL-172617
+|Worksheet name not properly displayed in warning message when requesting access to a filter in a Worksheet.
 a|*Symptoms*:
 
-Visualization which doesn't load still shows menu options.
+Worksheet name not properly displayed in warning message when user does not have access to a filter in a Worksheet.
 
 *Conditions*:
 
-Visualization failed to load.
+. User creates an Answer with a filter applied to any column.
+. They save the answer and share it with another user who doesn't have access to the underlying data.
+. The other user clicks the filter chip in the Worksheet.
++
+ThoughtSpot version 9.7.0.cl.
 
 *Workaround*:
 
 None.
+
+|SCAL-172356
+|User can edit an existing or create a new Atlan connection in ThoughtSpot using deleted API tokens.
+a|*Symptoms*:
+
+Deleting the token in Atlan for an Atlan connection in ThoughtSpot does not make the token invalid. User is able to modify existing connection and also create a new connection with deleted token.
+
+*Conditions*:
+
+. Open the *Data* tab and navigate to *Data governance*.
+. In the Atlan tile, click *Connect*.
+. Enter the credentials and click *Next*.
+. Set the sync schedule and click *Next*.
+. Select the metadata fields to import, and click *Save & Sync*.
+. On the Atlan side, delete the generated token for the Atlan connection established in ThoughtSpot.
+. In ThoughtSpot, edit the Atlan connection and modify the sync / metadata checks.
++
+ThoughtSpot version 9.7.0.cl.
+
+*Workaround*:
+
+None.
+
+|SCAL-171431
+|GraphQL v2 cannot be disabled in ThoughtSpot.
+a|*Symptoms*:
+
+No way to disable GraphQL v2 in the product or by ThoughtSpot support.
+
+*Conditions*:
+
+QraphQL v2 is running.
+
+ThoughtSpot version 9.4.0.cl.
+
+*Workaround*:
+
+None.
+
+|SCAL-167159
+|Passthrough functions cannot be executed on an object in ThoughtSpot's in-memory database.
+a|*Symptoms*:
+
+Error appears: `Error Details [11022]
+Passthrough functions not supported for current query. Trace Id for this incident is ff025b55-9f46-470e-95f4-c4766533e5cf
+Additional Details
+Passthrough functions cannot be executed on Falcon objects`
+
+*Conditions*:
+
+Open query visualizer.
+
+ThoughtSpot version 9.4.0.cl.
+
+*Workaround*:
+
+None.
+
 |===
+
+
