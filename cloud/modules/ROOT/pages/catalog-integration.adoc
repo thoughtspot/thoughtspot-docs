@@ -1,0 +1,86 @@
+= Catalog integration
+:last_updated: 7/25/23
+:author: Naomi
+:page-layout: default-cloud
+:linkattrs:
+:experimental:
+:description: Use ThoughtSpot’s connection to Alation to import column- and table-level metadata and surface the data in the Search data knowledge cards.
+
+Use ThoughtSpot’s connection to Alation to import column- and table-level metadata, including column description, table description, column verification status and table verification status, and surface the data in the Search data knowledge cards. To set up or edit a connection to Alation, you must have *can manage catalog* permission. Once the metadata is imported, all users can see the metadata. Note, the user setting up the catalog connection can also configure which fields they want to display or hide on the column and table level knowledge cards. By default, all selected fields in the catalog connection process will be visible.
+
+NOTE: This feature is in beta and off by default. To enable it, contact {support-url}.
+
+image::catalog-integration.png[]
+
+== Connect to Alation
+
+. Open the *Data* tab and navigate to *Data governance*.
+
+. In the Alation tile, click *Connect*.
++
+image:alation-connect.png[Connection to Alation]
+
+. Enter the following credentials:
+
+* User name
+* Password
+* Instance URL (for example, `+https://connector.alationcatalog.com/+`)
+
+
+. Click *Next*.
+. Set a sync schedule to control how often your metadata updates from ThoughtSpot. The default is once a day. You can click the locale to change the sync schedule time zone.
++
+image:alation-sync.png[Create a sync schedule for Alation]
+
+. Click *Next*.
+
+. Select the fields to import from the following:
+
+* Table description
+* Column description
+* Table trustcheck
+* Column trustcheck
++
+image:alation-metadata.png[Select metadata to sync from Alation to ThoughtSpot]
++
+NOTE: In this context, trustcheck signifies verification status. While syncing, ThoughtSpot checks for tables that match those already connected to ThoughtSpot and imports only metadata for those tables.
+
+. Click *Save and sync*.
++
+Once the sync is complete, you see the *Last sync* field update in the Alation tile. The *Sync schedule* field displays the frequency with which ThoughtSpot will sync with Alation.
++
+image:alation-data-governance.png[Alation sync complete]
+
+If the sync is taking a while, you can press the “Refresh” button to fetch the latest status.
+
+== Edit a connection
+
+You can edit catalog integration with Alation to set off a sync immediately, edit your sync schedule, edit the metadata types imported to ThoughtSpot, or disconnect from Alation.
+
+To edit a connection with Alation:
+
+. Navigate to *Data* > *Data governance*.
+
+. Click the more options icon image:icon-more-10px.png[icon] in the top right corner of the Alation tile.
++
+image:alation-more-menu.png[Options for editing a Catalog sync]
+
+. Select from the following:
+
+* *Sync now* to set off a sync immediately
+* *Edit sync schedule* to change the cadence of your sync
+* *Edit metadata* to add or remove metadata fields from your sync
+* *Disconnect* to disconnect from Alation. If you disconnect from Alation, all metadata fields imported from Alation disappear from ThoughtSpot.
+
+
+== Informational panel display
+
+The informational panel display below the Alation catalog tile allows you to manage the metadata brought in for columns and data sources.
+
+Click *Manage columns* to decide whether to display the column description and column trustcheck in ThoughtSpot.
+
+Click *Manage data sources* to decide whether to display the table description and table trustcheck in ThoughtSpot.
+
+=== Troubleshooting connection or sync failure
+
+If the connection to Alation or the scheduled sync fails for any reason, a *View logs* field appears next to the *Last sync* status on the Alation tile in *Data governance*. You can view and download the log file to better understand why the connection failed.

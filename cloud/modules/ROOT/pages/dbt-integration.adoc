@@ -4,11 +4,12 @@
 :experimental:
 :page-layout: default-cloud
 :author: Teresa Killmond
-:description: ThoughtSpot's dbt integration allows you to provide your existing dbt models and create ThoughtSpot Worksheets, which you can use to search your data.
+:description: ThoughtSpot's dbt sync allows you to provide your existing dbt models and create ThoughtSpot Worksheets, which you can use to search your data.
+:jira: SCAL-182271, SCAL-182987
 
-ThoughtSpot's dbt integration allows you to easily provide your existing dbt models and automatically create ThoughtSpot xref:worksheets.adoc[Worksheets], which you can use to xref:search-data.adoc[search your data].
+ThoughtSpot's dbt sync allows you to easily provide your existing dbt models and automatically create ThoughtSpot xref:worksheets.adoc[Worksheets], which you can use to xref:search-data.adoc[search your data].
 
-dbt takes your raw data in your data warehouse and transforms and validates it. ThoughtSpot's dbt integration  connects users to their cloud data warehouse, integrates with your dbt models using an API key or zip file, and generates the relationships between the tables defined in the dbt model that you select. It also brings any logical tables into ThoughtSpot. Then, ThoughtSpot creates new Worksheets, based on the relationships between the tables. If a table does not have any relationships, ThoughtSpot creates a Worksheet based only on that table. These Worksheets provide user-friendly logical views of your complex datasets. Users can use these Worksheets to easily search their complex data. This process may replace existing dbt tables you imported into ThoughtSpot, but it will not replace existing Worksheets.
+dbt takes your raw data in your data warehouse and transforms and validates it. ThoughtSpot's dbt sync connects users to their cloud data warehouse, integrates with your dbt models using an API key or zip file, and generates the relationships between the tables defined in the dbt model that you select. It also brings any logical tables into ThoughtSpot. Then, ThoughtSpot creates new Worksheets, based on the relationships between the tables. If a table does not have any relationships, ThoughtSpot creates a Worksheet based only on that table. These Worksheets provide user-friendly logical views of your complex datasets. Users can use these Worksheets to easily search their complex data. This process may replace existing dbt tables you imported into ThoughtSpot, but it will not replace existing Worksheets.
 
 NOTE: Integration with dbt is certified only for Amazon Redshift, Databricks, Google BigQuery, and Snowflake connections.
 
@@ -26,7 +27,9 @@ Project ID:: Find your project ID in your dbt Cloud URL, after you sign in. For 
 * Optionally define the relationships for the dbt models in your `yml` schema file. For more information, refer to the https://docs.getdbt.com/docs/build/tests[dbt documentation^].
 +
 NOTE: If you do not define relationships, ThoughtSpot imports each model as a single table and creates one Worksheet based on each table.
-* Optionally define ThoughtSpot xref:data-modeling-settings.adoc[column properties] and xref:join-worksheet-edit.adoc[joins] within your dbt model schema. See xref:dbt-integration-metadata-tags.adoc[].
+
+NOTE: Manage your ThoughtSpot Worksheet and table xref:data-modeling-settings.adoc[column properties] and table xref:join-worksheet-edit.adoc[joins] in dbt by using metadata tags to define column properties and joins within your dbt model schema. See xref:dbt-integration-metadata-tags.adoc[].
+
 * To ensure ThoughtSpot can process the latest changes defined in your `yml` schema file, which defines relationships, metatags, and tests, you must have the latest versions of the `manifest.json` and `catalog.json` files. To ensure you have the latest versions of those files, run a dbt job, which generates the latest versions of these files.
 * If you are using *dbt cloud*, the *generate docs on run* setting must be on. You can enable this setting in the jobs settings of the project, under *Execution settings*.
 * If you are using *dbt core*, execute the `dbt docs generate` command along with the `dbt run` command.
@@ -35,8 +38,8 @@ NOTE: If you do not define relationships, ThoughtSpot imports each model as a si
 NOTE: When you compress the `manifest.json` and `catalog.json` files into one zip file, ensure that you do not include any hidden files, as this may cause errors later. To check the folder you plan to compress does not contain hidden files, refer to these articles for viewing hidden files on your https://discussions.apple.com/thread/7581737[Mac^] or https://support.microsoft.com/en-us/windows/view-hidden-files-and-folders-in-windows-97fbc472-c603-9d90-91d0-1166d1d9f4b5[Windows^] computer. If the folder contains hidden files, move them out of the folder before compressing it into a zip file.
 
 [#integrate]
-== Integrating with dbt
-You can set up your dbt integration from the Data workspace. To integrate with dbt, follow these steps:
+== dbt sync
+You can set up your dbt sync from the Data workspace. To integrate with dbt, follow these steps:
 
 . Ensure that you have already xref:connections.adoc[created a connection] to your external cloud data warehouse. This cloud data warehouse must contain the tables that are created from your dbt models.
 
@@ -124,7 +127,7 @@ NOTE: This process may replace existing dbt tables you imported into ThoughtSpot
 . If you select any of the tables or Worksheets you created, and then click *Joins*, you can see the joins ThoughtSpot created, based on the relationships in dbt.
 
 
-== How the dbt integration works
+== How the dbt sync works
 
 To integrate with dbt, ThoughtSpot reads information from the latest versions of the `manifest.json` and `catalog.json` files. In the <<prerequisites,prerequisites>>, you ensured that ThoughtSpot could find these files, either by enabling the *generate docs on run* setting in dbt cloud, or by creating a zip file with your `manifest.json` and `catalog.json` files for dbt core.
 
@@ -180,13 +183,13 @@ include::partial$schema-example.adoc[]
 
 [#edit]
 == Editing a dbt project
-If there are any changes to the dbt models that you would like the ThoughtSpot Worksheets, Liveboards, and tables to reflect, you must edit the dbt integration you created. This updates the existing Worksheets, Liveboards, and tables.
+If there are any changes to the dbt models that you would like the ThoughtSpot Worksheets, Liveboards, and tables to reflect, you must edit the dbt sync you created. This updates the existing Worksheets, Liveboards, and tables.
 
 .[.badge.badge-beta]#Beta#
 ****
-Updating your existing dbt integration Worksheets, Liveboards, and tables is in beta and off by default. ThoughtSpot also calls this feature *incremental updates*. To enable it, contact {support-url}.
+Updating your existing dbt sync Worksheets, Liveboards, and tables is in beta and off by default. ThoughtSpot also calls this feature *incremental updates*. To enable it, contact {support-url}.
 
-If incremental updates is off in your environment, editing a dbt integration creates new Worksheets, Liveboards, and tables. It does not update the existing objects.
+If incremental updates is off in your environment, editing a dbt sync creates new Worksheets, Liveboards, and tables. It does not update the existing objects.
 ****
 
 To edit a dbt project/ integration, follow these steps:
@@ -194,12 +197,18 @@ To edit a dbt project/ integration, follow these steps:
 . Select *Data* in the top navigation bar.
 
 . Select *dbt* in the side navigation bar.
++
+NOTE: When you edit a dbt sync, you often add columns and descriptions to your currently synced tables and worksheets. To simplify the process of editing a sync, ThoughtSpot pre-selects the folders, models, and worksheets you selected during your first sync.
 
-. In the list of dbt project, select the empty checkbox next to your project name. If necessary, use the search bar in the upper left corner to find your project.
+. In the list of dbt projects, select the empty checkbox next to your project name. If necessary, use the search bar in the upper left corner to find your project.
 
 . Select *Edit*.
 
-. Run the dbt integration again, making any changes you would like. Follow the steps in <<integrate,Integrating with dbt>>. This updates your Worksheets, tables, and Liveboards, based on the changes in your dbt models.
+. Run the dbt sync again, making any changes you would like. Follow the steps in <<integrate,Integrating with dbt>>. This updates your Worksheets, tables, and Liveboards, based on the changes in your dbt models.
++
+NOTE: You may generate an error if you have removed or renamed a column in dbt before re-syncing to ThoughtSpot. To handle this error, check your dbt models and tables to ensure every column maps correctly to the tables and models in ThoughtSpot.
+
+
 
 == Limitations
 
@@ -217,7 +226,7 @@ To edit a dbt project/ integration, follow these steps:
 
 == Troubleshooting
 
-For help troubleshooting issues with your dbt integration, see https://community.thoughtspot.com/s/article/Common-errors-encountered-during-dbt-Integration[Common errors encountered during dbt integration^].
+For help troubleshooting issues with your dbt sync, see https://community.thoughtspot.com/s/article/Common-errors-encountered-during-dbt-Integration[Common errors encountered during dbt integration^].
 
 '''
 > **Related information**

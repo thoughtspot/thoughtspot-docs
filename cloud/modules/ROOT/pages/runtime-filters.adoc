@@ -6,6 +6,7 @@
 :page-layout: default-cloud
 :page-aliases: /admin/ts-cloud/about-runtime-filters.adoc
 :description: Use runtime filters to filter an embedded Answer or Liveboard, or use runtime Parameters to apply Parameter values to an Answer or Liveboard.
+:jira: SCAL-183324,  SCAL-184768
 
 Runtime filters and Parameter overrides apply filters or xref:parameters-use.adoc[Parameter] values to a Liveboard or Answer by passing the filter or Parameter properties as query parameters in a Liveboard or visualization URL. You can also apply runtime filters in REST API requests when querying data from a Liveboard, Answer, or a visualization object. On embedded instances, you can use the Visual Embed SDK to apply filters to an embedded Liveboard or Answer, and update filters using events.
 
@@ -104,6 +105,36 @@ This list contains all the filter operators you can use with runtime filters. No
 === How to apply runtime filters
 
 For information about how to apply runtime filters, see https://developers.thoughtspot.com/docs/?pageid=runtime-filters[Runtime filters^]. For information about how to apply runtime filters in REST API v1 requests, see https://developers.thoughtspot.com/docs/?pageid=runtime-filters#_apply_runtime_filters_in_rest_api_v1_requests[Apply runtime filters in REST API v1 requests^].
+
+=== Runtime filter syntax
+
+You can use two different types of syntax for runtime filters.
+
+In the first kind of syntax, you can add the runtime filter after the Liveboard ID.
+
+.Example 1
+`\https://<thoughtspot-instance>.com/\#/pinboard/e510f946-f9ce-48ad-a4af-1a40a9cf8add/?col1=fruit&op1=eq&val1=fruit-value`
+
+This example translates to:
+[source,bash]
+----
+concat("{caption}pinboard{/caption}https://<thoughtspot-instance>.com/#/pinboard/e510f946-f9ce-48ad-a4af-1a40a9cf8add/?col1=fruit&op1=eq&val1=",fruit)
+----
+
+If you use the above syntax, runtime filters are removed whenever you navigate to a different tab within ThoughtSpot.
+
+In the second kind of syntax, you can add the runtime filter before the Liveboard ID.
+
+.Example 2
+`https://<thoughtspot-instance>.com/?col1=fruit&op1=eq&val1=fruit-value#/pinboard/e510f946-f9ce-48ad-a4af-1a40a9cf8add/`
+
+This example translates to:
+[source,bash]
+----
+concat(concat("{caption}pinboard{/caption}https://<thoughtspot-instance>.com/?col1=fruit&op1=eq&val1=",fruit), #/pinboard/e510f946-f9ce-48ad-a4af-1a40a9cf8add")
+----
+
+If you use the above syntax, runtime filters persist, and will be applied to every Liveboard you navigate to.
 
 [#limitations-of-runtime-filters]
 === Limitations of runtime filters
