@@ -5,7 +5,7 @@
 :experimental:
 :page-layout: default-cloud
 :description: With a custom calendar, you can choose when the year, quarter, or week starts, and search using date-related keywords.
-:jira: SCAL-172330, SCAL-201842 (doc enhancement), SCAL-176032, SCAL-229340, SCAL-230176
+:jira: SCAL-172330, SCAL-201842 (doc enhancement), SCAL-176032, SCAL-229340, SCAL-230176, SCAL-235033, SCAL-240707
 
 With a custom calendar, you can choose when the year, quarter, or week starts, and search using date-related keywords.
 
@@ -73,7 +73,7 @@ Custom calendar currently supports the following:
 You can use your custom calendar to search the following ways:
 
 * Using date keywords, like `this quarter` and `q3`.
-* Using date formulas with the `fiscal` option specified. (See xref:10.3.0.cl@cloud:ROOT:formulas-date.adoc#fiscal-and-gregorian-calendars[Fiscal and Gregorian calendars]).
+* Using date formulas with the `fiscal` option specified. (See xref:formulas-date.adoc#fiscal-and-gregorian-calendars[Fiscal and Gregorian calendars]).
 * Overriding the calendar used in the search bar by typing your custom calendar's name.
 * Binding a calendar with a column under the table detail page.
 Example: Binding `Lineorder` `commitdate` with the French calendar.
@@ -126,9 +126,63 @@ The Data workspace appears.
 
 * For a user to create a custom calendar, they must have the required permissions to create a table in the database used in the connection where they want to create their custom calendar.
 
+== Custom calendar query performance enhancements [.badge.badge-beta]#Beta#
+
+ThoughtSpot's custom calendar feature includes a configuration option that may significantly improve query performance for large datasets, particularly when working with date-based filters. This solution was specifically built for Google Big Query and Databricks, however, the query pattern may result in improved performance for other platforms with similar query planning engines.
+
+For example, consider a dataset that fulfills the following criteria:
+
+* Large fact tables that partitioned on date columns
+* Partition pruning requires a direct filter to the applied to the date column, rather than inferred from date columns
+* Queries using custom calendar date attributes (quarters, fiscal years, etc.)
+* Environments where date-based queries are experiencing performance issues
+* This feature is specifically helpful for common time-based queries such as:
+** Sales This Year
+** Sales Last 52 Weeks
+** Sales Last Quarter
+
+=== Query configuration options
+
+Note that the following are independent options available for custom calendars. They can be used in conjunction.
+
+==== Separate Common Table Expressions for custom calendar joins
+
+This option moves DATE DIM and Custom Calendar table joins to a separate Common Table Expression (CTE). It uses this CTE in joins against fact tables to enable partition pruning. It prevents optimizer from deferring crucial joins that would otherwise block partition pruning.
+
+This option is applicable when the data model includes a dimensional date table. That is, this CTE pattern will not be invoked if the date column is from the fact table itself.
+
+==== Approximate date filtering
+
+This feature was developed specifically for Google BigQuery. When enabled, the resulting query generation automatically infers date boundaries based on the search range. Query generation then adds a direct filter to the fact table and dimension tables date columns. This results in a reduction to the initial data scanned.
+
+Note that this is an approximate date filter. The design is to apply a predicate that applies a filter that returns slightly more data than the dynamic period. That is:
+
+* Last Month will calculate the start date of the Gregorian prior month.
+* Last Week will calculate the start of the prior Gregorian week.
+
+The reason for this design is that weeks, months, years, etc. do not align with Gregorian calendars. This approximate filter ensures that data is partitioned and then the actual filter is applied to ensure that the results are correct.
+
+=== Benefits
+
+* Significantly faster query performance on large datasets.
+* Better utilization of database optimization capabilities.
+* Reduced timeout issues with complex date-based filters.
+* Improved overall search experience.
+* Reduction in total bytes scanned.
+
+== Technical implementation
+
+The feature is enabled via a cluster-level configuration flag. To enable this feature for your ThoughtSpot implementation, please contact {support-url}.
+
+== Limitations
+
+* This feature may not improve all query types (for example, `sales august yearly`).
+* You cannot modify the automatically added approximate date filters.
+* The feature works for approximate date filters rather than exact.
+
 '''
 > **Related information**
 >
-> * xref:10.3.0.cl@cloud:ROOT:connections-cust-cal-create.adoc[Create a custom calendar] +
-> * xref:10.3.0.cl@cloud:ROOT:connections-cust-cal-update.adoc[Update a custom calendar] +
-> * xref:10.3.0.cl@cloud:ROOT:connections-cust-cal-delete.adoc[Delete a custom calendar]
+> * xref:connections-cust-cal-create.adoc[Create a custom calendar] +
+> * xref:connections-cust-cal-update.adoc[Update a custom calendar] +
+> * xref:connections-cust-cal-delete.adoc[Delete a custom calendar]

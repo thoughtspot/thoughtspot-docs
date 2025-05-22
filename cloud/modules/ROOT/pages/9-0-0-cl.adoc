@@ -1,0 +1,111 @@
+= February 2023 release notes
+:last_updated: 3/23/2021
+:experimental:
+:linkattrs:
+:page-layout: default-cloud
+:page-aliases:
+:description: ThoughtSpot Cloud 9.0.0.cl release notes
+
+These new and enhanced features of ThoughtSpot Cloud were released in February 2023.
+
+== ThoughtSpot Cloud 9.0.0.cl
+
+[#9-0-0-cl-analyst]
+=== For the Analyst
+[#parameters]
+Parameters [.badge.badge-beta-relnotes]#Beta#::
+Create Worksheet Parameters to optimize your data inquiries. Use Parameters to run different scenarios with adjustable values, without creating or modifying the constants in formulas for each new value. For more information, refer to xref:parameters-create.adoc[] and xref:parameters-use.adoc[].
++
+This feature is in Beta and off by default. To enable it, contact {support-url}.
+[#upload-custom]
+Upload custom geo maps [.badge.badge-early-access-relnotes]#Early Access#::
+Upload your own custom maps and visualize data on xref:chart-geo.adoc[geo charts] with regions that are specific to you and your organization. This feature must be enabled by your administrator.
++
+For more information about custom geo maps, see xref:geomaps-custom.adoc[].
+[#data-labels]
+Data labels on a dark background [.badge.badge-early-access-relnotes]#Early Access#::
+Labels that appear on a dark background can be displayed in a lighter text color, making them easier to read. This feature must be enabled by your administrator.
++
+For more information about data labels on a dark background, see xref:chart-data-labels.adoc[Show data labels].
+[#show-measures]
+Show measures in pivot table rows::
+By default, ThoughtSpot displays measures in columns in pivot tables. With this release, choose whether to display measures in rows or columns in your pivot tables. For more information, see xref:chart-pivot-table.adoc#reorder[Reorder your pivot table].
+[#apply-multiple]
+Apply multiple changes at once [.badge.badge-early-access-relnotes]#Early Access#::
+Every time when a user drag and drop the fields in the chart configuration panel, the chart reloads. When a user has multiple fields, they need to rearrange a lot of them to reach a desired chart. Now users can make multiple configurations, and apply them rather than waiting in between each configuration.
++
+For more information, see xref:chart-x-axis.adoc[Reorder labels on the axis or legend,window=_blank].
+[#tml-for]
+TML for Monitor alerts [.badge.badge-beta-relnotes]#Beta#::
+Export, edit, and import xref:monitor.adoc[KPI Monitor alerts] programmatically, using ThoughtSpot Modeling Language. For more information, see xref:tml-alerts.adoc#syntax-alerts[Syntax of the Monitor alert TML file].
++
+This feature is in Beta and off by default. To enable it, contact {support-url}.
+[#delete-joins]
+Delete joins and RLS rules through TML::
+When you edit and import table TML files, ThoughtSpot now supports deletion of joins at the table level and RLS rules. Refer to xref:tml.adoc[].
+[#export-fqns]
+Export FQNs when exporting TML files::
+To reduce ambiguity when exporting TML files, export the fully qualified names (FQNs) for the objects' data sources. If you select this option, the TML file contains FQNs for the underlying tables and connections.
++
+For more information, see xref:tml.adoc#fqn[ThoughtSpot Modeling Language].
+[#group-agg-filters]
+Group aggregation enhancement: filters [.badge.badge-beta-relnotes]#Beta#::
+Previously, when using group_aggregate formulas, users could use query_filters to include filters entered in the search bar in the formula's value, but it was difficult to write a formula that accepted filters from only a single column. Starting with this release, you can specify column names within the ‘filters’ section of a group_aggregate formula, and any filter in your search bar referencing that column will be added to the formula. Filters entered in the search bar that are not on columns specified in the third argument of the group_aggregate formula will be ignored.
++
+For example:
+Say that you search for `group formula` `color= ‘blue’` `ship mode != ‘car’`, where `group formula = group_aggregate (sum(Revenue), {ship mode}, {color, quantity})`. In this case, the formula will adopt the color = blue filter but ignore the ship mode filter, evaluating to `group_aggregate(sum(Revenue), {ship mode}, {color = ‘blue’})`. For details, see xref:formulas-aggregation-flexible.adoc#groupagg-filters-enhancement[Group aggregation filters].
+
+
+[#9-0-0-cl-business-user]
+=== For the Business User
+[#mandatory-liveboard]
+Mandatory Liveboard filters [.badge.badge-early-access-relnotes]#Early Access#::
+Mark certain filters in your Liveboard as mandatory. If you add mandatory filters to a Liveboard, the visualizations will only load after Liveboard viewers select values for the mandatory filters. Use mandatory filters for Liveboards that contain data that may not be relevant for everyone who must view and consume the Liveboard. Mandatory filters also lower query and performance costs. This feature must be enabled by your administrator.
++
+For more information about mandatory filters, see xref:liveboard-filters-mandatory.adoc[].
+[#thoughtspot-sync]
+ThoughtSpot Sync::
+You can now sync data directly from an Answer or custom SQL view to the following apps:
++
+--
+* xref:sync-servicenow.adoc[ServiceNow]
+* xref:sync-hubspot.adoc[HubSpot]
+--
++
+Using ThoughtSpot Sync, you can push insights directly to your selected app, notify your teams, and view data in context. ThoughtSpot Sync automatically establishes a secure pipeline to the destination app and thus eliminates the need for building custom connectors.
+
+[#rename-liveboards]
+Rename Liveboards and visualizations without entering edit mode::
+Change the name or description of a Liveboard or visualization without entering *Edit* mode. The more image:icon-more-10px.png[more menu icon] menu for Liveboards and Liveboard visualizations now includes a *Rename* option, where you can edit the object name and description. For more information, see xref:liveboard-layout-edit.adoc#other-edits[Other Liveboard edits].
+
+[#9-0-0-cl-data-engineer]
+=== For the Data Engineer
+
+[#9-0-0-cl-snowflake-csv]
+[#snowflake-csv]
+Snowflake CSV upload::
+
+Snowflake CSV upload is GA in this release. Now you have a quick and easy way to complete one-time data loads of small files that are not present in your cloud data warehouse. You can now upload a CSV file to the database of your Snowflake connection that can be joined to other tables or Worksheets in your connection. Once your administrator enables this feature, go to *Data* > *Utilities*, and click *Upload CSV*. See xref:connections-snowflake-csv-upload-config.adoc[Configure CSV upload for your Snowflake connection].
+[#postgresql-connection]
+PostgreSQL connection:: You can now create connections from ThoughtSpot to PostgreSQL. For details, see xref:connections-postgresql.adoc[PostgreSQL].
+[#redshift-partner]
+Redshift Partner Connect:: Redshift Partner Connect allows you to try out ThoughtSpot connected to Redshift for free. For details, see xref:connections-redshift-partner.adoc[ThoughtSpot in Redshift Partner Connect].
+
+[#dbt-metadata]
+dbt metadata tags for table and Worksheet column properties and table joins::
+
+Manage your ThoughtSpot table and Worksheet column properties and table joins in dbt by using metadata tags to define column properties and joins within your dbt model schema. dbt stays the source of truth, and you don't have to manually update the columns in ThoughtSpot when you make changes to your dbt model. For more information, see xref:dbt-integration-metadata-tags.adoc[Metadata tags for dbt].
+[#sharing-connections]
+Sharing connections::
+You can now share connections with other users or groups. Once granted access to a connection, users can add, remove, and modify tables in that connection. For more information, see xref:connections.adoc[].
+
+[#9-0-0-cl-it-ops-engineer]
+=== For the IT/Ops Engineer
+[#early-access]
+Early Access features::
+In this release, administrators can selectively enable or disable Early Access features for all users, using the Admin Console. For more information, see xref:early-access-enable.adoc[]. Early Access features are new in this release. For more information about them, see xref:release-lifecycle.adoc[].
+
+[#9-0-0-cl-developer]
+=== For the Developer
+
+For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation^].
