@@ -1,0 +1,143 @@
+= Set up ThoughtSpot in VMware
+:last_updated: 8/6/2021
+:linkattrs:
+:experimental:
+
+Learn how to install a ThoughtSpot cluster in a VMware environment.
+
+'''
+> **ThoughtSpot Training**
+>
+> * For best results in setting up ThoughtSpot in VMware, we recommend that you take the following ThoughtSpot U course: https://training.thoughtspot.com/node-network-configuration/569476[Node Configuration: VMware^].
+> * See other training resources at https://training.thoughtspot.com/[ThoughtSpot U^].
+
+'''
+
+This page explains how to install a ThoughtSpot cluster in a VMware VSphere Hypervisor (ESXi) 6.5 environment.
+
+NOTE: We do not support older versions of ESXi because of hardware/driver incompatibility issues.
+
+For each hardware node, you must do the following:
+
+* Complete the prerequisites
+* Use the ThoughtSpot Open Virtualization Appliance (OVA) file to create a virtual machine (VM)
+* Add hard disks to the VM
+
+This guide explains how to deploy ThoughtSpot on VMware, using ThoughtSpot's CentOS-based image.
+You can also deploy ThoughtSpot on VMware using Red Hat Enterprise Linux (RHEL) or Oracle Enterprise Linux (OEL), allowing you to run ThoughtSpot on an RHEL 7.8 or 7.9 or OEL 7.9 image that your organization manages internally.
+To install ThoughtSpot using RHEL or OEL, refer to the xref:rhel.adoc[RHEL and OEL deployment guide] after you launch your virtual machines.
+
+[#prerequisites]
+== Prerequisites
+
+This installation process assumes you have already acquired your host machines.
+You can install on a cluster with any number of nodes.
+A one node cluster is suitable for a sandbox environment but is insufficient for a production environment.
+You need at least three nodes for high availability (HA), but there is no limit on the number of nodes.
+
+[cols="5,~",grid=none,frame=none]
+|===
+| &#10063; a| Make sure you have installed the Hypervisor on each of your nodes.
+
+The VM template, by default, captures a 72-core configuration.
+If your physical host has more than 72 cores, you may want to edit VM to have (`n-2`) cores (for a physical host with n cores) to fully take advantage of computing power of the physical host.
+
+Extra cores help performance.
+| &#10063; | You must allocate 500 GB or more RAM for each VM.
+
+| &#10063; a| As a best practice, and for better performance, ThoughtSpot recommends that you install the operating system on a solid-state drive, or SSD.
+
+For data storage, you can use solid-state drives, local hard drives, or storage as a network (SAN) drives.
+| &#10063; a| Ensure that you do not enable the https://www.vmware.com/products/vsphere/drs-dpm.html[VMware DRS workload manager].
+It may cause outages for your ThoughtSpot servers.
+Your VMware administrator must disable VMware DRS.
+| &#10063; | Install https://my.vmware.com/web/vmware/downloads/details?downloadGroup=VMTOOLS1106&productId=974[VMware tools] on each virtual machine, to increase hardware speed and performance.
+| &#10063; a| Download and fill out the ThoughtSpot link:{attachmentsdir}/site-survey.pdf[Site survey^] to have a quick reference for any networking information you may need to fill out as you install ThoughtSpot.
+
+Ask your network administrator if you need help filling out the site survey.
+|===
+
+== Use the OVA to Create a VM
+
+. Download the https://thoughtspot.egnyte.com/dl/LPOSJr8Cdd[ThoughtSpot OVA^] file to a location on an accessible disk. The OVA file contains the OVF and the VMDK.
+
+. Download the https://thoughtspot.egnyte.com/dl/MaovnPnHqF[md5^], which you can use later to ensure the OVA file is on the correct version, and not corrupted.
+. Log in to the ESXi web portal.
+. Select menu:Virtual Machines[Create/Register VM].
++
+The system displays the dialog for selecting an OVA template.
++
+image::vmware-ova.png[ThoughtSpot OVA]
+
+. Select menu:Creation type[deploy a virtual machine from an OVF or OVA].
+Click *Next*.
+. Upload the ThoughtSpot OVA and click *Next*. The OVA contains both the OVF and the VMDK, so you only have to upload one file.
++
+The system prompts you to select storage.
+
+. Choose the SSD as the destination and click *Next*.
++
+The system displays the *Deployment Options* dialog.
+
+. Specify the settings, and click *Next*.
++
+Network mappings:: Select the correct network for your installation.
+Disk provisioning:: Choose _Thin_.
+Power on automatically:: Check this option.
+
+. Review your selection and click *Finish*.
++
+image::vmware-complete.png[]
+
+. Wait for the template to be loaded.
++
+Depending on your network speed, loading can take several minutes.
++
+image::vmware-loading.png[]
+
+. Make sure that the VM is powered off.
+
+== Add hard disks to the VM
+
+In production deployments, ThoughtSpot requires you to have three 2TB HDFS disks on HDD (3 x 2TB). If you expect your user data capacity for each VM to be 100 GB or less, you may not need three 2TB disks. Refer to xref:vmware.adoc#supported-configurations[Supported configurations] for more information. Follow these steps to create the required 3 2TB hard disks.
+
+. Edit the VM you just created.
++
+image::vmware-add-disk0.png[]
+
+. Select menu:Add hard disk[New hard disk].
++
+image::vmware-adddisk1.png[]
++
+The new disk appears as a new row under the only existing SSD row.
+
+. Click the *New Hard disk* to expand the detailed configuration options.
+. Set the options as follows.
++
+size:: 2 TB
+Location:: Use the *Browse* button to select the hard disk store.
++
+image::vmware-adddisk3.png[]
+Thin provisioned:: Check this option.
++
+You should see something similar to the following:
++
+image::vmware-add-disk-2-tb.png[]
+. Save your changes.
+. Repeat steps 1-5 to create additional hard disks. ThoughtSpot requires 3 hard disks for most environments. If you expect your user data capacity for each VM to be 100 GB or less, you may not need three 2TB disks. Refer to xref:vmware.adoc#supported-configurations[Supported configurations] for more information.
+. Power on the VM.
+. After the VM is online, run the following command to prepare the HDFS disks:
++
+[source,bash]
+----
+$ sudo /usr/local/scaligent/bin/prepare_disks.sh
+----
+
+== Next steps
+
+There is no network at this point on your VMs.
+As a prerequisite, verify the following:
+
+. The Network Adapter type is set to VMware vmxnet3 (Highly recommended).
+. All ESXi hosts in your VMware farm for ThoughtSpot have been trunked to the VLAN assigned to your ThoughtSpot VMs.
+. The console of all ThoughtSpot VMs is accessible in VMware vCenter Server.

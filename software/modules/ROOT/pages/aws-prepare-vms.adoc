@@ -1,0 +1,55 @@
+= Prepare AWS VMs for ThoughtSpot
+:last_updated: 12/31/2020
+:linkattrs:
+:experimental:
+
+Prepare the VMs before installing your ThoughtSpot cluster(s).
+
+. SSH into a VM.
++
+[source,bash]
+----
+$ ssh -i key.pem admin@<VM-IP>
+----
+
+. Run `sudo /usr/local/scaligent/bin/prepare_disks.sh` to configure the VMs.
++
+WARNING: Make sure you migrate any data off the disks.
+This command formats the disks, wiping them clean.
++
+[source,bash]
+----
+$ sudo /usr/local/scaligent/bin/prepare_disks.sh
+----
+
+. Configure the VM based on your specific network information.
+Refer to your site-survey or ask your network administrator for that information.
+. Run `df -h` to confirm configuration.
++
+[source,bash]
+----
+$ df -h
+----
+
+. Repeat these steps for each of your VMs.
++
+When complete, your storage is mounted and ready for use with your cluster.
+
+When the setup completes, you can load data into ThoughtSpot for search analytics.
+
+[#network-ports]
+== Open the required network ports
+
+If you have not already opened the required network ports, see xref:ports.adoc[Network ports] to determine which ports to open.
+
+[#install-cluster]
+== Install Cluster
+
+Next, you must configure your nodes and install your cluster.
+Follow the steps in xref:aws-installing.adoc[Installing AWS].
+
+'''
+> **Related information**
+>
+> * http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-best-practices.html[EC2 Best Practices^]
+> * xref:tsload-import-csv.adoc#loading-data-from-an-aws-s3-bucket[Loading data from an AWS S3 bucket]
