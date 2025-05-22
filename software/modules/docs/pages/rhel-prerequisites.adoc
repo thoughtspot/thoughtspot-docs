@@ -1,16 +1,17 @@
-= RHEL and OEL installation prerequisites
-:last_updated: 3/22/2020
+= RHEL installation prerequisites
+:last_updated: 01/03/2020
 :linkattrs:
 :experimenal:
 
 [options="interactive"]
 .Prepare the system and ThoughtSpot clusters for installation:
 * [ ] xref:set-up-hosts[1. Set up hosts for the ThoughtSpot cluster]
-* [ ] xref:partition-hosts[2. Partition the hosts]
-* [ ] xref:install-rhel[3. Install RHEL version 7.8 or 7.9 or OEL version 7.9 on all hosts]
-* [ ] xref:linux-kernel-version[4. Ensure that your Linux kernel is correct]
-* [ ] xref:enable-hosts[5. Enable the hosts to download RHEL or OEL packages]
+* [ ] xref:partition-hosts[2. Partition the hostsv]
+* [ ] xref:install-rhel[3. Install RHEL version 7.8 or 7.9 on all hosts]
+* [ ] xref:linux-kernel-version[4. Ensure that your Linux kernel is on version 3.10.0-1127.19.1]
+* [ ] xref:enable-hosts[5. Enable the hosts to download RHEL packages]
 * [ ] xref:enable-ansible[6. Enable an Ansible Control Server]
+* [ ] xref:disable-selinux[7. Disable SELinux]
 
 [#set-up-hosts]
 == Set up hosts for the ThoughtSpot cluster
@@ -18,11 +19,11 @@
 Set up hosts for the ThoughtSpot cluster on your chosen platform.
 Please refer to the relevant deployment sections in our documentation for the exact specification for the hosts: CPU, memory, and disks.
 
-* [*_RHEL only_*] ThoughtSpot-certified hardware appliance manufactured by xref:installing-dell.adoc[DELL]
-* [*_RHEL only_*] ThoughtSpot-certified hardware appliance manufactured by xref:installing-smc.html[SMC]
+* ThoughtSpot-certified hardware appliance manufactured by xref:installing-dell.adoc[DELL]
+* ThoughtSpot-certified hardware appliance manufactured by xref:installing-smc.html[SMC]
 * xref:aws-configuration-options.adoc[Amazon Web Services (AWS) EC2]
 * xref:gcp-configuration-options.adoc[Google Cloud Platform (GCP)]
-* [*_RHEL only_*] xref:azure-configuration-options.adoc[Microsoft Azure]
+* xref:azure-configuration-options.adoc[Microsoft Azure]
 * xref:vmware-intro.adoc[VMware]
 
 [#partition-hosts]
@@ -32,61 +33,50 @@ Ensure that all ThoughtSpot hosts meet the following partition and sizing requir
 All drives must be SSDs.
 
 . At least 20 GB available on the root drive, for yum packages and system logs.
-. At least 50 GB available for `/tmp`.
 . At least 200 GB for ThoughtSpot installation, either on a secondary drive or as a separate partition on the root drive.
 For ThoughtSpot-certified hardware platforms, xref:installing-dell.adoc[Dell] and xref:installing-smc.adoc[Super Micro Computer], you must use a secondary drive because the root drive has a limit of 200 GB.
 +
 NOTE: This drive must be separate from the data drive(s).
 
 [#install-rhel]
-== Install RHEL or OEL on hosts
+== Install RHEL on hosts
 
 ThoughtSpot is certified with RHEL versions 7.8 and 7.9;
-we *_do not_* support other versions of RHEL, including 7.7, 8, and 8.1. ThoughtSpot is certified with OEL version 7.9.
-Install RHEL version 7.8 or 7.9 or OEL version 7.9. On _RHEL version 7.8_, ensure that your xref:linux-kernel-version[linux kernel version] is 3.10.0-1127.19.1. On _RHEL version 7.9_, use the default linux kernel. On _OEL version 7.9_, ensure that you are using the Red Hat Compatible Kernel (RHCK), not the default Unbreakable Enterprise Kernel (UEK). If you are using the UEK, xref:contact-support.adoc[contact ThoughtSpot Support] to switch to the RHCK.
-
-NOTE: For RHEL deployments on online clusters, the Ansible playbook upgrades the OS to RHEL 7.9. The Ansible playbook does *_not_* upgrade the OS when installing offline.
+we *do not* support other versions of RHEL, including 7.7, 8, and 8.1.
+Install RHEL version 7.8 or 7.9, and ensure that your xref:linux-kernel-version[linux kernel version] is 3.10.0-1127.19.1.
 
 [#linux-kernel-version]
 === Linux kernel version
 
-For RHEL version 7.8, your Linux kernel *_must_* be on version 3.10.0-1127.19.1.
+Your Linux kernel *_must_* be on version 3.10.0-1127.19.1.
 RHEL 7.8 used to come with a Linux kernel of version 3.10.x, which has a bug that causes nodes to reboot unexpectedly.
 The default Linux kernel version for RHEL 7.8 is now 3.10.0-1127.19.1.
 However, you may have an older RHEL 7.8, with a Linux kernel of version 3.10.x.
 You must upgrade to 3.10.0-1127.19.1.
 If you have trouble upgrading your Linux kernel to version 3.10.0-1127.19.1, contact https://community.thoughtspot.com/customers/s/contactsupport[ThoughtSpot Support,window="_blank"].
-This is a requirement for all platforms: appliance, cloud, and VMware.
+This is a requirement for *_all_* platforms: appliance, cloud, and VMware.
 
-On OEL version 7.9, ensure that you are using the Red Hat Compatible Kernel (RHCK), not the default Unbreakable Enterprise Kernel (UEK). If you are using the UEK, xref:contact-support.adoc[contact ThoughtSpot Support] to switch to the RHCK.
+If you are using RHEL version 7.9, the default Linux kernel never had this bug.
 
-If you are using RHEL version 7.9, use the default Linux kernel.
-
-WARNING: If you are running RHEL 7.8, and your Linux kernel version is not 3.10.0-1127.19.1, you may run into unexpected node reboots and possible loss of data.
+WARNING: If your Linux kernel version is not 3.10.0-1127.19.1, you may run into unexpected node reboots and possible loss of data.
 
 [#enable-hosts]
-== Enable the hosts to download RHEL or OEL  packages
+== Enable the hosts to download RHEL packages
 
 *Repositories*
 
-[#yum-repository]
-Yum repositories for RHEL::
-  For RHEL deployments, you must enable the following Yum repositories in your cluster: `epel`, `nux-desktop`, `pgdg95`, `rhel`, `rhel-optional`, `rhel-extras`.
+Yum repositories::
+  You must enable the following Yum repositories in your cluster: `epel`, `nux-desktop`, `pgdg95`, `rhel`, `rhel-optional`, `rhel-extras`.
 
-Yum repositories for OEL::
-  For OEL deployments, you must enable the following Yum repositories in your cluster: `epel`, `nux-desktop`, `pgdg95`, `ol7_optional_latest`, `oracle-linux-ol7`.
-
-[#python-repository]
 Python repository::
   For Python, ensure the machine is able to reach the `PyPI` repository located at https://pypi.python.org/.
 
-[#r-repository]
 R repository::
   For R, ensure the machine is able to reach the `CRAN` repository located at https://cran.rstudio.com/.
 
-Make sure that you can download RHEL or OEL packages to all hosts, either from the xref:official-repositories[official package repositories], or from a xref:mirror-repositories[mirror repository] owned and managed by your organization.
+Make sure that you can download RHEL packages to all hosts, either from the xref:official-repositories[official package repositories], or from a xref:mirror-repositories[mirror repository] owned and managed by your organization.
 
-If you cannot access the RHEL or OEL repositories, there is no mirror repository in your organization, or you are unable to access Yum, Python, or R repositories, contact https://community.thoughtspot.com/customers/s/contactsupport[ThoughtSpot Support,window="_blank"].
+If you cannot access the RHEL repositories, there is no mirror repository in your organization, or you are unable to access Yum, Python, or R repositories, contact https://community.thoughtspot.com/customers/s/contactsupport[ThoughtSpot Support,window="_blank"].
 
 *Official package repositories*
 
@@ -102,3 +92,9 @@ If the hosts of your ThoughtSpot cluster have access to an internal repository t
 
 Configure an Ansible Control Server, on a separate host, to run the Ansible playbook that ThoughtSpot supplies.
 You must install both `rsync` and Ansible on the Ansible Control Server host.
+
+[#disable-selinux]
+== Disable SELinux or run it in permissive mode
+
+ThoughtSpot does not support policies that enforce SELinux.
+We recommend that you disable SELinux, or run it in permissive mode.
