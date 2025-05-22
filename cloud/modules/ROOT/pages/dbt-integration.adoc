@@ -34,6 +34,96 @@ NOTE: If you do not define relationships, ThoughtSpot imports each model as a si
 +
 NOTE: When you compress the `manifest.json` and `catalog.json` files into one zip file, ensure that you do not include any hidden files, as this may cause errors later. To check the folder you plan to compress does not contain hidden files, refer to these articles for viewing hidden files on your https://discussions.apple.com/thread/7581737[Mac^] or https://support.microsoft.com/en-us/windows/view-hidden-files-and-folders-in-windows-97fbc472-c603-9d90-91d0-1166d1d9f4b5[Windows^] computer. If the folder contains hidden files, move them out of the folder before compressing it into a zip file.
 
+[#integrate]
+== Integrating with dbt
+You can set up your dbt integration from the Data workspace. To integrate with dbt, follow these steps:
+
+. Ensure that you have already xref:connections.adoc[created a connection] to your external cloud data warehouse. This cloud data warehouse must contain the tables that are created from your dbt models.
+
+. Select *Data* in the top navigation bar.
+
+. Select *dbt* in the side navigation bar.
+
+. Select *Add dbt connection* in the upper right corner. The dbt integration wizard opens.
++
+image::dbt-integration-connect.png[dbt integration step 1]
+
+. Under *Data warehouse*, select the cloud data warehouse you would like to use from the dropdown menu, or search for it using the search bar in the dropdown menu. You can also select *Add new connection,* which opens the connection creation wizard.
+
+. Under *Database*, select the database within the cloud data warehouse that you would like to use from the dropdown menu, or search for it using the search bar in the dropdown menu. This database must contain the tables that are created from your dbt models.
+
+. Under *Connect to dbt project*, select either *Via dbt cloud* or *Use a .zip file*. If you are using *dbt core*, you must select *Use a .zip file*.
+
+. Under *URL*, specify the beginning of your dbt URL. For example, if your URL is `https://cloud.getdbt.com/#/accounts/12345/projects/56789/dashboard`, put `https://cloud.getdbt.com` in the URL text box.
+
+. If you select *Via dbt cloud* under *Connect to dbt project*, fill in the following parameters:
++
+API key:: This is also called the *API token* in dbt. To find this token, navigate to your *Account Settings* page in dbt cloud. Select the *Service Account tokens* page, and generate a new token.
+Account ID:: Your default dbt Cloud account ID. Find your account ID in your dbt Cloud URL, after you sign in. For example, if your URL is `https://cloud.getdbt.com/#/accounts/12345/projects/56789/dashboard`, your account ID is `12345`.
+Project ID:: Find your project ID in your dbt Cloud URL, after you sign in. For example, if your URL is `https://cloud.getdbt.com/#/accounts/12345/projects/56789/dashboard`, your project ID is `56789`.
+
+. If you select *Use a .zip file* under *Connect to dbt project*, select the *Upload* button, and add the zip file from your files. The zip file must contain the latest `manifest.json` and `catalog.json` files. By default, dbt stores these files under the `<project name>/target` folder.
++
+NOTE: When you compress the `manifest.json` and `catalog.json` files into one zip file, ensure that you do not include any hidden files, as this may cause errors later. To check the folder you plan to compress does not contain hidden files, refer to these articles for viewing hidden files on your https://discussions.apple.com/thread/7581737[Mac^] or https://support.microsoft.com/en-us/windows/view-hidden-files-and-folders-in-windows-97fbc472-c603-9d90-91d0-1166d1d9f4b5[Windows^] computer. If the folder contains hidden files, move them out of the folder before compressing it into a zip file.
+
+. Select *Next*.
+. If you receive the following error, make sure you executed the dbt project with the `GENERATE DOCS` option `ON`, and verify that you entered the API key, account ID, and project ID correctly. If you are using *dbt cloud*, ensure that the `generate docs on run` setting is on. You can enable this setting in the jobs settings of the project, under *Execution settings*. If you are using *dbt core*, execute the `dbt docs generate` command along with the `dbt run` command. After verifying everything, run the dbt connection again.
++
+----
+Unable to connect to dbt project. Please verify API key and retry
+----
++
+image::dbt-error-message.png[Error message saying "Unable to connect to dbt project. Please verify API key and retry"]
+
+. If you receive the following error, you may need to switch to an older version of dbt. ThoughtSpot supports dbt for versions 1.5 and earlier. Navigate to dbt and go to *Deploy > Environments > Environment_Name > Settings*. Click the dbt Version menu and scroll down to select 1.5.
++
+----
+Unable to fetch dbt models
+----
++
+image::dbt-error.png[Error message saying "Unable to fetch dbt models"]
+
+. On the next screen, select up to 4 dbt folders to import. ThoughtSpot lists the model names, paths, and the number of tables they have.
++
+To increase the maximum number of dbt folders you can import at a time, contact {support-url}.
++
+image::dbt-integration-folder-multiple.png[dbt integration step 2]
+
+. Select *Next*.
+
+. On the next screen, select tables or models to import. By default, ThoughtSpot imports all models in the folder(s). Deselect any models you do not want to import. You must select at least 1 model within each dbt folder.
++
+The *Synced* column appears if you enabled *Incremental updates* in your environment. See <<edit,Editing a dbt project>>. The *Synced* column says *No* if this is the first time you are importing this model. The *Synced* column says *Yes* if you are importing the same model again. If the *Synced* column says *Yes*, ThoughtSpot will update the existing ThoughtSpot objects, instead of creating new objects.
++
+image::dbt-integration-tables.png[dbt integration step 3]
+
+. On the next screen, choose which Worksheets you would like ThoughtSpot to create, based on the models and relationships specified.
++
+The *Synced* column appears if you enabled *Incremental updates* in your environment. See <<edit,Editing a dbt project>>. The *Synced* column says *No* if this is the first time you are importing this Worksheet. The *Synced* column says *Yes* if you are importing the same Worksheet again. If the *Synced* column says *Yes*, ThoughtSpot will update the existing Worksheet, instead of creating a new one.
++
+image::dbt-integration-worksheets-create.png[Select Worksheets for ThoughtSpot to create]
+
+. Select *Finish*.
+
+. The *Generated Tables, Worksheets and Liveboards* page appears. ThoughtSpot generates several tables, Worksheets, and Liveboards from your dbt models.
++
+image::dbt-integration-worksheets.png[dbt integration step 4]
++
+To inspect the table, Worksheet, and Liveboard details, select any of the table, Worksheet, or Liveboard names. You can view the joins created between the related tables in the Worksheets from the *Joins* tab for the Worksheet.
++
+To xref:search-data.adoc[search the data] on the Worksheets, select *Search worksheet* next to any Worksheet.
+
+. Select *Exit*.
+
+. To see the objects that you just created from dbt, navigate to the *Data > Home* or *Liveboards* pages.
++
+image::dbt-integration-home-page.png[dbt integration view Worksheets and tables]
++
+NOTE: This process may replace existing dbt tables you imported into ThoughtSpot, but it will not replace existing Worksheets.
+
+. If you select any of the tables or Worksheets you created, and then click *Joins*, you can see the joins ThoughtSpot created, based on the relationships in dbt.
+
+
 == How the dbt integration works
 
 To integrate with dbt, ThoughtSpot reads information from the latest versions of the `manifest.json` and `catalog.json` files. In the <<prerequisites,prerequisites>>, you ensured that ThoughtSpot could find these files, either by enabling the *generate docs on run* setting in dbt cloud, or by creating a zip file with your `manifest.json` and `catalog.json` files for dbt core.
@@ -87,94 +177,6 @@ include::partial$schema-example.adoc[]
 | f_order | d_customer, d_shipping, d_product, d_product_category | Yes. The Worksheet consists of the 5 tables: f_order, d_customer, d_shipping, d_product, and d_product_category.
 |===
 
-[#integrate]
-== Integrating with dbt
-You can set up your dbt integration from the Data workspace. To integrate with dbt, follow these steps:
-
-. Ensure that you have already xref:connections.adoc[created a connection] to your external cloud data warehouse. This cloud data warehouse must contain the tables that are created from your dbt models.
-
-. Select *Data* in the top navigation bar.
-
-. Select *dbt* in the side navigation bar.
-
-. Select *Add dbt connection* in the upper right corner. The dbt integration wizard opens.
-+
-image::dbt-integration-connect.png[dbt integration step 1]
-
-. Under *Data warehouse*, select the cloud data warehouse you would like to use from the dropdown menu, or search for it using the search bar in the dropdown menu. You can also select *Add new connection,* which opens the connection creation wizard.
-
-. Under *Database*, select the database within the cloud data warehouse that you would like to use from the dropdown menu, or search for it using the search bar in the dropdown menu. This database must contain the tables that are created from your dbt models.
-
-. Under *Connect to dbt project*, select either *Via dbt cloud* or *Use a .zip file*. If you are using *dbt core*, you must select *Use a .zip file*.
-
-. Under *URL*, specify the beginning of your dbt URL. For example, if your URL is `https://cloud.getdbt.com/#/accounts/12345/projects/56789/dashboard`, put `https://cloud.getdbt.com` in the URL text box.
-
-. If you select *Via dbt cloud* under *Connect to dbt project*, fill in the following parameters:
-+
-API key:: This is also called the *API token* in dbt. To find this token, navigate to your *Account Settings* page in dbt cloud. Select the *Service Account tokens* page, and generate a new token.
-Account ID:: Your default dbt Cloud account ID. Find your account ID in your dbt Cloud URL, after you sign in. For example, if your URL is `https://cloud.getdbt.com/#/accounts/12345/projects/56789/dashboard`, your account ID is `12345`.
-Project ID:: Find your project ID in your dbt Cloud URL, after you sign in. For example, if your URL is `https://cloud.getdbt.com/#/accounts/12345/projects/56789/dashboard`, your project ID is `56789`.
-
-. If you select *Use a .zip file* under *Connect to dbt project*, select the *Upload* button, and add the zip file from your files. The zip file must contain the latest `manifest.json` and `catalog.json` files. By default, dbt stores these files under the `<project name>/target` folder.
-+
-NOTE: When you compress the `manifest.json` and `catalog.json` files into one zip file, ensure that you do not include any hidden files, as this may cause errors later. To check the folder you plan to compress does not contain hidden files, refer to these articles for viewing hidden files on your https://discussions.apple.com/thread/7581737[Mac^] or https://support.microsoft.com/en-us/windows/view-hidden-files-and-folders-in-windows-97fbc472-c603-9d90-91d0-1166d1d9f4b5[Windows^] computer. If the folder contains hidden files, move them out of the folder before compressing it into a zip file.
-
-. Select *Next*.
-. If you receive the following error, make sure you executed the dbt project with the `GENERATE DOCS` option `ON`, and verify that you entered the API key, account ID, and project ID correctly. If you are using *dbt cloud*, ensure that the `generate docs on run` setting is on. You can enable this setting in the jobs settings of the project, under *Execution settings*. If you are using *dbt core*, execute the `dbt docs generate` command along with the `dbt run` command. After verifying everything, run the dbt connection again.
-+
-----
-Unable to connect to dbt project. Please verify API key and retry
-----
-+
-image::dbt-error-message.png[Error message saying "Unable to connect to dbt project. Please verify API key and retry"]
-
-. If you receive the following error, you may need to switch to an older version of dbt. ThoughtSpot supports dbt for versions 1.4 and earlier. Navigate to dbt and go to *Deploy > Environments > Environment_Name > Settings*. Click the dbt Version menu and scroll down to select 1.4.
-+
-----
-Unable to fetch dbt models
-----
-+
-image::dbt-error.png[Error message saying "Unable to fetch dbt models"]
-
-. On the next screen, select up to 4 dbt folders to import. ThoughtSpot lists the model names, paths, and the number of tables they have.
-+
-To increase the maximum number of dbt folders you can import at a time, contact {support-url}.
-+
-image::dbt-integration-folder-multiple.png[dbt integration step 2]
-
-. Select *Next*.
-
-. On the next screen, select tables or models to import. By default, ThoughtSpot imports all models in the folder(s). Deselect any models you do not want to import. You must select at least 1 model within each dbt folder.
-+
-The *Synced* column appears if you enabled *Incremental updates* in your environment. See <<edit,Editing a dbt project>>. The *Synced* column says *No* if this is the first time you are importing this model. The *Synced* column says *Yes* if you are importing the same model again. If the *Synced* column says *Yes*, ThoughtSpot will update the existing ThoughtSpot objects, instead of creating new objects.
-+
-image::dbt-integration-tables.png[dbt integration step 3]
-
-. On the next screen, choose which Worksheets you would like ThoughtSpot to create, based on the models and relationships specified.
-+
-The *Synced* column appears if you enabled *Incremental updates* in your environment. See <<edit,Editing a dbt project>>. The *Synced* column says *No* if this is the first time you are importing this Worksheet. The *Synced* column says *Yes* if you are importing the same Worksheet again. If the *Synced* column says *Yes*, ThoughtSpot will update the existing Worksheet, instead of creating a new one.
-+
-image::dbt-integration-worksheets-create.png[Select Worksheets for ThoughtSpot to create]
-
-. Select *Finish*.
-
-. The *Generated Tables, Worksheets and Liveboards* page appears. ThoughtSpot generates several tables, Worksheets, and Liveboards from your dbt models.
-+
-image::dbt-integration-worksheets.png[dbt integration step 4]
-+
-To inspect the table, Worksheet, and Liveboard details, select any of the table, Worksheet, or Liveboard names. You can view the joins created between the related tables in the Worksheets from the *Joins* tab for the Worksheet.
-+
-To xref:search-data.adoc[search the data] on the Worksheets, select *Search worksheet* next to any Worksheet.
-
-. Select *Exit*.
-
-. To see the objects that you just created from dbt, navigate to the *Data > Home* or *Liveboards* pages.
-+
-image::dbt-integration-home-page.png[dbt integration view Worksheets and tables]
-+
-NOTE: This process may replace existing dbt tables you imported into ThoughtSpot, but it will not replace existing Worksheets.
-
-. If you select any of the tables or Worksheets you created, and then click *Joins*, you can see the joins ThoughtSpot created, based on the relationships in dbt.
 
 [#edit]
 == Editing a dbt project

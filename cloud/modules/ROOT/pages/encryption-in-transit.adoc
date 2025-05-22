@@ -1,0 +1,25 @@
+= Encryption of data in transit
+:last_updated: 9/21/23
+:author: Naomi
+:page-layout: default-cloud
+:experimental:
+:description: ThoughtSpot provides encryption of data in transit.
+
+
+There are two parts to encryption in transit:
+
+. Encryption of data in transit between ThoughtSpot Cloud server and the data sources (machine to machine programmatic calls).
+. Encryption of data in transit between ThoughtSpot Cloud server and the user agent (ThoughtSpot App in browser. This data is encrypted with HTTPS / Transport Layer Security (TLS) 1.2.
+
+Encryption of data in transit between the ThoughtSpot Cloud server and the data sources is done by the database driver (JDBC) and configuration on the database server side to enforce an encrypted connection.
+Most cloud-based data warehouses such as Snowflake, Google BigQuery, Azure Synapse, Databricks and Oracle ADW provide encryption of data in transit by default.
+For example, the Databricks JDBC port is always `443 jdbc:databricks://<instance>.cloud.databricks.com:443/default;ssl=1;`.
+
+Another example is Google BigQuery. The endpoint the clients connect to BigQuery is an “https” endpoint - `+https://www.googleapis.com/bigquery/v2+`.
+
+
+
+Data sources that are typically deployed on-premise (MySQL, PostgreSQL, etc.) and the versions of these offered as managed services by different cloud vendors, may not enforce encrypted connection from clients by default. However, such data sources allow setting up configurations on the database server end that will force a client connection to use SSL. The clients would then have to pass the appropriate JDBC parameters along, for example, `SSLMode=Require`, `ENCRYPTDATA=ON`, etc. These properties vary from one database vendor to another.
+
+
+Data in transit from the ThoughtSpot server to the ThoughtSpot application in the browser is encrypted with TLS 1.2.

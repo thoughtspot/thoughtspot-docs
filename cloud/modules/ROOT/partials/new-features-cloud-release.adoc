@@ -1,134 +1,112 @@
 The latest release of ThoughtSpot Cloud contains several new and enhanced features.
 
-* <<9-3-0-cl-first,For the First User>>
-* <<9-3-0-cl-analyst,For the Analyst>>
-* <<9-3-0-cl-business-user,For the Business User>>
-* <<9-3-0-cl-data-engineer,For the Data Engineer>>
-* <<9-3-0-cl-it-ops-engineer,For the IT Ops Engineer>>
-* <<9-3-0-cl-developer,For the Developer>>
+* <<9-4-0-cl-first,For the First User>>
+* <<9-4-0-cl-analyst,For the Analyst>>
+* <<9-4-0-cl-business-user,For the Business User>>
+* <<9-4-0-cl-data-engineer,For the Data Engineer>>
+* <<9-4-0-cl-it-ops-engineer,For the IT Ops Engineer>>
+* <<9-4-0-cl-developer,For the Developer>>
 
-[#9-3-0-cl-first]
+[#9-4-0-cl-first]
 === For the First User
 
 Getting started with ThoughtSpot Cloud::
 The first user on the account has to complete a series of steps before other people can start using ThoughtSpot with your organization's data.
 For these instructions, see xref:ts-cloud-getting-started.adoc[Getting Started with ThoughtSpot Cloud].
 
-Free Trial CSV upload limit increase:: We increased the CSV upload limit in Free Trial to ten files per user. For more information, see
-xref:csv-load-free-trial.adoc[Load CSV files in Free Trial].
-
-
-[#9-3-0-cl-analyst]
+[#9-4-0-cl-analyst]
 === For the Analyst
 
-AI-generated Worksheet column synonyms [.badge.badge-early-access-relnotes]#Early Access#::
+Verified Liveboards [.badge.badge-beta-relnotes]#Beta#:: Admin-assigned verifiers can now mark Liveboards as verified. Users can now request these verifiers to review their Liveboards, and verify if the information displayed is trusted content. Verified Liveboards carry a tag that signifies that they have been audited for correctness. For more information, see xref:liveboard-verify.adoc[Verified Liveboards].
 
-When you create a Worksheet, ThoughtSpot automatically creates synonyms for each column name. This feature is now available for administrators to enable by default, without contacting ThoughtSpot Support. Users can easily start searching on your data, without knowing the exact names for every column. For example, if you have a column named `Product type`, ThoughtSpot might create a synonym such as `Product Category`. When a user searches for revenue by product category, for example, ThoughtSpot returns sales by product type. This feature must be enabled by your administrator.
+Indexing Queries Liveboard:: We introduced a Liveboard to answer the following questions: +
+
+* How many indexing queries are made?
+* What queries are failing and why?
+* How long are the indexing queries taking?
+* Which connections have the most failures so that the admin can easily identify them?
++
+Admin users can access the Indexing Queries Liveboard from the admin tab, and use the results to improve indexing queries performance. For more information, see xref:indexing-queries-liveboard.adoc[Indexing Queries Liveboard].
+
+Custom groups [.badge.badge-beta-relnotes]#Beta#:: You can now create custom groups, which can be used to classify values in a list you can then reuse across multiple analyses. Custom groups are community objects which remain when you navigate away from the Search Data page and can be viewed by any user with view access to the underlying Worksheet. For more information, see xref:custom-groups.adoc[Custom groups].
+
+Date picker enhancement in Search [.badge.badge-early-access-relnotes]#Early Access#:: We added support for rolling, fixed, and custom date filters when creating an Answer or filtering a Liveboard. Previously, when adding a date filter to a Search, ThoughtSpot supported the conditions `ON (=)`, `ON OR AFTER (>=)`, `BEFORE (<)`, and `BETWEEN`. Now, you can additionally filter for `ON OR BEFORE (\<=)`, `NOT BETWEEN`, `ON LAST`, and `ON NEXT`. To try it out, click the filter icon next to the Date column in the left side menu, or click the date filter below the Answer or Liveboard title. This feature must be enabled by your administrator. For more information, see
+xref:date-filter.adoc[Date filters for Answers and Liveboards].
+
+
+Geomap chart enhancements:: ThoughtSpot now supports the following enhancements for geomap visualizations:
+
+* We now provide geomap data for all countries. For a full list, see link:https://wiki.openstreetmap.org/wiki/List_of_territory_based_projects[Openstreetmap supported countries].
+* We now support multiple levels of subdivisions within a country, rather than just city and zip code.
+//* Zip code data is now visualized as an area within a region, rather than a point on a map. You must select *Auto select* in the Geo config column of the source table or Worksheet to access this feature.
+* We now support visualizations comparing subdivisions of multiple countries in a single visualization. For example, if a selected column contains data from cities in the United States and Mexico, all data would be displayed on a single visualization.
++
+To enable these features, the *Geo config* property in the underlying Worksheet must be set to *Auto select*. All Worksheets created after 9.4.0.cl GA classify geographical data as *Auto select* by default.
++
 For more information, see
-xref:data-modeling-visibility.adoc#automatic-synonyms[Create synonyms for a column].
+xref:chart-geo.adoc#enhancement[Geo chart enhancements].
 
+Responsive Liveboards:: We have improved the responsiveness of Liveboards. For windows between 1024 pixels and 500 pixels, the Liveboard columns respond to re-sizing. For windows smaller than 500 pixels in width, a horizontal scroll bar appears.
 
-Liveboard note tiles::
+Snowflake Query Profile SpotApp:: The Snowflake Query Profile SpotApp is now available. Use this SpotApp to analyze Snowflake query data to understand execution time better and pinpoint key areas for query optimization. For more information, see
+xref:spotapps-snowflake-query.adoc[Snowflake Query Profile SpotApp].
 
-The Liveboard note tiles feature is now GA. Add notes to your Liveboards, so that viewers of your Liveboards can quickly understand how to use the data and visualizations you gathered. Note tiles can provide an overview of a Liveboard or visualization, company branding through images, definitions of terms used in the Liveboard, and so on. With the GA of the note tiles feature, you don't need a specific privilege to upload images. See xref:liveboard-notes.adoc[Liveboard note tiles].
+Table column case definition [.badge.badge-beta-relnotes]#Beta#::
+We are introducing the ability to specify the case of a table column (for example, upper, lower, or mixed). Previously, SQL generated by ThoughtSpot was always wrapped in a LOWER function with no configuration options. Now, users will be able to define whether columns in tables are mixed case or lower case. To enable this feature, contact {support-url}.
 
-Change filter order for Answer filters::
+Worksheet formula indexing::
+In this release, worksheet formulas can now be indexed by setting *Suggest values in search* to *Yes* for the formula.
 
-Arrange Answer filters in the filter bar so that they are in a logical, coherent order, by dragging and dropping them to different spots in the list. This makes it easier for viewers of the Answer to understand and use the filters on the Answer. For more information, see xref:filters.adoc#order[Change the filter order].
-
-
-////
-Date picker enhancement in Search:: We added support for rolling, fixed, and custom date filters when creating an Answer. Previously, when adding a date filter to a Search, ThoughtSpot supported the conditions `ON (=)`, `ON OR AFTER (>=)`, `BEFORE (<)`, and `BETWEEN`. Now, you can additionally filter for `ON OR BEFORE (\<=)`, `NOT BETWEEN`, `ON LAST`, and `ON NEXT`. To try it out, click the filter icon next to the Date column in the left side menu, or click the date filter below the Answer title.
-////
-
-[#9-3-0-cl-business-user]
+[#9-4-0-cl-business-user]
 === For the Business User
 
-AI-generated answers [.badge.badge-early-access-relnotes]#Early Access#:: You can now use natural language to search for answers to your business questions. This feature is now available for administrators to enable, without contacting ThoughtSpot Support. To try it out, navigate to the Home page, select the search bar labeled *Ask any business question you have* and type your question. When you enter your question, you will see the AI generated answer appear, along with a list of related Answers created by users in your team.
-+
-You can select the Worksheet to search on by clicking the Worksheet title in the left side of the search bar and selecting a new Worksheet from the dropdown. Worksheets with AI answers enabled display a triangular icon to the left of the Worksheet name: image:icon-ai-answer.png[AI answer enabled icon].
+Notification center:: You now receive in-app notifications when items are shared with them, or when other users request access to an Answer or Liveboard. To view these notifications, simply click on the user profile icon. For more information, see xref:web-notifications.adoc[Web notifications].
 
-AI-suggested searches [.badge.badge-early-access-relnotes]#Early Access#::
-The AI-suggested searches feature helps you think of relevant questions to ask of your own data source, by providing examples of searches. This feature is now available for administrators to enable, without contacting ThoughtSpot Support. This feature is designed to help you get started if you are a new user of Search Data, or if you are working with a new Worksheet.
-For more information, see xref:search-ai-suggested.adoc[AI-suggested searches]. This feature must be enabled by your administrator.
-
-Liveboard cross filters::
-
-Liveboard cross filters are now GA. Right-click on any data point in your Liveboard and easily filter the entire Liveboard by that value. For example, if you right-click *California* in a geo chart on your Liveboard, and then select *Filter*, all the other visualizations only show data from California. A visualization for *Total sales by city*, for example, would only show sales for cities in California. This feature is also called _brushing and linking_. For more information, see
-xref:liveboard-filters-cross.adoc[Liveboard cross filters].
-
-Contextual change analysis [.badge.badge-early-access-relnotes]#Early Access#::
-You can now identify the key change drivers for changes in your metrics in a KPI chart. Select the percent change label or select any two data points on the KPI sparkline to view change analysis on your top 5 columns by usage-based ranking (UBR) and identify the reason behind the observed change. You can view the changes in other columns by clicking *Manage attributes* and selecting the desired column(s). This feature must be enabled by your administrator.
+Contextual change analysis:: Contextual change is now GA and on by default. You can now identify the key change drivers for changes in your metrics in a KPI chart. Select the percent change label or select any two data points on the KPI sparkline to view change analysis on your top 5 columns by usage-based ranking (UBR) and identify the reason behind the observed change. You can view the changes in other columns by clicking *Manage attributes* and selecting the desired column(s).
 +
 For more information, see
 xref:spotiq-change.adoc#change-analysis-contextual[Contextual change analysis].
 
-Keywords "of", "percentage of" [.badge.badge-beta-relnotes]#Beta#:: To enable business users to answer questions related to mix, contribution, share of, percentage, and total ratios, we added the keywords “of” and “percentage of”. These keywords help answer questions such as “What is the share of a certain store’s sales as a percentage of the regional whole?” Previously, searches such as these required the use of a group aggregate formula, which presented a barrier to users. To try out this feature, enter a search phrase in the search bar containing the keyword, such as `sales percentage of store region`, and press *Go*. +
-For more information, see
-xref:formulas-keywords.adoc[Keywords: Of and Percentage of]. This feature is off by default. To enable it, contact {support-url}.
+Admin controls for new data panel experience::
+ThoughtSpot admins now have more control for enabling the new data panel experience for users. As before, an admin can enable the new data panel experience by going to *Admin* > *Early Access features*, and enabling *Data Fluency*. Each user can selectively enable the new data panel experience by going to their user profile, and setting the *Answer data experience* to *New experience*. In this release, admins can now make the new answer data panel experience default for all users of a cluster, by going to *Admin* > *Search & SpotIQ* and setting the *Make new answer data panel experience default* to *Enabled*.
 
-Attributes in pivot table cells:: You can now include attributes in the pivot table cells as well as measures. This is useful for cases when you want to summarize text data such as user role, pass/fail, or other attributes. For more information, see
-xref:chart-pivot-table.adoc#attributes[Pivot table charts].
+Headline creation and pinning deprecation:: ThoughtSpot is deprecating the pin Headline to Liveboard feature. Beginning in the 9.4.0.cl Cloud release, users will no longer see the pin icon when they select table summaries. To visualize and pin single aggregated measures, attributes in string/date format, or time-series metrics with sparklines, we recommend creating xref:chart-kpi.adoc[KPI charts]. Existing Headlines pinned to Liveboards will not be affected in this release. For more information, see
+link:https://community.thoughtspot.com/s/article/How-to-convert-Headlines-to-KPI-charts[How to convert Headlines to KPI charts].
 
-Ability to change legend position:: You can now configure the legend position of a chart, or hide the legend. The available options are left, right, above, and below the visualization. To try it out, open the chart configuration menu, select *Settings*, and choose between *Legend on right*, *Legend on left*, *Legend on top*, and *Legend on bottom*. You can select the Show legend toggle to hide or show the legend. See
-xref:chart-change.adoc#legend[Changing charts].
+Liveboard tabs in Mobile:: We now display Liveboard tabs in the ThoughtSpot Mobile app. To create a Liveboard tab, you must access ThoughtSpot in a browser.
 
-Liveboard header visible when you scroll down::
-When you scroll down in a Liveboard, the Liveboard name, menu options, and filter and tab bars remain visible. You don't need to scroll back up to the top to edit the Liveboard or check if you're filtering by a specific store. You can see the filters or parameters applied to the Liveboard, select the *Edit* button or more options image:icon-more-10px.png[more options menu icon] menu, and view which tab you're on from any spot in the Liveboard.
+Show onboarding for new users following the share link:: When users are invited to ThoughtSpot via a Share link, they can now click the *Keep exploring* button to be directed to onboarding.
 
-Optionally change contextual menu to left-click::
+Natural language search improvements::
+We made the following changes to the natural language search feature:
 
-In this release, we introduce the option change the contextual menu interaction to left-click. Then, you can access the contextual menu for visualization data points with a left click. Instead of right-clicking on a data point to include or exclude it, drill down on it, or show underlying data, now you can access the menu more easily, with a single left click.
-+
-This feature is off by default. To enable it, contact {support-url}.
+* Redesigned search results page. Filtering facets are now in the left panel.
+* You can now interact with the Answers created by natural language search, including sorting values and drilling down.
 
-[#9-3-0-cl-data-engineer]
+
+
+[#9-4-0-cl-data-engineer]
 === For the Data Engineer
 
-ThoughtSpot Cloud on Google Cloud :: ThoughtSpot Cloud will be available on Google Cloud Platform in addition to AWS. Customers can choose whether they want their SaaS deployed on AWS or GCP.
-+
-ThoughtSpot on GCP can be purchased directly from ThoughtSpot but will also be available to purchase in the Google Cloud Marketplace, the BigQuery Partner Center, and Google Workspace Marketplace. Customers can also use their committed spend and credits on Google Marketplace to purchase ThoughtSpot. If you want to migrate to GCP, contact {support-url}.
+Connections:: You can now create connections from ThoughtSpot to the following connections:
 
-Edit a dbt integration::
+* xref:connections-amazon-aurora-mysql.adoc[Amazon Aurora for MySQL]
+* xref:connections-amazon-aurora-postgresql.adoc[Amazon Aurora for PostgreSQL]
+* xref:connections-amazon-rds-mysql.adoc[Amazon RDS for MySQL]
+* xref:connections-amazon-rds-postgresql.adoc[Amazon RDS for PostgreSQL]
 
-This release includes the following improvements to the dbt integration:
-+
---
-* Ability to connect to a single-tenant dbt environment.
-* New UI for editing a dbt integration in ThoughtSpot.
-* [.badge.badge-beta]#Beta# When editing a dbt integration, ThoughtSpot updates your existing Worksheets, tables, and Liveboards, instead of replacing them with new objects.
---
-+
-For more information, see xref:dbt-integration.adoc#edit[Editing a dbt integration].
+Connection error messaging improvements:: If you run into an error while creating a connection, you can now click *View details* to see error details and add a comment for your administrator.
 
-
-ThoughtSpot Cloud on Google Cloud :: ThoughtSpot Cloud will be available on Google Cloud Platform in addition to AWS. Customers can choose whether they want their SaaS deployed on AWS or GCP.
-+
-ThoughtSpot on GCP can be purchased directly from ThoughtSpot but will also be available to purchase in the Google Cloud Marketplace, the BigQuery Partner Center, and Google Workspace Marketplace. Customers can also use their committed spend and credits on Google Marketplace to purchase ThoughtSpot.
-
-
-Amazon Aurora PostgreSQL connection and Amazon Relational Database Service (RDS) PostgreSQL connection::
-You can now connect to and query Amazon Aurora and Amazon RDS for PostgreSQL databases using the PostgreSQL connector.
-//For details, see xref:connections-amazon-aurora-postgresql.adoc[Amazon Aurora PostgreSQL] and xref:connections-amazon-rds-postgresql.adoc[Amazon RDS PostgreSQL].
+dbt:: ThoughtSpot now supports dbt version 1.5.
 
 
 
-MySQL connection::
-You can now create connections from ThoughtSpot to MySQL. For details, see
-xref:connections-mysql.adoc[MySQL].
-
-Specify default connection for CSV uploads:: Previously, when multiple database connections were configured to receive CSV uploads without a specified table or worksheet for collocation, the files were randomly uploaded to one of the connections. With this new enhancement, administrators and data managers now have the ability to specify a default target connection for such uploads. +
-To set the default target connection, navigate to *Data > Connections*, click the *More* menu icon image:icon-more-10px.png[menu icon], select *Configure data upload*, and click the *Enable data upload* toggle to on. By specifying a default connection, you ensure that CSV files without a designated destination will be uploaded to the chosen connection.
-This enhancement provides better control and organization of CSV uploads, making it easier to manage data in scenarios where end-users do not select a co-location for their uploaded files.
-
-In-app billing reporting:: Admin users will be able to access a Liveboard reflecting the pricing model purchased and associated with their cluster. Query-based pricing customers see the xref:query-stats.adoc[Billable Query Stats Liveboard], while time-based pricing customers see the xref:consumption-pricing-time-based.adoc#credit-usage-pinboard[Credit Usage Liveboard].
-
-
-[#9-3-0-cl-it-ops-engineer]
+[#9-4-0-cl-it-ops-engineer]
 === For the IT/Ops Engineer
 
+New London cloud region for AWS:: ThoughtSpot Cloud now supports the London region when you connect using AWS. See xref:ts-cloud-requirements-support.adoc[ThoughtSpot Cloud requirements and support].
 
-[#9-3-0-cl-developer]
+[#9-4-0-cl-developer]
 === For the Developer
 
 ThoughtSpot Everywhere:: For information about the new features and enhancements introduced in this release, refer to https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation^].
