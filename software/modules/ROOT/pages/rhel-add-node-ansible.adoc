@@ -1,0 +1,67 @@
+= Add nodes to ThoughtSpot using Ansible on clusters that use RHEL
+:last_updated: 12/8/2022
+:author: Teresa Killmond
+:linkattrs:
+:experimental:
+:description: Add nodes to ThoughtSpot using Ansible on RHEL clusters.
+
+If your organization requires that privilege escalation take place through an external tool that integrates with Ansible, follow the steps in this article to add nodes to your cluster.
+
+Before adding nodes to the cluster, ensure that the xref:rhel-install-ansible.adoc#system-settings[system settings] are correctly configured.
+
+== Add nodes to the cluster
+
+. Rename *node_add_hosts.sample* to *node_add_hosts.yaml*.
+. Update the Ansible vars in *node_add_hosts.yaml* with your own specific values. See <<ansible-vars,Sample Ansible vars>>.
+. Run the ansible-playbook. This adds nodes to the cluster. Run the following command on any cluster node:
++
+[source,bash]
+----
+ansible-playbook -i node_add_hosts.yaml ts-node-add.yaml
+----
++
+If privilege escalation requires a password, add the `-K` option to the `ansible-playbook` command.
+. If there is a failure at any point, fix the failure and rerun the `ansible-playbook` command. Bypass the completed steps using the `--start-at-task` option, specifying the task at which to start.
+
+[#ansible-vars]
+=== Sample Ansible vars
+
+This is the definition of the *node_add_hosts.sample* file that is present in your Ansible tarball. You must replace anything in this file within `<>` with your own specific information.
+
+[source,bash]
+----
+all:
+ children:
+    new_hosts:
+      hosts:
+      # List of IPs of the nodes in the cluster>
+      <node_ip1>:
+      <node_ip2>:
+  vars:
+    ssh_user: <ts_service_user>
+    ansible_ssh_user: <ts_service_user>
+    username: <ts_service_user>
+    groupname: <ts_service_group>
+    env: {}
+    ssh_private_key: <Private key for ssh>
+    tarball_location:<Release tarball complete path >  # Location of the tarball
+    ramdisk_size: <size of ramdisk for falcon> # The default is 50619136k (50Gb)
+    # Thoughtspot vars. Do not modify
+     release_location: /export/releases/root/
+     pgversion: 11
+     layout_file: /tmp/hadoop_config.json
+     no_sudo: 1
+     run_setup_during_install: 1
+    minimal_sudo_install: 1
+    offline: 1
+----
+
+'''
+> **Related information**
+>
+> * xref:rhel-install-ansible.adoc[]
+> * xref:rhel-restore-ansible.adoc[Restoring a cluster]
+> * xref:rhel-start-stop-ansible.adoc#start[Starting a cluster]
+> * xref:rhel-start-stop-ansible.adoc#stop[Stopping a cluster]
+> * xref:rhel-upgrade-ansible.adoc[Upgrading a cluster]
+> * xref:rhel-delete-ansible.adoc[Deleting a cluster]

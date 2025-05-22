@@ -23,6 +23,7 @@ Project ID:: Find your project ID in your dbt Cloud URL, after you log in. For e
 * Optionally define the relationships for the dbt models in your `yml` schema file. For more information, refer to the https://docs.getdbt.com/docs/build/tests[dbt documentation^].
 +
 NOTE: If you do not define relationships, ThoughtSpot imports each model as a single table and creates one Worksheet based on each table.
+* To ensure ThoughtSpot can process the latest changes defined in your `yml` schema file, which defines relationships, metatags, and tests, you must have the latest versions of the `manifest.json` and `catalog.json` files. To ensure you have the latest versions of those files, run a dbt job, which generates the latest versions of these files.
 * If you are using *dbt cloud*, the *generate docs on run* setting must be on. You can enable this setting in the jobs settings of the project, under *Execution settings*.
 * If you are using *dbt core*, execute the `dbt docs generate` command along with the `dbt run` command.
 * If you are using *dbt core*, you must connect to dbt using a zip file, which must contain the latest `manifest.json` and `catalog.json` files. By default, dbt stores these files under the `<project name>/target` folder.
@@ -33,7 +34,7 @@ NOTE: When you compress the `manifest.json` and `catalog.json` files into one zi
 
 To integrate with dbt, ThoughtSpot reads information from the latest versions of the `manifest.json` and `catalog.json` files. In the <<prerequisites,prerequisites>>, you ensured that ThoughtSpot could find these files, either by enabling the *generate docs on run* setting in dbt cloud, or by creating a zip file with your `manifest.json` and `catalog.json` files for dbt core.
 
-ThoughtSpot reads the following information from the `manifest.json` file:
+ThoughtSpot reads the following information from the `manifest.json` file. Make sure that the `manifest.json` file contains the latest details of your `yml` schema file.
 
 * Database name
 * Schema name
@@ -62,6 +63,14 @@ The Worksheet creation follows these steps:
 For example, based on the following `schema.yml` file, ThoughtSpot creates the following Worksheets:
 
 Download the `schema.yml` file link:{attachmentsdir}/schema-example.yml[here].
+
+[%collapsible]
+.Click to view the yml schema file
+====
+--
+include::partial$schema-example.adoc[]
+--
+====
 
 |===
 | Model name | Relationship to | Worksheet created?
@@ -95,7 +104,7 @@ image::dbt-integration-connect.png[dbt integration step 1]
 
 . If you select *Via dbt cloud*, fill in the following parameters:
 +
-API key:: This is also called the *API token* in dbt. To find this token, navigate to your *Account Settings* page in dbt cloud. Click on the *Service Account tokens* page, and generate a new token.
+API key:: This is also called the *API token* in dbt. To find this token, navigate to your *Account Settings* page in dbt cloud. Select the *Service Account tokens* page, and generate a new token.
 Account ID:: Your default dbt Cloud account ID. Find your account ID in your dbt Cloud URL, after you log in. For example, if your URL is `https://cloud.getdbt.com/#/accounts/12345/projects/56789/dashboard`, your account ID is `12345`.
 Project ID:: Find your project ID in your dbt Cloud URL, after you log in. For example, if your URL is `https://cloud.getdbt.com/#/accounts/12345/projects/56789/dashboard`, your project ID is `56789`.
 
@@ -104,6 +113,13 @@ Project ID:: Find your project ID in your dbt Cloud URL, after you log in. For e
 NOTE: When you compress the `manifest.json` and `catalog.json` files into one zip file, ensure that you do not include any hidden files, as this may cause errors later. To check the folder you plan to compress does not contain hidden files, refer to these articles for viewing hidden files on your https://discussions.apple.com/thread/7581737[Mac^] or https://support.microsoft.com/en-us/windows/view-hidden-files-and-folders-in-windows-97fbc472-c603-9d90-91d0-1166d1d9f4b5[Windows^] computer. If the folder contains hidden files, move them out of the folder before compressing it into a zip file.
 
 . Select *Next*.
+. If you receive the following error, make sure you executed the dbt project with the `GENERATE DOCS` option `ON`, and verify that you entered the API key, account ID, and project ID correctly. If you are using *dbt cloud*, ensure that the `generate docs on run` setting is on. You can enable this setting in the jobs settings of the project, under *Execution settings*. If you are using *dbt core*, execute the `dbt docs generate` command along with the `dbt run` command. After verifying everything, run the dbt connection again.
++
+----
+Unable to connect to dbt project. Please verify API key and retry
+----
++
+image::dbt-error-message.png[Error message saying "Unable to connect to dbt project. Please verify API key and retry"]
 
 . On the next screen, select up to 4 dbt folders to import. ThoughtSpot lists the model names, paths, and the number of tables they have. Your model must have at least 2 tables.
 +
@@ -121,7 +137,7 @@ image::dbt-integration-tables.png[dbt integration step 3]
 +
 image::dbt-integration-worksheets.png[dbt integration step 4]
 +
-To inspect the Worksheet details, click on any of the Worksheet names.
+To inspect the Worksheet details, select any of the Worksheet names.
 +
 To xref:search.adoc[search the data] on the Worksheet, select *Search on this worksheet* next to any Worksheet.
 
@@ -135,7 +151,7 @@ NOTE: This process may replace existing dbt tables you imported into ThoughtSpot
 
 . If you click on any of the tables and Worksheets you created, and then select *Joins*, you can see the joins ThoughtSpot created, based on the relationships in dbt.
 
-. If there are any changes to the dbt models that you would like the ThoughtSpot Worksheets and tables to reflect, you must run the dbt integration again, which creates a new set of Worksheets.
+. If there are any changes to the dbt models that you would like the ThoughtSpot Worksheets and tables to reflect, you must run the dbt integration again, which creates a new set of Worksheets, and updates the existing tables.
 
 == Limitations
 
@@ -146,3 +162,7 @@ NOTE: This process may replace existing dbt tables you imported into ThoughtSpot
 * Integration with dbt is certified only for Amazon Redshift, Databricks, Google BigQuery, and Snowflake connections.
 
 * If you make changes to your dbt models in dbt, ThoughtSpot does not automatically reflect those changes. You must integrate with dbt again. This may affect changes you made to the tables and Worksheets in ThoughtSpot.
+
+== Troubleshooting
+
+For help troubleshooting issues with your dbt integration, see https://community.thoughtspot.com/s/article/Common-errors-encountered-during-dbt-Integration[Common errors encountered during dbt integration^].

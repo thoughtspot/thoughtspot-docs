@@ -7,42 +7,39 @@
 
 These are the known issues in this release of ThoughtSpot Software.
 
-[#releases-8-7-x]
-== 8.8.0.sw known issues
+[#releases-8-8-x]
+== 8.8.1.sw known issues
 
 [cols="17%,39%,38%"]
 |===
 |Issue ID |Description|Symptoms, conditions, and workaround
 
-|SCAL-129737
-|Headline summary is truncated despite the number of decimals.
+|SCAL-139140
+|A query with multiple `group_*` formulas mixed with other attribute formulas, and using a worksheet with multiple roots returns data where the same combinations of attribute values correspond to different measure values.
 a|*Symptoms*:
 
-Headline with decimal digits is rounded off, causing a loss of accuracy.
+Rows of data with the same attribute values appear to have different measure values.
 
 *Conditions*:
 
-Headline value is `DOUBLE` type.
+Search with multiple `group_*` formulas mixed with other attribute formulas, and using a worksheet with multiple roots. The query schema roots should be different than the worksheet roots.
 
 *Workaround*:
 
+One possible workaround is to reduce the worksheet to the tables needed by the query, or until the worksheet schema roots are the same as the query schema roots.
+
+|SCAL-137873
+|Locale parameter is not overwritten by `SearchEmbed` when embedding ThoughtSpot.
+a|*Symptoms*:
+
+Example:
+
+When the "locale" parameter is set as `en_AU` for the   `<SearchEmbed>` React component, the date is still displaying as mm/dd/yyyy rather than the expected dd/mm/yyyy format per the AU locale. The same parameter is used for the `<LiveboardEmbed>` component and it correctly displays the date.
+
+*Conditions*:
+
+N/A
+
+*Workaround*:
 None
-
-|SCAL-129691
-|“UniqueCount is not supported for the current query” error on pinned-headline tiles in a Liveboard.
-a|*Symptoms*:
-
-- When editing a pinned visualization, the Edit page shows the entire answer that the pinned headline came from. If the headline summary in the answer page is showing **--**, the selected aggregation is not compatible with the column that it is summarizing.
-- Pinning the headline to a Liveboard is not a locked action from the UI. When attempting to retrieve the actual summary, the visualization tile displays the execution error message specified in the *Description* section for this issue instead.
-
-*Conditions*:
-
-- The headline is over a formula column that contains any of the following: `unique_count`, `unique_count_if`, `group_unique_count`, `approx_unique_count`.
-- The formula’s unique count portion uses columns that come from tables of a connection to a cloud data warehouse.
-- The selected headline aggregation for the formula (the headline visualization at the bottom of the main answer visualization) is Table Aggregate.
-
-*Workaround*:
-
-Set the selected headline aggregation to something other than Table Aggregate. Usually, **TOTAL** is a sufficient replacement for Table Aggregate and better matches customer use cases.
-
 |===

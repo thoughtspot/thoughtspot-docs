@@ -1,0 +1,160 @@
+= TML for joins
+:last_updated: 5/19/2023
+:author: Teresa Killmond
+:linkattrs:
+:experimental:
+:description: Use TML to modify joins in a flat-file format.
+:object: joins
+
+Joins do not exist as a separate type of TML file. Instead, they are present in Worksheets, tables, views, and SQL views. To modify {object} using TML, download the objects that contain these {object} to flat files in `.TML` format, modify the files, and subsequently upload the files either to the same cluster, or to a different cluster.
+
+[#syntax-joins]
+include::partial$tml-syntax-joins.adoc[]
+
+[#join-parameters]
+== TML parameters for {object}
+These parameters and their definitions are specific to {object}; this list doesn't contain every parameter in every TML file. Similarly, the parameter definitions may vary from object to object, since the parameters may have different roles in different objects.
+
+[width=“100%”,grid=“none”,options="header"]
+|===
+| d - i | j - n | o - t
+a| <<description,description>>
+
+<<destination,destination>>
+
+<<fqn,fqn>>
+
+<<id,id>>
+
+<<is_one_to_one,is_one_to_one>>
+
+a| <<join,join>>
+
+<<join_path,join_path>>
+
+<<joins,joins>>
+
+<<joins_with,joins_with>>
+
+<<name,name>>
+
+a| <<on,on>>
+
+<<source,source>>
+
+<<table,table>>
+
+<<table_paths,table_paths>>
+
+<<type,type>>
+
+|===
+
+[#description]
+description::
+The text that describes a join.
+
+[#destination]
+destination::
+The name of the destination table or view for a join.
+
+[#fqn]
+fqn::
+The table or connection's GUID.
+You can find this string of letters and numbers at the end of the URL for that table or connection.
++
+For example, in `\https://<company>.thoughtspot.com/#/data/tables/34226aaa-4bcf-4d6b-9045-24cb1e9437cb`, the GUID is `34226aaa-4bcf-4d6b-9045-24cb1e9437cb`.
++
+Use this optional parameter to reduce ambiguity and identify a specific table, if you have multiple tables with the same name. When exporting a TML file, you have the option to *Export FQNs of referenced objects*, which ensures that the TML files you export contain FQNs for the underlying tables and connections. If you do not add the `fqn` parameter, and the connection or table you reference does not have a unique name, the file import fails.
+
+[#id]
+id::
+Specifies the id of a table path.
+
+[#is_one_to_one]
+is_one_to_one::
+Specifies the cardinality of the join. This is an optional parameter.
++
+Possible values: `true`, `false`
++
+Default: `false`
+
+[#join]
+join::
+Specific join, used in defining higher-level objects, such as table paths.
++
+Defined as `name` within `joins` definition.
+
+[#join_path]
+join_path::
+Specification of a composite join as a list of distinct `join` attributes.
++
+These `join` attributes list relevant joins, previously defined in the `joins`, by name.
++
+Default: `{}`
+
+[#joins]
+joins::
+Contains a list of joins between the tables and views.
++
+If you edit the joins in the view TML file, you are only editing the joins for that specific view. You are not editing the joins at the table level. To modify table-level joins, you must edit the source table's TML file.
++
+Each join is identified by `name`, and the additional attributes of `source`, `destination`, `type`, and `is_one_to_one.`
+
+[#joins_with]
+joins_with::
+Contains a list of external joins for which this object is the source. Each join is identified by `name` and optional `description`, and the additional attributes of `destination`, `type`, `on`, and `is_one_to_one`.
+
+[#name]
+name::
+The name of an object.
+Applies to `joins` and `destination`.
+
+[#on]
+on::
+The join expression: the relationship definition, or the keys that your tables are joined on. For example, `[sale::Sale_Last Name] = [employee::Employee_Last Name] AND [sale::Sale_First Name] = [employee::Employee_First Name]`.
++
+To alter a relationship definition, edit this parameter.
+
+[#source]
+source::
+Name of the source table or view for a join.
+
+[#table]
+table::
+Specific table, used in defining higher-level objects, such as table paths.
++
+Defined as `name` within `tables` definition.
+
+[#table_paths]
+table_paths::
+The list of table paths.
++
+Each table path is identified by the `id`, and additional attributes of `table` and `join_path`.
+
+[#type]
+type::
+This is the join type. This is an optional parameter.
++
+Possible values: `LEFT_OUTER` for left outer join, `RIGHT_OUTER` for right outer join, `INNER` for inner join, `OUTER` for full outer join.
++
+Default: `INNER`
+
+[#limitations]
+== Limitations of working with TML files
+
+There are certain limitations to the changes you can apply by editing {object} through TML.
+
+* You cannot directly edit an existing join; you must rename it, edit it to your specifications, and then delete the old join.
+* It isn't possible to reverse the join direction in the TML script.
+* You can only change logical tables using TML files.
+You can't change the physical version of the table that exists in a database.
+When you change the `column_name`, for example, the name changes in the application, but not in the physical table in the database.
+* You can't import manually compressed .zip files.
+You can only import .zip files that you exported from ThoughtSpot: a custom set of TML files, an object and its associated data sources, or multiple objects of the same type that you exported from the object list page.
+* Joins only appear in the table TML file of the source table in a join, or the table on the Many side of a Many-to-One join.
+You can only add and edit table joins from the TML file of the table on the Many side of the join.
+You can't view or modify table-level joins from the destination table's TML file.
+* You can't modify joins at the table level from the Worksheet, view, or Answer TML file.
+You can only override the joins for that specific Worksheet, view, or Answer.
+To modify table-level joins, you must edit the source table's TML file.

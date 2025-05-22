@@ -55,7 +55,7 @@ It contains the maximum number of disks to handle a fully loaded VM.
 === RHEL or OEL AMI
 
 This guide explains how to deploy ThoughtSpot on AWS, using ThoughtSpot's CentOS-based image.
-You can also deploy ThoughtSpot on AWS using Red Hat Enterprise Linux (RHEL) or Oracle Enterprise Linux (OEL), allowing you to run ThoughtSpot on an RHEL version 7.8, 7.9, 8.1, 8.2, 8.3, 8.4, or 8.5 or OEL version 7.9 image that your organization manages internally.
+You can also deploy ThoughtSpot on AWS using Red Hat Enterprise Linux (RHEL) or Oracle Enterprise Linux (OEL), allowing you to run ThoughtSpot on an RHEL version 7.8, 7.9, 8.1, 8.2, 8.3, 8.4, 8.5, 8.6, 8.7, or 8.8 or OEL version 7.9 image that your organization manages internally.
 To install ThoughtSpot using RHEL or OEL, choose your own RHEL- or OEL-based image on the AWS console, instead of ThoughtSpot's image, and refer to the xref:rhel.adoc[RHEL and OEL deployment guide] after you launch your virtual machines.
 
 [#al2-ami]
@@ -149,20 +149,20 @@ NOTE: Staging larger datasets (> 50 GB per VM), may require provisioning additio
 == Setting up your Amazon S3 bucket (recommended)
 
 If you are going to deploy your cluster using the S3-storage option, you must set up that bucket before you set up your cluster.
-Contact xref:support-contact.adoc[ThoughtSpot Support] to determine if your specific cluster size can benefit from the S3 storage option.
+Contact {support-url} to determine if your specific cluster size can benefit from the S3 storage option.
 
 Follow these steps to set up an S3 bucket in AWS.
 
-. On the AWS website, navigate to the S3 service dashboard by clicking *Services*, then *S3*.
+. On the AWS website, navigate to the S3 service dashboard by selecting *Services*, then *S3*.
 . Make sure the selected region in the upper-right corner of the dashboard is the same region in which you plan to set up your cluster.
-. Click *Create bucket*.
+. Select *Create bucket*.
 . In the *Name and region* page, enter a name for your bucket.
 . Select your region.
-. Click *Next*.
-. On the *Properties* page, click *Next*.
+. Select *Next*.
+. On the *Properties* page, select *Next*.
 . On the Configure options page, ensure that *Block _all_ public access* is selected.
-. Click *Next*.
-. On the Set permissions page, click *Create bucket*.
+. Select *Next*.
+. On the Set permissions page, select *Create bucket*.
 
 [#encrypt]
 == Encrypting your data at rest
@@ -182,12 +182,12 @@ S3:: See https://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-encryption.html[
 
 To set up a ThoughtSpot cluster in AWS, follow these steps:
 
-. On the AWS website, navigate to the EC2 service dashboard by clicking *Services*, then *EC2*.
+. On the AWS website, navigate to the EC2 service dashboard by selecting *Services*, then *EC2*.
 
 . Make sure your selected region is correct in the upper-right corner of the dashboard.
 If not, select your region.
-Let ThoughtSpot support know if you change your region.
-. Start the process of launching a VM by clicking *Launch Instance*.
+Let {support-url} know if you change your region.
+. Start the process of launching a VM by selecting *Launch Instance*.
 
 . In the *My AMIs* tab under *1.
 Choose AMI*, search *ThoughtSpot* to find the ThoughtSpot AMI.
@@ -197,37 +197,37 @@ Ensure that you select the ThoughtSpot AMI listed in xref:ami[Get access to Thou
 // image::aws-choose-ami.png[Select the ThoughtSpot AMI]
 
 . On the *Choose an Instance Type* page, select a ThoughtSpot-supported instance type. See xref:aws-configuration-options.adoc#ts-aws-instance-types[ThoughtSpot AWS instance types].
-. Click *Next: Configure Instance Details*.
+. Select *Next: Configure Instance Details*.
 . Configure the instances by choosing the number of EC2 instances you need.
 The instances must be on the same VPC and subnetwork.
 ThoughtSpot sets up the instances to be in the same ThoughtSpot cluster.
 +
 *S3 storage setting*: If you are going to use the S3 storage option, ThoughtSpot recommends that you restrict access to a specific S3 bucket.
 Create a new IAM role that provides read/write access to the specific bucket, and select it.
-For details on that, click *Create new IAM role*.
+For details on that, select *Create new IAM role*.
 +
 *AWS Systems Manager Agent*: If you plan to use the https://docs.aws.amazon.com/systems-manager/latest/userguide/ssm-agent.html[AWS SSM agent^] as an alternative to SSH, create a new IAM role with an SSM policy to grant AWS SSM permission to perform actions on your instances.
 Refer to https://docs.aws.amazon.com/systems-manager/latest/userguide/setup-instance-profile.html[Create an IAM instance profile for Systems Manager^].
 
-. Click *Next: Add Storage*.
+. Select *Next: Add Storage*.
 Add the required storage based on your instance type (either EBS volumes or S3), and the amount of data you are deploying.
 For specific storage requirements, refer to xref:aws-configuration-options.adoc[ThoughtSpot AWS instance types].
 +
 // image::aws-add-storage.png[Add storage volumes]
 
-.. Click *Add new volume*.
+.. Select *Add new volume*.
 .. Specify the type of storage, either EBS or S3.
 .. Specify the size of the volume.
 .. Ensure that you leave *Delete on termination* unchecked, to prevent potential loss of data if the VM is accidentally terminated.
 
-. When you are done modifying the storage size, click *Next: Add Tags*.
+. When you are done modifying the storage size, select *Next: Add Tags*.
 . Set a name for tagging your instances.
 This tag allows you to identify your instance more easily.
 
 [#security-groups]
 == Configure security groups
 
-. Click *Next: Configure Security Group*.
+. Select *Next: Configure Security Group*.
 . Select an existing security group to attach new security groups to so that it meets the security requirements for ThoughtSpot.
 +
 TIP: Security settings for ThoughtSpot
@@ -238,12 +238,21 @@ TIP: Security settings for ThoughtSpot
 [#network-ports]
 Refer to xref:ports.adoc[Network ports].
 
-. Click *Review and Launch*.
-. After you have reviewed your instance launch details, click *Launch*.
+. Select *Review and Launch*.
+. After you have reviewed your instance launch details, select *Launch*.
 . Choose a key pair. A key pair consists of a public and private key used to encrypt and decrypt login information. If you don't have a key pair, you must create one. Without a key pair, you cannot SSH into the AWS instance later.
-. Click *Launch Instances*. Wait a few minutes for it to fully start up. After it starts, it appears on the EC2 console.
+. Select *Launch Instances*. Wait a few minutes for it to fully start up. After it starts, it appears on the EC2 console.
 
 [#prepare-vms]
 == Prepare the VMs
 
 Before installing a ThoughtSpot cluster, an administrator must xref:aws-prepare-vms.adoc[prepare the VMs].
+
+'''
+> **Related information**
+>
+> * xref:aws-prepare-vms.adoc[Prepare AWS VMs for ThoughtSpot]
+> * xref:aws-installing.adoc[Configure ThoughtSpot nodes in AWS]
+> * xref:aws-cluster-install.adoc[Install ThoughtSpot clusters in AWS]
+> * xref:ha-aws-efs.adoc[Set up high availability]
+> * xref:aws-backup-restore.adoc[Back up and restore using S3]
