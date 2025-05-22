@@ -27,7 +27,7 @@ The following are good guidelines for choosing storage:
 If backups fill up this storage, other components will suffer.
 * To ensure better supportability and continuity in case local hard disks go bad, the shared storage volume should be network based.
 
-ThoughtSpot supports shared storage by mounting NFS or CIFS/Samba based volumes.
+Thoughtspot supports shared storage by mounting NFS or CIFS/Samba based volumes.
 Before you begin, make sure you know if the shared volume is Samba or NAS volume.
 To find out, use the `telnet` command.
 
@@ -36,8 +36,8 @@ Telnet confirms NFS::
 [source]
 ----
 $ telnet,2049
-Trying 192.168.2.216\...
-Connected to 192.168.2.216.
+Trying <IP_address>\...
+Connected to <IP_address>.
 Escape character is '{caret}]'.
 ----
 Telnet confirms Samba::
@@ -45,8 +45,8 @@ Telnet confirms Samba::
 [source]
 ----
 $ telnet,445
-Trying 192.168.2.216\...
-Connected to 192.168.2.216.
+Trying <IP_address>\...
+Connected to <IP_address>.
 Escape character is '{caret}]'
 ----
 
@@ -85,11 +85,11 @@ Samba share::
 [source]
 ----
 tscli nas mount-cifs
-  --server 192.168.4.216
+  --server <IP_address>
   --path_on_server /bigstore_share
   --mount_point /mnt
-  --username admin
-  --password sambashare
+  --username <your_admin_username>
+  --password <your_password>
   --uid 1001
   --gid 1001
 ----
@@ -99,11 +99,11 @@ Samba share with Windows AD authentication::
 [source]
 ----
 tscli nas mount-cifs
-  --server 172.27.1.75
+  --server <IP_address>
   --path_on_server /elc
   --mount_point /home/admin/etl/external_datadir
-  --username COMPANYCO/thoughtspot_svc
-  --password 'ts123PDI!'
+  --username <your_admin_username>
+  --password <your_password>
   --uid 1001
   --gid 1001
 ----
@@ -112,21 +112,38 @@ NFS::
 [source]
 ----
 tscli nas mount-nfs
-  --server 192.168.4.132
+  --server <IP_address>
   --path_on_server /data/toolchain
   --mount_point /mnt
 ----
 
-. Log in to the target machine.
+. Log in to the target machine/ secondary appliance.
 . Ensure that the target machine is running a ThoughtSpot cluster.
 Note that the clusters on the primary and target machines do not need to be on the same ThoughtSpot version.
 +
 If a cluster is not running on the target machine, contact xref:support-contact.adoc[ThoughtSpot Support] to create a cluster.
 
-. Repeat steps 3-5 on the target machine.
+. Add the NAS mount entry to the `/etc/fstab` file. For example:
 +
-The target machine and the primary machine should both be accessing the shared volume.
-The configuration of the mount point should be identical on both machines.
+[source,bash]
+----
+$ cat /etc/fstab
+...
+...
+...
+<IP_address>:/elc /home/admin/etl/external_datadir nfs rw,noexec,nofail,username=<your_admin_username>,password=<your_password> 0 0
+----
+
+. Run the `sudo mount -a` command. This creates a NAS mount on all nodes.
++
+[source,bash]
+----
+$ sudo mount -a
+----
+You must create the NAS mount under `/export`. You cannot create it under the root partition.
++
+The mount point and the parameters should be identical for both the primary and secondary machines.
+
 
 . Test the configuration by creating a file as the `admin` user.
 +

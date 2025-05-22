@@ -118,8 +118,6 @@ a| <<phrase,phrase>>
 
 <<plotAsBand,plotAsBand>>
 
-<<query,query>>
-
 <<range,range>>
 
 <<rule,rule>>
@@ -167,7 +165,7 @@ a| <<phrase,phrase>>
 
 [#aggregation]
 aggregation::
-  The default aggregation of the Worksheet, View, or Table column, or the aggregation of the output for a formula.
+  The default aggregation of the Worksheet, View, or table column, or the aggregation of the output for a formula.
 +
 Aggregation options depend on the data type.
 +
@@ -215,7 +213,7 @@ color::
 
 [#column]
 column::
-  The id of the column being filtered on.
+  The id of the column(s) being filtered on. When a Pinboard contains xref:pinboard-filters-linked.adoc[linked filters], or filters that affect visualizations based on more than one Worksheet, the primary filter column appears first in the list of columns in the TML. The linked filter column appears after the primary filter column.
 
 [#columns]
 columns::
@@ -251,7 +249,7 @@ conditional_formatting::
 
 [#connection]
 connection::
-  A way to identify the external data warehouse connection that the table resides in.
+  A way to identify the external data warehouse connection that the table resides in. To add tables or columns to an Embrace connection, you must specify this parameter.
 
 [#currency_type]
 currency_type::
@@ -284,7 +282,11 @@ Note that this is not the same as the data warehouse (Falcon, Amazon Redshift, o
 [#db_column_name]
 db_column_name::
   The name of the column in the database.
-Note that this database is not the same as the data warehouse (Falcon, Amazon Redshift, or Snowflake, for example).
+Note that this database is not the same as the data warehouse (Amazon Redshift, or Snowflake, for example).
+
+[#db_column_properties]
+db_column_properties::
+  The properties of the column in the database. Note that this database is not the same as the data warehouse (Amazon Redshift or Snowflake, for example).
 
 [#db_table]
 db_table::
@@ -297,7 +299,7 @@ description::
 
 [#destination]
 destination::
-  Name of destination table or view of the join
+  The name of the destination table or View for a join.
 
 [#display_mode]
 display_mode::
@@ -307,6 +309,10 @@ Specify either `CHART_MODE` or `TABLE_MODE`.
 [#display_headline_column]
 display_headline_column::
   If the visualization is a headline, this parameter specifies the column the headline comes from.
+
+[#excluded_visualizations]
+excluded_visualizations::
+  A list of visualizations the Pinboard editor chose to exclude from the filter. Only appears when using xref:pinboard-filters-selective.adoc[selective filters].
 
 [#expr]
 expr::
@@ -333,7 +339,7 @@ fqn::
   The table or connection's GUID.
 You can find this string of letters and numbers at the end of the URL for that table.
 +
-For example, in `https://<company>.thoughtspot.com/#/data/tables/34226aaa-4bcf-4d6b-9045-24cb1e9437cb`, the GUID is `34226aaa-4bcf-4d6b-9045-24cb1e9437cb`.
+For example, in `\https://<company>.thoughtspot.com/#/data/tables/34226aaa-4bcf-4d6b-9045-24cb1e9437cb`, the GUID is `34226aaa-4bcf-4d6b-9045-24cb1e9437cb`.
 +
 Use this optional parameter to reduce ambiguity and identify a specific table or connection, if you have multiple tables or connections with the same name. If you do not add the `fqn` parameter, and the connection or table you reference does not have a unique name, the file import fails.
 
@@ -443,7 +449,7 @@ See xref:data-modeling-visibility.adoc[]
 
 [#is_one_to_one]
 is_one_to_one::
-  Specifies the cardinality of the join
+  Specifies the cardinality of the join. This is an optional parameter.
 +
 Possible values: `true`, `false`
 +
@@ -487,9 +493,16 @@ See xref:worksheet-progressive-joins.adoc[How the worksheet join rule works]
 
 [#joins]
 joins::
-  List of joins between tables and views, used by the Worksheet or View.
+  Contains a list of joins between the tables and Views.
++
+If you edit the joins in the Worksheet or View TML file, you are only editing the joins for that specific Worksheet or View. You are not editing the joins at the table level. To modify table-level joins, you must edit the source table's TML file.
 +
 Each join is identified by `name`, and the additional attributes of `source`, `destination`, `type`, and `is_one_to_one.`
+
+[#joins_with]
+joins_with::
+  Contains a list of external joins for which this table is the source. +
+  Each join is identified by `name` and optional `description`, and the additional attributes of `destination`, `type`, `on`, and `is_one_to_one`.
 
 [#layout]
 layout::
@@ -511,7 +524,7 @@ min::
 [#name]
 name::
   The name of an object.
-Applies to `worksheet`, `table`,`join`, `formula`, `answer`, `pinboard`, `view`, `table`, `connection` and so on.
+Applies to `worksheet`, `table`,`joins`, `formula`, `answer`, `pinboard`, `view`, `table`, `connection`, `destination`, and so on.
 +
 For Answers, `name` refers to how the column appears in the query.
 For example, if you sorted by `Quarter` in your search, from the `Commit Date` column, the `name` of the column is `Quarter(Commit Date)`.
@@ -519,7 +532,8 @@ Refer to xref:search-data-api.adoc#components[Components of a Search Query] to u
 
 [#on]
 on::
-  The keys that your tables are joined on.
+  The join expression: the relationship definition, or the keys that your tables are joined on. For example, `[sale::Sale_Last Name] = [employee::Employee_Last Name] AND [sale::Sale_First Name] = [employee::Employee_First Name]`. +
+  You cannot directly edit a relationship definition. To alter a relationship definition, you must rename the join or create a new join.
 
 [#oper]
 oper::
@@ -540,9 +554,9 @@ pinboard::
 
 [#properties]
 properties::
-  The list of properties of a Worksheet, Table, or View column, a Worksheet or View itself, or the properties of the output for a formula within an Answer, Worksheet, or View.
+  The list of properties of a Worksheet, table, or View column, a Worksheet or View itself, or the properties of the output for a formula within an Answer, Worksheet, or View.
 +
-For Worksheets, Views, and Tables, each column can have the following properties, depending on its definition: `column_type`, `aggregation`, `index_type`, `is_hidden`, `index_priority`, `synonyms`, `is_attribution_dimension`, `is_additive`, `calendar`, `format_pattern`, `currency_type`, `geo_config`, `spotiq_preference`, and `search_iq_preferred`.
+For Worksheets, Views, and tables, each column can have the following properties, depending on its definition: `column_type`, `aggregation`, `index_type`, `is_hidden`, `index_priority`, `synonyms`, `is_attribution_dimension`, `is_additive`, `calendar`, `format_pattern`, `currency_type`, `geo_config`, `spotiq_preference`, and `search_iq_preferred`.
 +
 Worksheets and Views themselves can have the following properties that affect query generation: `is_bypass_rls`, and `join_progressive`.
 +
@@ -553,10 +567,6 @@ plotAsBand::
   Specifies whether to plot the chart conditional formatting like a band on the Visualization.
 +
 This is the 'fill chart' option in the UI.
-
-[#query]
-query::
-  The query that the View is based on.
 
 [#range]
 range::
@@ -591,7 +601,7 @@ The options are `EXTRA_SMALL`, `SMALL`, `MEDIUM`, `LARGE`, `LARGE_SMALL`, `MEDIU
 
 [#source]
 source::
-  Name of source table or view of the join
+  Name of the source table or View for a join.
 
 [#spotiq_preference]
 spotiq_preference::
@@ -608,7 +618,7 @@ See xref:data-modeling-synonym.adoc[]
 
 [#table]
 table::
-  Top-level container for all object definitions within the Table.
+  Top-level container for all object definitions within the table.
 +
 Specific table, used in defining higher-level objects, such as table paths.
 +
@@ -634,17 +644,17 @@ Each table is identified by `name`.
 
 [#type]
 type::
-  For Worksheets and Views, this is the join type.
+  For Worksheets and Views, this is the join type. This is an optional parameter.
 +
 Possible values: `LEFT_OUTER` for left outer join, `RIGHT_OUTER` for right outer join, `INNER` for inner join, `OUTER` for full outer join.
 +
 Default: `INNER`
 +
-For Tables, this is the Embrace connection type.
+For tables, this is the Embrace connection type.
 +
-Possible values: `Snowflake` or `Amazon Redshift`.
+Possible values: `Snowflake`, `Google BigQuery`, `Microsoft Azure`, or `Amazon Redshift`.
 +
-For Answers, this is the chart type
+Within the `chart` section of an Answer TML file, this is the chart type.
 +
 Possible values: `COLUMN`, `BAR`, `LINE`, `PIE`, `SCATTER`, `BUBBLE`, `STACKED_COLUMN`, `AREA`, `PARETO`, `COLUMN`, `GEO_AREA`, `GEO_BUBBLE`, `GEO_HEATMAP`, `GEO_EARTH_BAR`, `GEO_EARTH_AREA`, `GEO_EARTH_GRAPH`, `GEO_EARTH_BUBBLE`, `GEO_EARTH_HEATMAP`, `WATERFALL`, `TREEMAP`, `HEATMAP`, `STACKED_AREA`, `LINE_COLUMN`, `FUNNEL`, `LINE_STACKED_COLUMN`, `PIVOT_TABLE`, `SANKEY`, `GRID_TABLE`, `SPIDER_WEB`, `WHISKER_SCATTER`, `STACKED_BAR`, or `CANDLESTICK`.
 
