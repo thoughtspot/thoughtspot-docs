@@ -1,0 +1,58 @@
+[width="100%",options="header",cols="20%,40%,40%"]
+|====================
+|Function|Description|Examples
+|`average`|Returns the average of all the values of a column.|`average (revenue)`
+|`average_if`|Returns the average of all the columns that meet a given criteria.|`average_if(city = "San Francisco", revenue)`
+|`count`|Returns the number of rows in the table containing the column.|`count (product)`
+|`count_if`|Returns the number of rows in the table containing the column.|`count_if(region =’west’, region)`
+|`cumulative_average`|Takes a measure and one or more attributes. Returns the average of the measure, accumulated by the attribute(s) in the order specified.|`cumulative_average (revenue, order date, state)`
+|`cumulative_max`|Takes a measure and one or more attributes. Returns the maximum of the measure, accumulated by the attribute(s) in the order specified.|`cumulative_max (revenue, state)`
+|`cumulative_min`|Takes a measure and one or more attributes. Returns the minimum of the measure, accumulated by the attribute(s) in the order specified.|`cumulative_min (revenue, campaign)`
+|`cumulative_sum`|Takes a measure and one or more attributes. Returns the sum of the measure, accumulated by the attribute(s) in the order specified.|`cumulative_sum (revenue, order date)`
+|`group_aggregate` a|Takes a measure and optional attributes and filters. Used
+to aggregate measures with different granularities and filters than the columns used in the search. Commonly used in comparison
+analysis.
+
+This formula takes the following form:
+`group_aggregate (<aggregation(measure)>, <groupings>, <filters>)`
+
+Define lists using curly brackets, `{ }`. Optional list functions `query_groups` or
+`query_filters` specify the lists or filters used in the original search. Use + (plus) and - (minus) to add or exclude specific columns for query groups.
+See xref:aggregation-flexible.adoc[Flexible aggregation functions].|`group_aggregate (sum (revenue), {ship mode, date}, {} )`
+
+`group_aggregate (sum (revenue), {ship mode , date}, {day_of_week (date) = 'friday'} )`
+
+`group_aggregate (sum (revenue), query_groups(), query_filters() )`
+
+`group_aggregate (sum (revenue), query_groups() + \{date\}, query_filters() )`
+|`group_average`|Takes a measure and one or more attributes. Returns the average of the measure grouped by the attribute(s).|`group_average (revenue, customer region, state)`
+|`group_count`|Takes a measure and one or more attributes. Returns the count of the measure grouped by the attribute(s).|`group_count (revenue, customer region)`
+|`group_max`|Takes a measure and one or more attributes. Returns the maximum of the measure grouped by the attribute(s).|`group_max (revenue, customer region)`
+|`group_min`|Takes a measure and one or more attributes. Returns the minimum of the measure grouped by the attribute(s).|`group_min (revenue, customer region)`
+|`group_stddev`|Takes a measure and one or more attributes. Returns the standard deviation of the measure grouped by the attribute(s).|`group_stddev (revenue, customer region)`
+|`group_sum`|Takes a measure and one or more attributes. Returns the sum of the measure grouped by the attribute(s).|`group_sum (revenue, customer region)`
+|`group_unique_count`|Takes a measure and one or more attributes. Returns the unique count of the measure grouped by the attribute(s).|`group_unique_count (product , supplier)`
+|`group_variance`|Takes a measure and one or more attributes. Returns the variance of the measure grouped by the attribute(s).|`group_variance (revenue, customer region)`
+|`max`|Returns the maximum value of a column.|`max (sales)`
+|`max_if`|Returns the maximum value among columns that meet a criteria.|`max_if( (revenue > 10) , customer region )`
+|`min`|Returns the minimum value of a column.|`min (revenue)`
+|`min_if`|Returns the minimum value among columns that meet a criteria.|`min_if( (revenue < 10) , customer region )`
+|`moving_average`|Takes a measure, two integers to define the window to aggregate over, and one or more attributes. The window is (current - Num1…Current + Num2) with both end points being included in the window. For example, “1,1” will have a window size of 3. To define a window that begins before Current, specify a negative number for Num2. Returns the average of the measure over the given window. The attributes are the ordering columns used to compute the moving average.|moving_average (revenue, 2, 1, customer region)
+|`moving_max`|Takes a measure, two integers to define the window to aggregate over, and one or more attributes. The window is (current - Num1…Current + Num2) with both end points being included in the window. For example, “1,1” will have a window size of 3. To define a window that begins before Current, specify a negative number for Num2. Returns the maximum of the measure over the given window. The attributes are the ordering columns used to compute the moving maximum.|`moving_max (complaints, 1, 2, store name)`
+|`moving_min`|Takes a measure, two integers to define the window to aggregate over, and one or more attributes. The window is (current - Num1…Current + Num2) with both end points being included in the window. For example, “1,1” will have a window size of 3. To define a window that begins before Current, specify a negative number for Num2. Returns the minimum of the measure over the given window. The attributes are the ordering columns used to compute the moving minimum.|`moving_min (defects, 3, 1, product)`
+|`moving_sum`|Takes a measure, two integers to define the window to aggregate over, and one or more attributes. The window is (current - Num1…Current + Num2) with both end points being included in the window. For example, “1,1” will have a window size of 3. To define a window that begins before Current, specify a negative number for Num2. Returns the sum of the measure over the given window. The attributes are the ordering columns used to compute the moving sum.|`moving_sum (revenue, 1, 1, order date)`
+|`rank`|Returns the rank for the current row. Identical values receive an identical rank. Takes an aggregate input for the first argument. The second argument specifies the order, 'asc' \| 'desc'. a|`rank (sum (revenue) , 'asc' )`
+
+`rank (sum (revenue) , ‘desc' )`
+|`rank_percentile`|Returns the percentile rank for the current row. Identical values are assigned an identical percentile rank. Takes an aggregate input for the first argument. The second argument specifies the order, 'asc' \| 'desc'. a|`rank_percentile (sum (revenue) , 'asc' )`
+
+`rank_percentile (sum (revenue) , 'desc' )`
+|`stddev`|Returns the standard deviation of all values of a column.|`stddev (revenue)`
+|`stddev_if`|Returns a standard deviation values filtered to meet a specific criteria.|`stddev_if( (revenue > 10) , (revenue/10.0) )`
+|`sum`|Returns the sum of all the values of a column.|`sum (revenue)`
+|`sum_if`|Returns sum values filtered by a specific criteria.|`sum_if(region=’west’, revenue)`
+|`unique count`|Returns the number of unique values of a column.|`unique count (customer)`
+|`unique_count_if`|Returns the number of unique values of a column provided it meets a criteria.|`unique_count_if( (revenue > 10) , order date )`
+|`variance`|Returns the variance of all the values of a column.|`variance (revenue)`
+|`variance_if`|Returns the variance of all the values of a column provided it meets a criteria.|`variance_if( (revenue > 10) , (revenue/10.0) )`
+|====================
