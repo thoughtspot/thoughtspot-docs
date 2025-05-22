@@ -1,11 +1,11 @@
 = Drill down into your data
-:last_updated: 7/30/2024
+:last_updated: 5/19/2025
 :linkattrs:
 :experimental:
 :page-layout: default-cloud
 :page-aliases: /complex-search/drill-down.adoc
 :description: Drill down into the Answers ThoughtSpot delivers to gain deeper insights into the many layers of your data.
-:jira: SCAL-197579, SCAL-202496
+:jira: SCAL-197579, SCAL-202496, SCAL-254306
 
 
 
@@ -74,6 +74,14 @@ If you want to go back one step at a time while drilling down, either drill down
 When you add a date filter to a search that includes a date column, ThoughtSpot's natural behavior is to override the date column. If you want to preserve the date column in your search, we recommend creating a formula that contains the date column, then adding the filter.
 
 For example, consider a search for `revenue` `commit date month of year` `commit date between 01/01/1991 and 01/01/1993`. If you then filter on `month of year = 2` `by ship mode`, the commit date column is removed from your search. If you create a formula defining commit date as between 01/01/1991 and 01/01/1993, then add the filter for `month of year = 2`, then the commit date data remains in your search.
+
+== Drill down by measures
+
+ThoughtSpot has a drill anywhere concept for answering follow-up questions. On any visualization, you can drill down into any attributes that are part of the ThoughtSpot semantic model. In addition, there is a unique capability to have measures act like an attribute by using the `BY` keyword. Example: `<Sales>` `<BY Quantity Purchased>` automatically creates a grouping of quantity purchased, making it act like an attribute, and aggregates *Sales* as a measure.
+
+However, if you do not use the `BY` keyword and just use `<Sales> <Quantity Purchased>`, it automatically aggregates both measures and displays the default aggregated value.
+
+This capability is limited to normal measures, and not custom formulas created within the semantic model.  By product design, formulas cannot change from measure to attribute as they need to go through query run-time calculation.
 
 == Save and share your new Answer
 
