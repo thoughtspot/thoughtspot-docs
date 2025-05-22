@@ -2,10 +2,10 @@
 :experimental:
 :last_updated: 2/9/2022
 :linkattrs:
+:page-layout: default-cloud
 
 ThoughtSpot supports OAuth for a Microsoft Azure Synapse connection. This page describes the setup and configuration required for using OAuth2.0 with Azure AD as the IdP for Azure Synapse connections.
 
-[#part-1]
 == Part 1: Create AD application in Azure
 
 The first step in setting up OAuth with Azure AD as an IdP is to create an active directory application in Azure.
@@ -56,7 +56,7 @@ image::azure-application-endpoints.png[]
 
 An active directory user must be set as Admin for the SQL server.
 
-1. Navigate to the SQL server associated with the Synapse deployment and click **Active Directory Admin**.
+1. Navigate to to the SQL server associated with the Synapse deployment and click **Active Directory Admin**.
 +
 image::azure-ad-1.png[]
 
@@ -82,29 +82,41 @@ Active directory is now linked  with the SQL database.
 +
 This is referred to as a “contained user” created in the database mapped to Azure AD identity. For details, see Microsoft's documentation:
 https://docs.microsoft.com/en-us/azure/azure-sql/database/authentication-aad-configure?tabs=azure-powershell#create-contained-users-mapped-to-azure-ad-identities[Create contained users mapped to Azure AD identities^].
-+
-You cannot manage database roles for AD users from Azure. You must manage them from the database side.
+
+== Part 4: Scope for OAuth authorization request
+
+You must include the resource URL in the scope you pass with the authorization request. In this case, it is URL of the Synapse server.
+
+[source]
+--
+url = webclient.prepare_request_uri(
+  authurl,
+  redirect_uri = 'http://localhost:8080/callback',
+  scope = ['offline_access','openid','https://sql.azuresynapse.net/.default'],
+  state = 'abc1234'
+)
+--
 
 == Troubleshooting
 
-If the following `Invalid Resource` error appears on initial login, you must update the API permissions.
+- If valid API Permissions for the AD application are not present, the following error appears:
++
+image::synapse-oauth-error1.png[]
 
-image::synapse-oauth-error1.png[An Invalid Resource error message]
+- With the API permission granted as below, the user is required to consent to the application accessing the resource.
++
+image::synapse-oauth-error2.png[]
+- You cannot manage database roles for AD users from Azure. You must manage them from the database side. For details, see Microsoft's documentation: https://docs.microsoft.com/en-us/azure/azure-sql/database/authentication-aad-configure?tabs=azure-powershell#create-contained-users-mapped-to-azure-ad-identities[Create contained users mapped to Azure AD identities^].
 
-Under **API / Permissions name**, for Azure SQL Database, add the **user_impersonation** permission, as shown below.
 
-The *Delegated* type indicates that the application will authenticate on behalf of the user.
 
-image::azure-config-permissions.png[Add the user impersonation permission with the delegated type]
 
-'''
-> **Related information**
->
-> * xref:connections-synapse-add.adoc[Add a connection]
-> * xref:connections-synapse-edit.adoc[]
-> * xref:connections-synapse-remap.adoc[]
-> * xref:connections-synapse-delete-table.adoc[]
-> * xref:connections-synapse-delete-table-dependencies.adoc[]
-> * xref:connections-synapse-delete.adoc[]
-> * xref:connections-synapse-reference.adoc[Reference]
-> * xref:connections-query-tags.adoc#tag-synapse[Synapse query tags]
+== Related links
+
+* xref:connections-synapse-add.adoc[Add a Synapse connection]
+* xref:connections-synapse-edit.adoc[Edit a Synapse connection]
+* xref:connections-synapse-remap.adoc[Remap a Synapse connection]
+* xref:connections-synapse-delete-table.adoc[Delete a table from a Synapse connection]
+* xref:connections-synapse-delete-table-dependencies.adoc[Delete a table with dependent objects]
+* xref:connections-synapse-delete.adoc[Delete a Synapse connection]
+* xref:connections-synapse-reference.adoc[Connection reference for Synapse]

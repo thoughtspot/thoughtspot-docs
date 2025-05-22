@@ -1,132 +1,286 @@
 = Collect security logs
-:last_updated: 03/15/2023
-:author: Naomi
+:last-updated: 10/11/2021
 :linkattrs:
 :experimental:
-:description: ThoughtSpot Software provides security audit events related to account activities and user actions within ThoughtSpot.
+:page-aliases: /admin/data-security/audit-logs.adoc
 
-ThoughtSpot Software provides security audit events related to account activities and user actions within ThoughtSpot.
-These events can help your SOC team detect potential security threats or compromised user accounts in your organization.
+Collect security audit logs to monitor user activity in ThoughtSpot and increase your system security.
 
-== How to fetch security events
-
-To fetch security events from ThoughtSpot, you can push the logs to your SIEM server.
-
-=== Push to your SIEM server
-
-ThoughtSpot’s human-readable and comprehensive events can be shipped to your SIEM application in near real-time. Security events remain within the system for 30 days.
-To integrate with your SIEM or view these logs, contact {support-url}.
-
-ThoughtSpot also supports log ingestion to the customer SIEM system. We support multiple output plugins which can be configured to push the security audit events to the configured destination SIEM server at an interval of every 5 seconds.
-
-ThoughtSpot supports the following output plugin options:
-
-- HTTP
-- Splunk
-- Azure Log Analytics
-- Datadog
-
-== ThoughtSpot security events
+ThoughtSpot Software provides security audit events related to account activities and user actions within ThoughtSpot. These events can help your SOC team detect potential security threats or compromised user accounts in your organization. These human-readable and comprehensive events can be shipped to your SIEM application in near real-time. Security events remain within the system for 30 days. To integrate with your SIEM or view these logs, xref:support-contact.adoc[contact ThoughtSpot Support].
 
 ThoughtSpot security events include the following information:
 
-* An event ID
-* A unique description of the event (for example,
-"`A user account was created`")
-* Timestamp (in UTC) yyyy/mm/dd:hh:mm:ss
-* User ID of the person initiating the event
-* IP of the user (public IP of the system from which the request comes to ThoughtSpot)
-* Fields specific to the event (for example,
-name of the new account)
+- An event ID
+- A unique description of the event (e.g. “A user account was created”)
+- Timestamp (in UTC) yyyy/mm/dd:hh:mm:ss
+- User ID of the person initiating the event
+- IP of the user
+- Fields specific to the event (e.g. name of the new account)
 
 [#security-events]
-== ThoughtSpot Security events
+== Security events
 
 The possible events are:
 
-* <<logout-successful,account-logout>>
-* <<create-answer,answer-creation>>
-* <<delete-answers,answer-deletion>>
-* <<update-answers,answer-update>>
-* <<create-rls-rule,create-rls-rule>>
-* <<delete-rls-rules,delete-rls-rules>>
-* <<login-failed,failed-login>>
-* <<logout-failed,failed-logout>>
-* <<user-groups-created,group-creation>>
-* <<user-groups-deleted,group-deletion>>
-* <<user-group-modified,group-modification>>
-* <<principals-in-group-update,group-principals-update>>
-* <<account-locked,locked-account>>
-* <<share-objects,object-sharing>>
-* <<update-password,password-change>>
-* <<create-pinboard,pinboard-creation>>
-* <<delete-pinboards,pinboard-deletion>>
-* <<update-pinboards,pinboard-update>>
-* <<privilege-changes,privilege-change>>
-* <<users-modified,profile-change>>
-* <<login-successful,successful-login>>
-* <<create-tables,table-creation>>
-* <<update-rls-rule,update-rls-rule>>
-* <<users-created,user-account-creation>>
-* <<users-deleted,user-account-deletion>>
-
+- <<logout-successful,Account logout>>
+- <<create-answer,Answer creation>>
+- <<delete-answers,Answer deletion>>
+- <<update-answers,Answer update>>
+- <<login-failed,Failed login>>
+- <<logout-failed,Failed logout>>
+- <<user-groups-created,Group creation>>
+- <<user-groups-deleted,Group deletion>>
+- <<user-group-modified,Group modification>>
+- <<principals-in-group-update,Group principals update>>
+- <<account-locked,Locked account>>
+- <<share-objects,Object sharing>>
+- <<update-password,Password update>>
+- <<create-pinboard,Pinboard creation>>
+- <<delete-pinboards,Pinboard deletion>>
+- <<update-pinboards,Pinboard update>>
+- <<privilege-changes,Privilege changes>>
+- <<users-modified,Profile change>>
+- <<create-rls-rule,Row level security (RLS) rule creation>>
+- <<delete-rls-rules,RLS rule deletion>>
+- <<update-rls-rule,RLS rule modification>>
+- <<login-successful,Successful login>>
+- <<create-tables,Table creation>>
+- <<users-created,User account creation>>
+- <<users-deleted,User account deletion>>
+//- <<user-group-change,User group change>>
 
 == Event descriptions
 
 ThoughtSpot defines these events as follows:
 
 [#logout-successful]
-Account logout::  A user logs out from ThoughtSpot.
+Account logout::
+A user logs out from ThoughtSpot.
+
 [#create-answer]
-Answer creation::  A user attempts to create a new answer.
+Answer creation::
+A user attempts to create a new answer.
+
 [#delete-answers]
-Answer deletion::  A user attempts to delete an answer.
+Answer deletion::
+A user attempts to delete an answer.
+
 [#update-answers]
-Answer update::  A user attempts to modify an existing answer.
-[#create-rls-rule]
-Row-level security (RLS) rule creation::  A user creates an RLS rule on a table.
-[#delete-rls-rules]
-RLS rule deletion::  A user deletes an RLS rule on a table.
+Answer update::
+A user attempts to modify an existing answer.
+
+
 [#login-failed]
-Failed login::  A user fails to log in due to an incorrect password, or IDP/ADP deny the authentication request.
+Failed login::
+A user fails to log in due to an incorrect password, or IDP/ADP deny the authentication request.
+
+// 7.2 release
+
 [#logout-failed]
-Failed logout::  User logout failed.
+Failed logout::
+User logout failed.
+
+
 [#user-groups-created]
-Group creation::  A user creates a new group, either manually through the Admin Portal, or through the internal API.
+Group creation::
+A user creates a new group, either manually through the Admin Portal, or through the internal API.
+
 [#user-groups-deleted]
-Group deletion::  A user deletes a group, either manually through the Admin Portal, or through the internal API.
+Group deletion::
+A user deletes a group, either manually through the Admin Portal, or through the internal API.
+
 [#user-group-modified]
 Group modification::
-A user modifies the properties of a group, either in Admin Portal or over internal API.
-(Properties include group name, display name, and sharing visibility.)
+A user modifies the properties of a group, either in Admin Portal or over internal API. (Properties include group name, display name, and sharing visibility.)
+
 [#principals-in-group-update]
-Group principals update::  A user successfully or unsuccessfully attempts to add or remove users or groups from a group.
+Group principals update::
+A user successfully or unsuccessfully attempts to add or remove users or groups from a group.
+
 [#account-locked]
 Locked account::
-A local user fails to authenticate _x_ times in a row, locking the account.
-Administrators can configure the number of authentication attempts before lockout within ThoughtSpot.
+A local user fails to authenticate _x_ times in a row, locking the account. Administrators can configure the number of authentication attempts before lockout within ThoughtSpot.
 
 [#share-objects]
-Object sharing::  A user successfully or unsuccessfully attempts to share an object (Pinboard, Worksheet, Answer) with another user or group.
+Object sharing::
+A user successfully or unsuccessfully attempts to share an object(Pinboard, Worksheet, Answer) with another user or group.
+
 [#update-password]
-Password change::  A user successfully or unsuccessfully attempts to change their password.
+Password update::
+A user successfully or unsuccessfully attempts to change their password.
+
 [#create-pinboard]
-Pinboard creation::  A user attempts to create a new Pinboard.
+Pinboard creation::
+A user attempts to create a new Pinboard.
+
 [#delete-pinboards]
-Pinboard deletion::  A user attempts to delete a Pinboard.
+Pinboard deletion::
+A user attempts to delete a Pinboard.
+
 [#update-pinboards]
-Pinboard update::  A user attempts to modify an existing Pinboard.
+Pinboard update::
+A user attempts to modify an existing Pinboard.
+
 [#privilege-changes]
-Privilege change::  A user adds or removes one or several privileges from a group.
+Privilege changes::
+A user adds or removes one or several privileges from a group.
+
 [#users-modified]
-Profile change::  A user profile changes, either manually in the Admin Portal or over SAML sync.
+Profile change::
+A user profile changes, either manually in the Admin Portal or over SAML sync.
+
+[#create-rls-rule]
+Row level security (RLS) rule creation::
+A user creates an RLS rule on a table.
+
+[#delete-rls-rules]
+RLS rule deletion::
+A user deletes an RLS rule on a table.
+
 [#update-rls-rule]
-RLS rule update::  A user modifies an RLS rule on a table.
+ RLS rule modification::
+ A user attempts to modify an RLS rule on a table.
+
 [#login-successful]
-Successful login::  A local, IDP or AD user logs in to ThoughtSpot.
+Successful login::
+A local, IDP or AD user logs in to ThoughtSpot.
+
 [#create-tables]
-Table creation::  A user attempts to create a new table.
+Table creation::
+A user attempts to create a new table.
+
 [#users-created]
-User account creation::  A new user creates an account, either manually in the Admin Portal or through the internal API.
+User account creation::
+ A new user creates an account, either manually in the Admin Portal or through the internal API.
+
 [#users-deleted]
-User account deletion::  A user account is deleted, either manually in the Admin Portal or through the internal API.
+User account deletion::
+ A user account is deleted, either manually in the Admin Portal or through the internal API.
+
+////
+[#user-group-change]
+User group change::
+ A successful or unsuccessful attempt to change the user list to a group by adding or removing members.
+////
+
+
+////
+= System security tools and processes
+:last_updated: 04/30/2021
+:linkattrs:
+:experimental:
+
+System security refers to audit logs and security policies.
+
+ThoughtSpot includes a number of management tools, monitoring applications, and automated processes to support system security.
+System security includes managing access and privileges, audit logs, security policies, and Linux OS installed package updates.
+
+== Audit logs
+
+There are several ways you can view audit log information in ThoughtSpot.
+You can see recent events in the Control Center or view more detailed audit logs using tscli.
+Administrators can view audit logs of configuration changes users have made to ThoughtSpot in these ways:
+
+* Monitor events from the xref:system-pinboards.adoc[Control Center].
+* Generate audit log reports through the `tscli` command.
+
+You can access an audit log of cluster events through tscli.
+You can also access information on cluster updates, configurations, data loading and metadata events.
+
+Use the `tscli event list` command to return an audit list of events from the cluster.
+The syntax is:
+
+[source,console]
+----
+tscli event list
+   [--include <all|config|notification>]
+   [--since <hours,minutes,days>
+   | --from <yyyymmdd-HH:MM>
+   --to <yyyymmdd-HH:MM>]
+   [--detail]
+   [--summary_contains
+   <'string1'| 'string2' ...>]
+   [--detail_contains
+   <'string1'| 'string2' ...>]
+   [--attributes
+   <key1='value1'|
+   key2='value2' ...>]
+----
+
+Optional parameters are:
+
+`--include`::
+  Specifies the type of events to include, and can be `all`, `config`, or `notification`.
+
+`--detail`::
+vvReturns the events in a detail format rather than a tabular summary, which is the default.
+
+`--summary_contains <'string1' \| 'string2' ...>`::
+  Specifies a string to check for in the event summary.
++
+Enclose strings in single quotes, and separate multiple strings with &pipe;.
++
+Events that match all specified strings will be returned.
+
+`--detail_contains <'string1'\| 'string2' ...>`::
+  Specifies a string to check for in the detail.
++
+Enclose strings in single quotes, and separate multiple strings with `\|` (pipe symbol).
++
+Events that match all specified strings will be returned.
+
+`--attributes <key1='value1' &pipe; key2='value2' ...>`::
+  Specifies attributes to match as key=value pairs.
++
+Separate multiple attributes with `\|` (pipe symbol).
++
+Events that match all specified key/value pairs will be returned.
++
+Put single quotes around the value(s).
+
+And a time window made up of either:
+
+* `--since <hours,minutes,days>`, which is a time in the past for where the event audit begins, ending at the present time.
++
+Specify a human readable duration string, e.g.
++
+4h (4 hours), 30m (30 minutes), 1d (1 day).
+
+Or both:
+
+* `--from <yyyymmdd-HH:MM>` is a timestamp for where to begin the event audit.
++
+It must be of the form: yyyymmdd-HH:MM.
+* `--to <yyyymmdd-HH:MM>` is a timestamp for where to end the event audit.
++
+It must be of the form: yyyymmdd-HH:MM.
+
+To get audit logs:
+
+. Log in to the Linux shell using SSH.
+. Issue the `tscli event list` command, with the desired parameters, for example:
++
+[source,console]
+----
+ $ tscli event list
+    --include config
+    --since 24 hours
+----
+
+== Security policies
+
+Security policies are the principles and processes ThoughtSpot uses in development to ensure a product that conforms to security standards.
+Security policies ensure a secure product with each release.
+When a release is in development, each build is tested using Qualys Network Security and Vulnerability Management Suite.
+Issues and vulnerabilities are fixed proactively, based on the results.
+
+The ThoughtSpot Engineering and ThoughtSpot Support teams are notified of Common Vulnerabilities and Exposures (CVEs), so they can patch OS packages proactively as well.
+You can view installed packages along with their version numbers at any time, in order to see if you require an update to ThoughtSpot.
+
+Whenever a CVE is identified, and an OS package needs to be updated, the next patch release will include the patch or update.
+You can view installed Linux packages at any time, along with the version numbers of the installed packages.
+
+== Third-party security software for security, governance, and monitoring of ThoughtSpot
+
+You can install supported xref:secure-monitor-sw.adoc[third-party security and monitoring software] on a ThoughtSpot cluster.
+////

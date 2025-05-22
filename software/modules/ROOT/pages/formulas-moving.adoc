@@ -4,13 +4,13 @@
 :linkattrs:
 :page-partial:
 :page-aliases: /complex-search/about-moving-formulas.adoc
-:description: Moving formulas can be used to smooth out any irregularities in your data to easily recognize trends.
 
 ////
 NOTE: The formula editor redesign is part of the xref:answer-experience-new.adoc[new answer experience]. The new answer experience is in [.label.label-beta]#Beta# and off by default, but the option to turn it on or off individually is on by default. If you have the new answer experience on, your user interface and experience may be different from the experience described in this article. You can turn the new answer experience on or off individually from the *Experience manager* panel in xref:user-profile.adoc#new-answer-experience[your profile]. If that option is not available, contact your administrator.
 ////
 
-Moving formulas can be used to smooth out any irregularities in your data to easily recognize trends.
+Moving formulas can be used to smooth out any irregularities in your data to
+easily recognize trends.
 
 The larger intervals smooth out a larger number of peaks and troughs in your data. When the intervals are smaller, the moving formulas are closer to the actual data points.
 
@@ -92,30 +92,3 @@ image::moving_average_table.png[]
 A box that displays the moving average within the entire table appear at the bottom of the chart.
 
 . To use a different aggregation type, click the current aggregation type at the bottom of the box and select another type.
-
-== Calculate a moving sum of a unique count
-
-ThoughtSpot doesn't have a purpose-built function for calculating a moving sum, or other moving formula, for a unique count. However, for many use cases, you can use a `group_aggregate` to facilitate this type of count. Adding a `group_aggregate` to your formula allows you to pass the aggregate function (in this case, `unique count`) in the windowing function (in this case, `moving_sum`).
-
-See the following example for the general formula for a moving sum of a unique count. In this example, we calculate the moving sum of unique customer names, using `monthly date` as our aggregation bucket.
-
-[source,bash]
-----
-moving_sum (group_aggregate (unique count (Customer Name ),query_groups (),query_filters ()),2,0,start_of_month (Date ))
-----
-
-The result looks something like this:
-
-image::moving-unique-example.png[Moving sum of a unique count of customers]
-
-You can use this syntax on any moving formula: average, maximum, minimum, and sum.
-
-NOTE: This syntax produces a unique count for each individual result, such as *Oct 2021*. However, it doesn't produce a unique count across results. If a customer name appears in both October 2021 and November 2021, for example, that customer would be counted in both those months.
-
-'''
-> **Related information**
->
-> * xref:formulas-cumulative.adoc[Cumulative functions]
-> * xref:formulas-aggregation-flexible.adoc[Flexible aggregation functions]
-> * xref:formulas-aggregation-group.adoc[Grouping functions]
-> * xref:formulas-aggregation-filtered.adoc[Filtered aggregation functions]
