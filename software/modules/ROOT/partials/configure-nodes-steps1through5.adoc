@@ -1,0 +1,133 @@
+[#node-step-1]
+=== Step 1: Log in to your cluster
+
+Log in to your cluster with admin credentials from Terminal on a Mac or a terminal emulator on Windows.
+Ask your network administrator if you do not know the admin credentials.
+
+. Run `ssh admin@<nodeIP>`.
++
+Replace `nodeIP` with your specific network information.
+
+ $ ssh admin@<nodeIP>
+
+. Enter your admin password at the prompt.
++
+Ask your network administrator if you don't know the password.
+
+NOTE: The password does not appear on the screen as you type it.
+
+[#node-step-2]
+=== Step 2: Get a template for network configuration
+
+Run the `tscli cluster get-config` command to get a template for network configuration for the new cluster.
+Redirect it to the file `nodes.config`.
+
+You can find more information on this process in the xref:nodesconfig-example.adoc[`nodes.config` file reference].
+
+ $ tscli cluster get-config |& tee nodes.config
+
+[#node-step-3]
+=== Step 3: Prepare node configuration
+
+WARNING: _DNS server_ and _IP address_ values must be set in the cloud backend.
+It then populates them into the VM configuration.
+If you specify different values during this step, it can create a temporary mismatch and lead to connectivity issues.
+
+. Add your specific network information for the nodes in the `nodes.config` file, as demonstrated in the xref:nodesconfig-example.adoc#autodiscovery-of-one-node-example[autodiscovery of one node example].
+Run `vim nodes.config` to edit the file.
++
+----
+ $ vim nodes.config
+----
++
+NOTE: Some of the information in the `nodes.config` file may be pre-populated from earlier steps. For example, if you specified an IP address while creating VMs, that IP address might already be present in your `nodes.config` file.
+
+. Fill in the areas specified in xref:parameters-nodesconfig.adoc[Parameters of the nodes.config file] with your specific network information.
++
+If you have additional nodes, complete each node within the nodes.config file in the same way.
++
+Do not edit any part of the `nodes.config` file except the sections described in xref:parameters-nodesconfig.adoc[Parameters of the nodes.config file].
+If you delete quotation marks, commas, or other parts of the code, it may cause setup to fail.
+
+. Update the file `/etc/hosts` with all the node IP addresses and hostnames for the other VMs that will be part of the ThoughtSpot cluster.
+
+[#node-step-4]
+=== Step 4: Configure the nodes
+
+Configure the nodes in the `nodes.config` file using the `set-config` command.
+
+. Disable the `firewalld` service by running `sudo systemctl stop firewalld` in your terminal.
+The `firewalld` service is a Linux firewall that must be off for ThoughtSpot installation.
+After the cluster installer reboots the nodes, `firewalld` automatically turns back on.
++
+----
+ $ sudo systemctl stop firewalld
+----
+
+. To make sure you temporarily disabled `firewalld`, run `sudo systemctl status firewalld`.
+Your output should specify that `firewalld` is inactive.
+It may look something like the following:
++
+----
+ $ sudo systemctl status firewalld
+   ● firewalld.service - firewalld - dynamic firewall daemon
+     Loaded: loaded (/usr/lib/systemd/system/firewalld.service; disabled; vendor preset: enabled)
+     Active: inactive (dead)
+----
+
+. Run the configuration command: `$ cat nodes.config | tscli cluster set-config`.
++
+If the command returns an error, refer to <<set-config-error-recovery,set-config error recovery>>.
++
+After you run the node configuration command, your output appears similar to the following:
++
+[source,console]
+----
+ $ cat nodes.config | tscli cluster set-config
+
+ Connecting to local node-scout
+ Setting up hostnames for all nodes
+ Setting up networking interfaces on all nodes
+ Setting up hosts file on all nodes
+ Setting up NTP Servers
+ Setting up Timezone
+ Done setting up ThoughtSpot
+----
+
+[#node-step-5]
+=== Step 5: Confirm node configuration
+
+Use the `get-config` command to confirm node configuration.
+
+Your output may look similar to the following:
+
+[source,console]
+----
+$ tscli cluster get-config
+
+{
+  "ClusterId": "",
+  "ClusterName": "",
+  "DataNetmask": "255.255.252.0",
+  "DataGateway": "192.168.4.1",
+  "IPMINetmask": "255.255.252.0",
+  "IPMIGateway": "192.168.4.1",
+  "Timezone": "America/Los_Angeles",
+  "NTPServers": "0.centos.pool.ntp.org,1.centos.pool.ntp.org,2.centos.pool.ntp.org,3.centos.pool.ntp.org",
+  "DNS": "192.168.2.200,8.8.8.8",
+  "SearchDomains": "example.company.com",
+  "Nodes": {
+	"ac:1f:6b:8a:77:f6": {
+  	"NodeId": "ac:1f:6b:8a:77:f6",
+  	"Hostname": "Thoughtspot-server1",
+  	"DataIface": {
+    	"Name": "eth2",
+    	"IPv4": "192.168.7.70"
+  	},
+  	"IPMI": {
+    	"IPv4": "192.168.5.70"
+  	}
+	}
+  }
+}
+----
