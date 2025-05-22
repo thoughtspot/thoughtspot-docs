@@ -2,19 +2,22 @@
 === Step 1: Log in to your cluster
 
 Log in to your cluster with admin credentials from Terminal on a Mac or a terminal emulator on Windows.
-Ask your network administrator if you do not know the admin credentials.
+Ask your network administrator if you don't know the admin credentials.
 
 . Run `ssh admin@<nodeIP>`.
 +
 Replace `nodeIP` with your specific network information.
-
- $ ssh admin@<nodeIP>
++
+[source,console]
+----
+$ ssh admin@<nodeIP>
+----
 
 . Enter your admin password at the prompt.
 +
 Ask your network administrator if you don't know the password.
 
-NOTE: The password does not appear on the screen as you type it.
+NOTE: The password doesn't appear on the screen as you type it.
 
 [#node-step-2]
 === Step 2: Get a template for network configuration
@@ -24,20 +27,23 @@ Redirect it to the file `nodes.config`.
 
 You can find more information on this process in the xref:nodesconfig-example.adoc[`nodes.config` file reference].
 
- $ tscli cluster get-config |& tee nodes.config
+[source,console]
+----
+$ tscli cluster get-config |& tee nodes.config
+----
 
 [#node-step-3]
 === Step 3: Prepare node configuration
 
-WARNING: _DNS server_ and _IP address_ values must be set in the cloud backend.
-It then populates them into the VM configuration.
-If you specify different values during this step, it can create a temporary mismatch and lead to connectivity issues.
+WARNING: _DNS server_ and _IP address_ values must be set in the cloud backend. It then populates them into the VM configuration. If you specify different values during this step, it can create a temporary mismatch and lead to connectivity issues.
 
-. Add your specific network information for the nodes in the `nodes.config` file, as demonstrated in the xref:nodesconfig-example.adoc#autodiscovery-of-one-node-example[autodiscovery of one node example].
+. Add your specific network information for the nodes in the `nodes.config` file, as demonstrated in the xref:nodesconfig-example.adoc#autodiscovery-of-one-node-example[Autodiscovery of one node example].
++
 Run `vim nodes.config` to edit the file.
 +
+[source,console]
 ----
- $ vim nodes.config
+$ vim nodes.config
 ----
 +
 NOTE: Some of the information in the `nodes.config` file may be pre-populated from earlier steps. For example, if you specified an IP address while creating VMs, that IP address might already be present in your `nodes.config` file.
@@ -58,26 +64,27 @@ Configure the nodes in the `nodes.config` file using the `set-config` command.
 
 . Disable the `firewalld` service by running `sudo systemctl stop firewalld` in your terminal.
 The `firewalld` service is a Linux firewall that must be off for ThoughtSpot installation.
-After the cluster installer reboots the nodes, `firewalld` automatically turns back on.
 +
+[source,console]
 ----
- $ sudo systemctl stop firewalld
+$ sudo systemctl stop firewalld
 ----
 
-. To make sure you temporarily disabled `firewalld`, run `sudo systemctl status firewalld`.
+. To make sure you disabled `firewalld`, run `sudo systemctl status firewalld`.
 Your output should specify that `firewalld` is inactive.
 It may look something like the following:
 +
+[source,console]
 ----
- $ sudo systemctl status firewalld
-   ● firewalld.service - firewalld - dynamic firewall daemon
-     Loaded: loaded (/usr/lib/systemd/system/firewalld.service; disabled; vendor preset: enabled)
-     Active: inactive (dead)
+$ sudo systemctl status firewalld
+  ● firewalld.service - firewalld - dynamic firewall daemon
+    Loaded: loaded (/usr/lib/systemd/system/firewalld.service; disabled; vendor preset: enabled)
+    Active: inactive (dead)
 ----
 
 . Run the configuration command: `$ cat nodes.config | tscli cluster set-config`.
 +
-If the command returns an error, refer to <<set-config-error-recovery,set-config error recovery>>.
+If the command returns an error, refer to xref:set-config-error-recovery[Set-config error recovery].
 +
 After you run the node configuration command, your output appears similar to the following:
 +
@@ -97,9 +104,7 @@ After you run the node configuration command, your output appears similar to the
 [#node-step-5]
 === Step 5: Confirm node configuration
 
-Use the `get-config` command to confirm node configuration.
-
-Your output may look similar to the following:
+Use the `get-config` command to confirm node configuration. Your output may look similar to the following:
 
 [source,console]
 ----
