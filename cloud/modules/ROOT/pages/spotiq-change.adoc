@@ -6,7 +6,7 @@
 :page-layout: default-cloud
 :linkattrs:
 :description: With SpotIQ change analysis, you can compare two data points for change and identify key change drivers from the underlying attribute columns
-:jira: SCAL-175535, SCAL-175265, SCAL-172513, SCAL-141936, SCAL-147558, SCAL-176265, SCAL-178860, SCAL-201036
+:jira: SCAL-175535, SCAL-175265, SCAL-172513, SCAL-141936, SCAL-147558, SCAL-176265, SCAL-178860, SCAL-201036, SCAL-201645
 
 With SpotIQ change analysis, you can compare any two data points in a visualization for change and identify key change drivers from the underlying attribute columns.
 
@@ -81,7 +81,7 @@ image::additional-insight.png[SpotIQ additional insights]
 [#remember-personalized]
 === Remember personalized columns [.badge.badge-early-access]#Early Access#
 
-Admin users with edit permissions on a Liveboard can set their preferred attribute columns through the change analysis window and select to keep those selections for any subsequent change analysis calculations on that Liveboard.
+Users with edit permissions on a Liveboard can set their preferred attribute columns through the change analysis window and select to keep those selections for any subsequent change analysis calculations on that Liveboard.
 
 To set personalized attribute columns that will persist on the Liveboard, follow these steps:
 
@@ -152,7 +152,7 @@ image::comparative-analysis-advanced-new.png[Comparative analysis advanced value
 ==== Z-Score
 
 
-A Z-score represents the number of standard deviations from the mean a data point is. Z-scores are a way to compare results from a test to a “normal” population. The basic Z-score formula for a sample is:  z = (x – μ) / σ where
+A Z-score represents the number of standard deviations from the mean a data point is. Z-scores are a way to compare results from a test to a "normal" population. The basic Z-score formula for a sample is:  z = (x – μ) / σ where
 
 * σ is the standard deviation
 * μ is the mean
@@ -161,7 +161,7 @@ A Z-score represents the number of standard deviations from the mean a data poin
 Currently, any value outside μ +/- N * σ (i.e. Z-score less than or greater than N) is an anomaly. N is determined based on the number of rows. It is chosen such that the max or min has < 0.1 probability of crossing the threshold. SpotIQ uses the following table to approximately choose the value of N, that is, how many standard deviations we want to be able to use as threshold:
 
 
-[options=”header”]
+[options="header"]
 |===
 | Cardinality | N (number of standard deviations from mean)
 
@@ -176,13 +176,13 @@ Currently, any value outside μ +/- N * σ (i.e. Z-score less than or greater th
 
 ThoughtSpot uses different methods to explain the difference between points selected for SpotIQ analysis, depending on the underlying aggregation of the measures.
 
-For SUM or COUNT or UNIQUE COUNT or SUM x SUM measures, ThoughtSpot uses the following change formula: `fx= “measure value for point 1” - “measure value for point 2”`. Next, we slice by attributes, and rank the attribute by what fraction of the total change is concentrated in the first few values for a given attribute. For example, in an analysis of a chart for revenue by month, the formula could be defined as `fx = “Total revenue in April” - “Total revenue in June”`. Then, we slice both April revenue and June revenue by region. If we find that all regions have similar revenue except China, then we can say that region is a useful attribute for explaining the difference in revenue across April and June.
+For SUM or COUNT or UNIQUE COUNT or SUM x SUM measures, ThoughtSpot uses the following change formula: `fx= "measure value for point 1" - "measure value for point 2"`. Next, we slice by attributes, and rank the attribute by what fraction of the total change is concentrated in the first few values for a given attribute. For example, in an analysis of a chart for revenue by month, the formula could be defined as `fx = "Total revenue in April" - "Total revenue in June"`. Then, we slice both April revenue and June revenue by region. If we find that all regions have similar revenue except China, then we can say that region is a useful attribute for explaining the difference in revenue across April and June.
 
 We identify the outlier change values using a Z-score distribution with a multiplier chosen based on the number of rows in the data. All values lesser than `mean - multiplier x std dev` or values greater than `mean + multiplier x std dev` are highlighted as outlier changes.
 
 For AVERAGE or SUM/SUM measures, change analysis generates insights with What-if percent change insights which present hypothetical scenarios for each explanation attribute. A What-if percent change insight for an attribute shows what the overall percent change in measure would have been had a particular attribute value not changed across the two points. A smaller What-if percent change for an attribute value implies that the value is a significant contributor towards explaining the overall change, since without that attribute changing, the overall change in the measure would have been smaller than it was.
 
-For example, if we do comparative analysis on average profit monthly for October 2016 and April 2017, one of the insights generated says that “If average profit for copiers (sub-category) had not changed, the decrease would have been only 29.81% instead of 94.45%”. This means that the overall average profit decreased by 94.45% from October 2016 to April 2017, but if we disregard the change in the average profit of copiers, the overall average profit would have decreased by just 29.81%.
+For example, if we do comparative analysis on average profit monthly for October 2016 and April 2017, one of the insights generated says that "If average profit for copiers (sub-category) had not changed, the decrease would have been only 29.81% instead of 94.45%". This means that the overall average profit decreased by 94.45% from October 2016 to April 2017, but if we disregard the change in the average profit of copiers, the overall average profit would have decreased by just 29.81%.
 
 
 

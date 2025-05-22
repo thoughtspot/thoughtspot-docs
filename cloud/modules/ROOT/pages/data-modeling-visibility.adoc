@@ -5,7 +5,7 @@
 :page-layout: default-cloud
 :page-aliases: /admin/data-modeling/change-visibility-synonym.adoc
 :description: Make it easier to find a column assigning a synonym, or more difficult to find by creating a hidden column.
-:jira: SCAL-201612
+:jira: SCAL-201612, SCAL-157372
 
 You can hide columns from users in ThoughtSpot without dropping them from the database.
 It is common to hide a column when its data contains identifier columns that are used to join tables, but which do not have any meaning to users.
@@ -24,7 +24,7 @@ When you hide a Worksheet, table, or view column, you only hide it from users wi
 Administrators and users with edit privileges on the object can still see and interact with the hidden column.
 Users without edit privileges for the object cannot see or interact with the hidden column.
 
-If a hidden column is used in an Answer pinned to a Liveboard, then the entire Liveboard becomes read-only to users. This limits Liveboard functionality, which means the ability to adjust filters and download data is restricted. If you want to make a certain column available only to a subset of users, we recommend using xref:security-data-object.adoc#cls[column-level security].
+If a hidden column is used in an Answer pinned to a Liveboard, then only users with edit access to the underlying data source and *Can manage data* privileges can edit a filter based on that column. Users without this level of access can edit filters based on other columns in the Answer, but not those based on the hidden column. If you want to make a certain column available only to a subset of users, we recommend using xref:security-data-object.adoc#cls[column-level security].
 
 To hide a column, change the *HIDDEN* (UI)/*Hide* (model file) setting.
 By default, all columns in a data source appear in ThoughtSpot.

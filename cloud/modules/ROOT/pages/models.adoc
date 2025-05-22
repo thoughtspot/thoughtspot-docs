@@ -1,11 +1,11 @@
 = Create Models
-:last_updated: 3/28/2024
+:last_updated: 5/13/2024
 :linkattrs:
 :experimental:
 :page-layout: default-cloud-early-access
 :description: Models are logical views created on top of a more complex data model, to enable business users to more easily consume data.
 :model: Model
-:jira: SCAL-158357, SCAL-194041 (9.12.5 -drag to create joins), SCAL-194038 (9.12.5 - bulk edit column properties).
+:jira: SCAL-158357, SCAL-194041 (9.10.5 -drag to create joins), SCAL-194038 (9.10.5 - bulk edit column properties). SCAL-189664 (remove spotapps - removed from image in step 3 of creating a model. SCAL-202208 (sort and filter in columns grid - 9.12.0.cl), SCAL-203404 (model filters limit - 9.12.0.cl)
 
 == Introducing Models
 
@@ -64,16 +64,16 @@ image::model_choose.png[Choose how to model your data]
 
 
 . Choose how you want to model your data, using one of the following options:
-.. To create your own model, select *Build your own with cloud data*.
+.. To create your own model, select *Build your own with cloud data* and click *Next*.
 ... To create a new connection, refer to xref:connections.adoc[About connections]
 ... To use an existing connection, select it from the list, and select *Connect*.
-.. To build a model from tables originally created from dbt models, select *dbt*
+.. To build a model from tables originally created from dbt models, select *dbt*  and click *Next*.
 ... To create a new dbt connection, select *Add dbt connection* and refer to step 5 of xref:dbt-integration.adoc#integrate[Integrating with dbt].
 ... To use an existing connection, select it from the list, and select *Connect*.
-.. To import the TML for a model, select *TML*, and upload your tml files. For more information, refer to xref:tml-worksheets.adoc[TML for Worksheets].
+.. To import the TML for a model, select *TML* and click *Next*.
+... Upload your tml files. For more information, refer to xref:tml-worksheets.adoc[TML for Worksheets].
 +
 NOTE: The information at this link also applies to {model}s.
-.. To use an existing SpotApp as a model, select *SpotApps*, and select a SpotApp.
 
 . <<build-model,Build your data model>>.
 
@@ -159,7 +159,7 @@ To add columns to your {model}, do the following:
 
 . Click the *Columns* tab.
 +
-image::model_columns.png[Model columns tab]
+image::model_columns.png[Model Columns tab]
 +
 Table names are highlighted in blue, and their associated columns appear underneath them.
 
@@ -186,6 +186,41 @@ You are prompted to edit the title and description of your {model}.
 Your model is saved, and you have the option to add formulas, filters, parameters, and adjust settings.
 . If you don't want to add those now, select *Exit data model*.
 
+==== Sorting and filtering columns
+
+You have the option to sort any column in ascending or descending order, as well as apply a filter to a column by selecting possible values of the column.
+
+image::models_sort_filter.png[Sort columns]
+
+
+
+To sort a column, do the following:
+
+. Click a column heading
+. From the pop-up menu, select either *Sort ascending* or *Sort descending*.
+
+To filter a column, do the following:
+
+. Click a column heading
+. From the pop-up menu, select *Filter*.
+. In the _Edit filter_ window, select the values you want to filter by and click *Apply*.
++
+A label appears above the table indicating the values used to filter the column.
++
+image::models_sort_filter_2.png[Filtered values label]
++
+You can delete the filter by hovering over the label and clicking the (X).
++
+In the _Edit filter_ window, you also have the following options to use when editing or adding a filter:
+
+- Select all
+- Clear
+- Search
+- Show selected
+
++
+NOTE: Sort and filter states are not saved when you save your Model, however they do persist when you switch between tabs of the {model} editor.
+
 === Adding formulas
 
 To add formulas to your {model}, do the following:
@@ -196,11 +231,11 @@ To add formulas to your {model}, do the following:
 . Create a name for your formula.
 . Enter a formula, using the formula assistant (at right) if needed.
 +
-image::model_formulas_2.png[Formula editor]
+image::model_formulas_2.png[Enter a formula]
 +
 With the formula assistant, you can see a list of formula operators with examples.
 +
-If you want to change what your formula returns, select the Advanced settings button image:icon_formula_gear_32px.png[gear icon].
+If you want to change what your formula returns, select the Advanced settings button image:icon_formula_gear_32px.png[Formula advanced settings].
 +
 Depending on your formula, you may be able to change:
 
@@ -219,7 +254,7 @@ To add filters to your {model}, do the following:
 . Click *Add filter*.
 . Choose the column you want to filter on.
 +
-image::model_filters.png[Choose column]
+image::model_filters.png[Filter a column]
 . Select the values to include in your Answer.
 +
 image::model_filters_2.png[Select values]
@@ -229,6 +264,8 @@ You can also include values in bulk, by clicking *+ Add values in bulk*, and add
 . Click *Submit*.
 . Click *Save changes*.
 
+CAUTION: ThoughtSpot recommends to not use more than 1,000 filter values in a {model}.
+
 === Adding parameters
 
 To add parameters to your {model}, do the following:
@@ -236,7 +273,7 @@ To add parameters to your {model}, do the following:
 . Click the *Parameters* tab.
 . Click *Add Parameter*.
 +
-image::model_parameters.png[Edit parameter]
+image::model_parameters.png[Add a parameter]
 . In the _Parameter name_ text box, enter a name for your Parameter. This name should be unique for the object, and easy for users to understand.
 . Optionally, enter a description for the Parameter in the _Add a description_ text box. Use this field to add additional information users might need before using this Parameter in their analysis. It is a best practice to use this field to specify the formulas this Parameter is used in, in addition to any other information you add.
 . Under _Data settings_, specify the data type the Parameter must be: Integer, Double, String, Boolean, or Date. For more information about data types, refer to xref:data-types.adoc[Data types].
@@ -300,7 +337,7 @@ NOTE: Even though the button currently says _Edit Worksheet_, it allows you to e
 ****
 *Edit tables*
 
-Using the More menu image:model_table_join_more.png[Model more menu] in the upper right of a table, you can edit a table in the following ways:
+Using the More menu image:model_table_join_more.png[More menu] in the upper right of a table, you can edit a table in the following ways:
 
 - Add Join
 - Rename table
@@ -358,7 +395,7 @@ A role-playing dimension is when a single physical dimension is referenced multi
 To implement role-playing dimensions with Models, do the following in the Model editor:
 
 . Go to the *Tables* tab.
-. Select the More menu image:model_table_join_more.png[Model more menu] in the upper right of  the dimension table that you want to use in a different role.
+. Select the More menu image:model_table_join_more.png[More menu] in the upper right of  the dimension table that you want to use in a different role.
 . Select *Duplicate Table*.
 . In the _Duplicate Table Name_ window that opens, assign an alias (since 2 tables cannot have the same name) by entering a new name (or alias) for that table.
 . Click *Save*.
@@ -370,3 +407,4 @@ To implement role-playing dimensions with Models, do the following in the Model 
 It will appear as a new table (with the alias assigned in step 4) on the left panel in the *Columns* tab of the model. You can tell it's a role-playing dimension because the original table name appears in parentheses *()* next to the new name.
 
 CAUTION: Copies/aliases of tables that are on the "many" side of a join are not supported in {model}s.
+
