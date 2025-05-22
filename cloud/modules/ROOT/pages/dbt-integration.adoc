@@ -6,21 +6,23 @@
 
 ThoughtSpot's dbt integration allows you to easily provide your existing dbt models and automatically create ThoughtSpot xref:worksheets.adoc[worksheets], which you can use to xref:search-data.adoc[search your data].
 
-dbt takes your raw data in your data warehouse and transforms and validates it. ThoughtSpot's dbt integration  connects users to their cloud data warehouse, integrates with your dbt models using an API key or zip file, and generates the relationships between the tables defined in the dbt model that you select. It also brings any logical tables into ThoughtSpot. Then, ThoughtSpot creates new worksheets, based on the relationships between the tables. These worksheets provide user-friendly logical views of your complex datasets. Users can use these worksheets to easily search their complex data. This process may replace existing dbt tables you imported into ThoughtSpot, but it will not replace existing worksheets.
+dbt takes your raw data in your data warehouse and transforms and validates it. ThoughtSpot's dbt integration  connects users to their cloud data warehouse, integrates with your dbt models using an API key or zip file, and generates the relationships between the tables defined in the dbt model that you select. It also brings any logical tables into ThoughtSpot. Then, ThoughtSpot creates new worksheets, based on the relationships between the tables. If a table does not have any relationships, ThoughtSpot creates a worksheet based only on that table. These worksheets provide user-friendly logical views of your complex datasets. Users can use these worksheets to easily search their complex data. This process may replace existing dbt tables you imported into ThoughtSpot, but it will not replace existing worksheets.
 
-NOTE: Integration with dbt is certified only for Snowflake connections.
+NOTE: Integration with dbt is certified only for Snowflake and Databricks connections.
 
 == Prerequisites
 Before you can integrate with dbt, you must satisfy the following prerequisites
 
-* Create a xref:connections.adoc[connection] to your external cloud data warehouse in Snowflake. This cloud data warehouse must contain the tables that are created from your dbt models.
+* Create a xref:connections.adoc[connection] to your external cloud data warehouse, either Snowflake or Databricks. This cloud data warehouse must contain the tables that are created from your dbt models.
 * If you connect to dbt via *dbt cloud*, you need the API key, Account ID, and Project ID:
 +
-API key:: This is also called the *API token* in dbt. Any dbt user with a dbt developer license has an API token. Find your token in your dbt profile, under *API access*.
+API key:: This is also called the *API token* in dbt. To find this token, navigate to your *Account Settings* page in dbt cloud. Click on the *Service Account tokens* page, and generate a new token.
 Account ID:: Your default dbt Cloud account ID. Find your account ID in your dbt Cloud URL, after you log in. For example, if your URL is `https://cloud.getdbt.com/#/accounts/12345/projects/56789/dashboard`, your account ID is `12345`.
 Project ID:: Find your project ID in your dbt Cloud URL, after you log in. For example, if your URL is `https://cloud.getdbt.com/#/accounts/12345/projects/56789/dashboard`, your project ID is `56789`.
-* Define the relationships in the dbt models. If you do not define the relationships, ThoughtSpot does not create tables or worksheets.
-* If you are using *dbt cloud*, execute the project with the *GENERATE DOCS?* option *ON*.
+* Optionally define the relationships for the dbt models in your `yml` schema file. For more information, refer to the https://docs.getdbt.com/docs/build/tests[dbt documentation^].
++
+NOTE: If you do not define relationships, ThoughtSpot imports each model as a single table and creates one worksheet based on each table.
+* If you are using *dbt cloud*, the *generate docs on run* setting must be on. You can enable this setting in the jobs settings of the project, under *Execution settings*.
 * If you are using *dbt core*, execute the `dbt docs generate` command along with the `dbt run` command.
 * If you are using *dbt core*, you must connect to dbt using a zip file, which must contain the latest `manifest.json` and `catalog.json` files. By default, dbt stores these files under the `<project name>/target` folder.
 
@@ -46,7 +48,7 @@ image::dbt-integration-connect.png[dbt integration step 1]
 
 . If you select *Via dbt cloud*, fill in the following parameters:
 +
-API key:: This is also called the *API token* in dbt. Any dbt user with a dbt developer license has an API token. Find your token in your dbt profile, under *API access*, and enter it in the dbt integration wizard under *API key*.
+API key:: This is also called the *API token* in dbt. To find this token, navigate to your *Account Settings* page in dbt cloud. Click on the *Service Account tokens* page, and generate a new token.
 Account ID:: Your default dbt Cloud account ID. Find your account ID in your dbt Cloud URL, after you log in. For example, if your URL is `https://cloud.getdbt.com/#/accounts/12345/projects/56789/dashboard`, your account ID is `12345`.
 Project ID:: Find your project ID in your dbt Cloud URL, after you log in. For example, if your URL is `https://cloud.getdbt.com/#/accounts/12345/projects/56789/dashboard`, your project ID is `56789`.
 
@@ -54,13 +56,15 @@ Project ID:: Find your project ID in your dbt Cloud URL, after you log in. For e
 
 . Select *Next*.
 
-. On the next screen, select a dbt folder to import. ThoughtSpot lists the model names, paths, and the number of tables they have. Your model must have at least 2 tables.
+. On the next screen, select up to 4 dbt folders to import. ThoughtSpot lists the model names, paths, and the number of tables they have.
 +
-image::dbt-integration-folder.png[dbt integration step 2]
+To increase the maximum number of dbt folders you can import at a time, contact {support-url}.
++
+image::dbt-integration-folder-multiple.png[dbt integration step 2]
 
 . Select *Next*.
 
-. On the next screen, select tables to import. By default, ThoughtSpot imports all tables in the folder. Deselect any tables you do not want to import. You must select at least 2 tables within the dbt folder. These tables must have relationships to each other.
+. On the next screen, select tables to import. By default, ThoughtSpot imports all tables in the folder(s). Deselect any tables you do not want to import. You must select at least 1 table within each dbt folder.
 +
 image::dbt-integration-tables.png[dbt integration step 3]
 
@@ -88,8 +92,8 @@ NOTE: This process may replace existing dbt tables you imported into ThoughtSpot
 
 == Limitations
 
-* Currently, you can only connect to one dbt folder at a time.
+* By default, you can only connect to a maximum of 4 dbt folders at a time. To increase this maximum, contact {support-url}.
 
-* The integration does not currently support relationships defined across folders.
+* You must import at least 1 table.
 
-* You must select at least 2 tables within the dbt folder. These tables must have relationships to each other.
+* Integration with dbt is certified only for Snowflake and Databricks connections.
