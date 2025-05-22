@@ -1,4 +1,4 @@
-= {spotapp}
+= ServiceNow Incident Management SpotApps
 :last_updated: 6/13/2022
 :experimental:
 :linkattrs:
@@ -9,6 +9,13 @@
 
 include::partial$spotapps-intro.adoc[]
 
+**There are two ServiceNow Incident Management SpotApps:**
+
+- ServiceNow Incident Management
+- ServiceNow Incident Management (Snowflake Connector for ServiceNow)
+
+The first one is for cloud data warehouses except for Snowflake. The second one is for customers who use the Snowflake Connector for ServiceNow to move their ServiceNow data into Snowflake.
+
 This is a sample Liveboard, created after you deploy the {spotapp}:
 
 image::spotapp-servicenow-liveboard.png[ServiceNow SpotApp Liveboard]
@@ -17,13 +24,17 @@ Use the {spotapp} for incident management. You can track the number of tickets s
 
 [#prerequisites]
 == Prerequisites
-Before you can deploy the {spotapp}, you must complete the following prerequisites:
+Before you can deploy either {spotapp}, you must complete the following prerequisites:
 
 include::partial$spotapp-prereqs-general.adoc[]
 
 * Developer account in {application}
 * {application} data loaded into your cloud data warehouse.
++
+If you use Snowflake as your cloud data warehouse, use Snowflake’s purpose-built {application} connector to ingest your {application} data. Make sure to select all the <<schema,required tables and columns>> when connecting. To learn how to use the Snowflake {application} connector, see https://other-docs.snowflake.com/en/connectors/servicenow/servicenow-index.html[Snowflake Connector for ServiceNow^].
 * Access to the following {application} tables in your cloud data warehouse. Refer to <<schema,{spotapp} schema>> for more details.
+
+=== ServiceNow tables for cloud data warehouses except Snowflake
 ** INCIDENT
 ** CMN_LOCATION
 ** SYS_USER
@@ -34,6 +45,19 @@ include::partial$spotapp-prereqs-general.adoc[]
 ** SERVICES
 ** CONFIG_ITEM
 ** CORE_COMPANY
+
+=== ServiceNow tables for Snowflake
+** CMDB_CI_SERVICE__VIEW
+** CMDB_CI__VIEW
+** CMN_COST_CENTER__VIEW
+** CMN_LOCATION__VIEW
+** CONTRACT_SLA__VIEW
+** CORE_COMPANY__VIEW
+** INCIDENT__VIEW
+** SERVICE_OFFERING__VIEW
+** SYS_USER_GROUP__VIEW
+** SYS_USER__VIEW
+** TASK_SLA__VIEW
 
 include::partial$spotapp-deploy-individual.adoc[]
 
@@ -65,7 +89,7 @@ The following table describes the schema for the {spotapp}.
 | incident| close_code| VARCHAR| Y
 | incident| closed_at| DATE_TIME| Y
 | incident| closed_by| VARCHAR| Y
-| incident| close_Ntes| VARCHAR| Y
+| incident| close_notes| VARCHAR| Y
 | incident| cmdb_ci| VARCHAR| Y
 | incident| company| VARCHAR| Y
 | incident| escalation| VARCHAR| Y
@@ -110,4 +134,81 @@ The following table describes the schema for the {spotapp}.
 | task_sla| __status| VARCHAR| N
 | task_sla| sys_created_on| DATE_TIME| N
 | task_sla| task| VARCHAR| N
+|===
+
+[#schema-snow-connector]
+== ServiceNow Incident Management (Snowflake Connector for ServiceNow) SpotApp schema
+
+The following table describes the schema for the ServiceNow Incident Management (Snowflake Connector for ServiceNow) SpotApp.
+
+[format="csv", options="header"]
+|===
+Table,Column,Datatype,Required
+CMDB_CI_SERVICE__VIEW,NAME,VARCHAR,No
+CMDB_CI_SERVICE__VIEW,SYS_ID,VARCHAR,No
+CMDB_CI__VIEW,NAME,VARCHAR,No
+CMDB_CI__VIEW,SYS_ID,VARCHAR,No
+CMN_COST_CENTER__VIEW,NAME,VARCHAR,No
+CMN_COST_CENTER__VIEW,SYS_ID,VARCHAR,No
+CMN_LOCATION__VIEW,COUNTRY,VARCHAR,No
+CMN_LOCATION__VIEW,NAME,VARCHAR,No
+CMN_LOCATION__VIEW,STATE,VARCHAR,No
+CMN_LOCATION__VIEW,SYS_ID,VARCHAR,No
+CONTRACT_SLA__VIEW,DURATION,DATE_TIME,No
+CONTRACT_SLA__VIEW,SYS_ID,VARCHAR,No
+CONTRACT_SLA__VIEW,SYS_NAME,VARCHAR,No
+CONTRACT_SLA__VIEW,TARGET,VARCHAR,No
+CONTRACT_SLA__VIEW,TYPE,VARCHAR,No
+CORE_COMPANY__VIEW,NAME,VARCHAR,No
+INCIDENT__VIEW,ACTIVE,BOOL,No
+INCIDENT__VIEW,ASSIGNED_TO,VARCHAR,No
+INCIDENT__VIEW,ASSIGNMENT_GROUP,VARCHAR,No
+INCIDENT__VIEW,BUSINESS_SERVICE,VARCHAR,No
+INCIDENT__VIEW,CATEGORY,VARCHAR,No
+INCIDENT__VIEW,CLOSE_CODE,VARCHAR,No
+INCIDENT__VIEW,CLOSED_AT,DATE_TIME,No
+INCIDENT__VIEW,CLOSED_BY,VARCHAR,No
+INCIDENT__VIEW,CLOSE_NOTES,VARCHAR,No
+INCIDENT__VIEW,CMDB_CI,VARCHAR,No
+INCIDENT__VIEW,COMPANY,VARCHAR,No
+INCIDENT__VIEW,ESCALATION,INT64,No
+INCIDENT__VIEW,INCIDENT_STATE,INT64,No
+INCIDENT__VIEW,LOCATION,VARCHAR,No
+INCIDENT__VIEW,NUMBER,VARCHAR,No
+INCIDENT__VIEW,OPENED_AT,DATE_TIME,No
+INCIDENT__VIEW,OPENED_BY,VARCHAR,No
+INCIDENT__VIEW,PRIORITY,INT64,No
+INCIDENT__VIEW,REASSIGNMENT_COUNT,INT64,No
+INCIDENT__VIEW,REOPEN_COUNT,INT64,No
+INCIDENT__VIEW,REOPENED_TIME,DATE_TIME,No
+INCIDENT__VIEW,RESOLVED_AT,DATE_TIME,No
+INCIDENT__VIEW,RESOLVED_BY,VARCHAR,No
+INCIDENT__VIEW,ROUTE_REASON,INT64,No
+INCIDENT__VIEW,SERVICE_OFFERING,VARCHAR,No
+INCIDENT__VIEW,SEVERITY,INT64,No
+INCIDENT__VIEW,STATE,INT64,No
+INCIDENT__VIEW,SUBCATEGORY,VARCHAR,No
+INCIDENT__VIEW,SYS_CREATED_ON,DATE_TIME,No
+INCIDENT__VIEW,SYS_ID,VARCHAR,No
+INCIDENT__VIEW,SYS_UPDATED_BY,VARCHAR,No
+INCIDENT__VIEW,SYS_UPDATED_ON,DATE_TIME,No
+INCIDENT__VIEW,TASK_EFFECTIVE_NUMBER,VARCHAR,No
+INCIDENT__VIEW,URGENCY,INT64,No
+SERVICE_OFFERING__VIEW,NAME,VARCHAR,No
+SERVICE_OFFERING__VIEW,SYS_ID,VARCHAR,No
+SYS_USER_GROUP__VIEW,NAME,VARCHAR,No
+SYS_USER_GROUP__VIEW,SYS_ID,VARCHAR,No
+SYS_USER__VIEW,COST_CENTER,VARCHAR,No
+SYS_USER__VIEW,NAME,VARCHAR,No
+SYS_USER__VIEW,SYS_ID,VARCHAR,No
+SYS_USER__VIEW,TITLE,VARCHAR,No
+TASK_SLA__VIEW,ACTIVE,BOOL,No
+TASK_SLA__VIEW,END_TIME,DATE_TIME,No
+TASK_SLA__VIEW,HAS_BREACHED,BOOL,No
+TASK_SLA__VIEW,PLANNED_END_TIME,DATE_TIME,No
+TASK_SLA__VIEW,SLA,VARCHAR,No
+TASK_SLA__VIEW,STAGE,VARCHAR,No
+TASK_SLA__VIEW,START_TIME,DATE_TIME,No
+TASK_SLA__VIEW,SYS_CREATED_ON,DATE_TIME,No
+TASK_SLA__VIEW,TASK,VARCHAR,No
 |===

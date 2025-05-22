@@ -4,13 +4,14 @@
 :experimental:
 :page-layout: default-cloud
 :description: Use the KPI chart to display important metrics to support your business use cases and track changes in your data.
+:jira: SCAL-177005, SCAL-212568
 
 You can create visualizations of your data’s Key Performance Indicators (KPIs). The KPI chart type is part of the xref:answer-experience-new.adoc[new answer experience]. Use this feature to track the changes in important KPIs in your data. When you configure the KPI chart to suit your business use case, you can save it as an Answer, add it to a Liveboard to increase visibility, or create alerts to receive notifications on the changes in the KPI using the xref:monitor.adoc[**Monitor** feature].
 
 
 image:kpi-viz-example.png[KPI visualization example]
 
-When you search a single measure, such as Sales, ThoughtSpot automatically creates a KPI chart displaying the topmost value of that column. If you search multiple terms, you can configure the column visualized in your KPI chart. To tailor the KPI visualization to your business use case, you can add time comparison keywords such as “weekly” or “monthly” to change the aggregation of your KPI, use the chart configuration menu to decide how much information to display, or apply conditional formatting.
+When you search a single measure, such as Sales, ThoughtSpot automatically creates a KPI chart displaying the topmost value of that column. If you search multiple terms, you can configure the column visualized in your KPI chart. To tailor the KPI visualization to your business use case, you can add time comparison keywords such as "weekly" or "monthly" to change the aggregation of your KPI, use the chart configuration menu to decide how much information to display, or apply conditional formatting.
 
 [#kpi-attribute]
 == KPI charts for attributes
@@ -25,7 +26,7 @@ To create an attribute KPI, follow these steps:
 2. A table displaying all values of the attribute appears. To view the KPI chart, choose one option:
 * Select the *table to chart* toggle above your Answer and select the *chart* icon. +
 image:changeview-chartortable.png[Table to chart toggle icon image]
-* Select the *chart* icon image:icon-chart-20px.png[Chart icon image] to the right of your Answer and choose the KPI chart option.
+* Select the *Change visualization* icon image:icon-chart-type-10px.png[Chart icon image] to the right of your Answer and choose the KPI chart option.
 3. If your search contains multiple columns, select the *chart configuration* icon image:icon-gear-10px.png[chart configuration icon image] to the right of your Answer. Drag and drop the attribute column into the *visualized* section to visualize it in the KPI chart.
 
 Please note that if your query returns more than one row of results, the KPI chart displays the topmost value from the result table.
@@ -40,14 +41,14 @@ If you include time column (columns of type Date, Datetime, Timestamp and Time) 
 
 If you search a measure or attribute with a keyword comparing across time periods, such as `Sales weekly`, your KPI visualization displays data corresponding to the most recent date bucket associated with your search. For a measure KPI, the percent increase or decrease in that data from the previous data point appears.
 
-In the following example, the total sales for the week of 02/21/2022 was 3.21M. This measure increased 0.2% compared to the total sales for the previous week, 3.2M. Here, “WoW” signifies that the percent change is calculated week-over-week. You can also search a measure by day (DoD), month (MoM), quarter (QoQ), or year (YoY).
+In the following example, the total sales for the week of 02/21/2022 was 3.21M. This measure increased 0.2% compared to the total sales for the previous week, 3.2M. Here, "WoW" signifies that the percent change is calculated week-over-week. You can also search a measure by day (DoD), month (MoM), quarter (QoQ), or year (YoY).
 
 
 image:kpi-viz-sparkline.png[KPI visualization example 2]
 
 To create a KPI chart that displays the change between two specific date buckets, define the time periods for comparison in the search bar. For example, to compare the change in sales between this quarter and the previous quarter, search for `sales quarterly this quarter last quarter`.
 
-NOTE: You can only create KPI charts with data arranged in ascending, or chronological, order. You cannot create a KPI chart from any search using “date descending” as a filter.
+NOTE: You can only create KPI charts with data arranged in ascending, or chronological, order. You cannot create a KPI chart from any search using "date descending" as a filter.
 
 For more information on using time period keywords in search, see xref:search-time.adoc[Time series analysis].
 
@@ -93,7 +94,7 @@ Monthly:: Previous available data point, previous month, previous quarter (same 
 Quarterly:: Previous available data point, previous quarter, previous year (same quarter)
 Yearly:: Previous available data point, previous year
 
-Note that the default comparison point is “previous available data point”, which compares your most recent data point to the last recorded data point. In cases where there is missing data between the most recent data point and your chosen comparison point, use “previous available data point” to see the percent change from the last recorded data point.
+Note that the default comparison point is “previous available data point”, which compares your most recent data point to the last recorded data point. In cases where there is missing data between the most recent data point and your chosen comparison point, use "previous available data point" to see the percent change from the last recorded data point.
 
 [#kpi-conditional]
 == Apply conditional formatting
@@ -105,11 +106,12 @@ NOTE: Conditional formatting affects the text of a KPI visualization, it does no
 To apply conditional formatting to your KPI, follow these steps:
 
 1. Select the *chart configuration* icon image:icon-gear-10px.png[Chart configuration icon image] to the right of your KPI.
-2. Select the measure tile under the *Visualized* section, for example, “Total Sales”.
-3. Under the *Conditional formatting* dropdown menu, select *+ Add rule*.
-4. Define the values of your range and set the formatting options. In the following example, the KPI text turns red and bold when its value satisfies the condition, “between 180,000 and 200,000.”
+2. Select the measure tile under the *Visualized* section, for example, "Total Sales".
+3. Under the *Conditional formatting* dropdown menu, select *Edit*.
+4. Define the values of your range and set the formatting options. In the following example, the KPI text turns red and bold when its value satisfies the condition, "between 180,000 and 200,000".
 +
 image:kpi-conditional.png[KPI chart with conditional formatting]
+
 5. Select *Add*.
 
 View the conditional formatting rule(s) applied to a KPI by selecting the information icon image:icon-information-10px.png[Information icon image] that appears to the right of the measure.
@@ -117,14 +119,13 @@ View the conditional formatting rule(s) applied to a KPI by selecting the inform
 image::kpi-conditional-info.png[KPI chart with conditional formatting information]
 
 [#change-analysis]
-.[.badge.badge-beta]#Beta# KPI change analysis
-****
+== KPI change analysis
+
 You can now use SpotIQ analysis to directly identify the key drivers for recent change in your KPIs. KPI change analysis allows you to drill down into the causes of change in your KPIs and customize the insights generated by SpotIQ.
 
 To access this feature, go to your KPI chart and select the caret icon to the right of the percent change label. The *Run change analysis* pop-up allows you to customize the columns ThoughtSpot analyzes. Note that ThoughtSpot runs change analysis between the two most recent data points defined by the KPI’s time bucket (for example, `daily` or `weekly`).
 
-For more information on comparative analysis in ThoughtSpot, see xref:spotiq-change.adoc[]. For more about Beta features, see xref:release-lifecycle.adoc#beta[ThoughtSpot Cloud release life cycle].
-****
+For more information on comparative analysis in ThoughtSpot, see xref:spotiq-change.adoc[].
 
 == Monitor your KPI
 
@@ -133,4 +134,5 @@ When you pin a KPI visualization to a Liveboard or save it as an Answer, you can
 For more information on the **Monitor** feature, see xref:monitor.adoc[Monitor Key Performance Indicators in your data].
 
 == Limitations
-You can't create a KPI chart with a xref:formulas-aggregation-group.adoc[group aggregation function].
+
+You can't create a KPI chart from a search that includes the keywords "growth" or "versus".

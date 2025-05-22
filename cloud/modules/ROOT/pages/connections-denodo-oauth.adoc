@@ -5,10 +5,16 @@
 :page-layout: default-cloud
 :connection: Denodo
 :description: Learn how to configure OAuth for a Denodo connection in ThoughtSpot.
+:jira: SCAL-160062, SCAL-180837, SCAL-199788
 
 ThoughtSpot supports OAuth for a {connection} connection.
 
 To configure OAuth for {connection}, you create an app in the Identity Provider and use the app’s credentials to register it in {connection} as an external token provider. Once these steps are completed, {connection} will allow connections coming in with the JWT issued by the IdP.
+
+NOTE: For OAuth, we recommend checking the {connection} link:https://community.denodo.com/docs/html/browse/8.0/en/vdp/administration/server_configuration/server_authentication/oauth_authentication/oauth_authentication[documentation] to confirm any IDP support and their details. This article documents only the most frequently set-up IDP.
+
+IMPORTANT: Each ThoughtSpot instance requires a unique {connection} security integration.
+Each user in {connection} must have a default warehouse and default role.
 
 [#part-1]
 == Part 1: Configuring the IdP with Okta
@@ -35,6 +41,8 @@ It should follow this format:
 `\https://<your-thoughtspot-instance-host>/callosum/v1/connection/generateTokens`
 +
 image::dremio-oauth3.png[Add the ThoughtSpot redirect URI]
++
+NOTE: If your IdP supports rotation of refresh tokens with every usage, please ensure that this option is NOT chosen. ThoughtSpot does not support one-time use refresh tokens.
 
 . Assign the application to everyone in the organization or to specific groups. This step may vary for other IdPs.
 +
@@ -98,7 +106,6 @@ image:oauth-error.png[Error reading “Error in loading data. Connection to Snow
 
 . You will now have access to edit the connection.
 
-
 '''
 > **Related information**
 >
@@ -110,3 +117,5 @@ image:oauth-error.png[Error reading “Error in loading data. Connection to Snow
 > * xref:connections-denodo-delete.adoc[Delete a {connection} connection]
 > * xref:connections-denodo-private-link.adoc[]
 > * xref:connections-denodo-reference.adoc[Connection reference for {connection}]
+> * xref:connections-denodo-passthrough.adoc[]
+> * xref:connections-column-indexing-oauth.adoc[]

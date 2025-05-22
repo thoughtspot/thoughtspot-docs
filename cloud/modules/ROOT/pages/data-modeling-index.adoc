@@ -5,6 +5,7 @@
 :page-layout: default-cloud
 :page-aliases: /admin/data-modeling/change-index.adoc
 :description: ThoughtSpot dynamically indexes Search bar suggestions for column names and values.
+:jira: SCAL-206047
 
 
 When a user searches in the *Search* bar, ThoughtSpot supplies the user with suggestions for column names and their column values.
@@ -51,21 +52,24 @@ The exceptions are columns with *COLUMN TYPE* of `MEASURE` and columns with *DAT
 WARNING: If a column has a very large free text value, ThoughtSpot recommends you keep `DEFAULT` or set `DONT_INDEX`.
 Other settings indexing on these values may generate confusing suggestions.
 
-* Short strings (like a `firstname` column) are indexed using `PREFIX_AND_SUBSTRING` by default, which indexes both prefix and substrings.
+* Short strings (like a `firstname` column) are indexed using `PREFIX_AND_WORD_SUBSTRING` by default, which indexes prefixes for each individual word in the column value.
 * If a column has a _cardinality_ -
-the number of unique column values - greater than 1 million, ThoughtSpot does not index it by default. You can index columns with a greater cardinality than 1 million, but it may impact performance. To index a column with a cardinality greater than 1 million, contact {support-url}.
+the number of unique column values - greater than 100,000, and the index type is `DEFAULT`, ThoughtSpot does not index it. You can index columns with a greater cardinality than 100,000, but it may impact performance. To index a column with a cardinality greater than 100,000, set the index type to `PREFIX_ONLY`. If you must index a column with high cardinality using a type other than `PREFIX_ONLY`, contact {support-url}.
 
 If a column's *INDEX TYPE* is _not_ *DEFAULT*, and the column's cardinality is greater than 10 million, ThoughtSpot does not index the column.
 
+[#high-cardinality]
 === High cardinality and performance
 
 A column's cardinality can impact indexing.
-If you have a column with a very high cardinality and a very high number of rows, indexing these values can impact your ThoughtSpot performance.
-ThoughtSpot Support recommends you turn off indexing of primary key columns on extremely large tables (unlimited number of rows but < 1 million unique values) in your cluster.
+If you have a column with a very high cardinality and a very high number of rows, indexing these values can impact your ThoughtSpot performance. ThoughtSpot considers columns with over 100,000 unique values to have high cardinality.
+ThoughtSpot Support recommends you turn off indexing of primary key columns on extremely large tables (unlimited number of rows but < 100,000 unique values) in your cluster.
 
 High cardinality is relative to other considerations.
-In some cases, columns with fewer than 1 million rows but with columns containing long strings can cause performance problems with memory.
+In some cases, columns with fewer than 100,000 rows but with columns containing long strings can cause performance problems with memory.
 If you have concerns or questions, your ThoughtSpot contact can help you determine appropriate cardinality thresholds for your ThoughtSpot installation.
+
+To index a column with a cardinality greater than 100,000, set the index type to `PREFIX_ONLY`, `PREFIX_AND_WORD_SUBSTRING`, or `PREFIX_AND_SUBSTRING`. If you must change the cardinality limit for `DEFAULT` columns, contact {support-url}.
 
 === Configure your own cluster defaults
 
@@ -81,6 +85,8 @@ You cannot choose an index type.
 When viewing a Worksheet, toggle the *SUGGEST VALUES IN SEARCH* option on or off.
 
 image::worksheet-search-indexing.png[Worksheet search indexing]
+
+CAUTION: Indexing only works at the table level. If the underlying table column's INDEX TYPE is set to 'DONT INDEX', the respective Worksheet column won't be indexed and be able to 'suggest values'.
 
 [#override-system-default-column]
 == Override the system default on a column
@@ -139,7 +145,7 @@ If you are using the model file, locate the *Index* cell, and enter the *INDEX T
 [#column-suggestion-priority]
 == Change a column's suggestion priority
 
-A column's *INDEX PRIORITY* determines the order or rank in which it and its values appear in the search suggestions dropdown list.
+A column's *INDEX PRIORITY* determines the order or rank in which it and its values appear in the search suggestions dropdown list. It also affects which columns ThoughtSpot prioritizes when generating xref:ai-answers.adoc[AI Answers].
 
 image::priority-effect.png[High priority columns appear higher in the search suggestions]
 

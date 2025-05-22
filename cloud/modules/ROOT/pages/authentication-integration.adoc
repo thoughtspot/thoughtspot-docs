@@ -19,9 +19,7 @@ If the *SAML* section of the Admin Console is called *SAML integration*, your co
 
 [NOTE]
 ====
-If your organization uses xref:orgs-overview.adoc[multi-tenancy with Orgs], you must be a cluster administrator to manage SAML authentication, not an Org administrator. You manage SAML authentication for the whole cluster. You cannot set it separately for each Org.
-
-To ensure SAML authentication works smoothly in an Orgs environment, you must include Orgs mapping in your IDP assertion. See <<assertion,IDP metadata XML file>>. If you map Orgs with SAML, you can't also map groups.
+To ensure SAML authentication works smoothly in an Orgs environment, you must include Orgs mapping in your IDP assertion. See <<assertion,IDP metadata XML file>>. You can map Orgs and groups with SAML.
 ====
 
 == SAML SSO authentication
@@ -109,12 +107,14 @@ The attributes associated with the user; for example, the username and email add
 
 You need admin privileges to enable SAML SSO authentication.
 
+. If you are using xref:orgs-overview.adoc[], ask {support-url} to enable SAML integration in your environment. After ThoughtSpot Support enables SAML integration, you can configure SAML for your environment.
 . Configure the ThoughtSpot application instance on your IDP server.
+.. If you are using xref:okta-iam.adoc[], you must whitelist the following URL in your IDP: `https://identity.thoughtspotlogin.cloud/`.
 . Sign in to your ThoughtSpot application instance.
 . From the top navigation bar, select the *Admin* tab.
 . Select *SAML* from the side navigation bar that appears.
 +
-If your organization uses xref:orgs-overview.adoc[multi-tenancy with Orgs], ensure that you are in the Primary Org, in the *All orgs* section of the Admin Console. You manage SAML authentication for the whole cluster. You cannot set it separately for each Org.
+If your organization uses xref:orgs-overview.adoc[multi-tenancy with Orgs], ensure that you are in the Primary Org, in the *All orgs* section of the Admin Console. You manage SAML authentication for the whole cluster.
 . Select the *Configure* button in the middle of the screen.
 . Fill in the following parameters:
 +
@@ -122,7 +122,7 @@ image::admin-portal-saml-configure.png[Configure SAML]
 ThoughtSpot Service Address::
 A fully qualified and resolvable domain name for the ThoughtSpot service.
 +
-This must be in the format _<cluster-name>.thoughtspot.com_.
+This must be in the format _<cluster-name>.thoughtspot.cloud_.
 Port::
 Enter `443` in this box.
 +
@@ -159,7 +159,7 @@ Attributes and subjects appear in separate sections of your SAML assertion.
 It is *mandatory* to fill out the mail field.
 If your company cannot meet this requirement, contact {support-url}.
 +
-If your company uses Orgs, it is also mandatory to include mapping for the Orgs attribute. You must include all the Orgs to which the user belongs. Here is a sample *Orgs* attribute:
+If your company uses Orgs, it is also mandatory to include mapping for the Orgs attribute. If you do not including Orgs mapping, all users get assigned only to the Primary Org. In the Org mapping, you must include all the Orgs to which the user belongs. Here is a sample *Orgs* attribute:
 +
 [source,bash]
 ----
@@ -237,13 +237,14 @@ xsi:type="xs:string">testorg
 </saml2:Attribute>
 ----
 
-NOTE: If you map Orgs with SAML, you can't also map groups.
+NOTE: You can map Orgs and groups with SAML.
 
-== SAML group mapping
+== SAML group and Org mapping
 
-You can map your SAML groups from your IDP to your ThoughtSpot groups, unless you are using xref:orgs-overview.adoc[Orgs].
-SAML group mapping means that you do not have to manually recreate your groups in ThoughtSpot, if they are already present in your IDP.
+You can map your SAML groups and Orgs from your IDP to your ThoughtSpot. For more information about Orgs, see xref:orgs-overview.adoc[Orgs].
+SAML group and Org mapping means that you do not have to manually recreate your groups and Orgs in ThoughtSpot, if they are already present in your IDP.
 Refer to xref:saml-group-mapping.adoc[Configure SAML group mapping].
+
 
 == Use SSO login by default
 After you configure SAML authentication, a new option appears on the login page that allows users to sign in using SSO, while still allowing local users to sign in.

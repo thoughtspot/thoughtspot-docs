@@ -44,7 +44,7 @@ To use the cumulative function in a search:
 +
 image::aggregation_answer.png[Sample search with 3 attributes, 1 measures, and 1 filter]
 
-. Open the *Data* panel from the upper-left corner if it is not open, and select the *+* icon next to Formulas.
+. Open the Data panel from the upper-right corner if it is not open, navigate to the *Category* image:icon-by-category.png[Category view] or *A to Z* image:icon-a-to-z.png[Alphabetical view] view, click *+ Add*, and select *Formula*.
 If the xref:answer-experience-new.adoc[new Answer experience] is off in your environment, select the *more options* icon image:icon-more-10px.png[more options menu icon] in the upper-right side of the table, and select *Add formula*.
 +
 image::formula-editor-add.png[Click + to add a formula]
@@ -62,8 +62,28 @@ The formula will appear in the search bar and in the table as its own column.
 +
 image::cumulative_sum_table.png[cumulative sum table]
 +
-A headline box displaying the cumulative sum within the entire table will appear at the bottom.
+A table summary displaying the cumulative sum within the entire table will appear at the bottom.
 You can select it to toggle between different aggregations.
+
+== Calculate a cumulative sum of a unique count
+
+ThoughtSpot doesn't have a purpose-built function for calculating a cumulative sum, or other cumulative formula, for a unique count. However, for many use cases, you can use a `group_aggregate` to facilitate this type of count. Adding a `group_aggregate` to your formula allows you to pass the aggregate function (in this case, `unique count`) in the windowing function (in this case, `cumulative_sum`).
+
+See the following example for the general formula for a cumulative sum of a unique count. In this example, we calculate the cumulative sum of unique customer names, using `monthly date` as our aggregation bucket.
+
+[source,bash]
+----
+cumulative_sum (group_aggregate (unique count (Customer Name ),query_groups (),query_filters ()),start_of_month (Date) )
+----
+
+The result looks something like this:
+
+image::cumulative-unique-example.png[Cumulative sum of a unique count of customers]
+
+You can use this syntax on any cumulative formula: average, maximum, minimum, and sum.
+
+NOTE: This syntax produces a unique count for each individual result, such as *Oct 2021*. However, it doesn't produce a unique count across results. If a customer name appears in both October 2021 and November 2021, for example, that customer would be counted in both those months.
+
 
 '''
 > **Related information**

@@ -2,8 +2,8 @@
 :last_updated: 3/9/2023
 :linkattrs:
 :experimental:
-:author: Teresa Killmond
 :page-layout: default-cloud
+:author: Teresa Killmond
 :page-aliases: /admin/ts-cloud/scriptability.adoc
 :description: Export and import Worksheets, views, SQL Views, tables, Liveboards, Monitor alerts, and Answers in a human-readable format.
 
@@ -15,10 +15,10 @@ ThoughtSpot developed its own scriptable approach for exporting, enhancing, and 
 
 You can model your data and build out sophisticated dashboards in your test environment, before deploying to all users.
 
-TML supports several scenarios that you may encounter:
+ThoughtSpot Modeling Language supports several scenarios that you may encounter:
 
 * *Migrating from a development environment to a production environment* by downloading files from the development cluster and uploading the same files into the production cluster
-* *Implementing metadata changes outside ThoughtSpot UI*, such as replacing the underlying tables for an object, or replacing a single column from one table with a column in another table
+* *Implementing metadata changes outside the ThoughtSpot UI*, such as replacing the underlying tables for an object, or replacing a single column from one table with a column in another table
 * *Making bulk changes*, such as mass renaming of objects defined by Worksheets, and managing duplicates
 * *Reusing existing objects to build new objects*, such as building two very similar objects based on a similar, pre-existing object.
 
@@ -294,6 +294,22 @@ You must select the objects yourself.
 . Select *Import selected*.
 . The *Import Status* screen displays the status of the objects you imported.
 You can open the object(s) that you imported, or select *Exit* to return to the main object page.
+
+[#delete]
+== Deleting columns, joins, and RLS rules
+You can delete joins at the table level, table RLS rules, and table, Worksheet, View, and SQL View columns. However, keep in mind the following behaviors:
+
+* To delete a column or join, you must first remove its dependents. If you are deleting a column, you can delete it and remove that column's dependencies in the same zip file import.
+
+* If the deletion of a column fails, the whole import, including any other objects in a zip file, will fail.
+
+* Joins only appear in the table TML file of the source table in a join, or the table on the Many side of a Many-to-One join.
+You can only add and edit table joins from the TML file of the table on the Many side of the join.
+You can't view or modify table-level joins from the destination table's TML file.
+
+* You can't modify joins at the table level from the Worksheet, view, or Answer TML file.
+You can only override the joins for that specific Worksheet, view, or Answer.
+To modify table-level joins, you must edit the source table's TML file.
 
 == Limitations of working with TML files
 

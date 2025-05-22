@@ -11,7 +11,7 @@
 :page-partial:
 :connection: Snowflake
 :description: ThoughtSpot supports Snowflake’s internal OAuth for a Snowflake connection.
-
+:jira: SCAL-160062, SCAL-180837, SCAL-199788
 
 
 ThoughtSpot supports {connection}'s internal OAuth for a {connection} connection.
@@ -19,6 +19,10 @@ With OAuth, each ThoughtSpot user authenticates with {connection} and authorizes
 
 For {connection} connections that use internal OAuth, users must sign in when their OAuth tokens expire.
 The amount of time that {connection} OAuth tokens are valid is set in {connection}.
+
+NOTE: For OAuth, we recommend checking the {connection} link:https://docs.snowflake.com/en/user-guide/oauth-ext-overview[documentation] to confirm any IDP support and their details. This article documents only the most frequently set-up IDP.
+
+NOTE: If your IdP supports rotation of refresh tokens with every usage, please ensure that this option is NOT chosen. ThoughtSpot does not support one-time use refresh tokens.
 
 == Configuring a {connection} database for internal OAuth with ThoughtSpot
 
@@ -102,7 +106,7 @@ NOTE: Make sure you include the equals sign (=), if it exists.
 +
 Example: `KdKBb0aOxPzml+RJvMP1/eIEMlFxM/su6rPh2wLZ`
 
-. In the {connection} connection details page in ThoughtSpot, paste the OAuth client ID in the *OAuth Client Secret* field.
+. In the {connection} connection details page in ThoughtSpot, paste the OAuth client secret in the *OAuth Client Secret* field.
 +
 NOTE: Once a connection is created the token associated with the user login credentials for the connection is stored in ThoughtSpot for 90 days.
 
@@ -127,6 +131,14 @@ image:oauth-error.png[Error reading “Error in loading data. Connection to Snow
 
 . You will now have access to edit the connection.
 
+== OAuth connection improvements
+
+If you do not have a valid OAuth access token, you can now directly navigate to the OAuth authorization screen when performing one of the following actions on a connection shared with you:
+
+** View sample data
+** Create a custom SQL view
+** Edit the connection
+** Upload a CSV file
 
 '''
 > **Related information**
@@ -141,4 +153,9 @@ image:oauth-error.png[Error reading “Error in loading data. Connection to Snow
 > * xref:connections-snowflake-azure-ad-oauth.adoc[Configure Azure AD OAuth]
 > * xref:connections-snowflake-best.adoc[Best practices for {connection} connections]
 > * xref:connections-snowflake-private-link.adoc[]
+> * xref:connections-snowflake-psc.adoc[]
 > * xref:connections-snowflake-reference.adoc[Connection reference for {connection}]
+> * xref:connections-query-tags.adoc#tag-snowflake[ThoughtSpot query tags in Snowflake]
+> * xref:connections-snowflake-passthrough.adoc[]
+> * xref:connections-column-indexing-oauth.adoc[]
+

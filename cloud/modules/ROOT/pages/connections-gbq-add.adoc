@@ -1,11 +1,12 @@
 = Add a {connection} connection
-:last_updated: 9/21/2020
+:last_updated: 4/7/2023
 :linkattrs:
 :experimental:
 :page-layout: default-cloud
 :page-aliases: /admin/ts-cloud/ts-cloud-embrace-gbq-add-connection.adoc
 :connection: BigQuery
 :description: Learn how to add a BigQuery connection.
+:jira: SCAL-170548
 
 Before you can create a connection, you must create a custom role.
 For more information, see xref:connections-gbq-prerequisites.adoc[Prerequisites].
@@ -44,12 +45,21 @@ Refer to the xref:connections-gbq-reference.adoc[{connection} connection referen
 
 . (Optional) Provide additional key-value pairs that you need to set up your connection to {connection} or customize additional JDBC parameters supported by {connection}, by doing the following:
  .. Select the *Advanced Config* menu to reveal the *Key* and *Value* fields.
- .. Enter your key and value information. Refer to the https://storage.googleapis.com/simba-bq-release/jdbc/Simba%20Google%20BigQuery%20JDBC%20Connector%20Install%20and%20Configuration%20Guide.pdf[GBQ JDBC documentation^].
+ .. Enter your key and value information. Refer to the https://storage.googleapis.com/simba-bq-release/jdbc/Simba%20Google%20BigQuery%20JDBC%20Connector%20Install%20and%20Configuration%20Guide-1.3.2.1003.pdf[GBQ JDBC documentation^].
  .. To add more keys and values, select the plus sign (+), and enter them.
 
 +
 NOTE: Any key-value pairs that you enter must be defined in your {connection} data source.
 Key-value pairs are case-sensitive.
+
+. If you are connecting to GBQ using a Bridge connector, enter the following key-value pair under *Advanced Config*.
+
+* For *Key*, enter `bridgeToken`.
+* For *Value*, enter your bridge token value.
+
++
+[#bridge]
+NOTE: The Bridge connector for {connection} is off by default. To enable this feature, contact {support-url}. ThoughtSpot Support will provide you with the bridge token, token secret, and "host:port" of the bridge public load balancer for your cluster. To use the Bridge connector for {connection}, you must run a Bridge Client on a network that connects to your {connection} database.
 . Select *Continue*.
 . Select tables (on the left) and the columns from each table (on the right), and then select *Create connection*.
 +
@@ -105,6 +115,7 @@ Note that to remove share access from a connection, you must navigate to the *Sh
 > **Related information**
 >
 > * xref:connections-gbq-prerequisites.adoc[{connection} prerequisites]
+> * xref:connections-gbq-ingress.adoc[]
 > * xref:connections-gbq-edit.adoc[Edit a {connection} connection]
 > * xref:connections-gbq-remap.adoc[Remap a {connection} connection]
 > * xref:connections-gbq-external-tables.adoc[Query external tables from your {connection} connection]
@@ -113,3 +124,5 @@ Note that to remove share access from a connection, you must navigate to the *Sh
 > * xref:connections-gbq-delete.adoc[Delete a {connection} connection]
 > * xref:connections-gbq-oauth.adoc[Configure OAuth for a {connection} connection]
 > * xref:connections-gbq-reference.adoc[Connection reference for {connection}]
+> * xref:connections-gbq-passthrough.adoc[]
+//> * xref:connections-query-tags.adoc#tag-gbq[ThoughtSpot query tags in Google BigQuery]
