@@ -1,0 +1,141 @@
+= 8.4.0.sw Release Notes
+:experimental:
+:last_updated: 5/19/2022
+:linkattrs:
+:page-aliases: /release/notes.adoc
+:description: These release notes include information about new and enhanced features.
+
+ThoughtSpot version 8.4.0.sw is now available as a limited availability release.
+
+include::partial$limited-availability-notice.adoc[]
+
+These release notes include information about new and enhanced features.
+
+To see our feature deprecation plans, please see xref:deprecation.adoc[].
+
+For a complete list of issues that we fixed in this release, see xref:fixed.adoc#releases-8-4-x[Fixed issues].
+
+* <<new-8-4-0,8.4.0.sw New Features and Functionality>>
+* <<upgrade-paths,Supported Upgrade Paths>>
+
+[#new-8-4-0]
+== 8.4.0.sw New Features and Functionality
+
+* <<analyst-8-4-0-sw,For the Analyst>>
+* <<business-user-8-4-0-sw,For the Business User>>
+* <<data-engineer-8-4-0-sw,For the Data Engineer>>
+* <<it-ops-engineer-8-4-0-sw,For the IT Ops Engineer>>
+* <<developer-8-4-0-sw,For the Developer>>
+
+[#analyst-8-4-0-sw]
+=== For the Analyst
+
+Date interval functions::
+In this release, we introduced new functions for computing time intervals between two dates. In addition to the existing xref:formula-reference.adoc#diff_days[diff_days] and xref:formula-reference.adoc#diff_time[diff_time] functions, you can now use `diff_years`, `diff_quarters`, `diff_months` `diff_weeks`, `diff_hours`, and `diff_minutes` to calculate time intervals at these additional granularities.
++
+If your organization uses a xref:connections-cust-cal.adoc[custom calendar], which can specify a new starting date of a year, starting dates of quarters, a starting day of the month, and a starting day of the week, use the optional custom calendar argument with these functions to calculate the difference between the two dates.
++
+Refer to xref:formula-reference.adoc#date-functions[Formula reference date functions].
+
+Conditional and number formatting for downloaded tables::
+When you download a table in `XLSX` format, the downloaded table now shows the same conditional and number formatting as the table in ThoughtSpot. Refer to xref:search-download.adoc#table-formatting[Download your search].
+
+Liveboard schedule::
+ThoughtSpot now combines the Liveboard follow and xref:liveboard-schedule.adoc[Liveboard Schedule] features into a single action called "Schedule." To create a new schedule to receive an email containing a pdf of your Liveboard, users now select the *Schedule* button to the left of the *more options menu* image:icon-more-10px.png[].
++
+ThoughtSpot will migrate any existing Liveboard follows to Liveboard schedules. For users who followed a Liveboard in November Cloud or earlier, those Liveboard schedules appear in the list of Liveboard schedules as _Migrated from follow (your display name)_.
+
+New SpotIQ experience::
+The new SpotIQ experience is now available. The functionality remains the same, but we reorganized the UI to make it more intuitive. The new experience is off by default, but you can manage your individual SpotIQ experience xref:user-profile.adoc#spotiq[from your profile]. Note that the new SpotIQ experience is dependent on the xref:answer-experience-new.adoc[new answer experience]; to use the new SpotIQ experience, you must first enable the new answer experience. For more information, refer to xref:spotiq.adoc[SpotIQ].
+
+New answer experience::
+The xref:answer-experience-new.adoc[new answer experience] is now available. It contains multiple new features and feature enhancements.
+It is part of ThoughtSpot's move to a new stack. The new experience is *_off_* by default, but you can manage your individual answer experience xref:user-profile.adoc#new-answer-experience[from your profile].
+To learn more about the new answer experience, refer to xref:answer-experience-new.adoc[].
++
+The new answer experience contains the following features:
++
+include::partial$new-answer-experience-features.adoc[]
+
+New answer experience deprecations::
+include::partial$new-answer-experience-deprecations.adoc[]
+
+Streamlined analyst setup::
+We simplified the steps to set up an analyst account on ThoughtSpot. Now, you can create a connection, xref:worksheet-create-setup.adoc[create a worksheet] to model your business use cases, immediately search your data, and automatically xref:automated-answer-creation.adoc[create Search visualizations]. See xref:analyst-onboarding.adoc[Analyst Onboarding] for further details.
++
+This feature is specific to clusters based on connections to external data warehouses, not imported data (Falcon). To enable this feature for your cluster, xref:support-contact.adoc[contact ThoughtSpot Support].
+
+[#business-user-8-4-0-sw]
+=== For the Business User
+
+Starting in May 2022, ThoughtSpot refers to Liveboards instead of pinboards. With Liveboards, you can have an interactive experience and get granular insights through live queries on cloud data, tailored for you. You can use Liveboards to iterate, explore, and drill into more insights, and tell a continuously evolving data story. +
+ThoughtSpot plans to support for several releases, and then retire, internal processes and external methods that use the older naming convention.
+
+Key Performance Indicator (KPI) chart type::
+
+You can now create visualizations of your data’s Key Performance Indicators (KPIs). When you search for a measure with a time-related keyword (for example, `Sales weekly`), you can create sparkline visualizations of your data’s Key Performance Indicators (KPIs). ThoughtSpot also supports conditional formatting to add visual cues for KPIs or threshold metrics to easily show where you are falling short or exceeding targets. For more information, see xref:chart-kpi.adoc[].
+
+Auto-select search data source for new users::
+When a new user first uses xref:search.adoc[Search], ThoughtSpot intelligently selects a data source for them to search on. ThoughtSpot chooses the most popular data source in the cluster that the user has access to. This allows users to begin to search data easily, without looking through all the existing data sources on their cluster.
+
+Geo map support for France postcode::
+
+We now support more detailed geographic maps for France. You can now create maps based on postal codes, as well as region and city name. For more information, see xref:geomap-reference.adoc#france[Geo map reference].
+
+[#data-engineer-8-4-0-sw]
+=== For the Data Engineer
+
+[#data-workspace-beta]
+Data Workspace [.badge.badge-update]#Beta#::
+This release redesigns the Data section of the product. The new Data Workspace is still in the same place in the product. To access it, select Data from the top navigation bar. The redesign introduces several new features, such as SQL-based views and SpotApps, and makes the UI more intuitive.
++
+This feature is in beta and off by default. To enable it, contact {support-url}.
+
+[#sql-views-beta]
+SQL-based views  [.badge.badge-update]#Beta#::
+This release introduces beta support for SQL-based views. Users can create views based on custom SQL queries, and use those views as data sources. This type of view has the same functionality as a view based on searching your data.
++
+This feature is in beta and off by default. It is part of the new <<data-workspace-beta,Data Workspace>>, which is also in beta and off by default. To enable SQL-based views and the new Data Workspace, contact {support-url}.
+
+[#dbt-beta]
+Integration with dbt  [.badge.badge-update]#Beta#::
+ThoughtSpot now offers an integration with dbt. You can provide your existing dbt models and automatically create worksheets in ThoughtSpot that you can use to perform searches on your data.
++
+This feature is in beta and off by default. It is part of the new <<data-workspace-beta,Data Workspace>>, which is also in beta and off by default. To enable dbt integration and the Data tab redesign, contact {support-url}.
+
+[#databricks-oauth]
+OAuth for Databricks::
+Databricks connections now support OAuth. See xref:connections-databricks-oauth.adoc[Configure OAuth for a Databricks connection].
+
+[#it-ops-engineer-8-4-0-sw]
+=== For the IT Ops Engineer
+
+Python 3.9 upgrade::
+*_ThoughtSpot-managed CentOS deployments only:_* If you upgraded to Python 3.9 while on ThoughtSpot version 7.2.1, you must xref:python-upgrade.adoc[upgrade your Python version to 3.9] again after you upgrade to ThoughtSpot version 8.4.0.sw.
++
+NOTE: This does not apply to customer-managed Amazon Linux 2 or RHEL deployments. Amazon Linux 2 or RHEL deployments do not need to upgrade their Python version again.
+
+[#developer-8-4-0-sw]
+=== For the Developer
+
+Starting from the 8.4.0-sw release (Limited Availability), customers licensed to embed ThoughtSpot can use ThoughtSpot Everywhere features and Visual Embed SDK.
+
+To enable ThoughtSpot Everywhere on your cluster, contact ThoughtSpot Support.
+
+For information about ThoughtSpot Everywhere, refer to  link:https://developers.thoughtspot.com/docs[ThoughtSpot Everywhere Documentation, window=_blank].
+
+[#upgrade-paths]
+== Supported Upgrade Paths
+
+If you are running one of the following versions, you can upgrade to the 8.4.0.sw release directly:
+
+* 7.1.x to 8.4.0.sw
+* 7.2.x to 8.4.0.sw
+
+This includes any hotfixes or customer patches on these branches.
+
+If you are running a different version, you must do a multiple pass upgrade.
+
+First, upgrade to version 7.1.x or 7.2.x, and then to the 8.4.0.sw release.
+
+NOTE: To successfully upgrade your ThoughtSpot cluster, all user profiles must include a valid email address. Without valid email addresses, the upgrade is blocked.

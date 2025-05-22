@@ -1,0 +1,87 @@
+= Add a hyperlink to a search
+:last_updated: 5/10/2022
+:experimental:
+:linkattrs:
+:page-aliases: pinboard-hyperlink.adoc
+:description: Learn how to add a hyperlink to a search.
+
+include::partial$liveboards-announcement.adoc[]
+
+
+Learn how to add a hyperlink to a search.
+
+You can add a hyperlink directly within a Search. Using the concat formula, you can create an external hyperlink, or link your answer to another Liveboard.
+
+== How to add a basic hyperlink
+
+To add an external hyperlink in a search, follow these steps:
+
+1. Start a new Search. +
+Alternatively, choose to edit an existing answer from a Liveboard.
+
+2. If the Answer shows a chart, switch to **Table View**.
++
+image:changeview-chartortable.png[Switch to table view]
+
+3. Open the *Data* panel from the upper right corner if it is not open, and click the *+* icon next to Formulas. If the xref:answer-experience-new.adoc[new answer experience] is off in your environment, click the *more options* icon image:icon-more-10px.png[more icon] in the upper-right side of the table, and select *Add formula*.
++
+image::formula-add-v2.png[]
+
+
+4. Name your formula.
+
+5. Enter your formula, following the basic syntax:
++
+----
+concat({caption}value{/caption}link)
+----
+  .. For a data set that does not contain properly formed urls, your formula should include the url in full. +
+  For example, to link from the Product Category column to a Google search, use the following syntax to reference the `product category` column, and a Google search using its values:
++
+----
+concat("{caption}",product category,"{/caption}","https://www.google.com/search?q=",product category)
+----
+
+  .. For a data set that contains properly formed urls, you can simplify the formula. +
+  For example, to link from the `Fruit` column to the `url`, use the following syntax to reference the two columns, `fruit` and `url`:
++
+----
+concat("{caption}",fruit,"{/caption}",url)
+----
+6. Click **Save**.
+
+== How to link to another Liveboard
+
+To add a hyperlink to another Liveboard, follow these steps:
+
+1. Start a new Search.
++
+Alternatively, choose to edit an existing Answer from a Liveboard.
+
+2. Choose the target Liveboard for the link.
+
+3. Open your target Liveboard and copy the web address.
+
+4. Within your Search, switch to **Table View**.
+
+5. Open the *Data* panel from the upper right corner if it is not open, and click the *+* icon next to Formulas. If the xref:answer-experience-new.adoc[new answer experience] is off in your environment, click the *more options* icon image:icon-more-10px.png[more icon] in the upper-right side of the table, and select *Add formula*.
++
+image::formula-add-v2.png[]
+
+
+6. Name your formula.
+
+7. Enter your formula, following the basic syntax:
++
+----
+concat(“{caption}pinboard{/caption}http://<thoughtspot_server>:<port>/?<runtime filter>,column name)
+----
+For example, the formula to link between a search on fruit sales and a Liveboard based on the same data with url `\https://<thoughtspot-instance>.com/#/pinboard/e510f946-f9ce-48ad-a4af-1a40a9cf8add` would be:
++
+----
+concat("{caption}pinboard{/caption}https://<thoughtspot-instance>.com/#/pinboard/e510f946-f9ce-48ad-a4af-1a40a9cf8add/?col1=fruit&op1=eq&val1=",fruit)
+----
++
+Here, the runtime filter is operating on the column “fruit,” and will only return values that are equal (EQ) to the fruits listed in the columns. To learn more about runtime filters, see xref:runtime-filters.adoc[About Runtime Filters].
+
+8. Click **Save**.
