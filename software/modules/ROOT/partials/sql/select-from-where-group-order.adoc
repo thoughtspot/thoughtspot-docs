@@ -1,0 +1,40 @@
+SELECT <cols_or_expr> FROM <table_list> [WHERE <predicates>] [GROUP BY <expr>] [ORDER BY <expr>]:: Shows specified set of table data.
++
+If you do not specify the TOP number of rows to select, the top 50 rows will be returned by default. The number of rows to return can be set using the [.ph]#TQL# command line flag:
++
+[source]
+----
+--query_results apply_top_row_count`
+----
++
+You can use the following *aggregation* functions:  `sum`, `count`, `count distinct`, `stddev`, `avg`, `variance`, `min`, and `max`.
++
+You can use the following *date* functions:
+`absyear`, `absmonth`, `absday`, `absquarter`, `date`,
+and `time`.
+
+Examples;;
++
+[source]
+----
+SELECT TOP 10 "quantity"
+  FROM "sales_fact";
+
+SELECT COUNT(&#42;)
+  FROM "vendor";
+
+SELECT "vendor", SUM("quantity")
+  FROM "sales_fact"
+  GROUP BY "vendor";
+
+SELECT "vendor", SUM("amount")
+  FROM "vendor", "sales_fact"
+  WHERE "sales_fact"."vendorid" = "vendor"."vendorid"
+  AND "amount" > 100
+  GROUP BY "vendor"
+  ORDER BY "amount" DESC;
+
+SELECT "vendor", SUM("quantity")
+  FROM "sales_fact"
+  GROUP BY "vendor" LIMIT 10;
+----

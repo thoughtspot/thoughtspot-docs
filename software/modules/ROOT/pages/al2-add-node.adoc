@@ -1,0 +1,56 @@
+= Add a node to a ThoughtSpot cluster on Amazon Linux 2
+:last_updated: 01/03/2021
+:linkattrs:
+:experiment:
+
+You can easily configure an additional node for a ThoughtSpot cluster on Amazon Linux 2.
+
+To add a new node to a ThoughtSpot cluster deployed through Amazon Linux 2, you must first make this new node ready for ThoughtSpot.
+
+[#prerequisites]
+== Prerequisites
+
+* The new node must be available.
+* The new node must be of the same deployment type as the existing cluster.
+* Your organization's Amazon Linux 2 base image must be on the new node.
+
+[#configure-ansible]
+== Configure the Ansible Playbook
+
+Follow the general steps for configuring the Ansible Playbook, either on xref:al2-install-online.adoc#configure-ansible[online clusters], or on xref:al2-install-offline.adoc#configure-ansible[offline clusters].
+
+. Save a new copy of the `hosts.yaml` file, as `new-host.yaml`.
+. In the `hosts` parameter, *_only_* specify the `IP` or `hostname` of the new node.
+. Do not change the rest of the file; the Ansible configuration must be identical to the existing cluster.
+
+[#run-ansible]
+== Run the Ansible Playbook
+
+Run the Ansible Playbook from your local machine by entering the following command:
+[source]
+----
+ansible-playbook -i new-host.yaml ts.yaml
+----
+
+As the Ansible Playbook runs, it will perform the same tasks on the new node that it completed during the initial cluster set-up, but only for the new node.
+See xref:al2-install-online.adoc#run-ansible[Run Ansible].
+It will install all xref:al2-packages.adoc[Yum, Python, and R packages], configure the local user accounts for ThoughtSpot administration, install the ThoughtSpot CLI, and configure the node (create any necessary partitions, formatting the data disks, and running the `prepare disks` command).
+
+After the Ansible Playbook finishes, your new host is ready for installing the ThoughtSpot application.
+
+[#install-thoughtspot]
+== Install the ThoughtSpot application on the new node
+
+Follow these general steps to install ThoughtSpot on the new node:
+
+. Download the release artifact from the ThoughtSpot file sharing system, or get it from your organization's.
+. Upload the release artifact to the node.
+. Run the `tscli cluster create` command. This script prompts you for user input.
+. Check the cluster health by running health checks and logging into the application. Refer to the xref:aws-configuration-options.adoc[Amazon Web Services (AWS) EC2 deployment guide] for the detailed steps to install ThoughtSpot.
+
+Follow these general steps to install ThoughtSpot on the prepared hosts:
+
+. Download the release artifact from the ThoughtSpot file sharing system.
+. Upload the release artifact to the first host.
+. Run the `tscli cluster create` command. This script prompts you for user input.
+. Check the cluster health by running health checks and logging into the application.

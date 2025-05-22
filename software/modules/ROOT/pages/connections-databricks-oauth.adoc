@@ -1,0 +1,73 @@
+= Configure OAuth for a {connection} connection
+:last_updated: 6/7/2022
+:linkattrs:
+:page-aliases:
+:experimental:
+:connection: Databricks
+
+ThoughtSpot supports OAuth for a {connection} connection. This page describes the setup and configuration required.
+
+{connection} SQL endpoints are configured with OAuth 2.0 authentication on the Microsoft Azure platform, using Azure Active Directory (AAD) as the identity provider (IdP).
+
+== Part 1: Create an application in AAD
+
+To create an application in AAD, do the following:
+
+. Log in to the Azure portal and navigate to the AAD resource, click *Add*, and select *App registration*.
++
+image::databricks-oauth-config-1.png[]
+. Provide a name for your application and add a redirect URI in the following format:
++
+`\https://<your-thoughtspot-instance>/callosum/v1/connection/generateTokens`
++
+This is where the call is redirected upon successful login to AAD when creating a connection in ThoughtSpot.
++
+image::databricks-oauth-config-2.png[]
+
+. After you register your application, make a note of the *Application (client) ID* in the Essentials section of the app’s overview page. Also, make a note of the OAuth 2.0 authorization and token endpoints. These are required later when configuring the {connection} connection in ThoughtSpot.
++
+image::databricks-oauth-config-3.png[]
+
+== Part 2: Configure the AAD application
+
+To configure the AAD application, do the following:
+
+. In the Azure portal, navigate to your application by clicking *App Registrations* and then clicking your newly registered application to open it.
++
+image::databricks-oauth-config-4.png[]
+
+. In your application, click *API Permissions* and under the *AzureDatabricks* API/Permissions name, click the *user_impersonation* permission.
++
+image::databricks-oauth-config-5.png[]
+. Click *Certificates & secrets* and create a new secret for the app, providing an appropriate expiry time. Make a note of the secret value because it is displayed _only_ while creating it. The secret value is required later when you create the {connection} connection in ThoughtSpot.
++
+.Setting the scope of the authorization flow
+****
+
+In the authorization code flow for OAuth, the scope must be set with this resource id:
+[source]
+----
+2ff814a6-3304-4ab8-85cb-cd0e6f879c1d/.default
+----
+
+For more information, see https://docs.microsoft.com/en-us/azure/databricks/dev-tools/api/latest/aad/app-aad-token[Get Azure AD tokens by using the Microsoft Authentication Library^] in Microsoft's Azure {connection} documentation.
+****
+
+== Part 3: Create AAD users in the {connection} workspace
+
+To create AAD users in the {connection} workspace, do the following:
+
+. Log in to the {connection} workspace as a user with admin privileges. Click *Setting* and navigate to *Admin Console*.
+. Click *Add User* to create AAD users in {connection}.
++
+image::databricks-oauth-config-6.png[]
+
+== Part 4: Connect the client using the OAuth token
+
+The JDBC connection URL which uses the access token from AAD must use the following format:
+[source]
+----
+`"jdbc:spark://adb-111222444555.13.azuredatabricks.net:443/samples;transportMode=http;" +
+"ssl=1;httpPath=/sql/1.0/endpoints/c53335555f2222e999;" +
+"AuthMech=11;Auth_Flow=0;" +"Auth_AccessToken=<access_token>"`
+----
