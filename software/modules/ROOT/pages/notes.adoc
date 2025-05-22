@@ -1,0 +1,196 @@
+= 9.8.0.sw Release Notes
+:experimental:
+:last_updated: 10/26/23
+:linkattrs:
+:page-aliases: /release/notes.adoc
+:description: These release notes include information about new and enhanced features.
+
+++++
+<style>
+.badge-update-whats-new-beta {
+  font-style: normal !important;
+  top: -0.03rem !important;
+}
+
+</style>
+++++
+
+ThoughtSpot version 9.8.0.sw is now available.
+
+These release notes include information about new and enhanced features.
+
+To see our feature deprecation plans, please see xref:deprecation.adoc[].
+
+For a complete list of issues that we fixed in this release, see xref:fixed.adoc#releases-9-8-x[Fixed issues].
+
+* <<new-9-8-0,9.8.0.sw New Features and Functionality>>
+* <<upgrade-paths,Supported Upgrade Paths>>
+
+[#new-9-8-0]
+== 9.8.0.sw New Features and Functionality
+
+
+* <<analyst-9-8-0-sw,For the Analyst>>
+* <<business-user-9-8-0-sw,For the Business User>>
+* <<data-engineer-9-8-0-sw,For the Data Engineer>>
+* <<it-ops-engineer-9-8-0-sw,For the IT Ops Engineer>>
+* <<developer-9-8-0-sw,For the Developer>>
+
+[#analyst-9-8-0-sw]
+=== For the Analyst
+
+//Naomi-- scal-174354. Hadoop 3
+Updated Network ports:: We have updated the static ports used to communicate between services within a cluster. To see the updated list, refer to xref:ports.adoc#intracluster[Network ports].
+
+
+// Naomi -- scal-157152, scal-149212, scal-119947, scal-132902
+
+dbt:: We made the following changes to dbt:
+
+* Previously, when a Worksheet was created from a dbt model, the default worksheet join rule was "apply all joins". Now, "apply joins progressively" is the default. This means that when a Search is done on the Worksheet, joins are applied as each search term is added, rather than applying all joins to every Search.
+* In the past, ThoughtSpot generated a new Worksheet every time a user edited an existing dbt data model. Now, ThoughtSpot maintains a persistent connection with dbt and provides realtime updates. Users can update an object, update an object and create a new object, or simply create a new object.
+For more information, see xref:dbt-integration.adoc[].
+* ThoughtSpot now supports dbt version 1.6.
+
+//Mary -- scal-165262
+Embedding in note tiles::
+Embedding in note tiles is now available to all users and is on by default. You can now embed interactive content such as videos, pdfs, or Figma files into Liveboards using the note tile format. To try it out, enter a Liveboard, select the edit icon, and select *Add note* from the top bar. You can then click the embed icon and enter the URL or iFrame code for your content. You can interact with the content embedded in a Liveboard like you would with a website. For more information, see xref:liveboard-notes.adoc#embed[Embedding content with iFrames].
+
+//Mary -- scal-163617
+Personalized Liveboard Views::
+Personalized Liveboard views allow you to save your own set of values for filters and parameters in a Liveboard without creating a copy of the Liveboard. When you change the values of the already present filters in a Liveboard, you can save the personalized view for future use. The personalized Liveboard view inherits any changes made to the master Liveboard, including changes made to pinned visualizations, tabs, filter chips, and re-ordering.
+For more information, see xref:personalized-liveboard-views.adoc[Personalized Liveboard views].
+
+// Mary -- scal-140692
+Request access to view-only filters::
+ThoughtSpot introduces a request access function for view-only filters. You can now request access to underlying data sources by clicking *Request access*  in the filter modal. When you click *Request access* a request to access all the underlying data sources is sent. For more information, see xref:share-request-access.adoc[Request object access].
+
+
+
+[#business-user-9-8-0-sw]
+=== For the Business User
+
+// Mary -- scal-158463
+Atlan [.badge.badge-beta]#Beta#:: You can now see verification status and descriptions on tables and columns imported from Atlan. This information appears when you click on the corresponding table or column in *Search data*. Once connected, this information is visible to all users. For more information, see xref:catalog-integration-atlan.adoc[Atlan catalog integration].
+
+// Mary -- scal-154154, scal-174031
+Multi-date bucketing::
+Previously, when adding multiple date keywords to a Search, ThoughtSpot accepted the last entered date keyword as the bucket. For example, if you searched for `revenue` `monthly` `yearly`, ThoughtSpot would interpret `monthly` as `month of year`, rather than using the `monthly` bucket.
++
+Now, when you add multiple date keywords to a Search, ThoughtSpot preserves the date bucketing implied by the first date keyword. If you would like to change the default date bucket, you can use the *more options* menu for the column and select *Time Bucket* for more options. For more information, see
+xref:chart-table-change.adoc#multi-bucket[Multi-date bucketing].
+
+// Naomi -- scal-161857, SCAL-160779
+Verified Liveboards::
+We made the following enhancements to verified Liveboards:
+
+- When you request verification, you can now see the underlying data sources that will be shared with the verifier.
+- The name of the Liveboard now appears in verification request emails.
+- When editing an Answer on or pinning an Answer to a verified Liveboard, a warning banner appears indicating it may need to be verified again.
+- You can now easily search for verified Liveboards with trusted content, and filter to view only verified content. Verified Liveboards are identified with a tag visible in all screens. You can also cancel verification requests when needed.
+
+
+
+//Naomi -- scal-150635
+Improved error messaging for Liveboard visualizations:: Previously, ThoughtSpot displayed generic error messages for connection errors on Liveboards. Now, you can see the error message received from the underlying Cloud data warehouse.
+
+
+// Naomi -- scal-139411
+Query performance visibility [.badge.badge-beta-relnotes]#Beta#:: You can now see the state of query execution for any Liveboard visualization while it loads. If a visualization takes longer than three seconds to load, ThoughtSpot displays the current query execution status (executing query, waiting for connection, or processing query) to help users identify the reason for the delay.
+
+// Naomi -- scal-154258
+Hidden columns in tables::
+You can now hide a column from your table without removing it from your current Search. If you hide the column you’re using to sort results, the sorting order is unchanged. To try it out, create an Answer, open the chart configuration menu gear icon, and drag the selected column to *Hidden Columns*. For more information, see xref:chart-table.adoc#hidden-column[Hide a column].
+
+// Mark -- doc jira: SCAL-172330
+Custom calendar enabled by default::
+
+In this release, custom calendar is enabled by default for all connections, except for the following which don’t support custom calendar:
+
+- Dremio
+- Denodo
+
++
+
+For more information, see xref:connections-cust-cal.adoc[Custom calendar overview].
+
+
+//Mary -- scal-172513
+Change analysis: More insights::
+When running change analysis, you can now see additional insights. For example, ThoughtSpot will detect values that underwent the highest percentage change between the two data points defined in your analysis, and values whose share of the total changed the most. The additional insights appear below the main analysis in the change analysis pop-up window. For more information, see xref:spotiq-change.adoc[Change analysis].
+
+//Mary -- scal-158469
+Functional enhancements for verified Liveboards::
+Easily find verified Liveboards marked with banners, and icons. Sort search results to view content tagged as verified. Request verification of Liveboards and cancel requests when needed. For more information, see Verify Liveboards. For more information, see xref:liveboard-verify.adoc[Verify Liveboards].
+
+//Mary -- scal-112787
+Pivot table improvements::
+Previously, the summary values in ThoughtSpot pivot tables were not always calculated correctly. Enhancements to the pivot table summary calculations now ensure that the values are calculated correctly.
+
+//scal-161459
+New data panel with tag-based filtering::
+The new data panel experience is available for all customers in this release, and is enabled by default. In this release, you can now filter data sources by how they are tagged.
++
+For more information, see xref:search-start.adoc[Start a new search].
+
+[#data-engineer-9-8-0-sw]
+=== For the Data Engineer
+
+// Naomi -- scal-79850, scal-164909, scal-166159, scal-166160,scal-166161
+Connections::
+We added support for the following connections:
+
+* xref:connections-amazon-athena.adoc[Amazon Athena]
+* xref:connections-google-alloydb-postgresql.adoc[Google AlloyDB for PostreSQL]
+* xref:connections-google-cloud-sql-postgresql.adoc[Google Cloud SQL for PostgreSQL]
+* xref:connections-google-cloud-sql-sql-server.adoc[Google Cloud SQL for SQL Server]
+* xref:connections-singlestore.adoc[SingleStore]
+
+//Naomi -- scal-136661
+OAuth for Databricks using Proof Key for Code Exchange (PKCE):: We now support xref:connections-databricks-add.adoc[OAuth with PKCE for Databricks].
+
+// Mary -- scal-158463
+Atlan catalog integration [.badge.badge-beta]#Beta#:: You can now import metadata information related to your tables and columns from Atlan into ThoughtSpot. From the Data tab, you can set up a connection to Atlan to import column descriptions, column verification status, table descriptions, and table verification status. For more information, see xref:catalog-integration-atlan.adoc[Atlan catalog integration].
+
+[#it-ops-engineer-9-8-0-sw]
+=== For the IT Ops Engineer
+
+// scal-159716
+tscli command updates::
+We have updated the tscli command syntax to retrieve history. For more information, see xref:tscli-command-ref.adoc#tscli-update[tscli get history].
+
+Parameter runtime overrides::
+Adjust Parameter values at runtime from Liveboard or Answer URLs, or using REST API v1 requests. For more information, see
+xref:parameters-use.adoc#runtime-overrides[Runtime overrides for Parameters]
+and
+link:https://developers.thoughtspot.com/docs/?pageid=runtime-params[Runtime Parameters,window=_blank].
+
+//Mary - SCAL-181444 Doc JIRA SCAL-188796
+Multi-tenancy with Orgs::
+This release introduces ThoughtSpot’s multi-tenancy feature, which allows a ThoughtSpot software instance to be logically partitioned into multiple environments called Orgs. This feature is off by default. To enable it, contact ThoughtSpot Support. For more information, see xref:orgs-overview.adoc[Multi-tenancy with Orgs].
+
+
+[#developer-9-8-0-sw]
+=== For the Developer
+
+Customers licensed to embed ThoughtSpot can use ThoughtSpot Embedded features and Visual Embed SDK.
+
+To enable ThoughtSpot Embedded on your cluster, contact {support-url}.
+
+For information about ThoughtSpot Embedded, refer to  link:https://developers.thoughtspot.com/docs[ThoughtSpot Embedded Documentation, window=_blank].
+
+[#upgrade-paths]
+== Supported Upgrade Paths
+
+If you are running one of the following versions, you can upgrade to the 9.8.0.sw release directly:
+
+* 9.5.0.sw to 9.8.0.sw
+* 9.0.1.sw to 9.8.0.sw
+
+This includes any hotfixes or customer patches on these branches.
+
+If you are running a different version, you must do a multiple pass upgrade.
+
+First, upgrade to version 9.5.0.sw or 9.0.1.x, and then to the 9.8.0.sw release.
+
+NOTE: To successfully upgrade your ThoughtSpot cluster, all user profiles must include a valid email address. Without valid email addresses, the upgrade is blocked.
