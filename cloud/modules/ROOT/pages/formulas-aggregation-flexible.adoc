@@ -180,6 +180,25 @@ You can combine options to both add and remove columns like in the following exa
 
 Regarding dates, when query_groups() is defined, the date period defined in the search will be passed into the group function. Assuming the search is *monthly*, then the group function will also be at the monthly grain. You can use date functions to change the grain, such as `{start_of_year(transaction date)}`.
 
+[#query_group-grouping-columns]
+.Query_groups optional grouping columns [.badge.badge-early-access-whats-new]#Early Access#
+****
+The query_groups function is a parameter used in group_aggregate, first_value, and last_value functions. This returns a list of columns/attributes that have been included in the search. This allows for flexible inclusion and exclusion of grouping columns using the following syntax:
+
+* `query_groups()` → Includes all grouping columns.
+* `{region, department, store}` → Specifies a list of grouping columns explicitly. These columns can be considered as the FIXED level of detail for this formula.
+* `query_groups() - {customer_name, customer_region}` → Includes all grouping columns except customer_name and customer_region.
+* `query_groups() + {order_id}` → Includes all grouping columns and ensures order_id is always included.
+* Combining Inclusion & Exclusion: `query_groups() - {columns} + {columns}` is supported.
+
+You can now define an explicit optional list of grouping columns using th following syntax:
+`query_groups(region, department, store)`
+
+This ensures that only the specified columns are included if they are present in the query.
+
+NOTE: Previously, this required manually excluding all other columns from the Model. This approach was difficult to maintain, as new columns added to the Model would also need to be added to the exclusion list for every formula.
+****
+
 [#query-filters]
 == Query filters
 
