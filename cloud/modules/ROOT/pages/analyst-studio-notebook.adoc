@@ -1,0 +1,905 @@
+= The Notebook
+:categories: ["Query and analyze data"]
+:categories_weight: 20
+:date: 2022-12-12
+:description: Getting started with the Python and R Notebook.
+:ogdescription: Getting started with the Python and R Notebook.
+:page-layout: default-cloud
+:page-aliases: /analyst-studio/notebook.adoc
+:path: /articles/notebook
+:product: Analyst Studio
+:experimental:
+:jira: SCAL-232953, SCAL-256714
+
+== Overview
+
+Every {product} Report contains an integrated notebook-style environment where analysts can extend their analysis using either Python or R.
+
+The Notebook's movable code blocks and markdown cells enable exploratory data analysis, visualization, and collaboration.
+Notebook environments have a variety of supported <<python,Python libraries>> and <<r,R packages>> installed.
+You can add the results of output cells to Reports, or share a link to the Notebook directly.
+When Notebook output is included in the Report, that Report's schedule will re-run the Notebook so all of the data stays in sync.
+
+[#using-the-notebook]
+== Using the Notebook
+
+To get started using the Notebook:
+
+. Open an existing Report or create a new Report and run one or more SQL queries from the SQL Editor.
+. Click *New Notebook*.
+Your query results will automatically be loaded into a `datasets` object.
+. On the right-side panel, click the *dropdown* to select the environment you want to launch a Notebook from, usually either *Python 3*, *R*, or *Python 3 Edge*.
+
+[.bordered]
+image::notebook-language-2023.png[notebook language]
+
+Key elements of the {product} Notebook:
+
+* {blank}<<toolbar,**Toolbar**>>
+** Where you can manipulate and run your Notebook, restart the session, export, and more.
+* {blank}<<working-with-cells,**Cells**>>
+** Compose code and view results in a *Code* cell, or contextualize your work with a link:https://en.wikipedia.org/wiki/Markdown[Markdown,window=_blank] cell.
+* *Resources Panel*
+** The right-side panel provides resources to help you, including keyboard shortcuts, external documentation, and supported libraries/packages.
+* {blank}<<notebook-status,**Status Indicator**>>
+** Where you are notified about your Notebook session status.
+
+[#toolbar]
+=== Toolbar
+
+==== *Main Toolbar*
+
+[.bordered]
+image::notebook_toolbar2023.png[Notebook Toolbar]
+
+. *Run All* - Runs all input cells in the Notebook in sequence (from top to bottom).
+. *Restart*  - Stops any current computations running in the Notebook. +
+Restarts the session, thus clearing all the variables, libraries imported, etc., that were defined. However, code in input cells will be available to re-run after the Notebook restarts.
+. *Run Cell and Advance* - Runs code in the selected cell and advances to the next cell.
+. *Add New Cell* - Adds new input cell above or below the current cell.
+. *Add to Report*  - Adds the output of the selected cell to the Report.
+. *More → Hide All Output* - Hide all output in the notebook. Refreshing the Notebook will show the output that was previously hidden.
+. *More → Export* - Exports all input cells as a .py or .r file.
+
+==== *Cell Toolbar*
+
+[.bordered]
+image::celltoolbar.png[Cell Toolbar]
+
+. *Run Cell and Advance* - Runs code in the selected cell and advances to the next cell.
+. *Add New Cell* - Adds new input cell above or below the current cell.
+. *Move Cell Up* - Moves the current input or markdown cell up.
+. *Move Cell Down* - Moves the current cell down.
+. *Fold Cell* - Folds (hides) the current cell. Folded cells can still run.
+. *Freeze Cell* - Freezes the current input cell so that no changes are allowed; also prevents this cell from running.
+. *Markdown/Code dropdown* - Allows you to select the type for the current input cell (as code or markdown).
+. *Add to Report*  - Adds the output of the selected cell to the Report Builder.
+. *Delete Cell* - Permanently removes cell from the notebook.
+
+[#working-with-cells]
+=== Working with cells
+
+There are two types of cells in the Notebook:
+
+*Markdown* - link:https://en.wikipedia.org/wiki/Markdown[Markdown,window=_blank] cells allow you to add context to your analysis.
+Markdown cells contains text formatted using Markdown and display their output in-place when it's run.
+
+*Code* - Input Python or R code into the IN section of the cell.
+When this cell runs, any corresponding output (including visualizations) will be shown in the OUT section.
+
+Notes:
+
+* When you run your Notebook, cells are executed in the order they are displayed, starting from the top cell.
+* To select or change a cell's type, go to the dropdown menu in the cell toolbar and choose _Code_ or _Markdown_.
+* To run a cell, select it and press `Shift + Return`.
+Or click *Run Cell* in the cell or main toolbar.
+* The number next to the cell label will increment by one every time code in the cell is successfully run.
+* To see available methods for an object, type the name of the object followed by `.` and then press `tab`.
+
+[#notebook-status]
+=== Notebook status
+
+The status indicator, located in the bottom right corner of the browser window, will notify you if there is an issue with your session.
+It may prompt you to restart the kernel.
+
+* *Setting up notebook* - Displayed when opening up a new Notebook, or after re-starting your session.
+* *Ready* - Notebook is ready to go.
+* *Running* - Your code is executing.
+* *Loading dataframes* - This message may display for larger datasets while dataframe information is loaded into the Notebook.
+* *Notebook has encountered an unexpected error* - Your session has crashed and will need to be restarted.
+* *There was a problem with your session* - Your session has terminated, and you need to click *Restart* to get things working again.
+* *Cell is still running. Hang tight!* - This can appear when code being run includes long-running, computationally intense functions.
+The Notebook is still online.
+* *Notebook is having trouble, try running again* - The Notebook is experiencing problems. Please try running your code again to fix the issue.
+
+[#accessing-query-results]
+=== Accessing query results
+
+The Notebook has access to the results of every query in your Report.
+However, the way you access those results differs depending on the language you're using.
+In each case, all query results are delivered to the Notebook as a custom object called `datasets`.
+`datasets` contains objects of the following type:
+
+*Python:* link:https://pandas.pydata.org/pandas-docs/stable/dsintro.html#dataframe[pandas DataFrame,window=_blank]
+
+*R:* link:https://www.rdocumentation.org/packages/base/versions/3.6.1/topics/data.frame[Data Frame,window=_blank]
+
+In your Notebook code, reference query result sets in the `datasets` list by query name, position, or token.
+For example:
+
+|===
+| To return results for: | Python | R
+
+| First query added to report
+| `datasets[0]`
+| `datasets[[1]]`
+
+| Second query added to report
+| `datasets[1]`
+| `datasets[[2]]`
+
+| Query named 'Active Users'
+| `datasets["Active Users"]`
+| `datasets[["Active Users"]]`
+
+| Query with token '6763b688fb54'
+| `datasets["6763b688fb54"]`
+| `datasets[["6763b688fb54"]]`
+|===
+
+Notes:
+
+* The `datasets` object won't update in the Notebook until after all queries in the Report have run successfully.
+* R is 1-indexed and Python is 0-indexed.
+* If you refer to query results by the query name, remember to update your code if you rename the query in your Report.
+* The order of the results in the `datasets` object is based on when the query was added to the Report.
+Renaming a query may change the order it's displayed in the report editor, but will not affect its position in the `datasets` object.
+
+[discrete]
+===== How to find a query's token
+
+To find the query token starting from the Notebook or editor, click *View* in the header, then *View details*, and then click *SQL* for the query you wish to use.
+The URL for SQL contains the query token at the end:
+
+`+https://app.mode.com/ORGANIZATION_USERNAME/reports/REPORT_TOKEN/queries/QUERY_TOKEN+`
+
+[.bordered]
+image::querytoken.png[Query token]
+
+=== Memory management in Python
+
+{product}'s Python notebook has 16GB of RAM and up to 16 CPU available to it.
+The free {product} Studio notebook is limited to 4GB of RAM and 1 CPU.
+To effectively manage memory usage in the {product} Notebooks, consider (1) data load of query result sets, (2) incremental library installation, (3) memory utilization in session.
+
+[discrete]
+===== *Data load of query result sets*
+
+Query result sets are loaded into the notebook when the user explicitly references the query.
+Users can consistently load up to 2GB per raw query result as a pandas dataframes in the Notebook.
+
+[discrete]
+===== *Incremental library installation*
+
+For {product} Business and Enterprise paid plans, the Notebook environment has up to 1 GB of memory available to load additional packages.
+
+[discrete]
+===== *Memory utilization in session*
+
+Memory usage in the python Notebook can be checked by running the following command:
+
+[source,python]
+----
+from pympler.tracker import SummaryTracker
+tracker = SummaryTracker()
+tracker.print_diff()
+----
+
+== Output
+
+////
+[#adding-cell-output-to-your-report]
+=== Adding cell output to your Report
+
+[.bordered]
+image::notebook-add-to-report-2023.png[Notebook Toolbar]
+
+Add contents of the OUT section of any Notebook cell to the Report Builder by clicking on the cell and then clicking *Add to Report* in the toolbar.
+You can adjust the dimensions and placement of this cell in the Report Builder.
+
+NOTE: Scheduled runs will only re-run the Notebook if the Report view page contains at least one output generated by the Notebook. In this case, the Notebook will re-run as part of the scheduled Report run.
+////
+
+=== Add CSV export to a cell
+
+You can add an export button to a Notebook output cell so viewers can export the calculated results contained in any dataframe to a CSV.
+The following examples add an export button to an output cell that will generate a downloadable CSV of the query results of a query named "`New Users`":
+//+++<code-tabs-notebook>++++++</code-tabs-notebook>+++
+
+[tabs]
+====
+Python::
++
+--
+[options=noheader]
+|===
+| import notebooksalamode as mode | # Required library in Python
+
+| df = datasets["New Users"]    |   # export_csv() accepts any valid pandas DataFrame.
+
+| mode.export_csv(df)       |       # This example uses the result set from a query named "New Users".
+|===
+--
+R::
++
+--
+[options=noheader]
+|===
+| df \<- datasets[["New Users"]] | # export_data() accepts any valid Data Frame.
+| export_data(df)         |       # This example uses the result set from a query named "New Users".
+|===
+--
+====
+
+[#supported-libraries]
+== Supported libraries
+
+{product} enables easier access to advanced analytical functions by supporting well-established, public libraries within {product}'s Notebooks.
+Common use cases include:
+
+* *Data Manipulation* - Cleaning, aggregating, and summarizing data.
+* *Statistics* - Simple things like distributions, regressions, and trend lines, as well as some advanced tasks like predictive modeling and machine learning.
+* *Advanced Visualization* - Python and R have many visualization libraries, enabling analysts to quickly build charts including heatmaps, small multiples, and distributions.
+
+[#python]
+=== Python
+
+//IMPORTANT: Notebooks in the {product} Studio plan are unable to properly utilize the `pip`, `requests`, or the `urllib3` packages in the Python or Python 3 Edge environments. To fully utilize these packages, please upgrade to a paid {product} Business or Enterprise plan.
+
+{product} supports Python version 3.9 in the Notebooks.
+
+Each environment comes preloaded with the following libraries:
+//+++<supported-libraries-table type="Python">++++++</supported-libraries-table>+++
+
+[options="header"]
+|===
+| Library | Version (Py3) | Version (Edge) | Description
+
+| link:https://arrow.readthedocs.io/en/latest/[arrow^] | 1.2.3 |1.2.3 |date & time manipulation & formatting
+
+| link:https://www.crummy.com/software/BeautifulSoup/bs4/doc/[beautifulsoup4^] | 4.11.1 | 4.11.1 | parsing HTML, JSON & XML data
+
+| link:https://pypi.org/project/cufflinks/[cufflinks^] | 0.17.3 | 0.17.3 | bind Plotly directly to pandas dataframes
+
+| link:https://cvxopt.org/[cvxopt^] | 1.3.0 | 1.3.0 | convex optimization library
+
+| link:https://www.dask.org/[dask^] | 2022.11.1 | 2022.11.1 | flexible open-source Python library for parallel computing
+
+| link:https://duckdb.org/docs/api/python/overview.html[duckdb^] | 0.6.0 | 0.6.0 | in-process database management system focused on analytical query processing
+
+| link:https://emcee.readthedocs.io/en/v2.2.1/[emcee^] | 3.1.3 | 3.1.3 | MIT MCMC library
+
+| link:https://engarde.readthedocs.io/en/latest/index.html[engarde^] | 0.4.0 | 0.4.0 | defensive data analysis
+
+| link:https://fiona.readthedocs.io/en/stable/[fiona^] | 1.8.22 | 1.8.22 | read & write geospatial data files
+
+| link:https://python-visualization.github.io/folium/latest/[folium^] | 0.13.0 | 0.13.0 | build Leaflet.js maps
+
+| link:https://radimrehurek.com/gensim/[gensim^] | 4.2.0 | 4.2.0 | unsupervised semantic modeling from plain text
+
+| link:https://geopandas.org/en/stable/index.html[geopandas^] | 0.12.1 | 0.12.1 | extends pandas to allow spatial operations on geometric types
+
+| link:https://developers.google.com/chart/interactive/docs/dev/gviz_api_lib[gviz_api^] | 1.10.0 | 1.10.0 | helper library for Google Visualization API
+
+| link:https://hdbscan.readthedocs.io/en/latest/[hdbscan^] | 0.8.29 | 0.8.29 | clustering with minimal parameter tuning
+
+| link:https://python.igraph.org/en/stable/[igraph^] | 0.10.2 | 0.10.2 | network analysis tools
+
+| link:https://pypi.org/project/interpret/[interpret^] | 0.3.0 | 0.3.0 | fit interpretable ML modes. Explain blackbox ML
+
+| link:https://jmespath.org/[jmespath^] | 1.0.1 | 1.0.1 | JSON element extraction
+
+| link:https://pyphi.readthedocs.io/en/stable/api/jsonify.html[jsonify^] | 0.5 | 0.5 | converts from CSV to JSON
+
+| link:https://keras.io/[keras^] | 2.11.0 | 2.11.0 | neural networks API run on TensorFlow or Theano
+
+| link:https://lifelines.readthedocs.io/en/latest/[lifelines^] | 0.27.4 | 0.27.4 | survival analysis
+
+| link:https://lifetimes.readthedocs.io/en/latest/[lifetimes^] | 0.11.3 | 0.11.3 | user behavior analysis
+
+| link:https://mapbox-mapbox.readthedocs-hosted.com/en/latest/[mapbox^] | 0.18.1 | 0.18.1 | client for Mapbox web services
+
+| link:https://matplotlib.org/[matplotlib^] | 3.6.2 | 3.6.2 | 2D plotting visualizations
+
+| link:https://networkx.org/documentation/latest/[networkx^] | 2.8.8 | 2.8.8 | complex network manipulation
+
+| link:https://www.nltk.org/[nltk^] | 3.7 | 3.7 | natural language toolkit
+
+| link:https://numexpr.readthedocs.io/en/latest/[numexpr^] | 2.8.4 | 2.8.4 | fast numerical array expression evaluator
+
+| link:https://docs.scipy.org/doc/[numpy^] | 1.22.1 | 1.22.1 | various scientific computing functions
+
+| link:https://pandas.pydata.org/pandas-docs/stable/[pandas^] | 1.4.4 | 1.4.4 | data structures & data analysis tools
+
+| link:https://pypi.org/project/pandas-profiling/[pandas_profiling^] | 3.5.0 | 3.5.0 | generates profile reports from a pandas DataFrame
+
+| link:https://pypi.org/project/pandasql/[pandasql^] | 0.7.3 | 0.7.3 | query pandas dataframes using SQL syntax
+
+| link:https://patsy.readthedocs.io/en/latest/[patsy^] | 0.5.3 | 0.5.3 | describing statistical models/building design matrices
+
+| link:https://pip.pypa.io/en/stable/[pip^] | 21.2.5 | - | package installer
+
+| link:https://plot.ly/python/getting-started/[plotly^] | 5.10.0 | 5.10.0 | data visualizations, dashboards & collaborative analysis
+
+| link:https://pypi.org/project/plotly-geo/[plotly-geo^] | 1.0.0 | 1.0.0 | geographic shape files to support plotly map functionality
+
+| link:https://ptable.readthedocs.io/en/latest/tutorial.html[prettytable^] | 3.4.1 | 3.4.1 | display tabular data in ASCII table format
+
+| link:https://pypi.org/project/prophet/#history[prophet^] | 1.1.1 | 1.1.1 | forecasting with time series data
+
+| link:https://pygal.org/en/stable/[pygal^] | 3.0.0 | 3.0.0 | create interactive svg charts
+
+| link:https://pygraphviz.github.io/documentation/pygraphviz-1.5/[pygraphviz^] | 1.10 | 1.10 | interface for Graphviz graph layout & visualizations
+
+| link:https://pygsheets.readthedocs.io/en/stable/[pygsheets^] | 2.0.5 | 2.0.5 | access Google spreadsheets through the Google Sheets API
+
+| link:https://www.pymc.io/projects/docs/en/stable/learn.html[pymc3^] | 3.11.5 | 3.11.5 | probabilistic programming & Bayesian modeling
+
+| link:https://pypi.org/project/Pympler/[pympler^] | 1.0.1 | 1.0.1 | measure, monitor and analyze the memory behavior of Python objects
+
+| link:https://github.com/pyproj4/pyproj[pyproj^] | 3.4.0 | 3.4.0 | cartographic transformations & geodetic computations
+
+| link:https://pysal.org/[pysal^] | 2.7.0 | 2.7.0 | geospatial analysis library
+
+| link:https://github.com/tasdikrahman/pyzipcode-cli#pyzipcode[pyzipcode^] | 2.2 | - | query zip codes & location data
+
+| link:https://github.com/dvf/pyzipcode3[pyzipcode3^] | 2.2 | 2.2 | query zip codes & location data
+
+| link:https://docs.python-requests.org/en/latest/[requests^] | 2.28.1 | 2.28.1 | make HTTP requests
+
+| link:https://scikit-image.org/docs/stable/[scikit-image^] | 0.19.3 | 0.19.3 | image processing
+
+| link:https://scikit-learn.org/stable/index.html[scikit-learn^] | 1.1.3 | 1.1.3 | tools for data mining & analysis
+
+| link:https://github.com/cgevans/scikits-bootstrap[scikits.bootstrap^] | 1.1.0 | 1.1.0 | bootstrap confidence interval algorithms for scipy
+
+| link:https://docs.scipy.org/doc/scipy/reference/[scipy^] | 1.7.3 | 1.7.3 | advanced math, science & engineering functions
+
+| link:https://scrapy.org/[scrapy^] | 2.7.0 | 2.7.1 | scraping web pages
+
+| link:https://seaborn.pydata.org/[seaborn^] | 0.12.1 | 0.12.1 | statistical graphics visualizations
+
+| link:https://shapely.readthedocs.io/en/latest/[shapely^] | 1.8.5.post1 | 1.8.5.post1 | manipulation & analysis of geometric objects
+
+| link:https://six.readthedocs.io/[six^] | 1.16.0 | 1.16.0 | Python 2 & 3 compatibility library
+
+| link:https://spacy.io/usage/spacy-101[spacy^] | 3.4.2 | 3.4.3 | advanced natural language processing, including all small pipelines
+
+| link:https://github.com/laserson/squarify[squarify^] | 0.4.3 | 0.4.3 | implementation of the squarify treemap layout algorithm
+
+| link:https://sourceforge.net/projects/statsmodels/[statsmodels^] | 0.13.5 | 0.13.5 | estimate statistical models & perform statistical tests
+
+| link:https://docs.sympy.org/latest/index.html[sympy^] | 1.11.1 | 1.11.1 | symbolic mathematics
+
+| link:https://pypi.org/project/tabulate/[tabulate^] | 0.9.0 | 0.9.0 | pretty-print tabular data
+
+| link:https://www.tensorflow.org/tutorials[tensorflow^] | 2.10.0 | 2.11.0 | numerical computation using data flow graphs
+
+| link:https://pypi.org/project/tensorflow-decision-forests/[tensorflow-decision-forests^] | 1.1.0 | 1.1.0 | train, run and interpret decision forest models in tensorflow
+
+| link:https://textblob.readthedocs.io/en/dev/[textblob^] | 0.17.1 | 0.17.1 | common natural language processing tasks
+
+| link:https://github.com/ua-parser/uap-python[ua_parser^] | 0.16.1 | - | fast & reliable user agent parser
+
+| link:https://urllib3.readthedocs.io/en/latest/[urllib3^] | 1.26.13 | 1.26.13 | HTTP client for python
+
+| link:https://amueller.github.io/word_cloud/index.html[wordcloud^] | 1.8.2.2 | 1.8.2.2 | wordcloud generator
+
+| link:https://xgboost.readthedocs.io/en/latest/[xgboost^] | 1.7.1 | 1.7.1 | optimized distributed gradient boosting library
+
+|===
+
+IMPORTANT: We strongly discourage using either the `requests` or `pygsheets` libraries to access APIs that require authentication using personally identifiable credentials and information, as they will be visible to viewers of your Report.
+
+=== Edge
+//+++<flag-icon>++++++</flag-icon>+++
+
+{product} provides access to an additional Python 3 environment called Python 3 Edge where pending library upgrades are staged.
+Analysts should use Edge as an alternative environment where they can test out the updated versions of supported Python libraries without fear of jeopardizing scheduled Reports.
+
+{product} will announce periodic scheduled promotion events via emails to {product} account administrators.
+Users will have at least 30 days from that time for testing and validation before the library updates will be made in the broader Python 3 environment.
+Any Notebooks using the Edge environment will be migrated to use the Python 3 environment at the same time.
+
+// <supported-libraries-table type="Edge_new"></supported-libraries-table>
+
+////
+Please refer to the table above for the list of libraries that have been upgraded on Edge.
+<highlight type="note">**NOTE**: These libraries are tentatively scheduled for promotion on January 12, 2023 </highlight>
+////
+
+Analysts can access Edge via the environment dropdown in the upper right-hand corner of the Notebook.
+When switching between environments, remember to *Restart* the Notebook session.
+
+[.bordered]
+image::pythonEdge.png[python edge environment]
+
+[#r]
+=== R
+
+//IMPORTANT: Notebooks in the {product} Studio plan are unable to properly utilize the httr package in the R environment. To fully utilize this package, please upgrade to a paid {product} Business or Enterprise plan.
+
+The Notebook supports R version 4.2.0 and comes preloaded with the following R packages:
+//+++<supported-libraries-table json="https://mode.github.io/runtimes/r.json" type="R">++++++</supported-libraries-table>+++
+
+[options="header"]
+|===
+| Library | Version | Description
+
+| link:https://www.rdocumentation.org/packages/BTYD/versions/2.4.3[BTYD^] | 2.4.3 | buy-til-you-die (BTYD) models
+
+| link:https://cran.r-project.org/web/packages/BTYDplus/index.html[BTYDplus^] | 1.2.0 | extends BTYD
+
+| link:https://www.rdocumentation.org/packages/CausalImpact/versions/1.2.7[CausalImpact^] | 1.2.7 | estimates causal effect of intervention on time series
+
+| link:https://ggobi.github.io/ggally/index.html[GGally^] | 2.1.2 | extension to ggplot2
+
+| link:https://www.rdocumentation.org/packages/MASS/versions/7.3-58.1[MASS^] | 7.3-58.1 | functions & datasets to support Venables & Ripley
+
+| link:https://www.rdocumentation.org/packages/RColorBrewer/versions/1.1-3[RColorBrewer^] | 1.1-3 | ColorBrewer palettes
+
+| link:https://www.rdocumentation.org/packages/assertthat/versions/0.2.1[assertthat^] | 0.2.1 | easy pre- and post-assertions
+
+| link:https://www.rdocumentation.org/packages/blob/versions/1.2.3[blob^] | 1.2.3 | S3 class to represent BLOBs
+
+| link:https://www.rdocumentation.org/packages/caret/versions/6.0-93[caret^] | 6.0-93 | streamlines creation of predictive models
+
+| link:https://www.rdocumentation.org/packages/cluster/versions/2.1.4[cluster^] | 2.1.4 | cluster analysis extended Rousseeuw et al.
+
+| link:https://colorspace.r-forge.r-project.org/reference/index.html[colorspace^] | 2.0-3 | color space manipulation
+
+| link:https://www.rdocumentation.org/packages/data.table/versions/1.14.2[data.table^] | 1.14.2 | extends data.frame
+
+| link:https://www.rdocumentation.org/packages/DiagrammeR/versions/1.0.9[diagrammeR^] | 1.0.9 | Build graph/network structures
+
+| link:https://www.rdocumentation.org/packages/dichromat/versions/2.0-0.1[dichromat^] | 2.0-0.1 | color schemes for dichromats
+
+| link:https://www.rdocumentation.org/packages/digest/versions/0.6.29[digest^] | 0.6.29 | create compact hash digests of R objects
+
+| link:https://www.rdocumentation.org/packages/dplyr/versions/1.0.10[dplyr^] | 1.0.10 | a grammar of data manipulation
+
+| link:https://www.rdocumentation.org/packages/forcats/versions/0.5.2[forcats^] | 0.5.2 | working with categorical variables (factors)
+
+| link:https://www.rdocumentation.org/packages/forecast/versions/8.18[forecast^] | 8.17.0 | forecasting for time series & linear models
+
+| link:https://www.rdocumentation.org/packages/fpp3/versions/0.4.0[fpp3^] | 0.4.0 | Datasets referenced in book "Forecasting: principles and practice"
+
+| link:https://cran.r-project.org/web/packages/ggdendro/index.html[ggdendro^] | 0.1.23 | dendrograms & tree plots with ggplot2
+
+| link:https://www.rdocumentation.org/packages/ggplot2/versions/3.3.6[ggplot2^] | 3.3.6 | system for creating graphics
+
+| link:https://www.rdocumentation.org/packages/ggpubr/versions/0.4.0[ggpubr^] | 0.4.0 | publication-ready ggplot2 plots
+
+| link:https://www.rdocumentation.org/packages/ggridges/versions/0.5.3[ggridges^] | 0.5.3 | ridgeline plots in ggplot2
+
+| link:https://jrnold.github.io/ggthemes/reference/index.html[ggthemes^] | 4.2.4 | extra themes, scales, & geoms for ggplot2
+
+| link:https://www.rdocumentation.org/packages/glue/versions/1.6.2[glue^] | 1.6.2 | glue strings to data
+
+| link:https://www.rdocumentation.org/packages/gtable/versions/0.3.1[gtable^] | 0.3.1 | arrange grobs in tables
+
+| link:https://www.rdocumentation.org/packages/hts/versions/6.0.2[hts^] | 6.0.2 | hierarchical & grouped time series
+
+| link:https://www.rdocumentation.org/packages/httr/versions/1.4.4[httr^] | 1.4.4 | tools for working with URLs & HTTP*
+
+| link:https://www.rdocumentation.org/packages/iterators/versions/1.0.14[iterators^] | 1.0.14 | provides iterator construct
+
+| link:https://www.rdocumentation.org/packages/itertools/versions/0.1-3[itertools^] | 0.1-3 | various tools for creating iterators
+
+| link:https://www.rdocumentation.org/packages/janitor/versions/2.1.0[janitor^] | 2.1.0 | various tools for creating iterators
+
+| link:https://cran.r-project.org/web/packages/kernlab/index.html[kernlab^] | 0.9-31 | kernel-based machine learning lab
+
+| link:https://www.rdocumentation.org/packages/kknn/versions/1.3.1[kknn^] | 1.3.1 | weighted k-nearest neighbors
+
+| link:https://www.rdocumentation.org/packages/lars/versions/1.3[lars^] | 1.3 | least angle regression, lasso & forward stagewise
+
+| link:https://cran.r-project.org/web/packages/lattice/index.html[lattice^] | 0.20-45 | trellis graphics
+
+| link:https://github.com/hadley/lazyeval[lazyeval^] | 0.2.2 | lazy (non-standard) evaluation
+
+| link:https://www.rdocumentation.org/packages/leaflet/versions/2.1.1[leaflet^] | 2.1.1 | Create interactive Web Maps
+
+| link:https://www.rdocumentation.org/packages/lubridate/versions/1.8.0[lubridate^] | 1.8.0 | date and time manipulation
+
+| link:https://cran.r-project.org/web/packages/magrittr/index.html[magrittr^] | 2.0.3 | a forward-pipe operator
+
+| link:https://www.rdocumentation.org/packages/modelr/versions/0.1.9[modelr^] | 0.1.9 | modelling functions that work with the pipe
+
+| link:https://www.rdocumentation.org/packages/munsell/versions/0.5.0[munsell^] | 0.5.0 | utilities for using Munsell colors
+
+| link:https://www.rdocumentation.org/packages/nnet/versions/7.3-17[nnet^] | 7.3.17 | feed-forward neural networks & multinomial log-linear models
+
+| link:https://www.rdocumentation.org/packages/plotly/versions/4.10.0[plotly^] | 4.10.0 | data visualization, dashboards & collaborative analysis
+
+| link:https://www.rdocumentation.org/packages/prophet/versions/1.0[prophet^] | 1.0 | automatic forecasting procedure
+
+| link:https://www.rdocumentation.org/packages/proto/versions/1.0.0[proto^] | 1.0.0 | prototype object-based programming
+
+| link:https://purrr.tidyverse.org/[purrr^] | 0.3.4 | tools for working with functional vectors
+
+| link:https://www.rdocumentation.org/packages/reshape2/versions/1.4.4[reshape2^] | 1.4.4 | transform data between wide & long
+
+| link:https://www.rdocumentation.org/packages/rlang/versions/1.0.6[rlang^] | 1.0.5 | functions for base types & core R & tidyverse features
+
+| link:https://www.rdocumentation.org/packages/scales/versions/1.2.1[scales^] | 1.2.1 | scale functions for visualizations
+
+| link:https://www.rdocumentation.org/packages/stringr/versions/1.4.1[stringr^] | 1.4.1 | work with character strings & reg ex
+
+| link:https://www.rdocumentation.org/packages/tidyr/versions/1.2.1[tidyr^] | 1.2.1 | easily create tidy data
+
+| link:https://www.rdocumentation.org/packages/tidytext/versions/0.3.4[tidytext^] | 0.3.4 | conversion of text to and from tidy formats
+
+| link:https://www.rdocumentation.org/packages/tm/versions/0.7-8[tm^] | 0.7-8 | text mining
+
+| link:https://www.rdocumentation.org/packages/utf8/versions/1.2.2[utf8^] | 1.2.2 | fixes bugs in R’s UTF-8 handling
+
+| link:https://www.rdocumentation.org/packages/viridisLite/versions/0.4.1[viridisLite^] | 0.4.1 | port of matplotlib color maps
+
+| link:https://www.rdocumentation.org/packages/xml2/versions/1.3.3[xml2^] | 1.3.3 | parse XML
+
+| link:https://www.rdocumentation.org/packages/zoo/versions/1.8-11[zoo^] | 1.8-11 | S3 infrastructure for regular & irregular time series
+
+|===
+
+IMPORTANT: We strongly discourage using the `httr` library to access APIs that require authentication using personally identifiable credentials and information, as they will be visible to viewers of your Report.
+
+[#install-additional-libraries]
+== Install additional libraries
+
+//IMPORTANT: Notebooks in the {product} Studio plan are unable to install additional libraries. To access this feature, please upgrade to a paid {product} Business or Enterprise plan.
+
+To use a publicly available library in the Notebook, users can leverage each environment's package manager to install that library at run-time.
+The Notebook environment has up to 1 GB of memory available to load additional packages.
+
+IMPORTANT: {product}'s Notebook architecture limits access between manually installed libraries and the Notebook’s kernel. As a result, certain popular interactive libraries like Plotly, Bokeh, and ipywidgets may behave differently compared to how they are advertised.
+
+////
+{product}'s Notebook architecture does not enable manually installed libraries to have access to the Notebook's kernel.
+This means that manually installed versions of popular and interactive libraries like Plotly, Bokeh, and ipywidgets will not function as expected even if the package installation appears to succeed.
+
+Unlike officially supported libraries, you must install packages for any additional libraries in each individual report's Notebook environment.
+You must add the below package installation commands to the Notebook in each report where you want the corresponding libraries to be available.
+Avoiding these commands can result in the library not installing and/or importing properly.
+
+WARNING: Some libraries require authentication with credentials (for example, Tweepy, requests, etc.). We strongly discourage using libraries that require authentication using personally identifiable credentials and information, as these credentials will be visible to viewers of your report.
+////
+
+=== Python
+
+==== Installing libraries
+
+To install a library for use within a notebook, add the following command in any cell:
+
+[source,python]
+----
+! pip install library_name
+----
+
+Replace `library_name` with the name of the desired Python package. This command will install the library within the scope of the active Notebook, making it immediately available in subsequent cells. Note that each library installed this way is specific to the Notebook, so re-installation may be required for each session or upon reattachment.
+
+==== Installing specific versions
+
+You can specify a version by including it in the command, for example:
+
+[source,python]
+----
+! pip install library_name==version_number
+----
+
+This can be helpful to ensure compatibility or access to specific features within a version.
+
+==== Using installed libraries
+
+Next, in a subsequent cell, use below statement for each library that you want to include in your environment:
+
+[source,python]
+----
+from library_name import libraryname
+----
+
+==== Handling dependencies
+
+{product} Notebooks support dependencies for many commonly used packages; however, some packages with highly specialized dependencies may not be fully compatible. In these cases, consider using well-supported library alternatives when possible.
+
+==== Viewing and managing installed libraries
+
+To see a list of all libraries installed in your notebook session, use:
+
+[source,python]
+----
+%pip list
+----
+
+==== Accessing APIs securely with Secrets Store
+
+For libraries requiring API keys or other sensitive credentials, {product} now offers a <<python-notebooks-secrets-store,Secret Store>> feature that allows you to securely manage these details. By storing your credentials in the Secrets Store, you can safely use them within your notebooks without hardcoding sensitive information.
+
+To retrieve a stored secret in your notebook, use the following:
+
+[source,python]
+----
+from library_name import libraryname
+
+session = Session.builder.configs({
+    "account": "demoaccount",
+    "user": "DEMO_SHARED_ACCOUNT",
+    "password": protected_password,
+    "database": "SOURCE_SAMPLE_DATA",
+    "schema": "TCCP_DB1",
+    "warehouse": "DEMO_WH",
+    "role": "ACCOUNTADMIN"
+}).create()
+----
+
+With the Secrets Store, you can access APIs securely, making it easier to integrate external data sources without exposing authentication information.
+
+=== R
+
+First, use below syntax into a Notebook cell for each public package that you want to install into the R Notebook.
+
+[source,r]
+----
+install.packages (“library_name”)
+----
+
+Replace `library_name` with the name of the desired R package.
+
+Next, use below syntax for each library you want to include in your environment from the installed package(s). For example:
+
+[source,r]
+----
+library (“library_name”)
+----
+
+You may now use any of the methods or functionality included in the library in subsequent Notebook cells.
+
+== Notebook keyboard shortcuts
+
+=== General
+
+|===
+| Action | Mac | PC
+
+| Edit selected cell
+| kbd:[`Return`]
+| kbd:[`Enter`]
+
+| Run cell
+| kbd:[`Shift`] + kbd:[`Return`]
+| kbd:[`Shift`] + kbd:[`Enter`]
+
+| Select cell above
+| kbd:[`K`] or kbd:[`↑`]
+| kbd:[`K`] or kbd:[`↑`]
+
+| Select cell below
+| kbd:[`J`] or kbd:[`↓`]
+| kbd:[`J`] or kbd:[`↓`]
+
+| Insert cell above
+| kbd:[`A`]
+| kbd:[`A`]
+
+| Insert cell below
+| kbd:[`B`]
+| kbd:[`B`]
+
+| Move cell above
+| kbd:[`Shift`] + kbd:[`Option`] + kbd:[`↑`]
+| kbd:[`Shift`] + kbd:[`Alt`] + kbd:[`↑`]
+
+| Move cell below
+| kbd:[`Shift`] + kbd:[`Option`] + kbd:[`↓`]
+| kbd:[`Shift`] + kbd:[`Alt`] + kbd:[`↓`]
+|===
+
+=== Code editor
+
+|===
+| Action | Mac | PC
+
+| Code complete or indent
+| kbd:[`Return`]
+| kbd:[`Enter`]
+
+| Select all
+| kbd:[`⌘`] + kbd:[`A`]
+| kbd:[`Ctrl`] + kbd:[`A`]
+
+| Undo
+|  kbd:[`⌘`] + kbd:[`Z`]
+|  kbd:[`Ctrl`] + kbd:[`Z`]
+
+| Redo
+|  kbd:[`⌘`] + kbd:[`Y`]
+|  kbd:[`Ctrl`] + kbd:[`Y`]
+
+| Run cell
+|  kbd:[`⌘`] + kbd:[`Enter`]
+|  kbd:[`Ctrl`] + kbd:[`Enter`]
+
+| Insert cell below
+|  kbd:[`Option`] + kbd:[`Enter`]
+|  kbd:[`Alt`] + kbd:[`Enter`]
+|===
+
+[#python-notebooks-secrets-store]
+== Python Notebooks secrets store
+
+=== Overview
+The secrets store provides users with an intuitive and secure way to protect their credentials used in the Notebook. This helps users to extend their analysis by pulling in the data and libraries they need outside of SQL queries against their data warehouse. These credentials are stored encrypted and obfuscated to all users.
+
+NOTE: Secret store is currently only available for Python Notebooks.
+
+
+=== Managing secrets
+- Users can add secrets at a Report level and the secret only applies to that Report.
+- All Editors of that Report can use, edit, and delete existing secrets. They can also add new secrets to the Report.
+- Once secret values are added, they will always be obfuscated. Editing a secret would mean replacing the old secret with a new one. There is no way to print a secret value after it is added.
+- Users cannot use a secret from a Notebook in another Report, even if duplicating a Report with an existing secret.
+
+=== Using the secret store
+1. In the Python Notebook, click *New Secret* on the right side panel, under the *Secrets* tab and add the Display name and Secret value.
++
+[.bordered]
+image:notebook-secret-create.png[Create a new secret]
++
+Secrets will need to meet the following criteria:
+
+.. The secret display name must be within 1-100 characters long.
+.. The secret display name can only contain alphanumeric characters and underscores, and must begin with a letter.
+.. The secret values must be within 1-4096 characters long.
+
+2. Once saved, users can use the *Display Name* as a variable in the Python cells.
++
+[.bordered]
+image:notebook-secret-use.png[Use the display name as a variable]
+
+=== Editing secrets
+Once secret values are added, they will always be obfuscated. Editing a secret would mean replacing the old secret with a new one.
+
+[.bordered]
+image:notebook-secret-edit.png[Edit a secret]
+
+=== Deleting secrets
+Deleting a secret will also break any existing references to the secret in the Notebook. Any editor of the Report can delete a secret and the action can't be undone.
+
+[.bordered]
+image:notebook-secret-delete.png[Delete a secret]
+
+=== Administrative features
+- Admins can use Discovery Database (DDB) to get a list of all Reports using secrets.
+- Changes made to secrets are audited, and customers should reach out to {support-url} to obtain that information.
+
+[#faqs]
+== FAQs
+
+////
+[discrete]
+=== *Q: How much memory is available to the Notebook?*
+
+Each Notebook session has the following resources available, depending on the version of your {product} Workspace:
+
+|===
+| | Available memory | Available CPU | Run-time limit | Suspend after idle for | Can install additional libraries?
+
+| *Mode Studio*
+| 4 GB
+| 1 Core
+| 60 minutes
+| 30 minutes
+| No
+
+| link:https://mode.com/compare-plans/[*Analyst Studio Paid Plans*,window=_blank]
+| 16 GB
+| 16 Cores
+| 12 hours
+| 60 minutes
+| Yes
+|===
+
+When suspended, the Notebook environment can be resumed at any time by running a cell, running the entire Notebook, or running the Report.
+////
+
+[discrete]
+=== *Q: Can you visualize a Notebook-generated visualization with {product}'s native chart editor?*
+
+At this time, it is not possible to use our visualization tools, such as Quick Charts and Visual Explorer, to manipulate Python/R dataframes.
+To visualize data from a Notebook, you will need to use a visualization library to create a visualization.
+If you would like to see this functionality added in the future, please contact {support-url}, and they will be happy to add a request on your behalf for future consideration.
+
+[discrete]
+=== *Q: How to pass parameters into the Notebook?*
+
+To pass parameters to your Notebook, you must add them as a column in your SQL query.
+You can then access those column(s) in the dataset object in your Notebook:
+
+[source,python]
+----
+SELECT
+ '{{team}}' AS param
+FROM
+ benn.nfl_touchdowns
+----
+
+////
+This is an link:https://app.mode.com/modeanalytics/reports/9387faf8a122/details/queries/61b65545abb9[example Report,window=_blank] (check *Show Parameter Code*) showing how this can be done.
+You can view the Python code by clicking Notebook on the left side panel.
+////
+////
+[discrete]
+=== *Q: Can I add a Markdown cell into a Report?*
+
+Currently, it is not possible to add a Markdown cell into the Report Builder, it would have to be an output of a Code cell.
+
+We recommend using Text Boxes in our Report Builder.
+This includes text, links, images and more to add context to your Report.
+////
+
+[discrete]
+=== *Q: Can I use dbt Metrics in Notebooks?*
+
+Yes.
+Since metrics charts are SQL Queries under the hood, their results are made available to the Notebook and appear as data frames alongside all other Query results in a given Report.
+
+////
+[discrete]
+=== *Q: Can you apply report filters to Notebook-generated visuals?*
+
+{product}'s report filters only work with our native charts and tables.
+
+However, you can leverage xref:analyst-studio-parameters.adoc#overview[Parameters] for this case.
+When you select a parameter and run the Report, the queries return values associated with the selected parameters.
+As a result, the Notebook and its visualizations will also be adjusted, since the Notebook is purely powered by the query results.
+////
+
+[discrete]
+=== *Q: When do queries in the Notebook start to execute after a report run?*
+
+SQL Queries are kicked off simultaneously, and their results come in based on the processing time of your database.
+The Notebook will wait until all SQL queries have successfully returned results before running.
+This is because the logic is set up such that the Notebook does not know which query results execution is dependent on, so to be safe, it waits for all the SQL queries to finish running.
+
+Therefore, it is possible that the Notebook would render faster, but it must wait for all queries to finish running.
+
+////
+[discrete]
+=== *Q: I am on a paid {product} Business or Enterprise plan. Why can't I pip install or upgrade certain libraries in the Notebook?*
+
+If you want to install or upgrade additional libraries or versions, we recommend following the <<install-additional-libraries,steps outlined here>>.
+Please be sure to run the exact command listed on the site.
+If these commands do not work for you, it is possible that we do not support the library or the version of the library that you are trying to upgrade to.
+
+Due to the current architecture of the Notebook, there are certain libraries that we are unable to support.
+The ability to manually install additional libraries or upgrade to newer versions is a workaround that we offer for these cases.
+However, we cannot guarantee that these libraries will function properly if they are not included in our list of <<supported-libraries,supported libraries>>.
+
+If you do not see a library listed as supported, it is considered a feature request.
+Please contact {support-url} to confirm and request the library.
+////
+
+[discrete]
+=== *Q: Do you have a tutorial where I can learn Python for business analysis using real-world data?*
+
+We do have a tutorial available that teaches Python for business analysis using real-world data.
+This tutorial is designed for users with little or no experience with Python, and it covers everything from the basics of the language to advanced techniques for analyzing and visualizing data.
+
+If you're interested in learning how to use Python for business analysis, this tutorial is a great place to start.
+It includes step-by-step instructions and hands-on exercises to help you apply what you learn to real-world scenarios.
+
+////
+To access the tutorial, please visit the link:https://mode.com/python-tutorial/[page here,window=_blank].
+If you're interested in learning SQL as well, you can access this link:https://mode.com/sql-tutorial/[page here,window=_blank].
+We hope you find it helpful, and we look forward to hearing your feedback.
+////
