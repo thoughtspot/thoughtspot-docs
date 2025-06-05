@@ -2,7 +2,7 @@
 :author: Naomi
 :last_updated: 5/19/25
 :description: Use last/first_value functions to find the opening or closing values for semi-additive measures.
-:jira: SCAL-204538, SCAL-210314, SCAL-214756, SCAL-222973, SCAL-225382, SCAL-243235
+:jira: SCAL-204538, SCAL-210314, SCAL-214756, SCAL-222973, SCAL-225382, SCAL-243235, SCAL-257891
 
 == Formula syntax
 
@@ -698,7 +698,9 @@ If you instead search for `stock balance` `monthly` `group`, ThoughtSpot returns
 * Semi-additive functions cannot contain only constant expressions. For example, if you create a formula with no references to a column, such as `last_value(sum(1), {}, {true})`, ThoughtSpot will not support the function.
 * You cannot combine different partitioning and ordering clauses in different semi-additive functions from the same table, in the same query. That is, a case where formula 1 partitions on Date and Product, and formula 2 partitions on Date, Product, and Client.
 * Average, Variance, Standard Deviation and Unique Count do not work with semi-additive functions across an attribution query. That is, multiple fact tables with at least one non-shared attribute.
-* We do not support semi-additive functions and unique count functions from the same table. Note that a work-around exists by wrapping the unique count in a group_aggregate function. For example, `group_aggregate(unique_count(product),query_groups()+{},query_filters())`.
+* * Semi-additive formulas when combined with unique count formulas may result the following xref:search-data-errors-reference.adoc#search-data-error-11035[query generation error].
++
+Note that the unique count can be defined as the aggregate within the last_value function. That is, `last_value(unique count(store_id),query_groups(),{transaction_date})`.
 * Advanced aggregates (group, cumulative, moving and rank) cannot be used *within* the definition of semi-additive functions. Note they can be used to wrap these functions as outer aggregation.
 * ThoughtSpot will support `first_value` and `last_value` functions for Redshift and Google BigQuery beginning in the 10.1.0.cl release.
 
