@@ -5,7 +5,7 @@
 :page-partial:
 :page-aliases: /end-user/search/about-tables.adoc
 :description: Tables display your answer in a format similar to an Excel spreadsheet.
-:jira: SCAL-154258, SCAL-240730
+:jira: SCAL-154258, SCAL-240730, SCAL-247222
 
 Tables display your answer in a format similar to an Excel spreadsheet.
 
@@ -217,3 +217,205 @@ image::table-aggregate-summary.png[Table aggregate summary]
 When a user searches with a formula containing both a conditional clause and a group_aggregate expression, then ThoughtSpot detects the aggregation type on the first non-constant output clause and uses it in the Headline summary. In this context, a non-constant output clause means any base column reference (for example, `Revenue`), or formula (for example, `sum(revenue)`).
 
 For example, consider the formula `group_aggregate(sum(if (Color = 'blue') then 0 else group_unique_count(Discount)))`. In this case, the headline summary would use `COUNT_DISTINCT`. Of the two output clauses in this formula, `then 0` is a constant, while `else group_unique_count(Discount)` is non-constant and has an aggregation type of `COUNT_DISTINCT`.
+
+==== Table summary aggregate matrix
+
+
+[options=”header”]
+|===
+| Function | Total | Average | Min | Max | Variance | Standard deviation | Table aggregate | Total count | Unique count
+
+
+| Column measure | Yes | Yes | Yes | Yes  | Yes  | Yes | No | No | No
+
+
+| Column attribute | No | No | No | No | No | No | No | Yes | Yes
+
+
+| average(x) | No | No | Yes | Yes | No  | No | Yes | No | No
+
+
+| count(x) | Yes | Yes | Yes | Yes | Yes | Yes  | No | No | No
+
+
+| max(x) | No | Yes | Yes | Yes | Yes | Yes | No | No | No
+
+
+| median(x) | No | No | Yes | Yes | No | No | No | No | No
+
+
+| min(x) | No | Yes | Yes | Yes | Yes | Yes | No | No | No
+
+
+| percentile(x) | No | No | Yes | Yes | No | No | No | No |  No
+
+
+| stddev(x) | No | No | Yes | Yes | No | No | Yes | No | No
+
+
+| sum(x) | Yes | Yes | Yes | Yes | Yes | Yes | No | No | No
+| unique count(x) | Yes | Yes | Yes | Yes | Yes | Yes | No | No | No
+
+
+| variance(x) | No | No | Yes | Yes | No | No | Yes | No | No
+
+
+| cumulative_* | No | No | Yes | Yes | No | No | No | No | No
+
+
+| moving_* | No | No | Yes | Yes | No | No | No | No | No
+
+
+| rank | No | No | No | No | No | No | Yes | No | No
+
+
+| rank_percentile | No | No | Yes | Yes | No | No | No | No | No
+
+
+| group_* - with aggregate in search. For example, sum fxExample | Yes | Yes | Yes | Yes | Yes | Yes | Yes | No | No
+
+
+|group_* - with NO aggregate in search. For example, fxExample | No | No | No | No | No | No | No | Yes | Yes
+
+
+| group_aggregate - with outer aggregate. For example,
+sum(group_aggregate….)
+
+
+ | Yes | Yes | Yes | Yes | Yes | Yes | Yes | No | No
+
+
+| group_aggregate - with NO outer aggregate. For example,
+(group_aggregate….)
+
+
+| No | No | No | No | No | No | No | Yes | Yes
+
+
+
+
+| group_aggregate - with NO outer aggregate. For example,
+(group_aggregate….) Aggregate defined in search. For example, sum fxExample
+
+
+|  Yes | Yes | Yes | Yes | Yes | Yes | Yes | No | No
+
+
+| sum - last_value/first_value | Yes | Yes | Yes | Yes | Yes | Yes | Yes | No  | No
+
+
+| count - last_value/first_value | Yes | Yes | Yes | Yes | Yes | Yes | Yes | No | No
+
+
+| unique count - last_value/first_value | Yes | Yes | Yes | Yes | Yes | Yes | No | No | No
+
+
+| min - last_value/first_value | Yes  | Yes | Yes | Yes | Yes | Yes | Yes | No | No
+
+
+| max - last_value/first_value | Yes | Yes | Yes | Yes | Yes | Yes | Yes | No | No
+
+
+| average - last_value/first_value | No | No | Yes | Yes | No | No | Yes | No | No
+
+
+| standard deviation - last_value/first_value | No | No | Yes | Yes | No | No | Yes | No | No
+
+
+| variance - last_value/first_value | No | No | Yes | Yes | No | No | Yes | No | No
+
+
+|===
+
+
+==== Table aggregate
+
+
+Table aggregates are applied when aggregations are *non-composable* or when an expression is built on functions of aggregates, such as `AVG(x) + SUM(x)`.
+
+
+===== Non-composable aggregations
+
+
+Non-composable aggregations produce incorrect results when applied to already aggregated data. These functions depend on row count and require special handling.
+
+
+Consider the following examples:
+
+
+AVG(x):: The average of averages does not equal the true overall average.
+VARIANCE(x) or STDDEV(x):: These depend on all data points and cannot be aggregated.
+Expressions containing multiple aggregates, like `AVG(x)+SUM(x)`:: These lose accuracy when derived from aggregated data.
+
+
+===== Composable aggregations
+
+
+Composable aggregations can be applied multiple times at different levels of aggregation without losing correctness. These functions do not depend on row count and can be safely reaggregated.
+
+
+Consider the following examples:
+
+
+SUM(x):: The sum of sums is still a valid sum.
+COUNT(x):: Counting counts still produces the correct total.
+MAX(x) or MIN(x):: The maximum or minimum of values remains correct.
+
+
+.Applicability conditions
+
+
+[options=”header”]
+|===
+| Condition | Applicable
+
+
+| Single composable function at root level (SUM, MAX, COUNT, etc.) | No
+
+
+| Single/multiple standard functions ONLY (except <<supported_cases,supported cases>>) | Yes
+
+
+| Single/multiple cumulative functions ONLY | No
+
+
+| Single/multiple group functions ONLY | Yes
+
+
+| Single/multiple moving functions ONLY | No
+
+
+| Constant functions (for example, SUM(1)) | No
+|===
+
+
+[#supported_cases]
+===== Group function supported cases
+
+
+Table aggregates apply when the expression contains a *group function*, as long as there are no non-aggregate subexpressions.
+
+
+Supported cases:
+
+* `group_average(revenue, color)`
+* `min(group_aggregate(average(revenue), querygroups() + {color}, {}))`
+* `group_average(revenue, city, region) / group_average(revenue,region)`
+
+
+Not supported:
+
+* `revenue - group_average(revenue, color)`. Contains a non-aggregate subexpression.
+
+
+==== Limitations
+
+
+Table aggregates are not allowed if the expression tree contains `uniquecount`.
+
+
+'''
+> **Related information**
+>
+> * xref:formulas.adoc[]
+> * xref:formula-reference.adoc[]
