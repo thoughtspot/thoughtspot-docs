@@ -1,0 +1,161 @@
+////
+:doctype: book
+
+////include::7.1@software:ROOT:connections-snowflake-edit.adoc[]
+////
+= Configure internal OAuth or OAuth with PKCE for a {connection} connection
+:last_updated: 11/05/2021
+:experimental:
+:linkattrs:
+:page-layout: default-cloud
+:page-partial:
+:connection: Snowflake
+:description: ThoughtSpot supports Snowflake’s internal OAuth for a Snowflake connection.
+:jira: SCAL-160062, SCAL-180837, SCAL-199788
+
+
+ThoughtSpot supports {connection}'s internal OAuth for a {connection} connection.
+With OAuth, each ThoughtSpot user authenticates with {connection} and authorizes ThoughtSpot to query the database using their {connection} user account.
+
+For {connection} connections that use internal OAuth, users must sign in when their OAuth tokens expire.
+The amount of time that {connection} OAuth tokens are valid is set in {connection}.
+
+NOTE: For OAuth, we recommend checking the {connection} link:https://docs.snowflake.com/en/user-guide/oauth-ext-overview[documentation^] to confirm any IDP support and their details. This article documents only the most frequently set-up IDP.
+
+NOTE: If your IdP supports rotation of refresh tokens with every usage, please ensure that this option is NOT chosen. ThoughtSpot does not support one-time use refresh tokens.
+
+== Configuring a {connection} database for internal OAuth with ThoughtSpot
+
+To add a {connection} connection to ThoughtSpot using internal OAuth, you must set up the OAuth integration in {connection}.
+This requires a {connection} user account with ACCOUNTADMIN permission.
+
+IMPORTANT: Each ThoughtSpot instance requires a unique {connection} security integration.
+Each user in {connection} must have a default warehouse and default role.
+
+In your {connection} database, do the following:
+
+. In the Worksheet view, enter the following commands, and select *Run*:
++
+----
+SHOW USERS;
+
+SHOW SECURITY INTEGRATIONS;
+
+CREATE OR REPLACE SECURITY INTEGRATION <enter a name for your security role>
+  TYPE = OAUTH
+  OAUTH_CLIENT = CUSTOM
+  OAUTH_CLIENT_TYPE = <enter a client type>
+  OAUTH_REDIRECT_URI = 'https://<public url of your ThoughtSpot instance>/callosum/v1/connection/generateTokens'
+  OAUTH_USE_SECONDARY_ROLES = IMPLICIT
+  ENABLED = TRUE
+  COMMENT = '<enter a description of your security profile>'
+----
+
+. At the bottom of what you entered in step 1, add an empty line, and then enter the following to describe your security integration:
++
+----
+DESCRIBE SECURITY INTEGRATION <enter description of your security integration>;
+
+SELECT SYSTEM$SHOW_OAUTH_CLIENT_SECRETS('<enter same description of your security integration as previous line');
+----
++
+Example of a full query:
++
+----
+SHOW USERS;
+
+SHOW SECURITY INTEGRATIONS;
+
+CREATE OR REPLACE SECURITY INTEGRATION OAUTH_CONFIG
+  TYPE = OAUTH
+  OAUTH_CLIENT = CUSTOM
+  OAUTH_CLIENT_TYPE = 'CONFIDENTIAL'
+  OAUTH_REDIRECT_URI = 'https://177.122.45.2/callosum/v1/connection/generateTokens'
+  OAUTH_USE_SECONDARY_ROLES = IMPLICIT
+  ENABLED = TRUE
+  COMMENT = 'Profile for passthrough'
+
+DESCRIBE SECURITY INTEGRATION OAUTH_CONFIG;
+
+SELECT SYSTEM$SHOW_OAUTH_CLIENT_SECRETS('OAUTH_CONFIG');
+----
+
+. Select the *Run* button to run the full query.
++
+The Details window appears displaying a JSON object.
+
+. Copy the JSON object and select *Done* to close the window.
+. Paste the contents into a text editor.
++
+Example:
++
+----
+{"OAUTH_CLIENT_SECRET_2":"KqKBu0xOxPtmk+RKvNP0+eIAMlFxMsu8rRh6s5q1qLY",
+"OAUTH_CLIENT_SECRET":"KdKBb0aOxPzml+RJvMP1/eIEMlFxM/su6rPh2wLZ",
+"OAUTH_CLIENT_ID":"aOxPzmlRJvCP5eIUMlFxMbu6rJh7mTO="}
+----
+
+. For OAUTH_CLIENT_ID, copy the information between quotes after the colon (:).
++
+Example: `aOxPzmlRJvCP5eIUMlFxMbu6rJh7mTO=`
++
+NOTE: Make sure you include the equals sign (=), if it exists.
+
+. In the {connection} connection details page in ThoughtSpot, paste the OAuth client ID in the *OAuth Client ID* field.
+. For OAUTH_CLIENT_SECRET, copy the information between quotes after the colon (:).
++
+Example: `KdKBb0aOxPzml+RJvMP1/eIEMlFxM/su6rPh2wLZ`
+
+. In the {connection} connection details page in ThoughtSpot, paste the OAuth client secret in the *OAuth Client Secret* field.
++
+NOTE: Once a connection is created the token associated with the user login credentials for the connection is stored in ThoughtSpot for 90 days.
+
+== Sharing a Worksheet built from tables in a {connection} connection that uses OAuth
+
+When you share a ThoughtSpot object (Worksheet, Liveboard, or Answer) that references a {connection} connection that uses OAuth authentication, the user is prompted to sign in to {connection} before they can view any data.
+When viewing the Liveboard, Answer, or running a search on the Worksheet, ThoughtSpot displays a message telling the user to sign in with a button to initiate the login process.
+
+IMPORTANT: In order for a user to access your shared Worksheet, they must have a default role assigned to their user in {connection}.
+
+== Logging in to a connection created by another user using OAuth
+
+As an admin user, you may run into an issue logging in to connections created using OAuth. To resolve this issue, complete the following steps:
+
+. Search on a table belonging to the connection you are trying to edit. The following error appears:
++
+image:oauth-error.png[Error reading "Error in loading data. Connection to Snowflake could not be established. OAuth login required. Login"]
+
+. Click *Login*. You will be directed to the IDP login page.
+
+. Enter your login credentials.
+
+. You will now have access to edit the connection.
+
+== OAuth connection improvements
+
+If you do not have a valid OAuth access token, you can now directly navigate to the OAuth authorization screen when performing one of the following actions on a connection shared with you:
+
+** View sample data
+** Create a custom SQL view
+** Edit the connection
+** Upload a CSV file
+
+'''
+> **Related information**
+>
+> * xref:connections-snowflake-add.adoc[Add a {connection} connection]
+> * xref:connections-snowflake-edit.adoc[Edit a {connection} connection]
+> * xref:connections-snowflake-remap.adoc[Remap a {connection} connection]
+> * xref:connections-snowflake-external-tables.adoc[Query external tables from your {connection} connection]
+> * xref:connections-snowflake-delete-table.adoc[Delete a table from a {connection} connection]
+> * xref:connections-snowflake-delete-table-dependencies.adoc[Delete a table with dependent objects]
+> * xref:connections-snowflake-delete.adoc[Delete a {connection} connection]
+> * xref:connections-snowflake-azure-ad-oauth.adoc[Configure Azure AD OAuth]
+> * xref:connections-snowflake-auth0.adoc[Configure Auth0]
+> * xref:connections-snowflake-best.adoc[Best practices for {connection} connections]
+> * xref:connections-snowflake-private-link.adoc[]
+> * xref:connections-snowflake-psc.adoc[]
+> * xref:connections-snowflake-reference.adoc[Connection reference for {connection}]
+> * xref:connections-query-tags.adoc#tag-snowflake[ThoughtSpot query tags in Snowflake]
+> * xref:connections-snowflake-passthrough.adoc[]
+> * xref:connections-column-indexing-oauth.adoc[]

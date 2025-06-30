@@ -1,0 +1,484 @@
+= Spotter best practices
+:last_updated: 2/4/2025
+:author: Naomi
+:linkattrs:
+:experimental:
+:page-layout: default-cloud
+:description:
+:jira: SCAL-228500, SCAL-241099, SCAL-244132, SCAL-236596, SCAL-249847, SCAL-251401, SCAL-230530, SCAL-254813, SCAL-256741
+
+
+== Understand Spotter’s capabilities
+
+
+=== What questions can Spotter answer today?
+
+
+Spotter brings in the ability to translate natural language instructions to analytical queries on your data model that can help you perform some complex analysis. Let’s take a look at the capabilities of Spotter in more detail by taking a simplified table given below.
+
+[#table]
+[options=”header”]
+|===
+
+| Region | Month | Total sales
+
+| East | Jul 2024 | 4,000,000
+
+| East | Aug 2024 | 4,000,000
+
+| East | Sep 2024 | 4,000,000
+
+| Midwest | Jul 2024 | 5,000,000
+
+| Midwest | Aug 2024 | 5,000,000
+
+| Midwest | Sep 2024 | 4,000,000
+
+| South | Jul 2024 | 1,000,000
+
+| South | Aug 2024 | 1,000,000
+
+| South | Sep 2024 | 1,000,000
+
+| Southwest | Jul 2024 | 3,000,000
+
+| Southwest | Aug 2024 | 2,000,000
+
+| Southwest | Sep 2024 | 2,000,000
+
+| West | Jul 2024 | 4,000,000
+
+| West | Aug 2024 | 4,000,000
+
+| West | Sep 2024 | 3,000,000
+|===
+
+
+[#spotter-agent]
+.Spotter agent [.badge.badge-early-access]#Early Access#
+****
+Spotter agent is an enhanced experience that answers questions about the data model, provides natural language responses alongside visualizations, and performs more complex analysis. You can use Spotter agent to ask how many columns in a Worksheet, or to ask for suggestions on which question to ask next. Spotter agent can also explain how it arrived at a specific answer, so you can trust and verify your insights.
+
+To enable Spotter agent, or to make Spotter agent available to all users by default, contact your administrator. The Spotter agent option is available under *Admin > ThoughtSpot AI > Choose Spotter answer experience*.
+
+For more information, see xref:spotter-agent.adoc[].
+****
+
+
+Currently, Spotter can help you answer questions about your data which can be answered by using a combination of the capabilities mentioned below:
+
+Mathematical computations:: Spotter can count things in your dataset (for example, `how many regions are there?` ) , or it can aggregate metrics (for example,  `what is the average sales?` )  or it can perform complex mathematical computations (for example, `how does the sales for the east region compare against sales of the west region?`).
+
+Grouping:: Spotter can help you perform the computations for specific groups (for example, `what is the total sales by region?` or `what is the maximum sales for each region?`). You can also ask Spotter to create grouping on date columns on the fly (for example, `what are the yearly sales?` or `what are the monthly sales?`).
+
+Filtering:: You can instruct Spotter to perform the above operations on a filtered set of data instead of the full table. For example, `what are the total sales for August?` or `what are the sales for this month?` or  `what are the sales for South in July 2024?`
+
+== Data questions
+
+Let’s take a look at how business users in a retail business can get insights about their day-to-day operations with the help of Spotter.
+
+=== Basic aggregations
+
+Basic aggregations allow you to compute summary statistics such as sum, average, count, or unique count on measure columns, optionally grouped by attributes or dates. These fundamental operations provide a clear understanding of your data at a summarized level.
+
+[options="header"]
+|===
+| Question | Verifiable query tokens | Description
+
+| How many purchases were made?
+| `sum [quantity purchased]`
+| Calculates the total number of purchase transactions across your entire dataset, providing immediate insight into overall sales volume.
+
+| What is the average sales per city?
+| `average [sales] by [city]`
+| Computes the average sales figure for each unique city in your data, enabling geographic performance comparison at a glance.
+
+| Count the number of distinct products.
+| `unique count [product]`
+| Identifies the total number of unique products in your inventory, giving you precise visibility into your product portfolio diversity.
+
+| Show the number of purchases by item type for this year.
+| `sum [quantity purchased] by [item type] [date].'this year'`
+| Analyzes purchase quantity across different product categories within the current year, revealing category performance-wise customer behaviour differences.
+
+| Count the number of counties in each region.
+| `count [county] by [region]`
+| Quantifies the number of counties present within each business region, providing insights into regional administrative distribution.
+|===
+
+=== Date functions
+
+Spotter offers the most powerful and reliable date-based analysis capabilities in the industry.
+
+==== Relative date filtering
+
+These functions enable filtering data based on time periods relative to the current date and time, including keywords that represent durations like weeks, months, quarters, years, days, and hours in the past or future.
+
+[options="header"]
+|===
+| Question | Verifiable query tokens | Description
+
+| What was the total quantity purchased this week?
+| `sum [quantity purchased] [date] = 'this week'`
+| Calculates the total quantity purchased within the current seven-day period, providing real-time insight into ongoing weekly performance.
+
+| How many different products were purchased last quarter?
+| `unique count [product] [date] = 'last quarter'`
+| Identifies the product diversity by counting unique products purchased in the previous quarter, enabling strategic inventory planning based on recent trends.
+
+| What is the sum of sales for the last 10 days?
+| `sum [sales] [date] = 'last 10 days'`
+| Calculates the 10-day sales total, providing an actionable short-term performance metric for immediate business decisions.
+
+| What is the average quantity purchased on Mondays for the last month?
+| `average [quantity purchased] [date].'day of week' = 'monday' [date] = 'last month'`
+| Analyzes Monday purchase patterns over the past month, revealing day-specific consumer behavior that can inform staffing and inventory decisions.
+
+| What is the total sales year to date?
+| `sum [sales] [date] = 'year to date'`
+| Measures cumulative sales performance from January 1st through the current date, providing a progressive annual performance benchmark.
+
+|===
+
+==== Absolute/specific date filtering
+
+These functions allow filtering data based on specific dates or fixed periods, such as a particular month, a specific day, or a defined date range.
+
+[options="header"]
+|===
+| Question | Verifiable query tokens | Description
+
+| Show me the total sales for Shirts item type in January of the current year.
+| `sum [sales] [item type] = 'Shirts' [date] = 'january'`
+| Isolates January sales performance for the Shirts category, enabling focused analysis on seasonal product performance in the current year.
+
+| How many stores had purchases today?
+| `unique count [store] [date] = 'today'`
+| Identifies the count of stores with active transactions on the current day, providing real-time visibility into your retail network's daily activity.
+
+| Show me total sales from 2020 start till 2023 end.
+| `sum [ sales ] [date] between '01/01/2020' and '12/31/2023'`
+| Analyzes cumulative sales across a multi-year period, enabling comprehensive long-term performance evaluation and trend identification.
+
+| What is the average quantity purchased on Mondays for the last month?
+| `average [quantity purchased] [date].'day of week' = 'monday' [date] = 'last month'`
+| Quantifies Monday purchase behavior over the past month, revealing specific day-of-week patterns that can optimize operational planning.
+|===
+
+==== Date bucketing and granularity
+
+These functions enable grouping and aggregation of data based on different levels of date granularity, such as by month, week, day of the week, or other date parts.
+
+[options="header"]
+|===
+| Question | Verifiable query tokens | Description
+
+| What is the average sales for each month of this year?
+| `average [sales] by [date] [date].'month of year' [date] = 'this year'`
+| Breaks down average sales by month for the current year, revealing seasonal patterns and trends that impact your business cycle.
+
+| Show me the hourly sales for yesterday.
+| `[sales] [date].hourly [date] = 'yesterday'`
+| Provides a detailed hour-by-hour sales analysis for the previous day, enabling precise identification of peak transaction periods.
+
+
+|===
+
+=== Subqueries
+
+Subqueries allow you to embed a query within another query, using the results of the inner query to filter or condition the outer query. This sophisticated capability enables complex data retrieval and analysis. By leveraging subqueries, you can perform advanced tasks such as identifying items based on intricate criteria, comparing specific subsets of data, and filtering results based on dynamically computed values. Subqueries are particularly powerful when used with operators like `in` and `not in` to filter based on lists of values generated by the inner query.
+
+[options="header"]
+|===
+| Question | Verifiable query tokens | Description
+
+| What is the total sales of Jackets only from the top 5 cities by sales?
+| `[sales] in ( [city] top 5 [city] sort by [sales] ) [item type] = 'Jackets'`
+| Performs targeted analysis by first identifying your highest-performing cities, then specifically analyzing Jacket sales within those strategic markets.
+
+| Show quantity purchased for my top 10 products last year.
+| `[product] [quantity purchased] [date] = 'this year' [product] in ( [product] [date] = 'last year' top 10 [product] sort by [quantity purchased] )`
+| Tracks current year performance of historically strong products by analyzing purchase volumes for items that ranked in your top 10 during the previous year.
+
+| Show products that did not have any sales in the last 3 months.
+| `[product] [product] not in ([product] [sales] > 0 [date].'last 3 months')`
+| Identifies potentially underperforming or obsolete inventory by highlighting products with no recent sales activity, enabling inventory optimization decisions.
+
+| Show me Products that were sold in the East region in the last 12 months but  had no sales in the West region.
+| `[Product] [sales] > 0 [region] = 'east' [date] = 'last 12 months' [Product] not in ( [Product] [sales] > 0 [Region] = 'west' [date] = 'last 12 months' )`
+| Reveals products with region-specific performance disparities, identifying opportunities for targeted marketing strategies or regional expansion initiatives.
+
+
+|===
+
+=== Comparisons
+
+This category encompasses the ability to compare data across different segments, time periods, or attribute values. Spotter facilitates these comparisons through keywords like vs, relative and absolute date filters, and by calculating differences or ratios between data points. These capabilities enable you to identify trends, understand performance variations, and gain insights by contrasting different aspects of your data.
+
+[options="header"]
+|===
+| Question | Verifiable query tokens | Description
+
+| Compare sales of 'Shirts' this year vs last year.
+| `[sales] [date] = 'this year' vs [date] = 'last year' [item type] = 'Shirts'`
+| Delivers side-by-side year-over-year performance analysis for the Shirts category, enabling immediate identification of growth or decline trends.
+
+| Show me this year's quantity purchased for California vs Arizona.
+| `[quantity purchased] [state] = 'California' vs [state] = 'Arizona' [date] = 'this year'`
+| Provides direct state-to-state performance comparison, highlighting regional differences in consumer purchasing behavior across key markets.
+
+| Compare the sales of shirts for  Q1 2024, Q1 2023 & Q1 2022.
+| `[item type]=’shirts’ [sales] [product] [date] = 'q1 2024' vs [date] = 'q1 2023' vs [date] = 'q1 2022'`
+| Analyzes long-term Q1 performance trends across three consecutive years, revealing cyclical patterns and long-term trajectory for strategic planning.
+
+| Compare weekend vs weekday quantity purchased for this quarter.
+| `[quantity purchased] [date] = [date].'saturday' [date].'sunday' vs [date] != [date].'saturday' [date].'sunday' [date] = 'this quarter'`
+| Contrasts weekend and weekday purchase volumes, revealing consumer behavior patterns that can optimize scheduling, inventory management, and marketing initiatives.
+
+|===
+
+=== Growth calculations
+
+Growth calculations enable you to determine percentage changes of measures over time. This powerful feature allows you to analyze trends, identify periods of significant increase or decrease in key metrics, and understand the rate at which your business is evolving. Spotter supports various time granularities, including yearly, quarterly, monthly, weekly, and daily, as well as period-over-period comparisons like year-over-year or month-over-month.
+
+[options="header"]
+|===
+| Question | Verifiable query tokens | Description
+
+| Show the growth of sales year over year.
+| `growth of [sales] by [date] [date].'yearly'`
+| Tracks annual sales growth rates over consecutive years, providing clear visibility into long-term business trajectory and performance sustainability.
+
+| What is the growth of sales month over month for California for the last 2 years?
+| `growth of sum [sales] by [date] [date].weekly [state] = 'California' [date] = 'last 2 years'`
+| Analyzes California's month-to-month sales growth using weekly data points over a 24-month period, revealing both seasonal patterns and unexpected fluctuations in this key market.
+
+| Show the growth of sales weekly for Jackets for the last 8 weeks.
+| `growth of sum [sales] by [date] [date].weekly [Item Type] = 'Jackets' [date] = 'last 8 weeks'`
+| Provides detailed week-over-week growth analysis for Jacket sales across a 2-month window, enabling precise tracking of recent category performance and trend identification.
+
+
+|===
+
+=== Arithmetic operations, ratios, and percentages
+
+These capabilities allow you to perform mathematical calculations on measures, derive ratios between different data points, and calculate various types of percentages. Gain deeper analytical insights by comparing values, understanding proportions, and quantifying changes within your data. Spotter supports a comprehensive range of operations, including basic arithmetic, percentage of total, percentage change, and complex ratio calculations, often in conjunction with grouping and filtering.
+
+[options="header"]
+|===
+| Question | Verifiable query tokens | Description
+
+| What is the percentage share of sales for each product?
+| `[percentage sales of products] [product]`
+| Calculates each product's contribution to overall sales, providing a proportional view of your portfolio performance that highlights your most impactful offerings.
+
+| Show the percentage of total sales that comes from California this year.
+| `[percentage contribution of California] [date] = 'this year'`
+| Quantifies California's percentage contribution to your total revenue for the current year, helping assess the strategic importance of this market to your overall business.
+
+| What is the month-over-month percentage change in sales for each region 2 years ago?
+| `growth of [sales] by [date] [date].monthly [date] = '2 years ago' [region]`
+| Delivers historical month-over-month percentage change analysis by region from two years prior, enabling comparison with current growth patterns to identify shifts in regional performance.
+
+
+|===
+
+==== Market share analysis
+
+Market share is a performance metric used to measure a company's sales or market share relative to the total sales or performance of a specific market or industry.
+
+[options="header"]
+|===
+| Question | Verifiable query tokens | Description
+
+| What is the market share of sales for Shirts by region
+a| `[Market share of sales for shirts] [region]`
+
+image::market-share-change.png[Market share change]
+
+| Calculates the percentage of total sales that comes from Shirts for each region. This involves calculating the total sales for all products in each region and then dividing the sales of Shirts in each region by the corresponding total sales, multiplying by 100 to get the percentage share.
+
+| What is the percentage change in market share by product for East compared to West
+
+
+a| `[Market share of sales for shirts] [region]`
+
+image::market-percentage-change.png[Market percentage change]
+
+| Calculates the market share of each product in the East region and compares it to the market share of the same product in the West region, then computes the percentage change between these two market share values. This involves implicitly calculating the market share for each region (sales of product in region / total sales in region) and then applying a formula to find the percentage difference between the East and West market shares for each product.
+
+
+|===
+
+=== Conditional logic
+
+Conditional logic enables you to define specific conditions to categorize, filter, or calculate data based on custom criteria. Create computed measures and attributes that dynamically adapt to underlying data patterns. Leverage if-then-else structures within formulas to implement sophisticated conditional logic, allowing you to segment data, flag specific instances, or apply different calculations based on whether certain conditions are met. This feature enhances Spotter's analytical power by enabling nuanced, context-aware insights tailored to your business needs.
+
+[options="header"]
+|===
+| Question | Verifiable query tokens | Description
+
+| Show stores that had sales greater than $1000 yesterday and more than $500 today.
+| `[store] [Sales Yesterday > 1000] = true [Sales Today > 500] = true`
+| Identifies consistently high-performing retail locations by applying multiple time-based sales thresholds, enabling focused attention on stores maintaining strong consecutive-day performance.
+
+| Show me the total sales in east if jackets category sales was 20% higher
+
+| `[total sales with 20% increase]
+[region = 'east']`
+
+| Projects potential regional sales impact by calculating total East region sales with a hypothetical 20% increase (what-if scenario) in the Jackets category, enabling strategic planning for targeted growth initiatives.
+
+| Show total sales by store for last month. Highlight stores as top performing if sales are over 1M, meets expectations if between 500k and 1M, and low performing if below 500k.
+
+| `[sales]
+[performance category]
+[store]
+[date = last month]`
+
+| Calculates the total sales per store for the last month and then categorizes each store into Top performing, Meets expectations, or Low performing based on its total sales using a conditional formula.
+
+
+|===
+
+////
+Here is a quick glance of the kind of questions you can ask using a combination of the above skills.
+
+Basic Aggregations:: Spotter supports basic aggregations, which act as building blocks for more complex calculations, using keywords like sum, average, count, and unique count. These can be used on any numerical column, and can be grouped by other columns.
+Examples::: `sum [sales_amount]` calculates the total sales. +
+`average [quantity_sold] by [product_category]` calculates the average quantity sold per product category. +
+`count [order_id]` counts the number of orders. +
+`unique count [customer_id]` counts the number of unique customers.
+Growth Calculations:: Spotter computes percentage change over time with the growth of keyword. This is particularly useful for trend analysis.
+Examples::: `growth of [revenue] by [order_date].yearly` shows the year-over-year revenue growth. +
+`growth of [quantity_sold] by [order_date].monthly` shows the monthly growth in quantity sold.
+Moving/Cumulative Calculations:: The system can perform moving and cumulative calculations. These are useful for tracking trends over time.
+Examples::: `cumulative_sum ( [sales_amount] , [order_date])` calculates the cumulative sum of sales over time. +
+`moving_sum ( [sales_amount] , 0 , 0 , [order_date] )` gives the current sales amount. +
+`moving_average ( [sales_amount] , 4 , 0 , [order_date] )` calculates the five-month moving average of sales (note the window is of four previous values plus the current value).
+Arithmetic Operations::
+Example::: To calculate profit, you might use a formula like `[sales_amount] - [cost_of_goods_sold]`.
+Conditional Logic::
+Example::: To categorize products based on their sales, a formula like `if ( average [sales_amount] > 1000000 ) then 'red' else 'blue'` can be used.
+String Manipulation:: Formulas can include string functions for operations like concatenation.
+Example::: You can combine the first three letters of product_name with the last three of product_category using a formula like `concat ( substr([product_name] , 0 , 3 ) , '-' , substr([product_category] , length - 3 , 3 ))`.
+Date Functions::
+Examples::: You can use date functions in formulas such as `diff_years([order_date], today())` to compute the difference in years from the current date. +
+To filter for the correct week number, one can use formulas such as `diff_weeks(date, to_date('12/02/2024', '%d/%m/%y')) = 0`.
+Aggregations with Conditions::
+Examples::: `group_aggregate ( sum ( [sales_amount] ) , { }, { [sales_amount] < 50000000 } )` calculates the sum of sales from small orders. +
+To compute the sum of sales_amount for specific products, use `sum_if (right([product_name], 6) = 'shirts', [sales_amount])`.
+Comparisons:: The vs keyword is used to compare values, time periods, or attributes.
+Examples::: `[sales_amount] [order_date] = 'this year' vs [order_date] = 'last year'` compares this year's sales to last year's. +
+`[sales_amount] [region] = 'Midwest' vs [region] = 'East'` compares sales in two different regions.
+Change Calculations:: Spotter can perform calculations to compute the change between values, often over time, or between attribute values. This is often done using formulas involving date and math functions, or with moving sums.
+Example::: `([sales_amount] in q2 2024 - [sales_amount] in q1 2024) / [sales_amount] in q2 2024 * 100` calculates the percentage change in sales between two quarters.
+Subqueries:: Subqueries allow for more complex filtering and analysis by using the results of one query to filter the results of another.
+Example::: To find the top 10 customers by sales and then show their orders, use `[order_id] [customer_id] in (top 10 [customer_id] by [sales_amount])`.
+
+NOTE: Analysts can provide training examples to help Spotter learn computation logic specific to their business. Without them, Spotter will generate these based on the details provided in question. +
+Some of the computations listed above will not be supported with aggregated fields. For example, if the analysts creates a group aggregate formula at worksheet level then tries to use the same in creating another group aggregate formula at answer level then those computations are not supported.
+
+
+Common Date Intents::
+Group by date:::
+Sample questions;; What are my weekly sales?, What are the quarterly sales?
+Filter by date:::
+Sample questions;; What are our yearly sales for the last 7 years?, What are the sales this year?
+
+Simple computations::
+Counting:::
+Sample question;; How many products were sold in the east region last week?
+Aggregation:::
+Sample questions;; What is the average sales for each store?, What is the maximum order size in the east region this week?
+Conditional counting/ aggregations:::
+Sample questions;; What are the sales for the east region?, What would be the sales if no jackets were sold?, What is total sales for east and the sales from small orders where small orders mean sales less than 50?
+
+Advanced computations::
+Ratios and percentage:::
+Sample questions;; What is the percentage of jacket sales in Arizona for the year 2023?, What is the ratio of units sold for shirts against pants?
+Comparison:::
+Sample questions;; Compare the quantity of jackets being sold to pants during 2020, 2021 and 2022, Compare the sales of east and west region
+Advanced calculations (change, nested aggregations, etc.):::
+Sample questions;; What is the change in sales each day between 2021 and 2023?, Can you provide the quarterly revenue breakdown for products that were part of the promotional campaign in Q2?
+////
+
+=== What questions are currently out of scope?
+
+
+Spotter is currently not designed to answer other types of questions. A few types of questions that Spotter doesn’t answer well are listed below.
+
+
+"Why" questions are not yet supported in Spotter and should be avoided. For example, Why did my sales go down in Q2?
+//Spotter is not able to answer descriptive questions about data sources. For example, How many columns does the Worksheet have?
+
+
+
+
+
+== Spotter user interface
+
+
+Let’s take a look at the Spotter user interface to understand how users can use the various options available. Spotter is designed as a conversational experience. The image below highlights some of the key elements:
+
+[.bordered]
+image:spotter-interface-1.png[Spotter interface basics]
+
+User Input:: The user input area is available at the bottom of the screen. You can use this to ask questions to the AI analyst or provide instructions on how the AI analyst should modify the answer. +
+NOTE: All follow-up questions in Spotter are treated as a follow-up to the last question. If you want to start with a new question, we recommend using the Reset option to reset the conversation.
+Last User Input:: Shows how your historical questions are displayed in the conversation.
+
+Interactive Chart:: Interactive chart is one of the elements of the response generated by Spotter. You can interact with the chart (similar to other parts of the ThoughtSpot product).
++
+NOTE: Only the last answer in the conversation supports interactive charts.
+
+Data Source:: Shows the data source used for the conversation. You can change the data source from here if you want to start conversations on a different data source.
+NOTE: Spotter conversations started from a Liveboard do not allow changing the data source.
+
+
+
+[.bordered]
+image:spotter-interface-2.png[Spotter interface conversations]
+
+
+Interpretation:: Spotter summarizes your query as it understands it. If you find that the interpretation differs from your prompt, you can rephrase to make Spotter's interpretation more accurate.
+
+Changes from Last Step (verification)::  Whenever you ask a follow-up question in the conversation, Spotter’s response includes the changes made from the last step to help you verify what has changed from the previous step.
++
+NOTE: The changes from Last Step are not currently available in saved chats.
+
+[#tokens]
+Query Tokens (verification):: All answers in Spotter show query tokens. These query tokens represent the simplified query and they uniquely specify how the data shown in the answer was computed. You can use the query tokens at any step to verify the complete answer. You can now hover over query tokens to see the following:
+
+Attributes::: Spotter displays a description in natural language and sample values. Select *More details* to view column statistics (such as how many unique values exist), data type, and source.
+Measures::: Spotter displays a description in natural language. Select *More details* to view column statistics (such as minimum and maximum values), data type, and source.
+Formulas::: Spotter displays the formula used.
+Filters::: Spotter displays an explanation of the filter in natural language and a mention of which value is being filtered.
+
+Switch Table/Chart (verification):: You can choose to view any answer in table view or chart view. The chart views are helpful for consuming simple answers while the table view is useful when the number of columns in the generated answer cannot be visualized elegantly in any chart.
+Edit user input (correction):: You can use the edit user input option to make modifications to your last question and make it more precise. Editing the latest user input will generate a new response using the edited instructions.
++
+NOTE: The option to edit user input is only available on the last question you asked.
+
+Delete (correction):: Generating insights sometimes requires a fair bit of exploration of the data. You can remove follow-up questions in case you want to go back to a previous state in the conversation and deep-dive in a different direction.
++
+NOTE: The option to edit user input is only available on the last question asked. Once the user input is deleted, the answer associated with it is also deleted.
+
+Edit Answer (correction)::  You can take control and modify the answer or visualization settings using our keyword-based search interface. It’s useful when you want to explore the data set in Do it yourself mode. You can always make modifications to an answer and come back to the conversation to ask more questions on the modified answers.
++
+NOTE: The option to edit the answer is only available on the last question asked by the user.
+
+
+[.bordered]
+image:spotter-interface-3.png[Spotter interface details]
+
+
+Answer Actions:: You can download the answer generated during the conversation. You can also save or pin the answer from the conversation when using Spotter in Cloud.
+
+Preview Data:: Preview data shows a few rows from the data source to help you check what columns are available for analysis in the selected data source. Preview Data is currently unavailable for data sources which contain a chasm trap or fan trap, unless you contact {support-url}.
+
+New chat / Reset chat:: All questions in the conversational experience are treated as a follow-up to the previous answer. If you want to start a new analysis with a fresh question, use this option to start a new conversation.
++
+NOTE: Spotter on Liveboards only provides the option to reset chat. When the chart is reset, you go back to the initial visualization from which the conversation started.
+
+Feedback:: Use the feedback option to inform us and your analytics team about which questions are not working.
