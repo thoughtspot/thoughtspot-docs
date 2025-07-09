@@ -10,7 +10,7 @@
 :path: /articles/datasets
 //can't find in modern stack
 :product: Analyst Studio
-:jira: SCAL-234704
+:jira: SCAL-234704, SCAL-256777
 
 ////
 [#overview]
@@ -217,6 +217,57 @@ NOTE: Only users with *can manage data* privileges can access the Data workspace
 . Unlike items from ThoughtSpot Connections, which are live, a Dataset is an extract that runs on a schedule. Your Dataset in ThoughtSpot will refresh according to the schedule(s) you set in Analyst Studio.
 
 Note that if you want to edit an existing, published Dataset, it may break the content built on it. We recommend creating a new Dataset with the desired edits and publishing it. If you delete a Dataset after publishing, you must also delete the Dataset in the ThoughtSpot Data workspace.
+
+[#dependencies]
+=== Dataset dependency
+[cols="20%,40%,40%"]
+|===
+| |*Update to published dataset in Analyst Studio* |*Resulting behavior to dataset in the Data workspace*
+
+.6+|*Data Run outcomes*
+|Dataset run succeeds (manual or via a schedule)
+|New cached results are made available automatically
+|Google Sheet sync succeeds (manual or via a schedule)
+|New cached results are made available automatically
+|Dataset run fails (manual or via a schedule)
+|Updates are paused—table will fallback to the last successful results until the issue is resolved
+|Dataset run succeeds, but exceeds the 10GB result set limit
+|Updates are paused—table will fallback to the last successful results until the issue is resolved
+|Dataset run succeeds, but exceeds the total 25GB/50GB Workspace limit
+|Updates are paused—table will fallback to the last successful results until the total amount of published data is reduced
+|Google Sheet sync fails
+|Updates are paused—table will fallback to the last successful results until the issue is resolved
+.9+|*Data Run outcomes*
+|Column is added
+|Change is not reflected automatically, requires the Dataset to be republished
+|Calculated field is added
+|Change is not reflected automatically, requires the Dataset to be republished
+|Aggregate calculated field is added
+|Not supported in the table view
+|Field description is added
+|Not supported in the table view
+|Column is removed
+|Change is not reflected automatically, but will surface an error in the table and on any dependent content. To reflect the change, remove any dependencies leveraging the column and republish the Dataset
+|Calculated field is removed
+|Change is not reflected automatically, but will surface an error in the table and on any dependent content. To reflect the change, remove any dependencies leveraging the column and republish the Dataset
+|Aggregate calculated field is removed
+|Not supported in the table view
+|Field description is removed
+|Not supported in the table view
+|Data type of existing column is changed
+|Change is not reflected automatically, but will surface an error in the table and on any dependent content. To reflect the change, remove any dependencies leveraging the column and republish the Dataset
+.4+|*Dataset Lifecycle changes*
+|Dataset name is changed
+|The table will break unless the Dataset is republished with its original name and Collection schema
+|Dataset is moved to a different Analyst Studio Collection
+|Moving Collections will update the table’s schema, breaking the table and content that’s built on it unless the schema is updated manually via TML
+|Dataset is unpublished
+|The table will break unless the Dataset is republished with its original name and Collection schema
+|Dataset is deleted in Analyst Studio
+|The table will break unless the Dataset is republished with its original name and Collection schema
+|===
+
+CAUTION: If a dataset is deleted directly from the Data workspace, then you must republish the dataset from Analyst Studio for it to appear again.
 
 ////
 === Moving a Dataset to a Collection
