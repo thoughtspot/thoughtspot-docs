@@ -1,0 +1,145 @@
+= Spotter Agent
+:last_updated: 6/2/2025
+:author: Naomi
+:linkattrs:
+:experimental:
+:page-layout: default-cloud-early-access
+:description: Spotter Agent is designed to interact with your questions naturally.
+:jira: SCAL-256741, SCAL-260724, SCAL-260805
+
+
+Spotter Agent is designed to interact with your questions naturally, offering avenues for further explanation of your data. You can now ask questions about your data, such as “How many columns are in this worksheet?” Spotter Agent can suggest questions you can ask to improve your understanding of the data analysis, and you can ask Spotter to answer multiple questions at once. For questions resulting in a chart or table, you can drill down on the answer, show underlying data, or use SpotIQ analyze.
+
+
+With Spotter Agent, you can also ask questions about how calculated fields such as formulas are generated. Spotter Agent has also improved its responses for questions not related to the data model you selected.
+
+
+== Sample conversation with Spotter Agent
+
+
+For the following example, we will ask Spotter Agent to give data literacy and analysis on a sample Worksheet for apparel retail.
+
+
+To start, we will ask Spotter Agent for a quick overview of the dataset. Note that Spotter Agent describes the number of columns in the Worksheet, the purpose of the dataset, and key use cases. Spotter Agent also suggests columns and example questions for each use case.
+
+
+[.bordered]
+image::spotter-agent-1.png[Spotter Agent gives a quick overview of the Sample Retail Apparel Worksheet, including four use cases, Sales Performance Analysis, Product Insights, Geographic Trends, and Store-level Analysis. Each use case contains three sample questions.]
+
+
+Next, we can ask “Give me the total sales by region”, and Spotter Agent responds with a chart.
+
+
+[.bordered]
+image::spotter-agent-2.png[Spotter Agent shows a bar chart with the total sales for each region.]
+
+
+For suggestions on further analysis, we can ask Spotter Agent, “What can I ask next?” Spotter Agent suggests questions for four categories, Sales Analysis, Geographic Insights, Store Performance, and Product Analysis.
+
+
+[.bordered]
+image::spotter-agent-3.png[Spotter Agent suggests follow-up questions for Sales Analysis, Geographic Insights, Store Performance, and Product Analysis.]
+
+
+You can prompt Spotter Agent to give you answers to multiple questions by simply mentioning which questions you want answered by their number order.
+
+
+[.bordered]
+image::spotter-agent-4.png[When prompted to give answers to questions number 4 and 8, Spotter Agent answers “What are the top-selling products in each region?” and “Which stores in each region contribute the most to total sales?” with bar charts.]
+
+
+To dive deeper, you can simply ask, “Can you explain how the above answer is calculated?”
+
+
+[.bordered]
+image::spotter-agent-5.png[Spotter Agent provides a general explanation on how it calculated the previous answers.]
+
+
+You can ask a question at a closer level of detail to guide your analysis.
+
+
+[.bordered]
+image::spotter-agent-6.png[Spotter Agent shows an answer for the percentage contribution of jackets in total sales for each region for this year. The Answer tokens show Spotter Agent created a formula to answer this question.]
+
+
+You can finish by asking Spotter Agent to explain the formula created for the previous answer.
+
+
+[.bordered]
+image::spotter-agent-7.png[Spotter Agent describes how it calculated the previous answer, including an explanation of the formula for percentage contribution.]
+
+
+== Enabling Spotter Agent
+
+Spotter Agent can be enabled by selecting the Spotter answer experience as "Spotter agent" in the Admin panel's AI section. By default, "Classic experience" is selected.
+
+Spotter experience must be enabled first for these flags to work.
+
+Instances upgraded in 10.8.0.cl under BETA need to enable these flags again.
+
+Reference the following table to see the behavior of the Spotter answer experience according to the flags enabled.
+
+[options="header"]
+|===
+| Choose Spotter experience | Spotter answer experience | Make Spotter agent default experience for all users | User experience
+
+| Sage & Ask Sage | Spotter Agent | Enabled | We do not recommend this configuration.
+
+| Spotter | Classic experience | Disabled | Spotter Agent is disabled on the instance.
+
+| Spotter | Spotter Agent | Disabled | Spotter Agent is disabled by default, but you can opt in from your profile page.
+
+| Spotter | Spotter Agent | Enabled | All users experience Spotter Agent.
+|===
+
+[#feedback]
+== Feedback in Spotter Agent [.badge.badge-beta]#Beta#
+
+
+When Spotter Agent is enabled, you can add reference questions and business terms to coaching from within a conversation, give feedback with additional details, and leave comments that are reviewed by your administrator. Note that you can only comment on feedback when you downvote an Answer in Spotter.
+
+
+To add a particular question or phrase to Spotter Coach, click *+ Add to Coaching* below the Answer.
+
+
+The *Confirm reference question* modal appears. The default reference question is Spotter's interpretation of your most recent question. You can edit the reference question in the provided text box to refine your coaching, and click *Confirm and Continue*.
+
+
+[.bordered]
+image::spotter-add-reference.png[The Confirm reference question modal appears, with an editable text box for the Reference question and a preview of the Answer as a visualization]
+
+
+
+
+
+The *Review business terms and mapped search tokens* modal appears. You can accept or reject the business terms mapped to the provided search tokens, or ignore them if the term is not useful to your coaching.
+
+
+[.bordered]
+image::spotter-review-business.png[The Review business terms and mapped search tokens modal shows a suggested mapping of item type ‘jackets’ to item type = jackets.]
+
+
+To leave feedback on an Answer that did not meet your expectations, click the thumbs down icon below the Answer.
+
+
+[.bordered]
+image::spotter-agent-feedback.png[Feedback modal with four options (Incorrect data, lost previous context, poor visualization, and incomplete answer) as well as a text field for writing a comment.]
+
+
+
+Spotter Agent provides four clickable fields to classify an incorrect answer, as incorrect data, lost previous context, poor visualization, and incomplete answer. You can also enter comments on the Answer in the text box provided.
+
+
+== Limitations
+
+
+* If Spotter Agent cannot access the answer data, it cannot summarise results in the conversation.
+* Spotter Agent cannot change chart types.
+* Coaching for non-data questions is not available, these questions are addressed based on metadata from the Worksheet or Model.
+* Spotter Agent only works with Azure OpenAI models right now.
+* Spotter Agent is optimized for the English language and may not be fully locale-aware.
+* The following functionalities of spotter are not available in Spotter Agent in 10.11.0.cl:
+
+** What’s changed: Spotter  usually shows the difference from the last answer above the answer, this will not be available once you switch to Spotter Agent.
+** Spotter interpretations: Spotter Agent may not show the Spotter interpretations.
+** Human-in-the-loop feedback: Spotter agent doesn't support human-in-the-loop feedback.

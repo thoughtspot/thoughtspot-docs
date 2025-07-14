@@ -1,0 +1,93 @@
+= Worksheet readiness for Sage
+:last_updated: 06/05/2024
+:linkattrs:
+:experimental:
+:page-layout: default-cloud-deprecated
+:description: We recommend minimizing unnecessary columns (aiming for fewer than 50 columns), using clear and distinct column names, and indexing relevant columns.
+:jira: SCAL-207854, SCAL-234878
+
+IMPORTANT: Worksheet creation is deprecated starting in the 10.4.0.cl release, and is disabled by default. If you need to create a Worksheet and the option is not available to you in ThoughtSpot, contact your ThoughtSpot administrator to enable Worksheet creation.
+
+We have identified several steps to prepare a Worksheet that can significantly improve Sage’s accuracy. Some of the key Worksheet preparation steps include minimizing unnecessary columns (aiming for fewer than 50 columns to maintain optimal performance), using clear and distinct column names, and indexing relevant columns.
+
+== Guidelines for column names
+
+See the following guidelines for setting up a Worksheet to get the best accuracy for Sage:
+
+* Avoid similar column names
+** If identical strings appear in multiple columns, it may confuse Sage’s judgment on column selection. +
+For instance, for the query ‘Show customers by Product’, Sage may have trouble deciding which column to choose from the ‘Product Line’ and 'Product Type' columns.
+
+* Use user-friendly names rather than abbreviations and domain-specific terms
+** When creating column names, avoid using abbreviations and specific jargon terms as they may not be easily understood by Sage, potentially impacting accuracy. +
+For instance, for the query ‘Show the number of policies created last month’, Sage may have trouble deciding which column to choose from the ‘plc_date’ and ‘crt_date’ columns.
+
+* Avoid mismatch between column names and data types
+** If column names do not align with their respective data types, it can impact accuracy. +
+For instance, if a column named ‘weeks’ is marked as an attribute column with values such as ‘Week 1’ and ‘Week 2’, it makes it difficult for Sage to respond correctly to date related queries. If you want to keep the data as is, then we suggest renaming the column to ‘Week number’ to make it less confusing for Sage.
++
+Note that you should also ensure that column values and data type match. If a column `order_date` has values like "01 Jan 20", but data type `text`, you should change the data type to `date`. You can change the data type of a column by editing the underlying Worksheet from the Data tab.
+
+* Use underscores or spaces as delimiters in column names
+** Avoid using other types of delimiters such as brackets and emojis as they may interfere with Sage functionalities.
+
+* Avoid overlap in column names and keywords
+** Avoid overlap between column names and xref:keywords.adoc[ThoughtSpot Search keywords] as it can impact accurate query interpretation. +
+For instance, if a column is named 'Sales growth,' indicating annual sales growth, and a user searches for 'What is the Sales growth month over month?', Sage might prioritize the 'Sales growth' column instead of recognizing the user's intent to use the 'growth' keyword on the ‘Sales’ column in a monthly context.
+
+== Guidelines for synonyms
+
+See the following guidelines for setting up Worksheet synonyms to get the best accuracy for Sage:
+
+* Define synonyms for common terms
+** The best practice is to consistently use easily understandable column names that are widely recognized within the business unit or organization. However, there may be occasions where different terms are employed to denote the same data column. +
+For instance, 'Sales' typically denotes the column capturing total revenue from item sales, but 'turnover' and 'revenue' may also be used interchangeably for this purpose within your business context. In such instances, we advise naming the column as 'Sales,' which is the most prevalent term, and defining ‘turnover’ and ‘revenue’ as synonyms for ‘Sales’ column. +
+This approach will assist Sage in picking the column correctly when users ask for sales, turnover or revenue.
++
+image:demo-worksheet-synonyms.png[Define Worksheet synonyms]
+
+* Avoid overlap in synonyms and column names
+** Ensure that the synonyms for a particular column are clear and distinct from any other column name or column synonyms to avoid confusing Sage. +
+For instance, if for a query ‘Show the total expenses for last month’, there is a column named 'Costs' with a synonym 'Expense', and another column named 'Material Expenses' in the Worksheet, Sage might not be able to select the right column.
+
+== Guidelines for date columns
+
+See the following guidelines for setting up Worksheet date columns to get the best accuracy for Sage:
+
+* Avoid adding multiple date columns
+** We advise keeping the number of date columns to a minimum, adding only those that are necessary. Keywords such as 'growth' often rely on date columns, making it challenging for the system to select the appropriate column to generate a response.
+
+* Specify the correct date column in Answers and Liveboards
+** If your worksheet has more than two date columns, we suggest building content such as Answers and Liveboards containing the specific date columns. When you use specific date columns with corresponding measure and attribute columns in an Answer, ThoughtSpot learns the correlation between the columns. The correlation leads to ThoughtSpot ranking associated columns higher when prompted by the Sage query. This can significantly improve Sage's ability to accurately select the correct date columns when generating a response.
++
+For example, if you create Answers linking the `close date` and `booked acv` columns, ThoughtSpot will associate those terms in Sage.
+
+
+== Guidelines for indexing attribute columns
+
+See the following guidelines for setting up Worksheet indexing columns to get the best accuracy for Sage:
+
+* Ensure the columns you want to filter on in Sage are indexed
+** xref:data-modeling-index.adoc[Indexing] is essential for enabling access to relevant data values and accurately identifying specific column values in queries. +
+For instance, consider a query such as ‘Show sales for Metformin’. Without indexing, it becomes difficult for Sage to discern whether to look for the value ‘Metformin’ in the column named ‘Area’ or ‘Vendor Name’ or ‘Drug Name’. +
+If you don't see value suggestions in the Search Data page, then Sage will have trouble picking those values correctly.
++
+image:south-no-value-suggestion.png[Sage search no suggested values]
++
+image:fetch-south.png[Sage search suggested value for South in Region column]
++
+IMPORTANT: Disable indexing of columns within tables that contain personally identifiable information (PII) data.
+
+* Avoid indexing unused columns with overlapping values
+**  Index only required columns as too many values from columns might confuse Sage in selecting the right column. +
+Consider a query such as 'Show sales for Washington area'. Sage may find it challenging to determine whether the user is referring to 'Washington' within the context of the column names 'District' or 'State', as the value is present for both columns. If you cannot disable indexing on a column since users can query for values on it, we suggest specifying the column name while querying to help Sage in picking the right column. +
+For instance, changing the query to ‘Show sales for Washington State’, will provide a more accurate result.
+
+* Avoid indexing descriptive text columns
+** Indexing descriptive text columns can impact accuracy.
+
+* Index low-cardinality columns
+** Proactively identify and index low-cardinality columns to optimize data accessibility and analysis accuracy.
+
+* Create xref:worksheet-formula.adoc[formulas] or xref:column-sets.adoc[sets] for high-cardinality columns
+** Creating formulas or sets helps in mitigating potential indexing issues and enhancing Sage's accuracy.

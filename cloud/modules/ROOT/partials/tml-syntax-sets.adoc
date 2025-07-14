@@ -1,0 +1,305 @@
+== Syntax of the Sets TML file
+
+The `TML` file for Sets has a specific syntax.
+
+See the TML parameters for Sets for details about the keywords used in this example.
+
+See <<limitations,Limitations of working with TML files>> for more information about actions you can't perform using TML.
+
+You may not see each of these parameters in your own TML files, depending on whether each variable is explicitly defined.
+For example, if your Set has no formulas, the `formulas` variable does not appear.
+You can add that variable in the TML file to add formulas.
+
+To reduce ambiguity, you may need to add the optional `fqn` parameter to your TML file when you reference source tables. This is necessary if you have multiple tables with the same name. If you do not add the `fqn` parameter, and the table you reference does not have a unique name, the file import fails.
+
+=== Column sets
+
+.Column set with bins
+[subs=+macros]
+....
+<<guid,guid>>: <set_guid>
+<<cohort,cohort>>:
+  <<name,name>>: <set_name>
+  <<description,description>>: This is a multi-line description of the set
+    Description line 2
+  <<config,config>>:
+    <<cohort_type,cohort_type>>: SIMPLE
+    <<anchor_column_id,anchor_column_id>>: Amount
+    <<bins,bins>>:
+      <<minimum_value,minimum_value>>: 0.0
+      <<maximum_value,maximum_value>>: 100.0
+      <<bin_size,bin_size>>: 10.0
+    <<cohort_grouping_type,cohort_grouping_type>>: BIN_BASED
+  <<worksheet,worksheet>>:
+    <<id,id>>: Dunder Mifflin Sales
+    <<name,name>>: Dunder Mifflin Sales
+....
+
+
+.Column set with conditions
+[subs=+macros]
+....
+<<guid,guid>>: <set_guid>
+<<cohort,cohort>>:
+  <<name,name>>: <set_name>
+  <<config,config>>:
+    <<null_output_value,null_output_value>>: Ungrouped values
+    <<combine_non_group_values,combine_non_group_values>>: false
+    <<cohort_type,cohort_type>>: SIMPLE
+    <<anchor_column_id,anchor_column_id>>: date
+    <<groups,groups>>:
+    - <<name,name>>: 2020 Black Friday
+      <<conditions,conditions>>:
+      - <<operator,operator>>: EQ
+        <<value,value>>:
+        - 27/11/2020
+       column_name: date
+      <<combine_type,combine_type>>: ALL
+    - <<name,name>>: 2021 Black Friday
+      <<conditions,conditions>>:
+      - <<operator,operator>>: EQ
+        <<value,value>>:
+        - 26/11/2021
+        column_name: date
+      <<combine_type,combine_type>>: ALL
+    - <<name,name>>: 2022 Black Friday
+      <<conditions,conditions>>:
+      - <<operator,operator>>: EQ
+        <<value,value>>:
+        - 25/11/2022
+        column_name: date
+      <<combine_type,combine_type>>: ALL
+    - <<name,name>>: 2023 Black Friday
+      <<conditions,conditions>>:
+      - <<operator,operator>>: EQ
+        <<value,value>>:
+        - 24/11/2023
+        column_name: date
+      <<combine_type,combine_type>>: ALL
+    - <<name,name>>: 2024 Black Friday
+      <<conditions,conditions>>:
+      - <<operator,operator>>: EQ
+        <<value,value>>:
+        - 29/11/2024
+        column_name: date
+      <<combine_type,combine_type>>: ALL
+    - <<name,name>>: 2025 Black Friday
+      <<conditions,conditions>>:
+      - <<operator,operator>>: EQ
+        <<value,value>>:
+        - 28/11/2025
+        column_name: date
+      <<combine_type,combine_type>>: ALL
+    - <<name,name>>: 2026 Black Friday
+      <<conditions,conditions>>:
+      - <<operator,operator>>: EQ
+        <<value,value>>:
+        - 27/11/2026
+        column_name: date
+      <<combine_type,combine_type>>: ALL
+    - <<name,name>>: 2027 Black Friday
+      <<conditions,conditions>>:
+      - <<operator,operator>>: EQ
+        <<value,value>>:
+        - 26/11/2027
+       column_name: date
+      <<combine_type,combine_type>>: ALL
+    - <<name,name>>: 2028 Black Friday
+      <<conditions,conditions>>:
+      - <<operator,operator>>: EQ
+        <<value,value>>:
+        - 24/11/2028
+        column_name: date
+      <<combine_type,combine_type>>: ALL
+    - <<name,name>>: 2029 Black Friday
+      <<conditions,conditions>>:
+      - <<operator,operator>>: EQ
+        <<value,value>>:
+        - 23/11/2029
+        column_name: date
+      <<combine_type,combine_type>>: ALL
+    - <<name,name>>: 2030 Black Friday
+      <<conditions,conditions>>:
+      - <<operator,operator>>: EQ
+        <<value,value>>:
+        - 29/11/2030
+        column_name: date
+      <<combine_type,combine_type>>: ALL
+    <<cohort_grouping_type,cohort_grouping_type>>: GROUP_BASED
+  <<worksheet,worksheet>>:
+    <<id,id>>: Dunder Mifflin Sales
+    <<name,name>>: Dunder Mifflin Sales
+....
+
+=== Query sets
+
+.Query set with columns
+[subs=+macros]
+....
+<<guid,guid>>: <set_guid>
+<<cohort,cohort>>:
+  <<name,name>>: <set_name>
+  <<answer,answer>>:
+    <<tables,tables>>:
+    - <<id,id>>: Dunder Mifflin Sales
+      <<name,name>>: Dunder Mifflin Sales
+    <<search_query,search_query>>: "[Customer Code] [Amount]"
+    <<answer_columns,answer_columns>>:
+    - <<name,name>>: Customer Code
+    - <<name,name>>: Total Amount
+    <<table,table>>:
+      <<table_columns,table_columns>>:
+      - <<column_id,column_id>>: Customer Code
+        <<show_headline,show_headline>>: false
+      - <<column_id,column_id>>: Total Amount
+        <<show_headline,show_headline>>: false
+      <<ordered_column_ids,ordered_column_ids>>:
+      - Customer Code
+      - Total Amount
+      <<client_state,client_state>>: ""
+    <<display_mode,display_mode>>: TABLE_MODE
+  <<config,config>>:
+    <<null_output_value,null_output_value>>: Ungrouped values
+    <<combine_non_group_values,combine_non_group_values>>: true
+    <<cohort_type,cohort_type>>: ADVANCED
+    <<anchor_column_id,anchor_column_id>>: Customer Code
+    <<groups,groups>>:
+    - <<name,name>>: 0-100
+      <<conditions,conditions>>:
+      - <<operator,operator>>: BW
+        <<value,value>>:
+        - "0"
+        - "100"
+      column_name: Total Amount
+      <<combine_type,combine_type>>: ALL
+    - <<name,name>>: 100-200
+      <<conditions,conditions>>:
+      - <<operator,operator>>: BW
+        <<value,value>>:
+        - "101"
+        - "200"
+      column_name: Total Amount
+      <<combine_type,combine_type>>: ALL
+    <<cohort_grouping_type,cohort_grouping_type>>: GROUP_BASED
+    <<hide_excluded_query_values,hide_excluded_query_values>>: false
+    <<group_excluded_query_values,group_excluded_query_values>>: Excluded values
+  <<worksheet,worksheet>>:
+    <<id,id>>: Dunder Mifflin Sales
+    <<name,name>>: Dunder Mifflin Sales
+....
+
+.Query set with conditions
+[subs=+macros]
+....
+<<guid,guid>>: <set_guid>
+<<cohort,cohort>>:
+  <<name,name>>: <set_name>
+  <<answer,answer>>:
+    <<tables,tables>>:
+    - <<id,id>>: Dunder Mifflin Sales
+      <<name,name>>: Dunder Mifflin Sales
+    <<search_query,search_query>>: "[Customer Code] count [Order ID]"
+    <<answer_columns,answer_columns>>:
+    - <<name,name>>: Customer Code
+    - <<name,name>>: Number of Order ID
+    <<table,table>>:
+      <<table_columns,table_columns>>:
+      - <<column_id,column_id>>: Customer Code
+        <<show_headline,show_headline>>: false
+      - <<column_id,column_id>>: Number of Order ID
+        <<show_headline,show_headline>>: false
+      <<ordered_column_ids,ordered_column_ids>>:
+      - Customer Code
+      - Number of Order ID
+      <<client_state,client_state>>: ""
+      client_state_v2: "{\"tableVizPropVersion\": \"V1\",\"columnProperties\": [{\"columnId\": \"Customer Code\",\"columnProperty\": {}},{\"columnId\": \"Number of Order ID\",\"columnProperty\": {}}]}"
+    <<display_mode,display_mode>>: TABLE_MODE
+  <<config,config>>:
+    <<cohort_type,cohort_type>>: ADVANCED
+    <<anchor_column_id,anchor_column_id>>: Customer Code
+    <<return_column_id,return_column_id>>: Number of Order ID
+    <<cohort_grouping_type,cohort_grouping_type>>: COLUMN_BASED
+    <<hide_excluded_query_values,hide_excluded_query_values>>: true
+  <<worksheet,worksheet>>:
+    <<id,id>>: Dunder Mifflin Sales
+    <<name,name>>: Dunder Mifflin Sales
+....
+
+////
+[subs=+macros]
+....
+
+<<guid,guid>>: <set_guid>
+<<set,set>>:
+  <<name,name>>: <set_name>
+  <<description,description>>:
+    This is a multi-line description of the set
+    Description line 2
+  <<tables,tables>>:
+  - <<id,id>>: <table_id>
+    <<name,name>>: <table_name_1>
+    <<fqn,fqn>>: <optional_GUID_of_table_name>
+  <<formulas,formulas>>:
+  - <<id,id>>: <formula_id_1>
+    <<name,name>>: <formula_name_1>
+    <<expr,expr>>: <formula_definition_1>
+    <<properties,properties>>: <formula_properties_1>
+      <<column_type,column_type>>: [ MEASURE | ATTRIBUTE ]
+      <<data_type,data_type>>: [ BOOL | VARCHAR | DOUBLE | FLOAT | INT | BIGINT | DATE | DATETIME | TIMESTAMP | TIME ]
+      <<aggregation,aggregation>>: [ SUM | COUNT | AVERAGE | MAX | MIN |
+                     COUNT_DISTINCT | NONE | STD_DEVIATION | VARIANCE]
+  - <<id,id>>: <formula_id_2>
+    <<name,name>>: <formula_name_2>
+    <<expr,expr>>: <formula_definition_2>
+    <<properties,properties>>: <formula_properties_2>
+  - <<id,id>>: <formula_id_3>
+    <<name,name>>: <formula_name_3>
+    <<expr,expr>>: <formula_definition_3>
+    <<properties,properties>>: <formula_properties_3>
+  <<search_query,search_query>>: <search_query_string>
+  <<set_columns,set_columns>>:
+  - <<id,id>>: <column_id_1>
+    <<name,name>>: <column_name_1>
+    <<custom_name,custom_name>>: <custom_name_1>
+  - <<name,name>>: <column_name_2>
+  <<table,table>>:
+    <<table_columns,table_columns>>:
+    - <<column_id,column_id>>: <column_id_1>
+      <<show_headline,show_headline>>: [ true | false ]
+      <<headline_aggregation,headline_aggregation>>: <headline_aggregation_string>
+    - <<column_id,column_id>>: <column_id_2>
+    <<ordered_column_ids,ordered_column_ids>>:
+    - <<column_id,column_id>>: <column_id_1>
+    - <<column_id,column_id>>: <column_id_2>
+    <<client_state,client_state>>: <client_state_string>
+  <<chart,chart>>:
+    <<type,type>>: <chart_type>
+    <<chart_columns,chart_columns>>: <chart_column_1>
+    - <<column_id,column_id>>: <column_id_1>
+    - <<column_id,column_id>>: <column_id_2>
+    <<axis_configs,axis_configs>>: <axis_config_1>
+    - x:
+      - <<column_id,column_id>>: <column_id_x_axis>
+    - y:
+      - <<column_id,column_id>>: <column_id_y_axis>
+      <<color,color>>:
+      - <<column_id,column_id>>: <column_id_color>
+    <<axis_configs,axis_configs>>: <axis_config_2>
+    <<locked,locked>>: [ true | false ]
+    <<client_state,client_state>>: <client_state_string>
+  <<display_mode,display_mode>>: <display_mode_string>
+  <<parameter_values,parameter_values>>:
+  - <<key,key>>: <parameter_1_key>
+    <<value,value>>: <parameter_1_value>
+  - <<key,key>>: <parameter_2_key>
+    <<value,value>>: <parameter_2_value>
+  - <<key,key>>: <parameter_n_key>
+    <<value,value>>: <parameter_n_value>
+  <<parameter_overrides,parameter_overrides>>:
+  - <<key,key>>: <parameter_guid>
+    <<value,value>>:
+      <<name,name>>: <parameter_name>
+      <<id,id>>: <parameter_guid>
+      <<override_value,override_value>>: <parameter_override_value>
+....
+////
