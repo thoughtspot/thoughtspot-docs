@@ -5,13 +5,13 @@
 :page-layout: default-cloud
 :author: Teresa Killmond
 :page-aliases: /admin/ts-cloud/scriptability.adoc
-:description: Export and import Worksheets, views, SQL Views, tables, Liveboards, Monitor alerts, and Answers in a human-readable format.
+:description: Export and import Models, views, SQL Views, tables, Liveboards, Monitor alerts, and Answers in a human-readable format.
+:jira: SCAL-264258
 
 
+Use ThoughtSpot Modeling Language (TML) to export and import Models, views, tables, Liveboards, Monitor alerts, and Answers in a human-readable format.
 
-Use ThoughtSpot Modeling Language (TML) to export and import Worksheets, views, tables, Liveboards, Monitor alerts, and Answers in a human-readable format.
-
-ThoughtSpot developed its own scriptable approach for exporting, enhancing, and migrating Worksheets, views, tables, Liveboards, Monitor alerts, and Answers.
+ThoughtSpot developed its own scriptable approach for exporting, enhancing, and migrating Models, views, tables, Liveboards, Monitor alerts, and Answers.
 
 You can model your data and build out sophisticated dashboards in your test environment, before deploying to all users.
 
@@ -19,7 +19,7 @@ ThoughtSpot Modeling Language supports several scenarios that you may encounter:
 
 * *Migrating from a development environment to a production environment* by downloading files from the development cluster and uploading the same files into the production cluster
 * *Implementing metadata changes outside the ThoughtSpot UI*, such as replacing the underlying tables for an object, or replacing a single column from one table with a column in another table
-* *Making bulk changes*, such as mass renaming of objects defined by Worksheets, and managing duplicates
+* *Making bulk changes*, such as mass renaming of objects defined by Models, and managing duplicates
 * *Reusing existing objects to build new objects*, such as building two very similar objects based on a similar, pre-existing object.
 
 == How to use TML files
@@ -39,7 +39,7 @@ Note that this workflow changes the object(s) in both clusters.
 
 You may notice that you don't see options to Import, Export, or Edit TML for certain objects. If you don't have the required permissions to import, export, or edit the TML for an object, you won't see TML options for that object.
 
-Refer to the following tables for required permissions for importing, editing, and exporting the TML for Liveboards, Answers, Worksheets, tables, and views.
+Refer to the following tables for required permissions for importing, editing, and exporting the TML for Liveboards, Answers, Models, tables, and views.
 
 [#import-permissions]
 *Import*
@@ -49,15 +49,15 @@ Refer to the following tables for required permissions for importing, editing, a
 
 | The dependents must already exist in the cluster.
 You must have *view* permissions for the first-level dependent.
-For example, if you import a Liveboard that is built on a Worksheet that is built on a table, you must have *view* permission for the Worksheet.
-When importing a new Worksheet or view, you must have the *can manage data* permission.
-| *Can manage data*, if the object or any of its dependents is a Worksheet or view.
+For example, if you import a Liveboard that is built on a Model that is built on a table, you must have *view* permission for the Model.
+When importing a new Model or view, you must have the *can manage data* permission.
+| *Can manage data*, if the object or any of its dependents is a Model or view.
 | *Edit* permission on the existing object.
 The dependents must already exist in the cluster.
 You must have *view* permissions for the first-level dependent.
-When importing a Worksheet or view, you must have the *can manage data* permission.
+When importing a Model or view, you must have the *can manage data* permission.
 | *Edit* permission on the existing object(s).
-*Can manage data*, if the object or any of its dependents is a Worksheet or view.
+*Can manage data*, if the object or any of its dependents is a Model or view.
 |===
 
 [#export-permissions]
@@ -95,7 +95,7 @@ ThoughtSpot introduces a consistent sort order when exporting the TML of an obje
 The following sections list the sort order for various TML objects:
 
 ////
-Columns are exported in the order in which they appear in the table's landing page by default. For worksheets and models, columns are sorted in the order in which they appear on the columns tab of the model editor.
+Columns are exported in the order in which they appear in the table's landing page by default. For Models and models, columns are sorted in the order in which they appear on the columns tab of the model editor.
 
 Other objects like formulas, filters, parameters, joins are sorted in lexicographical order for models.
 ////
@@ -179,7 +179,7 @@ Other objects like formulas, filters, parameters, joins are sorted in lexicograp
 ### Export one object
 To export one object:
 
-1. Navigate to the Liveboard, Answer, View, table, or Worksheet you want to export.
+1. Navigate to the Liveboard, Answer, View, table, or Model you want to export.
 
 2. Click the three-dot icon, and select **Export TML**.
 
@@ -202,13 +202,13 @@ image::nav-bar-no-spotiq.png[The top navigation bar]
 [.bordered]
 image::utilities.png[The top navigation bar]
 
-. Select the object(s) you want to export - Worksheet, Answer, Liveboard, View, or a Table. Hover over the object(s) you want to export, and select the empty checkboxes that appear.
+. Select the object(s) you want to export - Model, Answer, Liveboard, View, or a Table. Hover over the object(s) you want to export, and select the empty checkboxes that appear.
 . Select the *Export n objects* button.
 +
 [.bordered]
 image::export-tml.png[Export multiple objects]
 
-. Choose whether to export only the objects, or the objects and their underlying data sources (worksheets, tables, and views). To download any KPI Monitor alerts for the object, you must export the associated objects. The `Alerts.tml` file in the zip file that downloads defines any KPI Monitor alerts associated with the objects. If you have administrator privileges, you see every alert for the objects. Otherwise, you see only the alerts you created. Choose whether to export the table and connection FQNs. If you select this option, the TML file contains FQNs for the underlying tables and connections.
+. Choose whether to export only the objects, or the objects and their underlying data sources (Models, tables, and views). To download any KPI Monitor alerts for the object, you must export the associated objects. The `Alerts.tml` file in the zip file that downloads defines any KPI Monitor alerts associated with the objects. If you have administrator privileges, you see every alert for the objects. Otherwise, you see only the alerts you created. Choose whether to export the table and connection FQNs. If you select this option, the TML file contains FQNs for the underlying tables and connections.
 If you export a table, you do not see the *Choose what to export* modal, since tables do not have any dependents.
 +
 [.bordered]
@@ -254,13 +254,13 @@ image::edit-tml.png[Edit TML - object list page]
 +
 // [Edit TML from object]({{ site.baseurl }}/images/scriptability-edit-tml-object.png "Edit TML from object")
 
-For Worksheets, Tables and Views::
+For Models, Tables and Views::
 . Navigate to the *Data* page > *Home*.
 . Select the object for which you want to the edit the TML, and select the empty checkboxes that appear.
 . Select the *Edit TML*  button.
 +
 [.bordered]
-image::edit-worksheet.png[Edit TML - object list page]
+image::edit-model.png[Edit TML - object list page]
 +
 
 . The TML editor opens.
@@ -308,13 +308,13 @@ image::publish-status.png[Open the object or return to the TML editor]
 [#update-object]
 == Update an object
 
-You can overwrite an existing Worksheet, view, table, Answer, or Liveboard, by downloading the `TML` file, making any necessary changes, and then re-uploading the `TML` file.
+You can overwrite an existing Model, view, table, Answer, or Liveboard, by downloading the `TML` file, making any necessary changes, and then re-uploading the `TML` file.
 To update collections of objects packaged together as a zip file, refer to xref:tml-import-export-multiple.adoc[Migrate multiple TML files].
 
 You can also update an object using the <<tml-editor,TML editor>>.
 
 To update an existing object by downloading the TML file and modifying it, follow these steps.
-In this case, we are updating a single Worksheet.
+In this case, we are updating a single Model.
 You can update multiple objects at once by uploading them in .zip file format.
 
 . <<export-object,Export the object>> you want to update, as in steps 1 to 5 of the <<export-object,Export an Object>> section.
@@ -323,13 +323,14 @@ You can update multiple objects at once by uploading them in .zip file format.
 . Select *Import TML*.
 +
 ////
-Here, we are uploading the edited *TCPH WS* worksheet.
+Here, we are uploading the edited *TCPH WS* Model.
 
-![Start Worksheet update from file]({{ site.baseurl }}/images/scriptability-worksheet-update.png "Start Worksheet update from file")
+![Start Model update from file]({{ site.baseurl }}/images/scriptability-worksheet-update.png "Start Model update from file")
 ////
 . In the *Import* interface, click *Select .tml or .zip files to upload*.
 +
-image::scriptability-worksheet-update-browse.png[Find the Worksheet TML file]
+[.bordered]
+image::scriptability-model-update-browse.png[Find the Model TML file]
 
 . In your file system, find and select the `TML` file you edited.
 . If you uploaded a `.zip` file with multiple objects, you can deselect any files in the `.zip` file you don't want to upload.
@@ -355,7 +356,7 @@ You can open the object(s) that you imported, or select *Exit* to return to the 
 [#migrate-object]
 == Migrate an object
 
-To migrate an Answer, Liveboard, view, or Worksheet from one cluster to another, follow these steps.
+To migrate an Answer, Liveboard, view, or Model from one cluster to another, follow these steps.
 To migrate collections of objects packaged together as a zip file, refer to xref:tml-import-export-multiple.adoc[Migrate multiple TML files].
 Note that you cannot create a new table using TML.
 You can only update existing tables.
@@ -368,10 +369,10 @@ The object remains on the original cluster as well, unless you delete it.
 . Navigate to the *Data* > *Utilities* page, and click the *Import TML* button.
 +
 ////
-. To upload a Worksheet or view, select the *More* icon image:icon-more-10px.png[more options menu] in the upper-right side of the screen.
+. To upload a Model or view, select the *More* icon image:icon-more-10px.png[more options menu] in the upper-right side of the screen.
 Then, select *Import TML*.
 +
-image::scriptability-cloud-worksheet-view-import.png[Import Worksheet or View TML]
+image::scriptability-cloud-worksheet-view-import.png[Import Model or View TML]
 
 . To upload a Liveboard or Answer, select the *Import TML* button in the upper-right side of the screen.
 +
@@ -403,7 +404,7 @@ You can open the object(s) that you imported, or select *Exit* to return to the 
 
 [#delete]
 == Deleting columns, joins, and RLS rules
-You can delete joins at the table level, table RLS rules, and table, Worksheet, View, and SQL View columns. However, keep in mind the following behaviors:
+You can delete joins at the table level, table RLS rules, and table, Model, View, and SQL View columns. However, keep in mind the following behaviors:
 
 * To delete a column or join, you must first remove its dependents. If you are deleting a column, you can delete it and remove that column's dependencies in the same zip file import.
 
@@ -413,13 +414,13 @@ You can delete joins at the table level, table RLS rules, and table, Worksheet, 
 You can only add and edit table joins from the TML file of the table on the Many side of the join.
 You can't view or modify table-level joins from the destination table's TML file.
 
-* You can't modify joins at the table level from the Worksheet, view, or Answer TML file.
-You can only override the joins for that specific Worksheet, view, or Answer.
+* You can't modify joins at the table level from the Model, view, or Answer TML file.
+You can only override the joins for that specific Model, view, or Answer.
 To modify table-level joins, you must edit the source table's TML file.
 
 == Limitations of working with TML files
 
-There are certain limitations to the changes you can apply by editing a Worksheet, Answer, table, view, or Liveboard through TML.
+There are certain limitations to the changes you can apply by editing a Model, Answer, table, view, or Liveboard through TML.
 
 include::partial$scriptability-limitations.adoc[]
 
@@ -427,11 +428,10 @@ include::partial$scriptability-limitations.adoc[]
 > **Related information**
 >
 > * xref:tml.adoc[ThoughtSpot Modeling Language]
-> * xref:worksheet-edit.adoc[Edit a Worksheet]
 > * xref:worksheet-formula.adoc[Create a formula in a Worksheet]
-> * xref:worksheet-filter.adoc[Create a Worksheet filter]
+> * xref:worksheet-filter.adoc[Create a Model filter]
 > * xref:worksheet-progressive-joins.adoc[How the Worksheet join rule works]
 > * xref:worksheet-inclusion.adoc[Create join rule or RLS for a Worksheet]
 > * xref:join-add.adoc[Create a join relationship]
-> * xref:join-worksheet-edit.adoc[Modify joins between Worksheet tables]
-> * xref:worksheet-delete.adoc[Delete Worksheets or tables]
+> * xref:join-worksheet-edit.adoc[Modify joins between Model tables]
+> * xref:model-delete.adoc[Delete Models or tables]

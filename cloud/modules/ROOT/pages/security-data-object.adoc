@@ -5,7 +5,7 @@
 :linkattrs:
 :page-layout: default-cloud
 :description: Learn about data and object security in ThoughtSpot.
-:jira: SCAL-230550
+:jira: SCAL-230550, SCAL-264258
 
 ThoughtSpot provides many features for protecting data.
 
@@ -15,7 +15,7 @@ video::exNqEoKsQ6A[youtube,title="ThoughtSpot Success Series: Group Design, Priv
 == Object security
 
 Object security controls what content users see within ThoughtSpot.
-Objects are tables, columns in tables, Worksheets, Liveboards, and saved Answers.
+Objects are tables, columns in tables, Models, Liveboards, and saved Answers.
 
 Users gain access to objects when an object owner shares access with them.
 Owners can share with individual users or with entire groups, giving access to everyone within that group.
@@ -26,33 +26,33 @@ This has implications on setting up privileges, and on applying row-level securi
 === Permissive Security mode
 
 The default Permissive Security mode of ThoughtSpot means that when someone shares an object with you, you can see all the data it uses, regardless of explicit permissions to the parent object data.
-You can see a shared Liveboard without having access to its underlying worksheet or table.
+You can see a shared Liveboard without having access to its underlying Model or table.
 
 [#advanced-security-mode]
 === Advanced Security mode
 
 ThoughtSpot's Advanced Security mode, or strict column-level security (CLS), is the opposite of the default permissive mode.
 Unless the user has explicit permissions to the entire stack of parent objects, they cannot see the data in the child object.
-For example, in a shared Liveboard, you can see data only if you have explicit permissions to the relevant columns of the parent worksheet.
-Similarly, you can only see the data in a worksheet to which you have access if you have explicit permissions to its parent table object.
+For example, in a shared Liveboard, you can see data only if you have explicit permissions to the relevant columns of the parent Model.
+Similarly, you can only see the data in a Model to which you have access if you have explicit permissions to its parent table object.
 
 Work with your {support-url} team to enable the Advanced Security Mode on the relevant clusters.
 
 [NOTE]
 ====
-To ensure that ThoughtSpot applies <<cls,column-level security>> to *table dependents*, such as Worksheets, Liveboards, and Answers, you must enable <<advanced-security-mode,Advanced Security>>, also called *Strict CLS*.
+To ensure that ThoughtSpot applies <<cls,column-level security>> to *table dependents*, such as Models, Liveboards, and Answers, you must enable <<advanced-security-mode,Advanced Security>>, also called *Strict CLS*.
 
 If you do not enable Advanced Security, users may see data in table _dependents_ that is restricted to them in the tables themselves.
 
-After enabling Advanced Security, make sure you share *all* underlying data (both tables and Worksheets) when you share Answers or Liveboards. If you do not share *all* underlying data, users can't see the Answers or Liveboards. ThoughtSpot will return an error.
+After enabling Advanced Security, make sure you share *all* underlying data (both tables and Models) when you share Answers or Liveboards. If you do not share *all* underlying data, users can't see the Answers or Liveboards. ThoughtSpot will return an error.
 ====
 
 == Row-level security (RLS)
 
 xref:security-rls.adoc[Row-level security] controls what data a user can see in each shared piece of content.
-Even if a user has access to a worksheet, they can only see rows from the tables they have permission to see.
+Even if a user has access to a Model, they can only see rows from the tables they have permission to see.
 
-RLS applies at the table level, so it automatically extends to all worksheets, saved answers, and Liveboards based on that table, every time.
+RLS applies at the table level, so it automatically extends to all Models, saved answers, and Liveboards based on that table, every time.
 Also, in queries where there are tables with table filters, all joins are always enforced to avoid accidentally allowing users access to data they shouldn't see.
 
 RLS requires three things:
@@ -77,17 +77,17 @@ Column-level security lets users see certain columns in a table, but not other c
 This can be accomplished by sharing a limited set of columns in a table with specific users or groups.
 
 Because someone can share with anyone in the same group, they can potentially share restricted columns.
-For example, if a _Human Resources_ repository has a column with salary information, and it appears in a worksheet, any _Human Resources_ group member could create an answer with visible salary information and mistakenly share with someone outside of _Human Resources_.
+For example, if a _Human Resources_ repository has a column with salary information, and it appears in a Model, any _Human Resources_ group member could create an answer with visible salary information and mistakenly share with someone outside of _Human Resources_.
 That 'outside' person now has access to the salary information.
-In such cases, we recommend that you work with your {support-url} team to enable <<advanced-security-mode,Advanced Security mode>>, which allows table dependents (such as Worksheets, Liveboards, and Answers) to inherit a table's CLS.
+In such cases, we recommend that you work with your {support-url} team to enable <<advanced-security-mode,Advanced Security mode>>, which allows table dependents (such as Models, Liveboards, and Answers) to inherit a table's CLS.
 
 [NOTE]
 ====
-To ensure that ThoughtSpot applies CLS to *table dependents*, such as Worksheets, Liveboards, and Answers, you must enable <<advanced-security-mode,Advanced Security>>, also called *Strict CLS*.
+To ensure that ThoughtSpot applies CLS to *table dependents*, such as Models, Liveboards, and Answers, you must enable <<advanced-security-mode,Advanced Security>>, also called *Strict CLS*.
 
 If you do not enable Advanced Security, users may see data in table _dependents_ that is restricted to them in the tables themselves.
 
-After enabling Advanced Security, make sure you share *all* underlying data (both tables and Worksheets) when you share Answers or Liveboards. If you do not share *all* underlying data, users can't see the Answers or Liveboards. ThoughtSpot will return an error.
+After enabling Advanced Security, make sure you share *all* underlying data (both tables and Models) when you share Answers or Liveboards. If you do not share *all* underlying data, users can't see the Answers or Liveboards. ThoughtSpot will return an error.
 ====
 
 == System privileges
