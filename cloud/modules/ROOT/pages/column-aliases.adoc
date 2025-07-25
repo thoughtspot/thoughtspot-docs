@@ -4,15 +4,15 @@
 :linkattrs:
 :experimental:
 :page-layout: default-cloud-beta
-:description: Users with edit privileges to Worksheets or Models can now create column name aliases, linked to the system language selected in the user profile.
+:description: Users with edit privileges to  Models can now create column name aliases, linked to the system language selected in the user profile.
 :jira: SCAL-241403
 
 
-If you have edit privileges to Worksheets or Models, you can now create column name aliases, linked to the system language you selected in your user profile. This allows you to search for column names in your system language, instead of typing the columns in English and the keywords in your system language. For example, a "Region" column can be displayed as "Région" in French and "Region" in English without duplicating Models.
+If you have edit privileges to models, you can now create column name aliases, linked to the system language you selected in your user profile. This allows you to search for column names in your system language, instead of typing the columns in English and the keywords in your system language. For example, a "Region" column can be displayed as "Région" in French and "Region" in English without duplicating Models.
 
-You can also set column descriptions in other languages to be displayed according to the system language you choose. Column aliases and localized column descriptions are stored in an internal variable store linked to the corresponding Model or Worksheet within ThoughtSpot, and can be updated by uploading a new CSV file of the same format. Note that updating aliases is not an incremental process– updating the definition replaces all previous aliases.
+You can also set column descriptions in other languages to be displayed according to the system language you choose. Column aliases and localized column descriptions are stored in an internal variable store linked to the corresponding model within ThoughtSpot, and can be updated by uploading a new CSV file of the same format. Note that updating aliases is not an incremental process– updating the definition replaces all previous aliases.
 
-Note that if you change the base column name for a Model or Worksheet with column aliases, the alias definitions automatically update to reflect the change. You do not need to recreate an alias file after changing base column names.
+Note that if you change the base column name for a model with column aliases, the alias definitions automatically update to reflect the change. You do not need to recreate an alias file after changing base column names.
 
 If you delete a column with an existing column alias, the associated alias is also automatically removed.
 
@@ -27,11 +27,11 @@ The column aliasing feature ensures that localized names and descriptions are di
 When users search for columns, the search autocomplete feature will display localized column names based on their selected system language.
 ThoughtSpot’s search suggestion engine will ensure that aliases are searchable and recognized in user queries.
 
-=== Worksheet and Model editing
+=== Model editing
 
-The default column name (as defined in the Model) will always be shown when editing Worksheets and Models.
+The default column name (as defined in the Model) will always be shown when editing models.
 
-Aliases will not be editable in the Worksheet/Model edit view— only the original name can be modified.
+Aliases will not be editable in the model edit view— only the original name can be modified.
 
 === Search left menu
 
@@ -88,7 +88,7 @@ The alias CSV file must contain the following columns:
 [options=”header”]
 |===
 | Column name | Description
-| column | The display name of the column as defined in the Model or Worksheet.
+| column | The display name of the column as defined in the model.
 | locale | The system language for which the alias is defined. This must be a supported ThoughtSpot locale. Refer to xref:locale.adoc[Set your display language (locale)].
 | alias | The display name for the column when the specified locale is selected.
 | description (optional) | The localized description for the column, if provided.
@@ -106,7 +106,7 @@ Sample CSV section:
 To ensure proper processing of the alias file, the following rules must be met:
 
 * *Column headers are required* – The first row must define the file header with values for: `column`, `locale`, `alias`, `description` (optional).
-* *Column values must exist in the Model or Worksheet* – Any column value that is not present in the associated Model will result in an error. The file will not be uploaded.
+* *Column values must exist in the model* – Any column value that is not present in the associated Model will result in an error. The file will not be uploaded.
 * *Case-insensitive column matching* – Column name values are not case-sensitive (for example, Quantity and quantity are treated as the same).
 * *File format must be .csv* – The file extension and format must conform to CSV standards.
 * *Locale values must be supported* – The locale column must contain only valid locales supported by ThoughtSpot. Refer to xref:locale.adoc[Set your display language (locale)].
@@ -115,10 +115,10 @@ To ensure proper processing of the alias file, the following rules must be met:
 
 == Upload an alias file
 
-Uploading a new alias file replaces the entire alias definition for a Worksheet or Model. To upload an alias file to a Worksheet or Model, follow these steps:
+Uploading a new alias file replaces the entire alias definition for a model. To upload an alias file to a model, follow these steps:
 
 
-. Navigate to the Worksheet or Model in the Data workspace, and click the more options menu icon image:icon-more-10px.png[menu icon].
+. Navigate to the model in the Data workspace, and click the more options menu icon image:icon-more-10px.png[menu icon].
 
 . Select *Upload Translations* and upload your CSV file.
 +
@@ -129,57 +129,57 @@ Note that you can incrementally update aliases by downloading an existing alias 
 
 == Download an alias file
 
-Downloading an alias file allows you to export the current alias definitions for a Model or Worksheet as a CSV file. This file can be used to review, edit, or reupload alias definitions. To download an alias file, follow these steps:
+Downloading an alias file allows you to export the current alias definitions for a model as a CSV file. This file can be used to review, edit, or reupload alias definitions. To download an alias file, follow these steps:
 
-. Navigate to the Worksheet or Model in the Data workspace, and click the more options menu icon image:icon-more-10px.png[menu icon].
+. Navigate to the model in the Data workspace, and click the more options menu icon image:icon-more-10px.png[menu icon].
 
-. Select *Download Translations*. Note that this option only appears if the Model or Worksheet contains an alias file already.
+. Select *Download Translations*. Note that this option only appears if the model contains an alias file already.
 +
 [.bordered]
 image::download-translations.png[Download translations]
 
 == Delete an alias file
 
-Deleting an alias file removes the alias definitions for the Model or Worksheet from ThoughtSpot. After deletion, column names revert to their default names.To delete an alias file, follow these steps:
+Deleting an alias file removes the alias definitions for the model from ThoughtSpot. After deletion, column names revert to their default names.To delete an alias file, follow these steps:
 
-. Navigate to the Worksheet or Model in the Data workspace, and click the more options menu icon image:icon-more-10px.png[menu icon].
+. Navigate to the model in the Data workspace, and click the more options menu icon image:icon-more-10px.png[menu icon].
 
-. Select *Delete Translations*. Note that this option only appears if the Model or Worksheet contains an alias file already.
+. Select *Delete Translations*. Note that this option only appears if the model contains an alias file already.
 +
 [.bordered]
 image::delete-translations.png[Delete translations]
 
-== Migrating a Worksheet or Model with aliases
+== Migrating a model with aliases
 
-If you want to migrate localized Worksheets or Models to a single master Worksheet or Model that contains all localized columns, there are two methods you can use: renaming columns in the localized Worksheet or Model before migration, or directly updating the TML files. Once migration to a master Worksheet or Model is complete, the alias file for the master Worksheet or Model dynamically displays column names in the correct system language, eliminating the need for language-specific Worksheets or Models in the future.
+If you want to migrate localized models to a single master model that contains all localized columns, there are two methods you can use: renaming columns in the localized model before migration, or directly updating the TML files. Once migration to a master model is complete, the alias file for the master model dynamically displays column names in the correct system language, eliminating the need for language-specific models in the future.
 
-If you rename the columns in the localized Worksheet or Model before migration, ThoughtSpot automatically remaps the columns, reducing risk of errors, but it requires renaming columns directly in the Worksheet or Model, which may impact users during migration. We recommend taking this approach to migration where possible.
+If you rename the columns in the localized model before migration, ThoughtSpot automatically remaps the columns, reducing risk of errors, but it requires renaming columns directly in the model, which may impact users during migration. We recommend taking this approach to migration where possible.
 
-If you manually update the TML files, there is no need to rename columns in the localized Worksheet or Model, reducing potential disruptions. However, manually updating the TML files can be time-consuming, and there is an increased risk of errors if not carefully validated.
+If you manually update the TML files, there is no need to rename columns in the localized model, reducing potential disruptions. However, manually updating the TML files can be time-consuming, and there is an increased risk of errors if not carefully validated.
 
 === Rename localized columns before migration
 
-To migrate localized Worksheets or Models to a single master Worksheet or Model by renaming columns manually, follow these steps:
+To migrate localized models to a single master model by renaming columns manually, follow these steps:
 
-. Back up the localized Worksheet or Model, and any Liveboards or Answers that depend on it.
-. Rename all columns in the localized Worksheet (in this case, Swedish Worksheet) to match the master Worksheet column name. For example, the columns `CountrySE`, `RegionSE`, and `SalesSE` become `Country`, `Region`, and `Sales`.
+. Back up the localized model, and any Liveboards or Answers that depend on it.
+. Rename all columns in the localized model (in this case, Swedish model) to match the master model column name. For example, the columns `CountrySE`, `RegionSE`, and `SalesSE` become `Country`, `Region`, and `Sales`.
 
 . ThoughtSpot automatically updates all column references in dependent Liveboards and Answers.
 
-. Update the TML files for each Liveboard and Answer, changing the Table ID from `Swedish Worksheet` to `Master Worksheet`, and Table Name from `Swedish Worksheet` to `Master Worksheet`.
+. Update the TML files for each Liveboard and Answer, changing the Table ID from `Swedish model` to `Master model`, and Table Name from `Swedish model` to `Master model`.
 
 . Save and re-import the updated TML files.
 
 === Manually update TML files for migration
-To migrate localized Worksheets or Models to a single master Worksheet by manually updating the TML files, follow these steps:
+To migrate localized models to a single master model by manually updating the TML files, follow these steps:
 
-. Back up the localized Worksheets or Models, and any dependent Liveboards and Answers.
+. Back up the localized models, and any dependent Liveboards and Answers.
 
 . Extract and edit the TML files for all dependent Liveboards and Answers.
 
-. Update the TML files for each Liveboard and Answer, renaming the columns to match the master Worksheet. For example, the columns `CountrySE`, `RegionSE`, and `SalesSE` become `Country`, `Region`, and `Sales`.
+. Update the TML files for each Liveboard and Answer, renaming the columns to match the master model. For example, the columns `CountrySE`, `RegionSE`, and `SalesSE` become `Country`, `Region`, and `Sales`.
 
-. Update TML files for each Liveboard and Answer, changing the Table ID from `Swedish Worksheet` to `Master Worksheet`, and Table Name from `Swedish Worksheet` to `Master Worksheet`.
+. Update TML files for each Liveboard and Answer, changing the Table ID from `Swedish modelt` to `Master model`, and Table Name from `Swedish model` to `Master model`.
 
 . Save and re-import the modified TML files.
 
