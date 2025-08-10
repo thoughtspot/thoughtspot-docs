@@ -1,9 +1,9 @@
 name: Sync Repository to Public Mirror
 
-# Workflow-level concurrency control - prevents multiple instances of this workflow
+# Branch-level concurrency control - allows parallel syncs for different branches
 concurrency:
-  group: sync-public-mirror-${{ github.repository }}
-  cancel-in-progress: false  # Queue instead of canceling to ensure all changes are synced
+  group: sync-public-mirror-${{ github.repository }}-${{ github.event.pull_request.base.ref || github.event.client_payload.branch || github.event.inputs.target_branches || 'default' }}
+  cancel-in-progress: false  # Queue per branch to ensure all changes are synced
 
 on:
   pull_request:
@@ -14,7 +14,7 @@ on:
   workflow_dispatch:
     inputs:
       force_sync:
-        description: 'Force sync all branches (WARNING: This will sync all 180+ branches)'
+        description: 'Force sync all branches (WARNING: This will sync all branches)'
         required: false
         default: false  # Changed default to false for optimization
         type: boolean
@@ -31,7 +31,7 @@ jobs:
   call-sync-workflow:
     # Only run this job when the PR was merged, not just closed, OR when manually triggered, OR via repository_dispatch
     if: github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch' || github.event_name == 'repository_dispatch'
-    uses: thoughtspot/workflows/.github/workflows/sync-to-public-mirror.yml@SCAL-259676
+    uses: thoughtspot/workflows/.github/workflows/sync-to-public-mirror.yml@main
     with:
       # Optimization logic: Only force sync when explicitly requested
       force_sync: ${{ github.event.inputs.force_sync == true || (github.event_name == 'repository_dispatch' && github.event.client_payload.force_sync == true) }}
@@ -48,4 +48,3 @@ jobs:
       merge_commit_sha: ${{ github.event.pull_request.merge_commit_sha || github.event.client_payload.commit_sha || github.sha }}
     secrets:
       SSH_DEPLOY_KEY: ${{ secrets.SSH_DEPLOY_KEY }}
-
