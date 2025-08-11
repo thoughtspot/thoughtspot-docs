@@ -1,0 +1,63 @@
+= Using Greenplum utilities
+:last_updated: 03/10/2022
+:page-aliases: /data-integrate/dataflow/dataflow-greenplum-utilities.adoc
+:experimental:
+:linkattrs:
+:description: You can use the Greenplum client to customize connections in DataFlow.
+
+
+You can use the Greenplum client to customize connections in DataFlow.
+
+Follow these steps to install the Greenplum client:
+
+. Download the appropriate installer package for your platform from the following site.
++
+The package name has the following form:
+`pacgreenplum-loaders-<version>-PLATFORM.bin.zip`.
++
+----
+https://network.pivotal.io/products/pivotal-gpdb#/releases/837931/file_groups/3218
+----
+. Select the Greenplum Client for RHEL 7 or RHEL 8, depending on your RHEL version.
++
+This downloads the RPM file.
+
+. Install the Greenplum client using `yum`. This command installs the utility on the path `/usr/local/greenplum-db-clients-<version>`.
++
+RHEL 7::
++
+----
+#sudo yum install greenplum-db-clients-<version>-rhel7-x86_64.rpm
+----
+RHEL 8::
++
+----
+#sudo yum install greenplum-db-clients-<version>-rhel8-x86_64.rpm
+----
+
+. To access `gpfdist` and `gpload` commands from DataFlow, create symlinks in the `/usr/bin` path.
++
+----
+#sudo ln -s /usr/local/greenplum-db-clients-<version>/bin/gpload /usr/bin/gpload
+
+#sudo ln -s /usr/local/greenplum-db-clients-<version>/bin/gpfdist /usr/bin/gpfdist
+----
+
+. Verify the installation by running the `gpfdist` command.
++
+----
+#gpfdist
+----
+
+. Restart the DataFlow service.
++
+----
+#tscli --adv service restart dataflow
+----
+
+'''
+> **Related information**
+>
+> * xref:dataflow-greenplum-add.adoc[]
+> * xref:dataflow-greenplum-reference.adoc[]
+> * xref:dataflow-greenplum-sync.adoc[]

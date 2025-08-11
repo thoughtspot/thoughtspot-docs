@@ -1,0 +1,218 @@
+////
+:doctype: book
+
+////include::7.1@software:ROOT:connections-snowflake-add.adoc[]
+////
+= Add a {connection} connection
+:last_updated: 10/08/2024
+:linkattrs:
+:experimental:
+:connection: Snowflake
+:description: Learn how to add a Snowflake connection.
+:jira: SCAL-91104, SCAL-196178, SCAL-136317 (multiple confiurations for snowflake)
+
+== Prerequisites
+
+Before you add a {connection} connection, ensure the default role of the account being used, or the role you provide in the connection, has been granted usage on the database and the schema, and select on the tables that will be added to the connection.
+
+Example:
+
+* Grant usage on warehouse `<warehousename>` to role `<rolename>`
+* Grant usage on database `<databasename>` to role `<rolename>`
+* Grant usage on schema `<databasename>`.`<schemaname>` to role `<rolename>`
+* Grant select on all tables in schema `<databasename>`.`<schemaname>` to role `<rolename>`
+
+== Connecting to {connection}
+
+To connect to {connection}:
+
+ifndef::spotter[]
+. Select *Data* in the top navigation bar.
+. Open the *Connections* tab in the left navigation bar, and select the {connection} tile. Alternatively, select *+ Create new* in the left navigation bar, select *Connection*, and select the {connection} tile.
+endif::[]
+ifdef::spotter[]
+. Click the app switcher menu image:spotter-app-switcher.png[Spotter app switcher] and then click *{form-factor}*.
+. On the left side of the screen, select *Manage data > Add data source*.
+. On the _Add a data source_ page, click *Connect data*.
++
+[.bordered]
+image::connection-spotter-set-up-new-connection.png[Set up a new connection]
+endif::[]
+. Create a name for your connection and a description (optional), then select *Continue*.
++
+image::embrace-snowflake-connection-type-ts-cloud.png[Add a {connection} connection]
+
+. Enter the connection details for your {connection} data source using either OAuth, OAuth with PKCE, Microsoft Azure AD OAuth, Service Account, or Key Pair authentication:
++
+The Use OAuth option uses https://docs.snowflake.com/en/user-guide/oauth-partner.html[{connection} OAuth authentication^].
++
+Before selecting *Use OAuth* or *OAuth with PKCE* authentication, you must configure OAuth in {connection}.
+For details, see xref:connections-snowflake-oauth.adoc[Configure OAuth for a {connection} connection].
++
+Before selecting *Use External OAuth* authentication, you must configure either Azure AD or Okta external OAuth.
+For details, see xref:connections-snowflake-azure-ad-oauth.adoc[Configure Azure AD external OAuth for a {connection} connection] or see xref:connections-snowflake-okta-oauth.adoc[Configure Okta external OAuth for a {connection} connection].
++
+- For OAuth authentication, do the following:
+
+ .. Select *OAuth*.
+ .. Enter Account name or your {connection} URL, OAuth Client ID, OAuth Client Secret, Database (optional), Role (optional), and Warehouse (optional).
+image:snowflake-connectiondetails-oauth2.png[Enter connection details]
+// [Enter connection details]({{ site.baseurl }}/images/gbq-connectiondetails.png "Enter connection details")
+ .. If you wish to provide the optional additional key-value pairs for your {connection} connection, complete the procedure in step 5, and then select *Continue*.
+If not, select *Continue*.
+ .. When the {connection} login screen appears, enter your {connection} User Name and Password and select *Log In*, or use the Single-Sign-On option.
+ .. In the next {connection} screen, allow ThoughtSpot to access your {connection} account by selecting *Allow*, and then go to step 7 to select tables for your connection.
++
+Using security passthrough may have implications for your row-level security.
+See xref:security-rls.adoc[About row-level security (RLS)] for more information.
+
++
+- For Microsoft Azure AD or Okta OAuth authentication, do the following:
+
+ .. Select *External OAuth*.
+ .. Enter Account name or {connection} URL, OAuth Client ID, OAuth Client Secret, Scope, Auth URL, Access token URL, and (optional) Database.
+image:snowflake-connectiondetails-azure-ad-oauth.png[Enter connection details]
+// [Enter connection details]({{ site.baseurl }}/images/gbq-connectiondetails.png "Enter connection details")
+ .. If you wish to provide the optional additional key-value pairs for your {connection} connection, complete the procedure in step 5, and then select *Continue*.
+If not, select *Continue*.
+.. To enable link:https://docs.snowflake.com/en/user-guide/security-access-control-overview#enforcement-model-with-primary-role-and-secondary-roles[Snowflake secondary roles^], enter the following key-value pair:
+[#secondary]
+... Key: enableSecondaryRoles
+... Value: true
+ .. When the Microsoft sign-in screen appears, sign in to your account using the email and password of your Microsoft account associated with Azure.
+ .. On the Stay-signed-in screen, select *Yes*.
+
++
+- For *Service Account* authentication, do the following:
+
+ .. Select *Service Account*.
+ .. Enter Account name, User, Password, Role, Warehouse, and (optional) Database.
+image:snowflake-connectiondetails-serv-acct2.png[Enter connection details]
+
++
+- For *Key Pair* authentication, do the following:
+
+.. Select *Key Pair*.
+.. Enter Account name or Snowflake URL, User, Private Key, (optional) Passphrase, Role, Warehouse and (optional) Database.
+image:snowflake-key-pair.png[Enter connection details]
+
++
+Refer to the xref:connections-snowflake-reference.adoc[{connection} connection reference] for more information on each of the specific attributes you must enter for your connection.
++
+. (Optional) Configure proxy for your {connection} connection by doing the following:
+.. Select the *Advanced Config* menu to reveal the Key and Value fields.
+.. For Key, enter *useProxy*, and for Value, enter *true*.
+.. Select the plus sign ( + ) to add additional Key and Value fields.
+.. For Key, enter *proxyHost*, and for Value, enter the URL of your proxy server.
+.. Select the plus sign ( + ) to add additional Key and Value fields.
+.. For Key, enter *proxyPort*, and for Value, enter your proxy port number.
++
+[IMPORTANT]
+.{connection} Shared proxy limitation
+====
+{connection} uses proxy settings from the first connection, and reuses the proxy configuration across *all* connections.
+
+When setting up a proxy with {connection} ensure that:
+
+- There are no other connections which use a different proxy or are without a proxy.
+- Ensure each new connection has the same proxy details. If there was an unsuccessful attempt to fetch metadata without proxy, adding a proxy later might not work because the {connection} driver might assume no proxy.
+====
+. (Optional) Provide additional key-value pairs that you need to set up your connection to {connection} or customize additional JDBC parameters supported by {connection}, by doing the following:
+ .. Select the *Advanced Config* menu to reveal the *Key* and *Value* fields.
+ .. Enter your key and value information. For example, if you want to access multiple {connection} databases in a single connection, but do not want the connection to access _all_ your Snowflake databases, you can specify that here. For each specific database you would like to access, set `database` as the key, and the database name as the value. Refer to the https://docs.snowflake.com/en/user-guide/jdbc-parameters.html[Snowflake JDBC documentation^].
+ .. To add more keys and values, select the plus sign (+), and enter them.
+
++
+NOTE: Any key-value pairs that you enter must be defined in your {connection} data source.
+Key-value pairs are case-sensitive.
+. Select *Continue*.
+. Select tables (on the left) and the columns from each table (on the right), and then select *Create connection*.
++
+image::snowflake-selecttables.png[Select tables and columns for your connection]
++
+The Create connection message appears, telling you the number of tables and columns that will be added to your connection.
+
+. Select *Create*.
+
+ifdef::spotter[]
+. On the _Add a data source_ page, click *Model your data*.
++
+[.bordered]
+image::connection-spotter-set-up-new-connection-2.png[connection created]
+
+include::partial$model-build.adoc[]
+
+include::partial$spotter-coach-and-chat.adoc[]
++
+
+endif::[]
+
+ifndef::spotter[]
++
+After you add the connection, you can search your {connection} database using the Search field.
+
+// [The "Connection created" screen]({{ site.baseurl }}/images/snowflake-connectioncreated.png "The "Connection created" screen")
+
+Your new connection appears on the *Data* > *Connections* page.
+Select the name of your connection to view the tables and columns in your connection.
+
+The connection you just created is a link to the external data source.
+If there are any joins in the selected tables of the external data source, those are imported into ThoughtSpot.
+
+You can now perform a live query on the selected tables and columns of your connection.
+Because the selected tables and columns in your connection are linked, it may take a while to initially render the search results.
+This is because ThoughtSpot does not cache linked data.
+With linked data, ThoughtSpot queries the external database directly, which is slower than querying data that is stored in ThoughtSpot's database.
+
+You can modify a {connection} connection in the following ways:
+
+* xref:connections-snowflake-edit.adoc[Edit a {connection} connection]
+* xref:connections-snowflake-remap.adoc[Remap a {connection} connection]
+* xref:connections-snowflake-delete-table.adoc[Delete a table from a {connection} connection]
+* xref:connections-snowflake-delete-table-dependencies.adoc[Delete a table with dependent objects]
+
+You can also xref:connections-snowflake-delete.adoc[Delete a {connection} connection].
+
+See the xref:connections-snowflake-reference.adoc[Connection reference] for details of connection parameters.
+
+We also recommend that you review xref:connections-snowflake-best.adoc[Best practices for {connection} connections].
+endif::[]
+ifndef::spotter[]
+
+== Sharing a connection
+
+Users with *can manage data* or *admin* privileges can share connections with other users or groups that have *can manage data* privileges. Once granted access to a connection, users can add, remove, and modify tables in that connection.
+
+To share a connection with another user, follow these steps:
+
+. Navigate to the *Data* tab and select *Connections*.
+
+. Select the checkbox next to the name of the connection you want to share, and click *Share*.
+
+. In the *Share connection* dialog, enter the ID of the user or group you want to share the connection with. You can use the search bar to find the user or group.
+
+. Select *Done*.
+
+Note that to remove share access from a connection, you must navigate to the *Share connection* dialog and select *Remove access* to the left of the user group or name.
+
+[#additional-configurations-create]
+include::partial$connection-create-additional-config.adoc[]
+
+You can edit additional configurations after you create them, including disabling and deleting them. For details, see xref:connections-snowflake-edit.adoc#edit-additional-connections[Edit additional connections of your {connection} connection].
+endif::[]
+
+'''
+> **Related information**
+>
+> * xref:connections-snowflake-edit.adoc[Edit a {connection} connection]
+> * xref:connections-snowflake-remap.adoc[Remap a {connection} connection]
+> * xref:connections-snowflake-external-tables.adoc[Query external tables from your {connection} connection]
+> * xref:connections-snowflake-delete-table.adoc[Delete a table from a {connection} connection]
+> * xref:connections-snowflake-delete-table-dependencies.adoc[Delete a table with dependent objects]
+> * xref:connections-snowflake-delete.adoc[Delete a {connection} connection]
+> * xref:connections-snowflake-oauth.adoc[Configure OAuth]
+> * xref:connections-snowflake-azure-ad-oauth.adoc[Configure Azure AD OAuth]
+> * xref:connections-snowflake-best.adoc[Best practices for {connection} connections]
+> * xref:connections-snowflake-reference.adoc[Connection reference for {connection}]
+> * xref:connections-query-tags.adoc#tag-snowflake[ThoughtSpot query tags in Snowflake]
+> * xref:connections-snowflake-passthrough.adoc[]

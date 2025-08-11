@@ -1,0 +1,29 @@
+[#search-data-error-11026]
+
+=== 11026
+
+Description:: Nesting group-aggregate formulas is not supported.
+
+Details:: This error is displayed as a query generation error when a query plan detects that the underlying formula is defined with nested group functions. An example of nested group function is the following where:
++
+--
+* the inner group aggregate is a level of detail calculation for sales at the country level.
+
+* the outer group aggregate creates a moving sum of the country sales that ignores any date filters. This ensures the moving calculation is correct when date filters are applied.
+--
++
+`Sales by Country ( worksheet formula) = sum(amount), {country}, query_filters())`
++
+`3 Month Average of Sales by Country= group_aggregate(moving_average(group_aggregate(Sales by Country,2,0,date),query_groups(), query_filters()-{date})`
+
+
+
+Cause:: ThoughtSpot does not support nested group functions. Refer to the xref:formula-reference.adoc#aggregate-functions[formula reference] for list of all group functions.
+
+Resolution:: A data modelling solution is required to calculate the inner group function. In this example this could be one of the following constructs to pre-calculate the sales by country value:
+
+* a table or column in the underlying database;
+
+* a ThoughtSpot Search based View;
+
+* a ThoughtSpot SQL based View.

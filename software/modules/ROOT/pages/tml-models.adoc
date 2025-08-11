@@ -1,0 +1,555 @@
+= TML for Models
+:last_updated: 6/20/2024
+:author: Rani Gangwar
+:linkattrs:
+:experimental:
+:page-layout: default-cloud
+:page-aliases:
+:description: Use TML to modify Models in a flat-file format. Then, migrate the Model to a different cluster, or restore it to the same cluster.
+:object: Models
+:jira: SCAL-158490, SCAL-186188, SCAL-206010
+
+include::partial$tml-intro-models.adoc[]
+
+[#syntax-worksheets]
+include::partial$tml-syntax-models.adoc[]
+
+[#worksheet-models]
+== TML parameters for {object}
+These parameters and their definitions are specific to {object}; this list doesn't contain every parameter in every TML file. Similarly, the parameter definitions may vary from object to object, since the parameters may have different roles in different objects.
+
+[width="100%",grid="none",options="header"]
+|===
+| a - g | i - l | n - w
+a| <<aggregation,aggregation>>
+
+<<alias,alias>>
+
+<<calendar,calendar>>
+
+<<column,column>>
+
+<<column_id,column_id>>
+
+<<column_type,column_type>>
+
+<<currency_type,currency_type>>
+
+<<custom_file_guid,custom_file_guid>>
+
+<<data_type,data_type>>
+
+<<default_value,default_value>>
+
+<<description,description>>
+
+<<destination,destination>>
+
+<<display_name,display_name>>
+
+<<expr,expr>>
+
+<<filters,filters>>
+
+<<format_pattern,format_pattern>>
+
+<<formulas,formulas>>
+
+<<fqn,fqn>>
+
+<<geo_config,geo_config>>
+
+<<geometryType,geometryType>>
+
+<<guid,guid>>
+
+a| <<id,id>>
+
+<<include_max,include_max>>
+
+<<include_min,include_min>>
+
+<<index_priority,index_priority>>
+
+<<index_type,index_type>>
+
+<<is_additive,is_additive>>
+
+<<is_attribution_dimension,is_attribution_dimension>>
+
+<<is_bypass_rls,is_bypass_rls>>
+
+<<is_hidden,is_hidden>>
+
+<<is_one_to_one,is_one_to_one>>
+
+<<join,join>>
+
+<<join_path,join_path>>
+
+<<join_progressive,join_progressive>>
+
+<<joins,joins>>
+
+<<joins_with,joins_with>>
+
+<<lesson_id,lesson_id>>
+
+<<lesson_plan_string,lesson_plan_string>>
+
+<<lesson_plans,lesson_plans>>
+
+<<linked_parameters,linked_parameters>>
+
+<<list_choice,list_choice>>
+
+<<list_config,list_config>>
+
+a| <<name,name>>
+
+<<on,on>>
+
+<<oper,oper>>
+
+<<parameters,parameters>>
+
+<<properties,properties>>
+
+<<range_config,range_config>>
+
+<<range_max,range_max>>
+
+<<range_min,range_min>>
+
+<<referencing_join,referencing_join>>
+
+<<source,source>>
+
+<<spotiq_preference,spotiq_preference>>
+
+<<synonyms,synonyms>>
+
+<<table,table>>
+
+<<table_paths,table_paths>>
+
+<<tables,tables>>
+
+<<type,type>>
+
+<<value,value>>
+
+<<values,values>>
+
+<<model,model>>
+
+<<columns,columns>>
+
+|===
+
+[#aggregation]
+aggregation::
+The default aggregation of the column.
++
+Aggregation options depend on the data type.
++
+Possible values are `SUM`, `COUNT`, `AVERAGE`, `MAX`, `MIN`, `COUNT_DISTINCT`, `NONE`, `STD_DEVIATION`, and `VARIANCE`
++
+Default: `SUM`.
+
+[#alias]
+alias::
+Aliases can be set for tables that are being used in the model. Aliases are especially useful for role playing dimension scenarios where an alias can be assigned to the same table that is being used in different roles.
+
+[#calendar]
+calendar::
+Specifies the calendar used by a date column.
++
+Can be the Gregorian calendar (`default`), a fiscal calendar, or any custom calendar.
++
+See xref:connections-cust-cal.adoc[Custom calendar overview].
+
+[#column]
+column::
+The id of the column(s) being filtered on.
+
+[#column_id]
+column_id::
+The `id` of the column.
++
+`column_id` is in the following format: `column_id: <id>::<name>`. `id` comes from `Worksheet.table_path`, and `name` comes from `Table.column`. For example: `column_id: Customer_Dimension::Customer_Name`.
+
+[#column_type]
+column_type::
+The type of data the column represents.
++
+Possible values: `MEASURE` or `ATTRIBUTE`. The default is: `MEASURE`.
+
+[#currency_type]
+currency_type::
+The source of the currency type.
++
+One of:
++
+`is_browser : true`;; infers the currency data from the locale of your browser
+`column : <column_name>`;; extracts the currency information from a specified column
+`iso_code : <valid_ISO_code>`;; applies currency based on the ISO code;
++
+See https://www.iso.org/iso-4217-currency-codes.html[ISO 4217 Currency Codes^] and xref:data-modeling-patterns.adoc#set-currency-type[Set currency type] for more information.
+
+[#custom_file_guid]
+custom_file_guid::
+The GUID for a custom map uploaded by an administrator.
+
+[#data_type]
+data_type::
+The data type of the Parameter.
+
+[#default_value]
+default_value::
+The default value for a Parameter in a Model. Specified when xref:parameters-create.adoc[creating a Parameter].
+
+[#description]
+description::
+The text that describes an object: a Model, a column, or a join.
+
+[#destination]
+destination::
+The name of the destination table or view for a join.
+
+[#display_name]
+display_name::
+The name or value that displays in the Parameter dialog for an accepted value, if a display name was set when xref:parameters-create.adoc[creating a Parameter]. For example, if the Parameter accepts `true` and `false`, the display names might be `yes` and `no`.
+
+[#expr]
+expr::
+The definition of the formula.
+
+[#filters]
+filters::
+Contains specifications for Model filters.
+
+[#format_pattern]
+format_pattern::
+The format pattern string that controls the display of a number, date, or currency column.
++
+See xref:data-modeling-patterns.adoc[Set number, date, and currency formats]
+
+[#formulas]
+formulas::
+The list of formulas in the Model.
++
+Each formula is identified by `name`, the `expr` (expression), and an optional `id` attribute.
+
+[#fqn]
+fqn::
+The table or connection's GUID.
+You can find this string of letters and numbers at the end of the URL for that table or connection.
++
+For example, in `\https://<company>.thoughtspot.com/#/data/tables/34226aaa-4bcf-4d6b-9045-24cb1e9437cb`, the GUID is `34226aaa-4bcf-4d6b-9045-24cb1e9437cb`.
++
+Use this optional parameter to reduce ambiguity and identify a specific table, if you have multiple tables with the same name. When exporting a TML file, you have the option to *Export FQNs of referenced objects*, which ensures that the TML files you export contain FQNs for the underlying tables and connections. If you do not add the `fqn` parameter, and the connection or table you reference does not have a unique name, the file import fails.
+
+[#geo_config]
+geo_config::
+Specifies the geographic information of a column. See xref:data-modeling-geo-data.adoc[Add a geographical data setting]
++
+One of:
++
+`latitude : true`;; for columns that specify the latitude
+`longitude : true`;; for columns that specify the longitude
+`country : true`;; for columns that specify the country
+`region_name`;; for specifying a region in a country
++
+Uses two paired parameters:
+
+- `country: __<country_name>__`
+- `region_name: __<region_name_in_UI>__`; can be State, Postal Code, District, and so on.
+
+`custom_file_guid: <custom map GUID>`;; for columns that use a custom map. Must be followed by `geometryType`
+`geometryType: <custom_map_geometry_type>`;; for columns that use a custom map. Must be preceded by `custom_file_guid`. Accepts the following values: `POINT`, `LINE_STRING`, `LINEAR_RING`, `POLYGON`, `MULTI_POINT`, `MULTI_LINE_STRING`, `MULTI_POLYGON`, `GEOMETRY_COLLECTION`, `CIRCLE`
+
+[#geometryType]
+geometryType::
+Specifies the geometry type of the *TopoJSON* file. Required for geographical configuration of Model or table columns that use a custom map. Accepts the following values: `POINT`, `LINE_STRING`, `LINEAR_RING`, `POLYGON`, `MULTI_POINT`, `MULTI_LINE_STRING`, `MULTI_POLYGON`, `GEOMETRY_COLLECTION`, `CIRCLE`
+
+[#guid]
+guid::
+The GUID for the Model. You can find this string of letters and numbers at the end of the URL for an object.
+
+[#id]
+id::
+Specifies the id of an object, such as `table_paths`, `formula`.
+
+[#include_max]
+include_max::
+
+Indicates if the maximum value in a Parameter range is a valid value. For example, if the range is 0-10, and `include_max` is false, the value `10` is not valid for that Parameter.
++
+Valid values are `true` and `false`.
+
+[#include_min]
+include_min::
+
+Indicates if the minimum value in a Parameter range is a valid value. For example, if the range is 0-10, and `include_min` is false, the value `0` is not valid for that Parameter.
++
+Valid values are `true` and `false`.
+
+[#index_priority]
+index_priority::
+A value (1-10) that determines where to rank a column's name and values in the search suggestions
++
+ThoughtSpot prioritizes columns with higher values.
++
+See xref:data-modeling-index.adoc#column-suggestion-priority[Change a column's suggestion priority].
+
+[#index_type]
+index_type::
+The indexing type for the column.
++
+Possible values: `DONT_INDEX`, `DEFAULT` (see xref:data-modeling-index.adoc#default-indexing[Understand the default indexing behavior]), `PREFIX_ONLY`, `PREFIX_AND_SUBSTRING`, and `PREFIX_AND_WORD_SUBSTRING`
++
+Default: `DEFAULT`
++
+See xref:data-modeling-index.adoc#override-system-default-column[Index Type Values].
+
+[#is_additive]
+is_additive::
+Controls extended aggregate options for attribute columns.
++
+For attribute columns that have a numeric data type (`FLOAT`, `DOUBLE`, or `INTEGER`) or a date data type (`DATE`, `DATETIME`, `TIMESTAMP`, or `TIME`)
++
+Possible values: `true` or `false`.
++
+Default: `true`.
++
+See xref:data-modeling-aggreg-additive.adoc#make-attribute-additive[Making an ATTRIBUTE column ADDITIVE].
+
+[#is_attribution_dimension]
+is_attribution_dimension::
+Controls if the column is an attribution dimension.
++
+Used in managing chasm traps.
++
+Possible values: `true` by default, `false` to designate a column as not producing meaningful attributions across a chasm trap
++
+Default: `true`
++
+See xref:data-modeling-attributable-dimension.adoc[Change the attribution dimension].
+
+[#is_bypass_rls]
+is_bypass_rls::
+Specifies if the Model supports bypass of Row-level security (RLS) rules.
++
+Possible values: `true` or `false`
++
+Default: `false`
++
+See xref:security-rls-concept.adoc#exempt-rls[Privileges that allow users to set, or be exempt from, RLS].
+
+[#is_hidden]
+is_hidden::
+The visibility of the column.
++
+Possible values: `true` to hide the column, `false` not to hide the column +
+Default: `false`
++
+See xref:data-modeling-visibility.adoc[].
+
+[#is_one_to_one]
+is_one_to_one::
+Specifies the cardinality of the join. This is an optional parameter.
++
+Possible values: `true`, `false`
++
+Default: `false`
+
+[#join]
+join::
+Specific join, used in defining higher-level objects, such as table paths.
++
+Defined as `name` within `joins` definition.
+
+[#join_path]
+join_path::
+Specification of a composite join as a list of distinct `join` attributes.
++
+These `join` attributes list relevant joins, previously defined in the `joins`, by name.
++
+Default: `{}`
+
+[#join_progressive]
+join_progressive::
+Specifies when to apply joins on a Model.
++
+Possible values: `true` when joins are applied only for tables whose columns are included in the search, and `false` for all possible joins
++
+Default: `true`
++
+See xref:worksheet-progressive-joins.adoc[How the Worksheet join rule works].
+
+[#joins]
+joins::
+Contains a list of joins between the tables and views.
++
+If you edit the joins in the Model TML file, you are only editing the joins for that specific Model. You are not editing the joins at the table level. To modify table-level joins, you must edit the source table's TML file.
++
+Each join is identified by `name`, and the additional attributes of `source`, `destination`, `type`, and `is_one_to_one.`
+
+[#joins_with]
+joins_with::
+Contains a list of external joins for which this Model is the source. +
+Each join is identified by `name` and optional `description`, and the additional attributes of `destination`, `type`, `on`, and `is_one_to_one`.
+
+[#lesson_id]
+lesson_id::
+The numeric ID of the xref:search-assist-coach.adoc[] lesson created for the Model. The first lesson shown to users has an ID of 0, the second lesson has an ID of 1, and so on.
+
+[#lesson_plan_string]
+lesson_plan_string::
+The content of the xref:search-assist-coach.adoc[] lesson created for the Model. For example, `"What were [Lo Tax] by [Lo Shipmode] in [Lo Commitdate].'2019' ?"`.
+
+[#lesson_plans]
+lesson_plans::
+Contains a list of xref:search-assist-coach.adoc[] lessons created for the Model.
+
+[#linked_parameters]
+linked_parameters::
+Links the Model parameter to the underlying table parameter. Takes the syntax "table_name::table_parameter_name". The table parameter name should be the name of the parameter in ThoughtSpot.
++
+NOTE: Only applicable to tables imported from SAP Hana.
+
+[#list_choice]
+list_choice::
+Contains the list of accepted values for a Parameter, if a list was configured when xref:parameters-create.adoc[creating a Parameter].
+
+[#list_config]
+list_config::
+Contains the list of accepted values for a Parameter, if a list was configured when xref:parameters-create.adoc[creating a Parameter].
+
+[#name]
+name::
+The name of an object.
+Applies to `models`, `joins`, `formula`, `connection`, `destination`, and so on.
+
+[#on]
+on::
+The join expression: the relationship definition, or the keys that your objects are joined on. For example, `[sale::Sale_Last Name] = [employee::Employee_Last Name] AND [sale::Sale_First Name] = [employee::Employee_First Name]`.
++
+To alter a relationship definition, edit this parameter.
+
+[#oper]
+oper::
+The operator of the Model filter.
+Accepted operators are `"in"`, `"not in"`, `"between"`, `=<`, `!=`, `+<=+`, `>=`, `>`, or `<`.
+
+[#parameters]
+parameters::
+Container for the xref:parameters-create.adoc[Parameters] in a Model.
+
+[#properties]
+properties::
+The list of properties of a column, a Model, or the properties of the output for a formula within a Model.
++
+Each column can have the following properties, depending on its definition: `column_type`, `aggregation`, `index_type`, `is_hidden`, `index_priority`, `synonyms`, `is_attribution_dimension`, `is_additive`, `calendar`, `format_pattern`, `currency_type`, `geo_config`, and `spotiq_preference`.
++
+Models themselves can have the following properties that affect query generation: `is_bypass_rls`, and `join_progressive`.
+
+[#range_config]
+range_config::
+Contains the minimum and maximum values for the range of values allowed for a Parameter, if a range is specified when xref:parameters-create.adoc[creating a Parameter].
+
+[#range_max]
+range_max::
+The maximum value for the range of values allowed for a Parameter, if a range is specified when xref:parameters-create.adoc[creating a Parameter].
+
+[#range_min]
+range_min::
+The minimum value for the range of values allowed for a Parameter, if a range is specified when xref:parameters-create.adoc[creating a Parameter].
+
+[#referencing_join]
+referencing_join::
+The Global join that is being referenced in the model.
++
+Global joins are joins created between tables and can be used across multiple worksheets.
++
+It is not possible to edit or override a Global join in the model but any Global join can be replaced by a Local join in the model. `referencing_joins` field in the model does not require details of the join itself.
+
+
+[#source]
+source::
+Name of the source table or view for a join.
+
+[#spotiq_preference]
+spotiq_preference::
+Specifies whether to include a column in SpotIQ analysis.
+Specify `EXCLUDE`, or this property defaults to include the column in SpotIQ Analysis.
++
+Refer to xref:spotiq-data-model-preferences.adoc[Set columns to exclude from SpotIQ analyses].
+
+[#synonyms]
+synonyms::
+Alternate names for the column, used in search.
++
+See xref:data-modeling-visibility.adoc[].
+
+[#table]
+table::
+Specific table, used in defining higher-level objects, such as table paths.
++
+Defined as `name` within `tables` definition.
+
+[#table_paths]
+table_paths::
+The list of table paths. Each table path is identified by the `id`, and additional attributes of `table` and `join_path`.
+
+[#tables]
+tables::
+List of tables used by the Model.
++
+Each table is identified by `name`.
+
+[#type]
+type::
+The join type. This is an optional parameter.
++
+Possible values: `LEFT_OUTER` for left outer join, `RIGHT_OUTER` for right outer join, `INNER` for inner join, `OUTER` for full outer join.
++
+Default: `INNER`
+
+[#value]
+value::
+An accepted value for a Parameter, if a list was configured when xref:parameters-create.adoc[creating a Parameter].
+
+[#values]
+values::
+The values being filtered (excluded or included) in a Model.
+
+[#model
+model::
+Top-level container for all object definitions within the Model.
+
+[#columns]
+columns::
+The list of columns available from the data sources in the Model.
++
+Each Model is identified by `name`, `description`, `column_id`, and `properties`.
+
+[#limitations]
+== Limitations of working with TML files
+
+There are certain limitations to the changes you can apply by editing {object} through TML.
+
+* Formulas and columns can either have a new name, or a new expression.
+You can't change both, unless migrating or updating the Model two times.
+* It isn't possible to reverse the join direction in the TML script.
+* TML doesn't support data type modifications.
+* You can't modify joins at the table level from the Model, view, or Answer TML file.
+You can only override the joins for that specific Model, view, or Answer.
+To modify table-level joins, you must edit the source table's TML file.
+* When deleting columns, you only delete ThoughtSpot's record of the column. You don't delete the column in your external database.
+
+Visit this page for information on xref:models.adoc[Creating Models].
+
+
+
