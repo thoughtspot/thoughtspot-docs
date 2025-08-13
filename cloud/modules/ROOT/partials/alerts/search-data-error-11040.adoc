@@ -1,0 +1,22 @@
+[#search-data-error-11040]
+
+=== 11040
+
+Description:: Rank-related function spanning multiple fact tables is not supported.
+
+Details:: Assume the Model definition has the underlying data tables. This is a chasm trap Model where there are two fact tables: Inventory and Purchases. There is a single shared dimension: date. Store and Supplier details are not shared. Store is joined to Inventory and Supplier to Purchases.
++
+dimStore ← factInventory → dimDate
++
+dimSupplier ← factPurchases → dimDate
+
+Cause:: The following formula definition can be saved, however, it will generate the query generation error:
++
+----
+fxQueryGenError = last_value(sum(factInventory.balance), {dimSupplier.Code}, {dimDate.Date})
+----
++
+The reason is that the join path between the columns factInventory.balance and dimSupplier.Code is via a chasm trap. This formula will return incorrect results.
+
+
+Resolution:: This Model would need to be augmented so that there is a direct join between factInventory and dimSupplier.
