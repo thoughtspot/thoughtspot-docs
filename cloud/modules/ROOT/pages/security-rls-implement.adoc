@@ -1,11 +1,11 @@
 = Set row-level security rules
-:last_updated: 11/19/2024
+:last_updated: 8/19/2025
 :linkattrs:
 :experimental:
 :page-layout: default-cloud
 :page-aliases: /admin/data-security/set-rls.adoc
 :description: Learn how to set row-level security (RLS) rules.
-:jira: SCAL-178829, SCAL-232634, SCAL-264258
+:jira: SCAL-178829, SCAL-232634, , SCAL-264258, SCAL-268708
 
 When rule-based row-level security (RLS) is set, it prevents users from seeing data they shouldn't in tables and the objects derived from them.
 You must have administrative rights on ThoughtSpot to set RLS rules.
@@ -97,6 +97,8 @@ ts_groups = if (col1 = 'x') then 'a' else 'none' or ts_groups = if (col1 = 'x') 
 ----
 
 Note that if an RLS rule is preventing indexing on a table, you can check the xref:index-statistics-liveboard.adoc[Index Statistics Liveboard] to find the problem.
+
+WARNING: For column indexing to work, the RLS rule must contain either the `ts_groups` or `ts_username` keywords. An RLS rule that does not contain either of these keywords will fail to index.
 
 '''
 > **Related information**
