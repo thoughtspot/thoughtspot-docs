@@ -1,0 +1,88 @@
+= What to coach and what not to coach in Spotter
+:last_updated: 8/19/25
+:author: Naomi
+:linkattrs:
+:page-aliases: spotter-coach-not-coach.adoc
+:experimental:
+:page-layout: default-cloud
+:description: Avoid overcoaching or trying to coach Spotter for scenarios it’s not designed for.
+
+== Coaching complex scenarios
+
+It’s best practice to pair business terms with related reference questions to reinforce intent. For complex questions or metrics, break them down into simpler concepts. Then, use a combination of reference questions and business term coaching to teach Spotter each part.
+
+Let’s say your company defines “win rate” as “number of booked deals / number of all non-open opportunities” and a common way users ask this is “Show me the win rate in last quarter for x”.
+
+[#example]
+Follow these steps to coach Spotter to answer related queries:
+
+. Break down the term by creating formulas with clear, human-friendly names. In this case, use the following three formulas:
++
+--
+* Total concluded deals last quarter = COUNT(opportunities WHERE status ≠ 'open', opportunity_closed_date = last quarter)
+* Won deals last quarter = COUNT(opportunities WHERE status = 'booked'and opportunity_won_date = last quarter)
+* Win rate last quarter =  ( (Won Deals (Last month)) / (Concluded Deals (Last month))
+--
+
+. Coach Spotter.
+
+.. Add a reference question for “show me the win rate in the last quarter for James”. Correct the answer to have the above three formulas: won deals by total concluded deals.
++
+[.bordered]
+image::spotter-coach-complex-ref.png[Review AI-generated answer modal showing the search tokens for ‘win rate (last quarter) for james belsey’. The reference questions displays “show me the win rate in the last quarter for James”]
+
+.. Define a business term for “win rate”. When Spotter prompts for the definition, or when you edit it, you would construct the logic using the three formulas that you defined.
++
+[.bordered]
+image::spotter-coach-complex-bus.png[Review business term modal displaying a mapping of “win rate in last quarter” to “win rate (last quarter)” and “James” to “james belsey”]
+
+... Approve the business term “win rate in last quarter”.
+
+... Reject the business term “James” as there could be multiple people named James and we don’t want to coach the system to generalize the Sales rep name based on user query.
+
+[#coaching-strategy]
+== How many examples and when?
+
+For answers to common strategic questions about the necessity and quantity of coaching examples to help you coach effectively, see below.
+
+If Spotter already answers a question correctly, should I still coach for it?::
+Consider the data model’s obviousness;; If the correct interpretation is truly straightforward and evident from your well-optimized data model, for example, if a user asks “show me the sales?” or “what is the revenue?” and there’s only one clear `sales` or `revenue` column that Spotter easily and correctly uses, then specific coaching for this exact query is likely unnecessary.
++
+If you, as the coach, feel the correct interpretation isn’t immediately obvious from the data model alone, even if Spotter happens to get it right, you may want to add it to coaching. Sometimes you may want to reinforce a fundamental interpretation, especially if it involves a subtle but important nuance. For instance, a query like “show me the sales for x region last month?” might be a good candidate for a reference question, not just to get the answer right, but to explicitly teach Spotter which specific date column (for example, `order date` versus `ship date`) should be contextually used with the `sales` measure when a time filter like “last month” is applied for that type of regional sales query.
+
+When should I lean towards coaching (even if Spotter seems correct)?::
+For highly critical, foundational queries;; If a question is extremely common and vital, creating a reference question acts as a “gold standard” to lock in its interpretation.
+To teach nuances and associations;; Use reference questions to guide Spotter on specific associations, like the correct date column to use with a particular measure in a certain context.
+To ‘warm up’ new data sets;; For new data sets, a few reference questions for common queries help establish initial patterns for Spotter and help associate columns with particular keywords.
+
+WARNING: While you might reinforce some basics, do not add too many obvious or overlapping coaching examples. Ensure that the concepts being coached in each piece of coaching are distinct and avoid introducing conflicting instructions. The goal is to clarify, not to confuse with excessive or redundant coaching.
+
+Test generalization with an example:: After providing your initial one or two examples, actively test if Spotter can generalize this learning to similar but uncoached questions.
+Example using a coaching scope;; Suppose you’ve added a reference question for “What is the revenue generated this quarter?” Spotter learns to map “revenue” to `sum(amount) where status=’booked’` and “this quarter” to the correct date logic on `close date`. You also add a reference question for “What is the revenue generated by region?” Spotter learns how to use the “revenue” logic and group it by the `region` column.
++
+Now, test generalization by asking a combined, uncoached question: “What is the revenue generated by sector this quarter?” or “Show revenue by department last month.”
++
+If Spotter correctly applies the “revenue” logic, grouped by the new dimension;;; The generalization is working well. You likely _don’t_ need to create explicit reference questions for every combination of metric, dimension, and time filter.
+If Spotter fails on the combined 	question;;; Analyze why. Did the initial examples not clearly isolate the concepts? Or is a specific term like “revenue” itself better defined as a robust business term for absolute consistency of the core metric before testing such combinations?
+
+When to add more:: Only consider adding another reference question example if testing reveals that Spotter consistently fails to generalize for a common and important variation, and you believe an additional example will clarify a specific pattern or nuance that was missed.
+
+== What not to coach in Spotter
+
+Avoid overcoaching or trying to coach Spotter for scenarios it’s not designed for. Good coaching focuses on Spotter’s strengths. Remember, Spotter treats your coaching as a trusted source of truth about your data, so it’s important to provide clear, accurate, and consistent coaching. Avoid providing conflicting information, as this can confuse Spotter more than helping it.
+
+[options=”header”]
+|===
+|  Don’t coach for… | Why
+
+| Fixing a broken data model | Spotter relies on your data model’s structure. Complex data models or data models with inconsistent data/ erroneous configuration will undermine coaching.
+
+| Business logic that changes often | If a definition changes weekly, maintaining the business term becomes impractical and unreliable.
+
+| Complex, context-specific phrases (for example, “best performing products”) | These can conflict between users unless they have a universally agreed-upon definition in your data. For example, coaching “best performing products” to select “sales” as the determining factor can cause issues if users from different departments might use another attribute such as ‘profit’ to define the same. It’s often better to coach to maintain a single definition.
+
+| LLM blind spots (for example, predictive logic) | In the current scenario, Spotter is best for asking questions about current and past data (descriptive analytics), not for predicting the future or performing extremely complex analyses.
+
+| Personalization (for example, “my team’s performance”) | While users can create user-level coaching, global coaching takes precedence. Avoid creating global coaching for highly personalized scenarios that don’t apply broadly.
+
+|===

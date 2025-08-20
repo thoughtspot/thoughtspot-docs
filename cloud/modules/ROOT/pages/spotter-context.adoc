@@ -1,0 +1,45 @@
+= Context in Spotter
+:last_updated: 8/18/25
+:author: Naomi
+:linkattrs:
+:experimental:
+:page-layout: default-cloud-beta
+:description: Use natural language context in Spotter to clarify how coaching is applied.
+:jira: SCAL-264111, SCAL-264626
+
+The natural language context feature is a powerful tool designed to enhance the coaching of the Spotter system. It allows you to add clear, natural language explanations to reference questions. This additional context helps the system understand the intent and logic behind a specific answer, reducing ambiguity and improving Spotter’s ability to generalize the learning from a reference question to similar future queries.
+
+NOTE: Context in Spotter is in beta and off by default. To enable this feature, contact {support-url}.
+
+== How to use natural language context
+Here is a step-by-step guide to using the natural language context feature:
+
+. *Ask a question*: Start by asking a question to Spotter. For example, "Show me the most active users".
+. *Identify the need for coaching*: Observe the initial response and notice if the system misunderstands the query. For example, it might not use the correct measure for "activity" or might not include the user's name alongside their ID.
+. *Initiate coaching*: Correct the response to what you expect to see. In this case, you would adjust the query to count the number of conversations and include both the user's ID and their name.
+. *Add natural language context*: This is the crucial step. In the coaching interface, along with the corrected query, add a clear and concise explanation of the logic, referencing specific column names when possible. For this example, you could add: "When I ask for 'most active users,' always show me the top 10 users by their conversation count. For identification, also include the User_Name and User_ID columns in the answer."
+. *Save and test*: Save the coaching example with the added natural language context. To verify that the system has learned correctly, ask a similar question, such as "Which users have actively engaged with the product last month?". The system should now apply the logic you provided to deliver the correct answer.
+
+== Key use cases
+Natural language context is particularly effective in the following scenarios:
+
+Clarifying reference questions:: It makes the logic behind a reference question explicit, which helps the system better understand and apply the context to other relevant situations.
+Defining implicit logic (data nuances):: It is highly effective for teaching the model how to handle logic that isn't explicitly stated in a query.
+Example;; Imagine a retail data model listing user transactions. These transactions have different statuses like 'Placed', 'Shipped', 'Fulfilled', and 'Returned'. A user might ask, "show me our sales for last month." A simple sum of sales might incorrectly include returned or unshipped orders. The implicit business rule is that "sales" should only be calculated on completed transactions. You can correct the answer by adding a filter, Order_Status = 'Fulfilled'. In the Context box, you would explain this rule: "When calculating sales or revenue, only include orders with a status of 'Fulfilled’ unless the user specifically requests a different status (for example, 'Shipped').”
+Resolving ambiguity:: Natural language context can help the system distinguish between similar-sounding terms or resolve ambiguity in filter values and column selections.
+Handling complex logic (business concepts):: This feature excels at defining complex business concepts and aggregations that have multiple conditions.
+Example;; Imagine your business defines a "High-Value Customer" as someone who has spent over $1,000, made a purchase in the last 90 days, AND has a return rate below 5%. Asking Spotter for "high-value customers" would likely fail. Using natural language context, you can build the correct answer with all three conditions and then explain the concept:
+"A 'High-Value Customer' must meet three criteria: lifetime spend over $1000, at least one purchase in the last 90 days, and a return rate below 5%. Apply all three conditions when this concept is mentioned."
+
+== Best practices and key considerations
+
+* *Maintain coaching coherency*: The information provided in the natural language context should not conflict with other coaching examples, standalone instructions, or default system behaviors. Contradictory information can confuse Spotter and degrade performance.
+* *Ensure consistency across examples*: If you add context to one reference question (for example, "always apply this filter for active clusters"), you should provide the same context in other similar reference questions. Providing conflicting or incomplete context across similar examples may confuse the system, as it may not know how much importance to give the context if it only appears inconsistently.
+* *Be clear and unambiguous*: The system requires clear instructions to perform predictably. The way users write context can vary, leading to different interpretations, so clarity is essential.
+* *Iterate and refine*: Coaching is an iterative process. It's recommended to start with a small set of coaching examples and gradually refine them based on the system's performance to avoid overfitting.
+
+== Known Limitations
+
+* *May not drastically increase accuracy scores*: While natural language context improves answer quality, it may not always cause a large jump in the number of correct answers.
+* *Does not guarantee perfect generalization*: Even with clear context, the system's application of the logic may not be flawless.
+* *May struggle with highly complex logic*: While it helps, adding natural language context does not resolve all issues, particularly with very complex logic or formulas.

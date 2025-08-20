@@ -1,0 +1,97 @@
+= Natural language instructions in Spotter
+:last_updated: 8/20/25
+:author: Naomi
+:page-layout: default-cloud-beta
+:linkattrs:
+:experimental:
+:description: You can add instructions in a natural language conversation to teach Spotter how to answer similar questions on the data model.
+:jira: SCAL-267909
+
+The natural language instructions feature allows you to provide the Spotter system with global rules that it should follow across all relevant queries. Unlike xref:spotter-context.adoc[Spotter context], which is tied to a specific reference question, a natural language instruction is a standalone directive designed to teach the system a core concept, a default behavior, or a specific data nuance. These instructions are sent along with the user’s query to guide the system toward a more accurate and consistent response.
+
+NOTE: These instructions are globally applicable and influence all queries made by any user on the data model, unlike other coaching methods that also have a user-level scope.
+
++++
+<div class="border">
+<script src="https://fast.wistia.com/player.js" async></script><script src="https://fast.wistia.com/embed/u44wyiigfc.js" async type="module"></script><style>wistia-player[media-id='u44wyiigfc']:not(:defined) { background: center / contain no-repeat url('https://fast.wistia.com/embed/medias/u44wyiigfc/swatch'); display: block; filter: blur(5px); padding-top:62.92%; }</style> <wistia-player media-id="u44wyiigfc" aspect="1.5894039735099337"></wistia-player>
+</div>
++++
+
+
+NOTE: Natural language instructions are in beta and off by default. To enable this feature, contact {support-url}.
+
+
+== Access and permissions
+
+To add or manage natural language instructions, you must have data model editing access.
+
+== Key use cases
+
+Natural language instructions are a versatile tool for shaping how the system interprets queries and presents answers. The primary use cases are:
+
+Data filtering and refinement:: Apply automatic filters to ensure analyses are consistent and accurate. This can be broken down into two main types:
+
+Applying conditional filters::: Teach Spotter to apply different logic based on the user’s query.
+Example;; To use different fulfillment centers based on the product line, you can instruct: "For queries about 'Electronics' sales, filter for Fulfillment_Center = 'FC-West'. For 'Apparel' sales, filter for Fulfillment_Center = 'FC-East'".
+
+Applying default filters::: Set up a rule that always applies a filter to clean up data.
+Example;; To ensure internal test data is always excluded from revenue analysis, you can instruct: "When calculating revenue, always exclude transactions where Account_Type = 'Internal Test'".
+
+Column selection and prioritization:: Guide the system to use the correct columns for analysis, filtering, or aggregations.
+Example;; If a query for "market" could ambiguously use a `City` or `Canvas Market` column, you can direct the system with: "Prefer Canvas Market column over City column for filtering market values".
+
+Example;; To ensure counts are always accurate, you can specify the column to use for counting: "For counting customers, always use the unique count of ‘Customer Cred ID’".
+
+Answer enrichment:: Automatically add more detail to answers to make them more comprehensive without requiring the user to ask for every column explicitly.
+Example;; If a user asks for basic provider information, you can enrich the answer with more detail using the instruction: "Provider demographic info is name, address, tax info, class and state code".
+
+Date handling:: Manage how the system handles date and time analysis, especially when a user omits a time frame.
+Example;; To prevent expensive, wide-ranging queries and align with common user preferences, you can set a default time period: "If a query does not specify a time period, apply a default filter for the 'last 30 days'".
+
+
+== Give instructions in Spotter
+
+To give instructions in Spotter, follow these steps:
+
+. Open Spotter and ask a question. For example, you could say, “Show me the sales for the last month.”
+
+. Let’s say your company defines “last month” as the last 30 days. If Spotter answers your question with the date filter “last month,” you can add context to correct its answer.
+
+. Click the information pane icon  in the top right corner of the conversation. The instructions pop-up appears.
+
+. Click the *+* icon to add an instruction. In the text box that appears, type your instruction. For example, you could say, “When I ask for last month, use ‘last 30 days’ as a filter.”
+
+. Click the check mark to save your instructions, and select *Close*.
+
+. When the pop-up closes, Spotter displays an acknowledgement that Instructions have been updated. Click *Regenerate last answer* to see the updated answer to your question and verify that Spotter has understood your instructions.
+
+== Best practices for writing instructions
+
+Be specific and direct:: Write your instruction as a clear command to ensure the system applies your rule correctly and predictably. For example, "Exclude all sales from 'Internal Test' accounts" is better than "I don't usually want to see our internal test accounts in reports."
+
+
+Pro tip;; In many cases, using preferential language like "Prefer A over B" can be more effective than a hard command like "Use A".
+
+Group instructions by concept:: Instead of creating many separate instructions for small, related rules, it is better to group them. Focus on teaching all the logic related to a particular business concept in a single, well-structured instruction. This helps the system understand the full context and know which rules to apply when a user's query mentions that concept.
+
+Match your data’s language:: Write instructions using the exact names for columns and the precise values stored in your data. This removes guesswork for the system and leads to more predictable results.
+
+Example;; *Instead of a generic (less effective) instruction*: "Exclude canceled orders when calculating total revenue", use a more *precise (more effective) instruction*: "Exclude orders where `order_status = 'CANCELLED-USER'` when calculating total revenue".
+
+
+== Limitations and key considerations
+
+No automatic override behavior:: A natural language instruction does *not* automatically override a user’s direct query if they conflict. Instead, both the user’s query and the instruction are sent to the Model, which can lead to unpredictable results or confusing answers. This makes writing clear, specific instructions critical.
+
+Not recommended for mathematical formulas:: Natural language instructions are not well-suited for teaching the system mathematical formulas or complex calculations. For these scenarios, other coaching methods, such as providing a reference question with xref:spotter-context.adoc[natural language context], are strongly recommended.
+
+Avoid conflicting coaching:: The instructions you provide must be coherent with each other and with other coaching assets like reference questions and business terms. Contradictory information will confuse the model and lead to unpredictable results.
+
+Unsupported capabilities:: To set clear expectations, please note that several advanced “agentic” behaviors are not currently supported by natural language instructions. These include:
++
+--
+* Enforcing specific chart types or visualizations.
+* Prompting the user with follow-up questions.
+* Defining conditional query logic (for example, “if the first query returns no data, run a second query”).
+* Question deflection (preventing the system from answering certain questions).
+--

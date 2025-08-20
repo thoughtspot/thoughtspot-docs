@@ -1,0 +1,68 @@
+= Spotter business terms
+:last_updated: 8/18/25
+:author: Naomi
+:description: Business terms teach Spotter how to accurately interpret specific terms common to your organization.
+:page-layout: default-cloud
+:linkattrs:
+:experimental:
+:jira:
+
+
+To begin coaching business terms:
+
+
+. Navigate to the Data workspace.
+. Under *Spotter coaching*, select the Business terms tab.
+. Click on *Add business term*.
++
+This will lead you directly into the coaching flow, where you can begin refining responses and improving Spotter's accuracy. You can use the data source tab next to the Search bar to select the data source for which you want to define a business term.
++
+[.bordered]
+image:spotter-coach-business.png[Coach Spotter references]
+
+
+
+. In the *Enter a business term* text box, enter a business term.
+
+
+. In the Search bar, enter the search token(s) that defines the business term for your data, then click *Go*. For example, you could enter a business term “sales contribution” and define it explicitly as `sum(order_amount) / sum(total_revenue)`. All future questions using “sales contribution” will apply your exact logic.
+
+
+. Your AI-generated Answer appears. Review the search tokens and visualization Spotter chose to visualize your definition and check for accuracy.
++
+You can modify the search tokens to refine the response. Changing these tokens updates the data visualization, allowing you to better tailor the answer to the question.
++
+Once you're satisfied with the adjustments, click *Submit* to save the response as a reference for future, similar queries.
+
+
+. You return to the Coach Spotter page, where you can see the coaching you've added.
+
+
+== Business term feedback level
+
+Depending on your role (for example, Admin or Model editor), saving a business term may apply globally to all users of the Model, or it might be initially saved at user level. For more information, see xref:spotter-coaching-permissions.adoc[Understand coaching levels].
+
+== Guidelines for effective business terms
+
+[options=”header”]
+|===
+| Principle | Why it matters | Example
+
+| Meaningful addition | Only define terms that an LLM can’t reliably guess or that have a very specific meaning in your business. | Avoid coaching “customer” as "customer column" if it’s the obvious choice in columns and Spotter is able to pick it up without coaching.
+
+| Business-specific logic | Focus on how your company uniquely defines things like revenue, churn, or contribution. | “Sales contribution” might seem obvious but often has a specific calculation method in your business which the LLM might not be able to predict.
+
+| Consistency across contexts | Spotter applies business terms globally; the term must hold the same meaning in all contexts it can be used for that Model. So avoid context-specific logic. | Be cautious when coaching general time-related terms if you have multiple date fields. For example, coaching “this year” to always use `created_date` can cause issues if a user asks about “this year” related to `transaction_date`.
+
+| Correct logic | Ensure the underlying definition (filters, formulas) is accurate and aligns with business intent. | Avoid coaching ‘profit’ as `sales - material cost` if the definition of profit varies across categories. Coach “material profit” and “net profit” separately.
+
+Similarly, if “best products” means “most selling product” for products in the North American region but “highly-rated products” in the European region, do not save this business term. Instead, coach on two reference questions using this term in different region questions to highlight the difference.
+|===
+
+== Key considerations
+
+Avoid business terms for obvious model interpretations:: Don’t create business terms for simple concepts Spotter infers directly from your data model. For example, if Spotter understands “total sales” as “sum(sales)” from the Model, a business term for “total sales” is unnecessary. Reserve business terms for specific business nuances, complex logic, or synonyms not evident from the Model.
+
+Avoid conflicting definitions:: A term must mean the same thing every time it’s used within its defined scope (for example, within a Model). For example, if “annual revenue” is defined as “sum(revenue)” where “period = `annual`”, don’t try to create another business term “yearly revenue” with a slightly different formula if users will use the terms interchangeably, as this can confuse Spotter.
+
+Don’t create overly rigid coaching for context-dependent terms:: For instance, coaching “this year” to always use a very specific, niche date field (for example, “sales date”) can lead to misinterpretations when users ask about “this year” in other contexts. For example, the query, “Number of orders this year?” should use “order date” and not “sales date”.
