@@ -5,12 +5,12 @@
 :page-layout: default-cloud
 :author: Teresa Killmond, Naomi
 :jira: SCAL-157885, SCAL-157886, SCAL-157887, SCAL-157890, SCAL-157889, SCAL-119947, SCAL-182271, SCAL-182987, SCAL-186187, SCAL-132886, SCAL-169614, SCAL-180960, SCAL-126451, SCAL-201301, SCAL-201304, SCAL-208784, SCAL-263318
-:description: ThoughtSpot's dbt sync allows you to provide your existing dbt models and create ThoughtSpot Worksheets, which you can use to search your data.
+:description: ThoughtSpot's dbt sync allows you to provide your existing dbt models and create ThoughtSpot Models, which you can use to search your data.
 
 
 ThoughtSpot's dbt sync allows you to easily provide your existing dbt models and automatically create ThoughtSpot xref:models.adoc[Models], which you can use to xref:search-data.adoc[search your data].
 
-dbt takes your raw data in your data warehouse and transforms and validates it. ThoughtSpot's dbt sync connects users to their cloud data warehouse, integrates with your dbt models using an API key or zip file, and generates the relationships between the tables defined in the dbt model that you select. It also brings any logical tables into ThoughtSpot. Then, ThoughtSpot creates new Worksheets, based on the relationships between the tables. If a table does not have any relationships, ThoughtSpot creates a Worksheet based only on that table. These Worksheets provide user-friendly logical views of your complex datasets. Users can use these Worksheets to easily search their complex data. This process may replace existing dbt tables you imported into ThoughtSpot, but it will not replace existing Worksheets.
+dbt takes your raw data in your data warehouse and transforms and validates it. ThoughtSpot's dbt sync connects users to their cloud data warehouse, integrates with your dbt models using an API key or zip file, and generates the relationships between the tables defined in the dbt model that you select. It also brings any logical tables into ThoughtSpot. Then, ThoughtSpot creates new Models, based on the relationships between the tables. If a table does not have any relationships, ThoughtSpot creates a Model based only on that table. These Models provide user-friendly logical views of your complex datasets. Users can use these Models to easily search their complex data. This process may replace existing dbt tables you imported into ThoughtSpot, but it will not replace existing Models.
 
 NOTE: Integration with dbt is certified only for Amazon Redshift, Databricks, Google BigQuery, and Snowflake connections.
 
@@ -31,9 +31,9 @@ Account ID:: Your default dbt Cloud account ID. Find your account ID in your dbt
 Project ID:: Find your project ID in your dbt Cloud URL, after you sign in. For example, if your URL is `https://cloud.getdbt.com/#/accounts/12345/projects/56789/dashboard`, your project ID is `56789`.
 * Optionally define the relationships for the dbt models in your `yml` schema file. For more information, refer to the https://docs.getdbt.com/docs/build/tests[dbt documentation^].
 +
-CAUTION: If you do not define relationships, ThoughtSpot imports each model as a single table and creates one Worksheet based on each table.
+CAUTION: If you do not define relationships, ThoughtSpot imports each model as a single table and creates one Model based on each table.
 +
-Manage your ThoughtSpot Worksheet and table xref:data-modeling-settings.adoc[column properties] and table xref:join-worksheet-edit.adoc[joins] in dbt by using metadata tags to define column properties and joins within your dbt model schema. See xref:dbt-integration-metadata-tags.adoc[].
+Manage your ThoughtSpot Model and table xref:data-modeling-settings.adoc[column properties] and table xref:join-worksheet-edit.adoc[joins] in dbt by using metadata tags to define column properties and joins within your dbt model schema. See xref:dbt-integration-metadata-tags.adoc[].
 
 * To ensure ThoughtSpot can process the latest changes defined in your `yml` schema file, which defines relationships, metatags, and tests, you must have the latest versions of the `manifest.json` and `catalog.json` files. To ensure you have the latest versions of those files, run a dbt job, which generates the latest versions of these files.
 * If you are using *dbt cloud*, the *generate docs on run* setting must be on. You can enable this setting in the jobs settings of the project, under *Execution settings*.
@@ -108,33 +108,33 @@ The *Synced* column says *No* if this is the first time you are importing this m
 +
 image::dbt-integration-tables.png[dbt integration step 3]
 
-. On the next screen, choose which Worksheets you would like ThoughtSpot to create, based on the models and relationships specified.
+. On the next screen, choose which Models you would like ThoughtSpot to create, based on the models and relationships specified.
 +
-The *Synced* column says *No* if this is the first time you are importing this Worksheet. The *Synced* column says *Yes* if you are importing the same Worksheet again. If the *Synced* column says *Yes*, ThoughtSpot will update the existing Worksheet, instead of creating a new one.
+The *Synced* column says *No* if this is the first time you are importing this Model. The *Synced* column says *Yes* if you are importing the same Model again. If the *Synced* column says *Yes*, ThoughtSpot will update the existing Model, instead of creating a new one.
 +
-image::dbt-integration-worksheets-create.png[Select Worksheets for ThoughtSpot to create]
+image::dbt-integration-worksheets-create.png[Select Models for ThoughtSpot to create]
 +
-NOTE: There is no minimum number of Worksheets to select in this step.
+NOTE: There is no minimum number of Models to select in this step.
 
 . Select *Finish*.
 
-. The *Generated Tables and Worksheets* page appears. ThoughtSpot generates several tables and Worksheets from your dbt models.
+. The *Generated Tables and Models* page appears. ThoughtSpot generates several tables and Models from your dbt models.
 +
 image::dbt-integration-worksheets.png[dbt integration step 4]
 +
-To inspect the table and Worksheet details, select any of the table or Worksheet names. You can view the joins created between the related tables in the Worksheets from the *Joins* tab for the Worksheet.
+To inspect the table and Model details, select any of the table or Model names. You can view the joins created between the related tables in the Models from the *Joins* tab for the Model.
 +
-To xref:search-data.adoc[search the data] on the Worksheets, select *Search worksheet* next to any Worksheet.
+To xref:search-data.adoc[search the data] on the Models, select *Search Model* next to any Model.
 
 . Select *Exit*.
 
 . To see the objects that you just created from dbt, navigate to the *Data > Home* page.
 +
-image::dbt-integration-home-page.png[dbt integration view Worksheets and tables]
+image::dbt-integration-home-page.png[dbt integration view Models and tables]
 +
-NOTE: This process may replace existing dbt tables you imported into ThoughtSpot, but it will not replace existing Worksheets.
+NOTE: This process may replace existing dbt tables you imported into ThoughtSpot, but it will not replace existing Models.
 
-. If you select any of the tables or Worksheets you created, and then click *Joins*, you can see the joins ThoughtSpot created, based on the relationships in dbt.
+. If you select any of the tables or Models you created, and then click *Joins*, you can see the joins ThoughtSpot created, based on the relationships in dbt.
 
 ////
 [#public-api]
@@ -169,19 +169,19 @@ ThoughtSpot reads the following information from the `catalog.json` file:
 
 * Column data types
 
-=== How ThoughtSpot creates Worksheets from dbt
+=== How ThoughtSpot creates Models from dbt
 
-ThoughtSpot creates Worksheets based on the table relationships defined in a .yml schema file in the *models* directory.
+ThoughtSpot creates Models based on the table relationships defined in a .yml schema file in the *models* directory.
 
-The Worksheet creation follows these steps:
+The Model creation follows these steps:
 
 . ThoughtSpot creates logical tables based on the model files. In the following example, ThoughtSpot creates a table for d_customer, d_product, d_product_category, and so on.
 
 . ThoughtSpot creates joins between the logical tables, based on the relationships defined in the .yml schema file. In the following example, ThoughtSpot creates joins between d_product and d_product_category, d_shipping and d_customer, and so on.
 
-. ThoughtSpot creates Worksheets made up of the logical tables, based on the relationships defined in the .yml schema file.
+. ThoughtSpot creates Models made up of the logical tables, based on the relationships defined in the .yml schema file.
 
-For example, based on the following .yml schema file, ThoughtSpot creates the following Worksheets:
+For example, based on the following .yml schema file, ThoughtSpot creates the following Models:
 
 Download the yml schema file link:{attachmentsdir}/schema-example.yml[here].
 
@@ -194,20 +194,20 @@ include::partial$schema-example.adoc[]
 ====
 
 |===
-| Model name | Relationship to | Worksheet created?
+| Model name | Relationship to | Model created?
 
 |d_customer | none | No. This model file only has relationships _from_ other model files. It does not have relationships _to_ other model files.
-|d_product | d_product_category | Yes. The Worksheet consists of the 2 tables: d_product and d_product_category.
-|d_shipping | d_customer | Yes. The Worksheet consists of the 2 tables: d_shipping and d_customer.
+|d_product | d_product_category | Yes. The Model consists of the 2 tables: d_product and d_product_category.
+|d_shipping | d_customer | Yes. The Model consists of the 2 tables: d_shipping and d_customer.
 |d_product_category | none | No. This model file only has relationships _from_ other model files. It does not have relationships _to_ other model files.
-| f_inventory | d_product, d_product_category | Yes. The Worksheet consists of the 3 tables: f_inventory, d_product, and d_product_category.
-| f_order | d_customer, d_shipping, d_product, d_product_category | Yes. The Worksheet consists of the 5 tables: f_order, d_customer, d_shipping, d_product, and d_product_category.
+| f_inventory | d_product, d_product_category | Yes. The Model consists of the 3 tables: f_inventory, d_product, and d_product_category.
+| f_order | d_customer, d_shipping, d_product, d_product_category | Yes. The Model consists of the 5 tables: f_order, d_customer, d_shipping, d_product, and d_product_category.
 |===
 
 
 [#edit]
 == Editing a dbt project
-If there are any changes to the dbt models that you would like the ThoughtSpot Worksheets and tables to reflect, you must edit the dbt sync you created. This updates the existing Worksheets and tables.
+If there are any changes to the dbt models that you would like the ThoughtSpot Models and tables to reflect, you must edit the dbt sync you created. This updates the existing Models and tables.
 
 
 
@@ -217,13 +217,13 @@ To edit a dbt project/ integration, follow these steps:
 
 . Select *dbt* in the side navigation bar.
 +
-NOTE: When you edit a dbt sync, you often add columns and descriptions to your currently synced tables and worksheets. To simplify the process of editing a sync, ThoughtSpot pre-selects the folders, models, and worksheets you selected during your first sync.
+NOTE: When you edit a dbt sync, you often add columns and descriptions to your currently synced tables and Models. To simplify the process of editing a sync, ThoughtSpot pre-selects the folders, models, and Models you selected during your first sync.
 
 . In the list of dbt projects, select the empty checkbox next to your project name. If necessary, use the search bar in the upper left corner to find your project.
 
 . Select *Edit*.
 
-. Run the dbt sync again, making any changes you would like. Follow the steps in <<integrate,Integrating with dbt>>. This updates your Worksheets and tables, based on the changes in your dbt models.
+. Run the dbt sync again, making any changes you would like. Follow the steps in <<integrate,Integrating with dbt>>. This updates your Models and tables, based on the changes in your dbt models.
 +
 NOTE: You may generate an error if you have removed or renamed a column in dbt before re-syncing to ThoughtSpot. To handle this error, check your dbt models and tables to ensure every column maps correctly to the tables and models in ThoughtSpot.
 
@@ -254,9 +254,9 @@ Once selected, access will automatically be granted to the user or group. To rem
 
 * Integration with dbt is certified only for Amazon Redshift, Databricks, Google BigQuery, and Snowflake connections.
 
-* If you make changes to your dbt models in dbt, ThoughtSpot does not automatically reflect those changes. You must integrate with dbt again. This may affect changes you made to the tables and Worksheets in ThoughtSpot.
+* If you make changes to your dbt models in dbt, ThoughtSpot does not automatically reflect those changes. You must integrate with dbt again. This may affect changes you made to the tables and Models in ThoughtSpot.
 
-* When you edit a dbt project in ThoughtSpot, you can't remove table and Worksheet columns, or joins. You can only add them.
+* When you edit a dbt project in ThoughtSpot, you can't remove table and Model columns, or joins. You can only add them.
 
 * When you edit a dbt project in ThoughtSpot, you can't change the column datatype.
 
@@ -281,7 +281,7 @@ For a full list of dbt errors, see the following table:
 
 | DBT_JSON_MISMATCH_MESSAGE | "Unable to import objects into " + "ThoughtSpot, missing table in catalog:"
 
-| WORKSHEET_ERROR | "Error occurred while generating Worksheet TML's."
+| Model_ERROR | "Error occurred while generating Model TML's."
 
 | TABLE_ERROR | "Error occurred while generating Table TML's."
 
