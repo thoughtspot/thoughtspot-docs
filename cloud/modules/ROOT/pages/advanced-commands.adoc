@@ -1,11 +1,11 @@
 = Cluster-level settings
-:last_updated: 10/30/2024
+:last_updated: 8/29/2025
 :linkattrs:
 :experimental:
 :page-aliases:
 :page-layout: default-cloud
 :description: This reference identifies the commands you can use to modify search data query generation at cluster-level.
-:jira: SCAL-222443, SCAL-266780
+:jira: SCAL-222443, SCAL-266780, SCAL-240707
 
 This reference identifies the commands you can use to modify search data query generation at cluster-level. These commands must be enabled by {support-url}.
 
@@ -62,6 +62,21 @@ When `FALSE`, the resulting query is a LEFT OUTER JOIN. This is normally a much 
 NOTE: Where multiple filters are applied from both sides of the chasm trap, then ThoughtSpot will intelligently determine the join type.
 +
 link:https://community.thoughtspot.com/customers/s/article/What-is-Attribution-and-Chasm-Traps[This article^] provides further details when this setting is `FALSE`.
+
+Approximate date filtering::
+This feature was developed specifically for Google BigQuery. When enabled, the resulting query generation automatically infers date boundaries based on the search range. Query generation then adds a direct filter to the fact table and dimension tables date columns. This results in a reduction to the initial data scanned.
++
+Because this is an approximate date filter, it is designed to apply a predicate that applies a filter that returns slightly more data than the dynamic period.
++
+That means:
++
+--
+* `Last Month` will calculate the start date of the Gregorian prior month.
+
+* `Last Week` will calculate the start of the prior Gregorian week.
+--
++
+The reason for this design is that weeks, months, years, etc. do not align with Gregorian calendars. This approximate filter ensures that data is partitioned and then the actual filter is applied to ensure that the results are correct.
 
 [#row-level-security]
 === Row-level security
