@@ -1,11 +1,11 @@
 = Create Models
-:last_updated: 11/19/2024
+:last_updated: 28th Aug 2025
 :linkattrs:
 :experimental:
 :page-layout: default-cloud
 :description: Models are logical views created on top of a more complex data model, to enable business users to more easily consume data.
 :model: Model
-:jira: SCAL-158357, SCAL-194041 (9.10.5 -drag to create joins), SCAL-194038 (9.10.5 - bulk edit column properties). SCAL-189664 (remove spotapps - removed from image in step 3 of creating a model. SCAL-202208 (sort and filter in columns grid - 9.12.0.cl), SCAL-203404 (model filters limit - 9.12.0.cl), SCAL-221549 (knowledge cards - 10.4.0.cl), SCAL-225747 (models GA), SCAL-250091
+:jira: SCAL-158357, SCAL-194041 (9.10.5 -drag to create joins), SCAL-194038 (9.10.5 - bulk edit column properties). SCAL-189664 (remove spotapps - removed from image in step 3 of creating a model. SCAL-202208 (sort and filter in columns grid - 9.12.0.cl), SCAL-203404 (model filters limit - 9.12.0.cl), SCAL-221549 (knowledge cards - 10.4.0.cl), SCAL-225747 (models GA), SCAL-250091, SCAL-268921 (Table Alias in model guidelines)
 
 == Introducing Models
 
@@ -184,3 +184,21 @@ To implement role-playing dimensions with Models, do the following in the Model 
 It will appear as a new table (with the alias assigned in step 4) on the left panel in the *Columns* tab of the model. You can tell it's a role-playing dimension because the original table name appears in parentheses *()* next to the new name.
 
 CAUTION: Copies/aliases of tables that are on the "many" side of a join are not supported in {model}s.
+
+=== Guidelines for alias table in {model}s
+* The model will not be created if the alias table is linked to multiple fact tables in the same model. Such a model creation may lead to ambiguous join paths or invalid queries.
+* Shared dimension across a chasm trap is allowed, and you do not need to alias the dimension table. ThoughtSpot recognizes and manages the shared dimension automatically.
+* If you encounter the error "Alias Tables [table_name1, table_name2] are connected to multiple root tables" when saving a model or importing TML, it means the referenced alias tables are in an unsupported configuration. Alias tables are only supported for role-playing dimensions, not for bridging multiple root tables or chasm trap scenarios. You can resolve this by:
+** Deleting the alias table
+. Go to *Data Workspace*
+. Edit the model and remove the unsupported alias table.
+. Manage and remove dependent objects before deletion.
+
+** Replacing with a View when deletion is not possible
+. Create a ThoughtSpot View with equivalent columns.
+. Replace the alias table in the model with the new view.
+
+** Replicating the table in the underlying database when View is not possible.
++
+[NOTE]
+Each alias table must be replaced with its own unique view. The view should be an aggregated or logically distinct form of the alias table, not an exact replica. You cannot reuse the same view for multiple alias table replacements; each must be a separate view object in the data model, even if they are based on the same underlying table. This ensures the model remains valid and avoids unsupported configurations.
