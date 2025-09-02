@@ -1,11 +1,11 @@
 = Cluster-level settings
-:last_updated: 8/29/2025
+:last_updated: 9/2/2025
 :linkattrs:
 :experimental:
 :page-aliases:
 :page-layout: default-cloud
 :description: This reference identifies the commands you can use to modify search data query generation at cluster-level.
-:jira: SCAL-222443, SCAL-266780, SCAL-240707
+:jira: SCAL-222443, SCAL-266780, SCAL-240707, SCAL-240706
 
 This reference identifies the commands you can use to modify search data query generation at cluster-level. These commands must be enabled by {support-url}.
 
@@ -77,6 +77,12 @@ That means:
 --
 +
 The reason for this design is that weeks, months, years, etc. do not align with Gregorian calendars. This approximate filter ensures that data is partitioned and then the actual filter is applied to ensure that the results are correct.
+
+Separate Common Table Expressions for custom calendar joins::
+
+This option moves DATE DIM and Custom Calendar table joins to a separate Common Table Expression (CTE). It uses this CTE in joins against fact tables to enable partition pruning. It prevents optimizer from deferring crucial joins that would otherwise block partition pruning.
++
+This option is applicable when the data model includes a dimensional date table. That is, this CTE pattern will not be invoked if the date column is from the fact table itself. To enable this option, contact {support-url}.
 
 [#row-level-security]
 === Row-level security
