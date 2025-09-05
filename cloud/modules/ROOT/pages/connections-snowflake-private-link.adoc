@@ -1,0 +1,104 @@
+= Enabling an AWS PrivateLink between ThoughtSpot Cloud and your {connection} data warehouse
+:last_updated: 3/16/2021
+:linkattrs:
+:experimental:
+:page-layout: default-cloud
+:page-aliases: /admin/ts-cloud/private-link-snowflake.adoc
+:description: Learn how to deploy an AWS PrivateLink between your Snowflake data warehouse and the ThoughtSpot Cloud tenant.
+:connection: Snowflake
+:jira: SCAL-187049
+
+Learn how to deploy an AWS PrivateLink between your Snowflake data warehouse and the ThoughtSpot Cloud tenant.
+
+NOTE: AWS PrivateLink is only available to Enterprise edition customers.
+
+include::partial$private-link-intro.adoc[]
+
+This article details how to enable a PrivateLink for *{connection}*;
+to enable it for other data warehouses, refer to:
+
+* xref:connections-redshift-private-link.adoc[Amazon Redshift PrivateLink]
+* xref:connections-databricks-private-link.adoc[Databricks PrivateLink]
+* xref:connections-denodo-private-link.adoc[Denodo PrivateLink]
+* xref:connections-dremio-private-link.adoc[Dremio PrivateLink]
+* xref:connections-adw-private-link.adoc[Oracle PrivateLink]
+* xref:connections-postgresql-private-link.adoc[PostgreSQL PrivateLink]
+* xref:connections-hana-private-link.adoc[SAP HANA PrivateLink]
+* xref:connections-sql-server-private-link.adoc[SQL Server PrivateLink]
+* xref:connections-starburst-private-link.adoc[Starburst PrivateLink]
+* xref:connections-teradata-private-link.adoc[Teradata PrivateLink]
+
+NOTE: You can enable a maximum of five PrivateLinks in your environment.
+
+To deploy an AWS PrivateLink, you must work with {support-url} and follow the procedure in this article.
+
+[#prerequisites]
+== Prerequisites
+
+* You must have a {connection} account
+* The ThoughtSpot instance must be in the same AWS region as your {connection} account
+* You must obtain the ThoughtSpot AWS Account ID from {support-url}. This is required for step 1 of <<request-configuration,Request Snowflake PrivateLink configuration>>. For example: `999999999999`
+
+== Enable an AWS PrivateLink for {connection}
+
+To deploy an AWS PrivateLink between your {connection} data warehouse and the ThoughtSpot Cloud tenant, follow these steps.
+
+. <<request-configuration,Request {connection} PrivateLink configuration>>
+. <<exchange-information,Exchange AWS and ThoughtSpot information with ThoughtSpot Support>>
+. <<embrace,Configure Connections>>
+
+[#request-configuration]
+=== Request {connection} PrivateLink configuration
+
+. Send a support request to {connection}, asking them to configure an AWS PrivateLink.
+You must provide the following information:
++
+--
+* {connection} account URL
+* ThoughtSpot AWS Account ID.
+You obtained ThoughtSpot's AWS Account ID from {support-url} in the <<prerequisites,prerequisites>>.
+--
++
+NOTE: Snowflake support must configure the AWS PrivateLink. Snowflake's self-service PrivateLink feature does not support third-party PrivateLink integrations, including the integration with ThoughtSpot.
+
+. After {connection} completes the PrivateLink configuration on the {connection} side, run the following command in your Snowflake environment. This command retrieves the *VPC Endpoint Service Name* and *Private DNS records required for {connection} clients* that you must send to {support-url}.
++
+[source,bash]
+----
+select system$get_privatelink_config();
+----
++
+Refer to the Snowflake documentation for additional information on the specific URLs you need: https://docs.snowflake.com/en/user-guide/admin-security-privatelink.html#creating-additional-cname-records[AWS PrivateLink & Snowflake^].
+
+[#account-name]
+NOTE: For Snowflake PrivateLink connections using JDBC drivers 3.13.25 or later, Snowflake no longer supports account names containing underscores. If your account name contains an underscore, you can either make changes in your DNS or in your application to set the default value of `allowUnderscoresInHost` to `true`. For more information on how to allow this property, refer to link:https://community.snowflake.com/s/article/Behaviour-Change-Release-information-associated-with-Snowflake-JDBC-driver-version-3-13-25#:~:text=This%20change%20was%20made%20to,my_account.snowflakecomputing.com[Behaviour Change Release information associated with Snowflake JDBC driver version 3.13.25^].
+
+[#exchange-information]
+=== Exchange AWS and ThoughtSpot information with ThoughtSpot Support
+
+. Send the *account name* from the DNS records and the *Service name* to {support-url}.
+You gathered this information from {connection} in step 2 of <<request-configuration,Request {connection} PrivateLink configuration>>.
+. After ThoughtSpot Support configures the AWS PrivateLink in ThoughtSpot, ask them to send you the PrivateLink {connection} account name.
+
+[#embrace]
+=== Configure Connections
+
+xref:connections-snowflake.adoc[Configure Connections for {connection}], using the PrivateLink {connection} account name from {support-url} for the *Account name* field. For example, `xyz99999.us-west-2.privatelink`.
+
+'''
+> **Related information**
+>
+> * xref:connections-snowflake-add.adoc[Add a {connection} connection]
+> * xref:connections-snowflake-edit.adoc[Edit a {connection} connection]
+> * xref:connections-snowflake-remap.adoc[Remap a {connection} connection]
+> * xref:connections-snowflake-external-tables.adoc[Query external tables from your {connection} connection]
+> * xref:connections-snowflake-delete-table.adoc[Delete a table from a {connection} connection]
+> * xref:connections-snowflake-delete-table-dependencies.adoc[Delete a table with dependent objects]
+> * xref:connections-snowflake-delete.adoc[Delete a {connection} connection]
+> * xref:connections-snowflake-oauth.adoc[Configure OAuth]
+> * xref:connections-snowflake-azure-ad-oauth.adoc[Configure Azure AD OAuth]
+> * xref:connections-snowflake-auth0.adoc[Configure Auth0]
+> * xref:connections-snowflake-best.adoc[Best practices for {connection} connections]
+> * xref:connections-snowflake-reference.adoc[Connection reference for {connection}]
+> * xref:connections-query-tags.adoc#tag-snowflake[ThoughtSpot query tags in Snowflake]
+> * xref:connections-snowflake-passthrough.adoc[]

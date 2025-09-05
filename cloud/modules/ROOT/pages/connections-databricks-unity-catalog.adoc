@@ -1,0 +1,46 @@
+= {connection} Unity Catalog FAQs
+:last_updated: 7/30/2025
+:linkattrs:
+:page-layout: default-cloud
+:page-aliases:
+:experimental:
+:connection: Databricks
+:description: We answer frequently asked questions for Databricks Unity Catalog.
+:jira: SCAL-247627
+
+
+== What is the Databricks Unity Catalog?
+
+
+Unity Catalog is a centralized data catalog that provides access control, auditing, lineage, quality monitoring, and data discovery capabilities across Databricks workspaces.
+
+In a Unity Catalog metastore, the three-level database object hierarchy consists of catalogs that contain schemas, which in turn contain data and AI objects, like tables and models. This hierarchy is represented as a three-level namespace (catalog.schema.table-etc) when you reference tables, views, volumes, models, and functions.
+
+
+For more information, see link:https://docs.databricks.com/aws/en/database-objects/[Database objects in Databricks].
+
+
+== FAQs
+
+Is integration automatic when creating a connection to Databricks, or does it need to be configured separately?::
+The integration is automatic. When you create a connection to Databricks that uses Unity Catalog, ThoughtSpot automatically recognizes and leverages Unity Catalog metadata without requiring any special configuration on the ThoughtSpot side.
+
+
+Does ThoughtSpot inherit user permissions, RLS (Row-Level Security), and column masking from Unity Catalog?::
+ThoughtSpot respects the access controls enforced by Unity Catalog at the data platform level. When users query data through ThoughtSpot, the queries are executed using their Databricks credentials, which means Unity Catalog’s permissions, RLS policies, and column masking are enforced. However, ThoughtSpot also maintains its own object-level permissions for additional governance layers.
+
+Do we import schema, tags, and table/column descriptions from the metastore?::
+Yes, ThoughtSpot imports schema information and table/column descriptions from Unity Catalog during the initial connection setup. This includes column names, data types, and descriptions. Tag import capabilities may vary depending on the current ThoughtSpot version - please verify with your account team for specific tag support details.
+
+Does it provide full auditing and lineage of ThoughtSpot usage of data?::
+Unity Catalog captures all data access from ThoughtSpot, providing query-level auditing of which tables and columns are accessed. This appears in Unity Catalog’s audit logs. For complete lineage tracking, you’ll see ThoughtSpot as a data consumer in Unity Catalog’s lineage views. ThoughtSpot also maintains its own usage analytics for additional insights into user behavior and content performance.
+
+
+Can we leverage Unity Catalog’s query federation capabilities?::
+Yes, if Unity Catalog is configured with query federation to access external data sources, ThoughtSpot can query this federated data through the Databricks connection. From ThoughtSpot’s perspective, federated tables appear as regular tables, allowing seamless analytics across multiple data sources managed by Unity Catalog.
+
+=== Additional Considerations
+
+Schema changes in Unity Catalog may require connection refresh in ThoughtSpot to reflect updates.
+
+Performance optimization features like materialized views in Unity Catalog can improve ThoughtSpot query performance.
