@@ -25,8 +25,8 @@ The three main factors to consider in migrating Spotter coaching are:
 === Target and source environments
 
 
-Across different clusters:: A common scenario where analysts test Spotter on a Model in a development environment and, once satisfied with the training, replicate this to the production environment for business users. This applies to both Cloud and Embedded customers.
-Within the same cluster or environment:: Users often migrate training from one Model to another within the same cluster.
+Across different instances:: A common scenario where analysts test Spotter on a Model in a development environment and, once satisfied with the training, replicate this to the production environment for business users. This applies to both Cloud and Embedded customers.
+Within the same instance or environment:: Users often migrate training from one Model to another within the same cluster.
 +
 Use Cases:
 +
@@ -48,7 +48,7 @@ Typically, customers migrate training from a development Model to production to 
 From one source Model to multiple target Models:: Training across multiple Models in one cluster in one session:
 +
 --
-* Customers aim to avoid duplicating training efforts on similar Models.
+* Users aim to avoid duplicating training efforts on similar Models.
 * For instance, one company wants to train on multiple identical Models (only differing by data rows). Another company also wanted to train on the table level since most of the Models were derived from one base table.
 * In the current scenario, this can only be addressed efficiently through migration, where training is performed on one Model and then migrated to others.
 
@@ -61,16 +61,16 @@ Embedded customers often need to migrate training data to Models for each of the
 === Target Model differences
 
 
-Customers want to replicate the Spotter experience from one Model to another. However, depending upon the difference between the two Models, there could be challenges in migration or replicating the experience.
+Users want to replicate the Spotter experience from one Model to another. However, depending upon the difference between the two Models, there could be challenges in migration or replicating the experience.
 
 
 Identical Model::
 Target Models are direct copies of the original Model, sharing the same data columns. +
-Migration in this case ensures consistency and allows for seamless replication of the training without any adjustments.
+Migration ensures consistency and allows for seamless replication of the training without any adjustments.
 
 
 Slightly different Model::
-Target Models may differ from the source Model:
+Target Models may differ from the source Model in the following ways:
 +
 --
 * Contain additional or fewer columns.
@@ -78,7 +78,7 @@ Target Models may differ from the source Model:
 --
 +
 While the underlying table joins might stay consistent, Embedded customers often adjust Models according to their clients' data.
-Adaptations are necessary to maintain the relevance and effectiveness of training during migration.
+You need to adapt the data to maintain the relevance and effectiveness of training during migration.
 
 
 
@@ -103,7 +103,7 @@ image::hover-tml.png[Hover over the TML section]
 . If you select *Export TML*:
 
 
-* Select *Export Model* and *Export associated Spotter feedback* to download the Model TML file and feedback TML file. Click *Save*.
+* Select *Export Model* and *Export associated Spotter feedback* to download the Model TML file and coaching TML file. Click *Save*.
 * Alternatively, select *Export Model & associated objects (tables etc.)* and *Export associated Spotter feedback* to download the TML files for the Model, all upstream objects, and the coaching. Click *Save*.
 +
 [.bordered]
@@ -154,7 +154,7 @@ You can export coaching from the Spotter coaching pages in the Data workspace. T
 == Export coaching using ThoughtSpot Embedded APIs
 
 
-You can download coaching TMLs from ThoughtSpot Embedded APIs as long as you are using v2. The specific API is `/api/rest/2.0/metadata/tml/export`.
+You can download coaching TML files from ThoughtSpot Embedded APIs as long as you are using v2. The specific API is `/api/rest/2.0/metadata/tml/export`.
 
 
 To export only the TML of coaching associated with an object, set the GUID of the object as `identifier` and set the `type` as `FEEDBACK` in the `metadata` array.
@@ -308,10 +308,10 @@ NOTE: We do not currently support importing a new Model and its coaching in the 
 * Check the sanity of the TML file, making sure you don’t have missing fields, invalid entries for fields like `type`, `access`, `chart_type`, or `display_mode`, invalid `search_tokens` for the Model, or invalid formula expressions for the Model that coaching entries are being targeted for.
 
 
-* Check for similar entries within the file: No two coaching entries can have the same 'feedback_phrase'. This can occur when uploading coaching entries on the user level, which can have the same coaching phrase. The system will throw an error when uploading multiple such entries. Users have the option to edit the coaching TML to avoid such scenarios.
+* Check for similar entries within the file: No two coaching entries can have the same 'feedback_phrase'. This can occur when uploading coaching entries on the user level, which can have the same coaching phrase. The system will throw an error when uploading multiple such entries. You have the option to edit the coaching TML to avoid such scenarios.
 
 
-* Check for conflicts with existing entries: The coaching entry should not have the same 'feedback_phrase' as a coaching present already on the target Model. It will throw a warning and will override the existing coaching entry if import is still done. Users have the option to edit the coaching TML or modify the existing entries to avoid the conflict.
+* Check for conflicts with existing entries: The coaching entry should not have the same 'feedback_phrase' as a coaching present already on the target Model. It will throw a warning and will override the existing coaching entry if import is still completed. You have the option to edit the coaching TML or modify the existing entries to avoid the conflict.
 
 
 * Do not modify the values for the following fields: `display_mode`, `chart_type`, and `axis_config`. Changes to these fields are not validated by the system during upload and may lead to unintended behavior.

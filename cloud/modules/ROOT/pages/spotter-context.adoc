@@ -7,12 +7,12 @@
 :description: Use natural language context in Spotter to clarify how coaching is applied.
 :jira: SCAL-264111, SCAL-264626
 
-The natural language context feature is a powerful tool designed to enhance the coaching of the Spotter system. It allows you to add clear, natural language explanations to reference questions. This additional context helps the system understand the intent and logic behind a specific answer, reducing ambiguity and improving Spotter’s ability to generalize the learning from a reference question to similar future queries.
+Use the natural language context feature to add clear, natural language explanations to reference questions. This additional context helps Spotter understand the intent and logic behind a specific answer, reducing ambiguity and improving Spotter’s ability to generalize the learning from a reference question to similar future queries.
 
 NOTE: Context in Spotter is in beta and off by default. To enable this feature, contact {support-url}.
 
 == How to use natural language context
-Here is a step-by-step guide to using the natural language context feature:
+
 
 To add context from the Spotter reference question page:
 
@@ -40,7 +40,7 @@ image::add-context.png[Add context.]
 [.bordered]
 image::context-added.png[Add context text box with "When I ask for 'most active users,' always show me the top 10 users by their conversation count. For identification, also include the User Name and User ID columns in the answer" entered.]
 
-. *Save and test*: Save the coaching example with the added natural language context. To verify that the system has learned correctly, ask a similar question, such as "Which users have actively engaged with the product last month?". The system should now apply the logic you provided to deliver the correct answer.
+. *Save and test*: Save the coaching example with the added natural language context. To verify that the system has learned correctly, ask a similar question, such as "Which users have actively engaged with the product last month?" The system should now apply the logic you provided to deliver the correct answer.
 
 To add context from within a conversation:
 
@@ -90,18 +90,23 @@ Natural language context is particularly effective in the following scenarios:
 
 Clarifying reference questions:: It makes the logic behind a reference question explicit, which helps the system better understand and apply the context to other relevant situations.
 Defining implicit logic (data nuances):: It is highly effective for teaching the model how to handle logic that isn't explicitly stated in a query.
-Example;; Imagine a retail data model listing user transactions. These transactions have different statuses like 'Placed', 'Shipped', 'Fulfilled', and 'Returned'. A user might ask, "show me our sales for last month." A simple sum of sales might incorrectly include returned or unshipped orders. The final expected response is `[sales] [fulfillment date=last month][ Order_Status = 'Fulfilled']`. The implicit business rule is that "sales" should only be calculated on completed/fulfilled transactions. You can correct the answer by adding a filter `Order_Status = 'Fulfilled'`. In the natural language context box, you would explain this rule: "When calculating sales or revenue, only include orders with a status of 'Fulfilled’ and refer to ‘Fulfillment date’ unless the user specifically requests a different status (for example, 'Shipped').”
+Example;; Imagine a retail data model listing user transactions. These transactions have different statuses like 'Placed', 'Shipped', 'Fulfilled', and 'Returned'. A user might ask, "show me our sales for last month."
++
+A simple sum of sales might incorrectly include returned or unshipped orders. The final expected response is `[sales] [fulfillment date=last month][ Order_Status = 'Fulfilled']`. The implicit business rule is that "sales" should only be calculated on completed/fulfilled transactions.
++
+You can correct the answer by adding a filter `Order_Status = 'Fulfilled'`. In the natural language context box, you would explain this rule: "When calculating sales or revenue, only include orders with a status of 'Fulfilled’ and refer to ‘Fulfillment date’ unless the user specifically requests a different status (for example, 'Shipped').”
 Resolving ambiguity:: Natural language context can help the system distinguish between similar-sounding terms or resolve ambiguity in filter values and column selections.
 Handling complex logic (business concepts):: This feature excels at defining complex business concepts and aggregations that have multiple conditions.
 Example;; Imagine your business defines a "High-Value Customer" as someone who has spent over $1,000, made a purchase in the last 90 days, AND has a return rate below 5%. Asking Spotter for "high-value customers" would likely fail. Using natural language context, you can build the correct answer with all three conditions and then explain the concept:
++
 "A 'High-Value Customer' must meet three criteria: lifetime spend over $1000, at least one purchase in the last 90 days, and a return rate below 5%. Apply all three conditions when this concept is mentioned."
 
 == Best practices and key considerations
 
-* *Maintain coaching coherency*: The information provided in the natural language context should not conflict with other coaching examples, standalone instructions, or default system behaviors. Contradictory information can confuse Spotter and degrade performance.
+* *Maintain coherency*: The information provided in the natural language context should not conflict with other coaching examples, standalone instructions, or default system behaviors. Contradictory information can confuse Spotter and degrade performance.
 * *Ensure consistency across examples*: If you add context to one reference question (for example, "always apply this filter for active clusters"), you should provide the same context in other similar reference questions. Providing conflicting or incomplete context across similar examples may confuse the system, as it may not know how much importance to give the context if it only appears inconsistently.
 * *Be clear and unambiguous*: The system requires clear instructions to perform predictably. The way users write context can vary, leading to different interpretations, so clarity is essential.
-* *Iterate and refine*: Coaching is an iterative process. It's recommended to start with a small set of coaching examples and gradually refine them based on the system's performance to avoid overfitting.
+* *Iterate and refine*: Coaching is an iterative process. We recommend starting with a small set of coaching examples and gradually refining them based on the system's performance to avoid overcoaching.
 
 == Known Limitations
 
