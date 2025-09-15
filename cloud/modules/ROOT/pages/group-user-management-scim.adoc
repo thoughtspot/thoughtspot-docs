@@ -1,0 +1,55 @@
+= Manage users and groups with SCIM
+:last_updated: 5/20/2025
+:linkattrs:
+:experimental:
+:page-layout: default-cloud-beta
+:description: ThoughtSpot works with SCIM to streamline user group management.
+
+System cross domain Identity Management (SCIM) allows you to synchronise user management between your IdP and ThoughtSpot. SCIM automates identity management and user provisioning across different identity management systems so that you no longer need to manage users, groups and privileges in multiple platforms. If you use an IdP like Okta, Azure, or Active Directory, with SCIM you can provision users to groups and Orgs and ensure they remain in sync with changes made in the IdP. SCIM provisioning is per Org, so that you can ensure that users are provisioned to a particular group in a particular Org.
+
+ThoughtSpot supports the following in beta:
+
+* Automatic provisioning of users with their corresponding groups and Orgs when the users authenticate via SSO (SAML).
+* Automatic updates of user attributes in ThoughtSpot when they are updated in the IdP.
+* When you delete a user from IdP, they are automatically deleted from ThoughtSpot.
+
+== Configure SCIM
+To configure SCIM on your cluster and automate updates between your IdP and ThoughtSpot, complete the following:
+
+* Provision capabilities in ThoughtSpot
+* Connect your IdP
+
+=== Provisioning capabilities in ThoughtSpot
+
+. Sign in to ThoughtSpot and navigate to the *Admin* portal.
+. Select *All Orgs*.
+. Under *Authentication* select *Provisioning*.
++
+NOTE: Before you configure, ensure that your IdP supports SCIM 2.0 for a seamless integration with ThoughtSpot.
+
+. Enter the *SCIM Base URL*. This URL identifies the SCIM API endpoint your Identity provider communicates with for every user management and user provisioning change.
+. Click *Generate Token* to generate and copy the authentication toke. This token is used to authenticate the SCIM service (ThoughtSpot application) in your IdP.
++
+[.bordered]
+image::scim.png[SCIM TS screen]
+
+
+=== Connecting to your IDP
+
+. Confirm if your IdP Supports SCIM.
+. Navigate to the provisioning page in your IdP.
+. Use the token you generated and copied in ThoughtSpot to set up the authentication between your IdP and ThoughtSpot.
+. You can then select which user management actions are synced with ThoughtSpot.
++
+NOTE: ThoughtSpot supports create, read, update, and delete of users and groups, and provisioning users to groups within Orgs.
+
+=== Testing your configuration
+
+. Once the configuration and authentication are complete, you can test the configuration by assigning a new user to your ThoughtSpot application in the IdP.
+. Navigate to ThoughtSpot cluster and refresh the page.
+. You should see the newly created user in the user management page in your cluster.
+
+Any of the configured changes done on IdP are reflected on your thoughtSpot cluster.
+
+NOTE: Low volume changes made in IdP may be reflected immediately in ThoughtSpot. Larger volume changes are usually reflected within 20 to 40 minutes.
+
