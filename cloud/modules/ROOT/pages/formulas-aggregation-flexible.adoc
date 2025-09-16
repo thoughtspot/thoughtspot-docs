@@ -5,7 +5,7 @@
 :page-layout: default-cloud
 :page-aliases: /complex-search/aggregation-flexible.adoc
 :description: Use the group_aggregate function in ThoughtSpot to aggregate measures at different granularities than the dimensions used in the search columns.
-:jira: SCAL-225559, SCAL-232103
+:jira: SCAL-225559, SCAL-232103, SCAL-266970
 
 == How aggregation formulas work
 
@@ -49,6 +49,19 @@ To use the groups and filters, specify them using the `query_groups` and `query_
 You can also add or exclude groups or filters.
 
 include::partial$flexible-aggregation-best-practices.adoc[]
+
+[NOTE]
+====
+When creating ratios that leverage group_aggregate functions, the outer aggregation must be explicitly defined.
+
+----
+Legacy formula: group_aggregate(sum(sales),{store},query_filters()) / group_aggregate(sum(sales),{Region},query_filters())
+----
+
+----
+New formula: sum(group_aggregate(sum(sales),{store},query_filters())) / sum(group_aggregate(sum(sales),{Region},query_filters()))
+----
+====
 
 == Examples
 
