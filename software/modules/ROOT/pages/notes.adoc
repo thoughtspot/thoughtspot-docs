@@ -1,6 +1,6 @@
 = 10.10.0.sw Release Notes
 :experimental:
-:last_updated: 8/11/25
+:last_updated: 9/18/25
 :linkattrs:
 :page-aliases: /release/notes.adoc
 :description: These release notes include information about new and enhanced features.
@@ -27,45 +27,116 @@ To see our feature deprecation plans, please see xref:deprecation.adoc[].
 [#new-10-10-0-cu1]
 == 10.10.0.sw New Features and Functionality
 
-// Writer – SCALs (epic and doc).
-TBD::
-TBD
-+
-For more information, see
-TBD
-
 [#analyst-10-10-0-sw]
 === For the Analyst
 
 // Writer – SCALs (epic and doc).
-TBD::
-TBD
-For more information, see
-TBD.
 
 [#business-user-10-10-0-sw]
 === For the Business User
 
-TBD::
-// Writer – SCALs (epic and doc).
-TBD.
-For more information, see TBD.
+[#10-10-0-sw-byoc]
+Custom charts::
+
+Custom charts are now available to all users and on by default. Custom charts allow you to use charts created outside of ThoughtSpot, including from third-party chart libraries. For more information, see xref:chart-custom.adoc[Custom charts].
+
+// Mark. jira: SCAL-219562. docs jira: SCAL-236450
+
+Improvements to Answers and Liveboards in the new navigation and homepage experience::
+In this release, we provide new options for sorting and filtering Answers and Liveboards, as well as the option to export them to TML. These options are available in the home page, as well as the Liveboards and Answers pages of the Insights app in the new navigation and homepage experience. The options include the following:
+
+- Sorting Answer and Liveboard lists by "last modified"
+- Filtering Liveboards and Answers by *All* or *Yours*
+- Exporting selected Answers and Liveboards to TML
+
+To confirm you are using the new navigation and homepage, go to your user profile and make sure Navigation and Homepage is set to *New experience*. For more information, see xref:thoughtspot-homepage.adoc[Home page].
+
+// Mark. jira: SCAL-227925. docs jira: SCAL-238657
+
+Blended axes in pivot table charts::
+In this release, we introduce a new way of adding multiple measures to pivot table charts called blended axes. With blended axes, you can group measures and control them through a system-defined chip called *Values* in the chart configuration settings. This chip acts like an attribute, with the different measures as its unique values. You can also place measures in rows of pivot tables instead of columns. This makes it possible to have more combinations and configurations of charts, including slicing the color for different measures, comparing multiple measures together, and more customizable pivot configurations.
+
+For more information, see
+xref:chart-pivot-table.adoc#blended-axes-pivot[Blended axes in a pivot table].
+
+// Mark – jira: SCAL-239213. docs jira: SCAL-248223
+// PM: Manan
+
+Parameters in column names in charts and tables::
+You can now add a parameter as a variable in the x and y-axis labels and column names of an Answer. When you select a different parameter value in the Answer, previously only the data changed. Now contextual information (such as axis name, column header, and legends) also updates to reflect parameter selected. Any place a parameter is used in Liveboards or Answers automatically displays the current information associated with the selected parameter value. For example, if you have a parameter which contains three possible values (Price, Shipping Cost, and Quantity), when you select Price, the information about the price of items is displayed. When you select Shipping Cost, the information updates to show shipping-related information, and so on.
+
+For more information, see xref:charts.adoc#parameters[Parameters in axis and column names of charts and tables].
+
+// Mark. jira: SCAL-224576. docs jira: SCAL-240479
+// PM: Vaibhav
+
+Iterative change analysis enhancements::
+The following new features are available in iterative change analysis:
+
+- Undo, redo and reset functionality.
+- Header information now displays the source and Answer name for easy reference.
+- Answer description and layout have been redesigned to improve readability and engagement.
+- Attribute value suggestions to encourage more effective iterative analysis.
+- Updates to the visual design to improve usability.
+
+For more information, see xref:spotiq-change.adoc#iterative[Iterative change analysis].
+
+// Mark. jiras: SCAL-221862. docs jira: SCAL-248276
+// PM: Rahul PJP.
+
+Manage tags for Answers and Liveboards::
+
+You can now manage all your Answer and Liveboard tags from one convenient window. Just click the *Manage tags* button at the top of your list of Liveboards or Answers, then create, edit, and delete tags. To delete and edit tags you must have administrator privileges or the *can manage tags* role if RBAC is enabled. For more information, see xref:tags.adoc[Use tags to organize].
+
+// Mark. jira: SCAL-216879. docs jira: SCAL-223905
+// PM: Mohil.
 
 [#data-engineer-10-10-0-sw]
 === For the Data Engineer
 
-// Writer – SCALs (epic and doc).
+Models::
+Models are now available to all customers and enabled by default. Worksheets are now deprecated and will be removed in a future release. Existing Worksheets continue to be available and editable, but Worksheet creation is disabled by default. To enable Worksheet creation, you must contact your ThoughtSpot administrator. You can migrate an individual Worksheet to a Model. Bulk migration of Worksheets to Models will be available in the 10.5.0.cl release. For more information, see xref:models.adoc[Models].
 
-TBD::
-TBD. For more information, see TBD.
+// Mark. jira: SCAL-217598. docs jira: SCAL-225747
+// PM: Samridh.
+
+Model knowledge cards::
+Model knowledge cards are now available to all users and on by default. With knowledge cards, you can now see more detail about tables and columns before you add them to a Model. To view the knowledge card, click the knowledge card button image:knowledge-card-button.png[knowledge card button,width="30"], and then click the table or column. For more information, see xref:models.adoc#knowledge-cards[Knowledge cards].
+
+// Mark. jira: SCAL-224609. docs jira: SCAL-248456
+// PM: Samridh
+
+Improved error messaging in Data model editor::
+The Data model editor has enhanced error messaging to help you understand and fix errors. Global errors, like a session expiring or an error when saving changes, are now displayed in a pop-up window. Local errors, associated with a specific tab, display a red dot on the tab and a banner under the tab after it is selected.
+
+// Mark. jira: SCAL-194821. docs jira: SCAL-238599
+// PM: Samridh.
+
+New security log events for data modeling::
+In this release, we've added new security log events for creating, updating, and deleting the following:
++
+- Tables
+- Imported tables
+- SQL views
+- Worksheets
++
+You can access security logs from ThoughtSpot by pushing the logs to your SIEM server, or by pulling the logs using the Audit Logs API. For more information, see xref:audit-logs.adoc[Collect security logs].
+
+
+// Mark. jira: SCAL-226582. docs jira: SCAL-238600
+// PM: Samridh.
 
 [#it-ops-engineer-10-1-0-sw]
 === For the IT Ops Engineer
 
 // Writer – SCALs (epic and doc).
 
-TBD::
-TBD. For more information, see TBD.
+Updated Early Access features page for administrators::
+
+The Early Access features page for administrators has been redesigned to allow an administrator to select multiple early access features and enable them all at the same time. For more information, see xref:early-access-enable.adoc[Early access features].
+
+// Mark. jira: SCAL-230258. docs jira: SCAL-242844
+// PM: Saurabh Pandey.
 
 [#developer-10-1-0-sw]
 === For the Developer
