@@ -2,23 +2,26 @@
 :last_updated: 10/08/2024
 :linkattrs:
 :experimental:
-:page-partial:
+:page-layout: default-cloud
 :page-aliases: /admin/data-modeling/set-format-pattern-numbers.adoc
 :description: Learn how to set key formats for column values.
 :jira: SCAL-204199
 
-Learn how to set key formats for column values.  You can set number, date, and currency display formats.
-
+You can set number, date, and currency display formats.
 These formats define how these value types display in tables and charts.
 
-NOTE: ThoughtSpot supports number, currency, and percent formatting, at the data source level and at the answer level. The `format pattern` option combines number and percent formatting. You can override data source (“custom” in the UI) formatting at the answer level. In source level/ custom formatting, you can only define the format pattern (number and percent formatting) or currency option. If you set them both, the format pattern overrides your currency formatting.
+NOTE: ThoughtSpot supports number, currency, and percent formatting, at the data source level and at the Answer level.
+The `format pattern` option combines number and percent formatting.
+You can override data source ("`custom`" in the UI) formatting at the Answer level.
+In source level/ custom formatting, you can only define the format pattern (number and percent formatting) or currency option.
+If you set them both, the format pattern overrides your currency formatting.
 
-[#number-formats]
+[#number_formats]
 == Number formats
 
 You can set a format for how numbers are displayed in tables and charts.
 For example, you can display numbers with a different number of digits after the decimal point, based on the data modeling setting *Format Pattern*.
-You can use any of the supported number formats for delimiters and number of digits to show using http://docs.oracle.com/javase/7/docs/api/java/text/DecimalFormat.html[Java Decimal Notation^].
+You can use any of the supported number formats for delimiters and number of digits to show using http://docs.oracle.com/javase/7/docs/api/java/text/DecimalFormat.html[Java Decimal Notation].
 Currency symbols are not supported.
 
 The system has default values which are:
@@ -84,13 +87,30 @@ NOTE: If you are formatting percentages, you cannot have a space before the perc
 
 === Profile-based number formatting
 
-Number formatting is set by default based on your ThoughtSpot profile's *Preferred locale* setting.
+Number formatting is set by default based on your ThoughtSpot profile's *System language* setting.
 You can set this value to accommodate your geographic locations.
 
-image::profile-locale.png[Change your preferred language in the profile]
+image::profile-locale.png[Set your system language from the profile]
 
 For example, if you are using ThoughtSpot in the US, the number formatting should look like this: `xxx,xxx.xx`.
 And in Europe, it should look like this: `xxx.xxx,xx`.
+[#num-format-attr]
+.Number formatting on attributes [.badge.badge-beta-whats-new]#Beta#
+****
+ThoughtSpot now includes enhanced number formatting controls for measures that are marked as attributes in the data source. Set the number format to *Number*, *Currency*, or *Percentage* to ensure that measures marked as attributes are formatted with the appropriate number format.
+
+. Click *Edit chart configuration*.
+. Select a column to edit the column properties.
+. Under *Number format*, select the appropriate number format from the *Category* drop down menu.
++
+[bordered]
+image:number-format.png[Number format menu]
+
+To enable this feature, contact {support-url}.
+****
+
+
+
 
 [#date]
 == Date formats
@@ -101,19 +121,23 @@ These are some examples of formats you can use:
 
 include::partial$data-modeling-strings.adoc[]
 
-You can change the date format used to display a column's values xref:model-data-ui.adoc[for a single table or worksheet] or, by editing the data model, for the xref:data-modeling-edit.adoc[entire ThoughtSpot instance]. To edit the data model file, you must have administrative privileges. To change the date format, follow these steps:
+You can change the date format used to display a column's values xref:model-data-ui.adoc[for a single table or Model] or, by editing the data model, for xref:data-modeling-edit.adoc[the entire ThoughtSpot instance].
+To edit the data model file, you must have administrative privileges.
+To change the date format, follow these steps:
 
-. Decide if the change is for a specific table or worksheet, or for the entire instance.
+. Decide if the change is for a specific table or Model, or for the entire instance.
 . Find the *Format Pattern* for the column.
 +
-This is either a column in a single table or worksheet, or a column in the data modeling file.
+This is either a column in a single table or Model or a column in the data modeling file.
 
 . In the column, enter the format you want to use.
 . Save your changes.
 +
 If you are using a data-modeling file you must upload the new file to your installation.
 
-NOTE: You can see this custom date formatting when you use the `date detailed` keyword. Other date buckets, such as `monthly` or `weekly`, use the standard format. For daily dates, ThoughtSpot uses each user's locale to determine whether to display `mm/dd/yyyy` or `dd/mm/yyyy`.
+NOTE: You can see this custom date formatting when you use the `date detailed` keyword.
+Other date buckets, such as `monthly` or `weekly`, use the standard format.
+For daily dates, ThoughtSpot uses each user's locale to determine whether to display `mm/dd/yyyy` or `dd/mm/yyyy`.
 
 [#set-currency-type]
 == Set currency type
@@ -128,24 +152,31 @@ Currency specific symbols are available in the non-embedded use case as well, bu
 All users are treated as if they are in `en-US` locale unless they are in embed mode and their browser configuration tells ThoughtSpot that they are in some other locale.
 For example, `100 Polish Zloty` appears as `100zł` to a user in Poland, but without localization enabled, it appears as `PLN 100`.
 
-This subtle difference can be seen when you use the REST API.
+NOTE: ThoughtSpot now supports whole number formatting for Japanese Yen (JPY) currency. This feature is in beta and off by default. To enable it, contact {support-url}.
 
+This subtle difference can be seen when you use the REST API.
+See the https://developers.thoughtspot.com/docs/?pageid=rest-apis[Developer documentation^] for more information on the API.
 
 . Find the *Currency Type* for the column whose display format you want to change.
-. Select it to open the *Specify Currency Type* modal.
+. Select it to open the *Specify Currency Type* menu.
 +
-image::specify_currency_type.png[Specify Currency Type]
+image::specify_currency_type.png[Specify the currency type]
 
 . Select one of the following ways you would like to change the format.
 +
-Infer From Browser:: Your currency data is modeled based on the locale of your browser setting.
+|===
+| Option | Description
 
-From a column:: Your currency data will be modeled upon the existing currency information in the selected column.
-+
+| *Infer From Browser*
+| Your currency data will be modeled upon the locale of your browser setting.
+
+| *From a column*
+| Your currency data will be modeled upon the existing currency information in the selected column.
 This option is disabled if there is no `VARCHAR` column to choose from.
 
-Specify ISO Code:: Your currency data will be modeled upon your selection from the available currency code choices.
-
+| *Specify ISO Code*
+| Your currency data will be modeled upon your selection from the available currency code choices.
+|===
 
 . Select *Ok* to save your changes.
 
@@ -157,7 +188,8 @@ If you use the *From a column* setup to specify the currency format, ThoughtSpot
 
 * In charts, the numbers in axes, data labels, and tooltips do not append the currency symbol. The currency symbol or ISO code is appended in the table view.
 
+
 '''
 > **Related information**
 >
-> * xref:data-modeling.adoc[]
+> * xref:data-modeling.adoc[Model the data for searching]

@@ -1,30 +1,35 @@
 = How to view a data schema
-:last_updated: 11/19/2020
-:experimental:
+:last_updated: 05/5/2025
 :linkattrs:
-:page-partial:
+:experimental:
+:page-layout: default-cloud
 :page-aliases: /admin/loading/schema-viewer.adoc
-:description: Use the schema viewer to see tables and worksheets and their relationships.
-
-Use the schema viewer to see tables and worksheets and their relationships.
-
+:description: Use the schema viewer to see tables and Models and their relationships.
+:jira: SCAL-253010
 
 ThoughtSpot has a *Schema Viewer* though which you can examine the database schema.
 It is interactive and configurable, so you can see the level of detail that is relevant to your work.
 
+You use the connection picker drop-down or search to select your connection in the *Schema Viewer*.
+
+NOTE: You can no longer view objects across all connections. You must filter by a specific connection.
+
 You must have *Admin* privileges to use the *Schema Viewer*.
 
-== Accessing the schema viewer for all objects
+== Accessing the Schema Viewer for all objects
 
 . Select the *Data* tab in the top menu.
-. Select *Utilities* in the left navigation bar.
+
+. Select *Utilities* from the side navigation bar.
+
 . Select *Open schema viewer*.
 
 . When the schema appears, you can see that you can control the visible part of the schema.
 +
-image::schema-viewer-new.png[Schema viewer]
+[.bordered]
+image::schema_viewer.png[Schema viewer. There is a 1 next to the [All | Yours] option. There is a 2 next to the [All types | Models | Tables | Views] option.]
 +
-[cols="5%,95%"]
+[cols="10%,90%"]
 |===
 | Legend | Action
 
@@ -32,37 +37,37 @@ image::schema-viewer-new.png[Schema viewer]
 | See either _All_ (Default), or _Yours_.
 
 | 2.
-| See either _All types_ (Default), _Worksheets_, _Tables_, or _Views_.
+| See either _All types_ (Default), _Models_, _Tables_, or _Views_.
+
 |===
 
-. The list of tables, worksheets, and imported data on the left changes as you select the various filters.
+. The list of tables and Models on the left changes as you select the various filters.
 The schema view focus changes in tandem.
-. To center the view panel on a specific table, worksheet, or view, select that object.
+. To center the view panel on a specific table, Model, or view, select that object.
 +
 You can also drag the objects around in the viewer to position them better.
 
-== Accessing the schema viewer for a single worksheet, table, or view
+== Accessing Schema Viewer for a single Model, table, or view
 
-You can now see the schema for each object for tables, worksheets, or views.
+You can now see the schema for each object for tables, Models, or views.
 
 . Select the *Data* tab in the top menu.
 
 . From the list of objects, select one.
-Here, we selected the worksheet _West Region Sales_.
-. At the top of the worksheet, select the *Joins* tab.
+Here, we selected the Model _Dunder Mifflin Sales_.
+. At the top of the Model, select the *Joins* tab.
+
+. The join information and the schema for the Model appear.
 +
-image::select-worksheet-schema.png[Select the joins tab]
+[.bordered]
+image::model-join-schema.png[Join and schema view for a single object]
 
-. The join information and the schema for the worksheet appear.
-+
-image::worksheet-join-schema.png[View the Joins information and the worksheet schema]
+== Why use the Schema Viewer
 
-== Why use the schema viewer
-
-You can use the schema viewer to discover the following information:
+You can use the Schema Viewer to discover the following information:
 
 * What is the relationship between two tables?
-* What tables make up this worksheet, and how are they joined?
+* What tables make up this Model, and how are they joined?
 
 The schema viewer shows joins between tables, join directionality, and join type.
 
@@ -70,45 +75,48 @@ The schema viewer shows joins between tables, join directionality, and join type
 ()
 (whether they are Foreign Key to Primary Key, relationship joins, or joins
 defined by users through the web interface). Use the **Table** list to find a
-specific table or worksheet.
+specific table or Model.
 ////
 
-== How the schema viewer shows joins
+== How the Schema Viewer shows joins
 
-You can use the schema viewer to review your schema and ensure that it was modeled using best practices.
+You can use the Schema Viewer to review your schema and ensure that it was modeled using best practices.
 For example, joins appear in different colors to distinguish their type:
 
-* Generic relationships are in *red*
-* Primary key/ foreign key joins are in *green*
+* Red is used for generic relationships
+* Green is used for primary key/foreign key joins
 
-When viewing a worksheet, you can also see what joins connect the tables: the inner, left outer, right outer, or full outer joins.
+When viewing a Model, you can also see what joins connect the tables: the inner, left outer, right outer, or full outer joins
 
-NOTE: Defining a generic relationship in the UI rather than using a primary key/ foreign key join through TQL has no impact on performance.
-However, when creating relationships in the UI, you must ensure that you create it in the right direction: many to one.
-To create many-to-many joins, or to create joins using >, <, >=, or \<=, use TQL.
+A good rule to follow is "Keep it Green".
+This means that you can get better results from PK/FK joins rather than from using generic relationships.
+You should only use generic relationships when the tables being joined have a many-to-many rather than a PK/FK structure.
+If you find tables that have been joined using a generic relationship, but could have used a PK/FK join, you should drop the relationship and create a PK/FK join instead.
 
-== Worksheet view
+== Model view
 
-Worksheets are often based on more than one table.
-The worksheet schema will show schemas for the tables behind the worksheet, as well as the joins between tables _that were created as a part of the worksheet_.
+Models are often based on more than one table.
+The Model schema will show schemas for the tables behind the Model, as well as the joins between tables _that were created as a part of the Model_.
 
-Select a worksheet to see it in the Schema Viewer.
-If the schema view is not showing the schema behind the worksheet, double-click the tab on the upper right of the worksheet object.
+Select a Model, to see it in the Schema Viewer.
+If the schema view is not showing the schema behind the Model, click *View column*.
 
-The worksheet view shows the following information:
+[.bordered]
+image::model_viewer_schema.png[Schema viewer for a specific object]
 
-* All tables in the worksheet, and the relationships between these tables.
-* Source columns for all columns of a worksheet.
+////
+The Model view shows the following information:
+
+* All tables in the Model, and the relationships between these tables.
+* Source columns for all columns of a Model.
 * Keys and definitions for each relationship, as well as join paths and types.
 * Columns that are derived from formulas.
-* Correct join paths for newly created chasm trap worksheets.
+* Correct join paths for newly created chasm trap Models.
 
-image::worksheet_viewer.png[Worksheet schema viewer]
-
+image::worksheet_viewer.png[Model schema view]
+////
 '''
 > **Related information**
 >
-> * xref:join-add.adoc[Worksheet joins]
-> * xref:join-worksheet-edit.adoc[Modify joins within a worksheet]
-> * xref:schema-change.adoc[Change the schema using TQL]
-> * xref:constraints.adoc[Constraints]
+> * xref:join-add.adoc[Model joins]
+> * xref:join-worksheet-edit.adoc[Modify joins within a Model]
