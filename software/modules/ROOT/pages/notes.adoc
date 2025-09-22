@@ -1,6 +1,6 @@
 = 10.10.0.sw Release Notes
 :experimental:
-:last_updated: 9/18/25
+:last_updated: 9/22/25
 :linkattrs:
 :page-aliases: /release/notes.adoc
 :description: These release notes include information about new and enhanced features.
@@ -39,6 +39,28 @@ Custom comparison point for KPI charts::
 Custom comparison points for KPI charts are now on by default and available to all users. Previously, time-series KPI charts had limited options when comparing to past periods. For example, a weekly KPI could be compared against the previous week, the previous month's same week, the previous quarter's same week, or the previous year's same week. Now, you can set a custom point in data against which ThoughtSpot compares the most recent data point, any number of weeks ago. This feature is applicable to all KPIs including time keywords like weekly, monthly, or quarterly. Your chosen comparison point persists for all viewers of the KPI.
 +
 For more information, see xref:chart-kpi.adoc#kpi-custom-comparison[KPI charts].
+
+
+Advanced conditional formatting::
+Advanced conditional formatting is now available to all users and on by default.
+In addition to using conditional formatting to visually highlight a threshold in a measure (for example, `sales > 10000`), you can now use conditional formatting to compare a column's measures to another column.
+For example, if you search for `sales this year` compared to `sales last year`, you can highlight where sales this year were less than last year. You can set multiple conditional formatting rules to a single table.
++
+For more information, see xref:search-conditional-formatting.adoc#advanced-conditional-formatting[Advanced conditional formatting].
+// Mary. jira: SCAL-194972. docs jira: SCAL-236113
+// PM: Manan, Vaibhav
+
+Date column filter window constraint [.badge.badge-beta-relnotes]#Beta#::
+You can now define mandatory date column filters that must be used when running a query. An administrator can define this to prevent users from executing queries without a date range, which could have both performance and cost implications on the underlying data platform. To enable this feature, contact {support-url}.
+// Mary. jira: SCAL-210167. docs jira: SCAL-220585
+// PM: Damian
+
+
+ThoughtSpot introduces additional controls for date bucket intervals in date columns [.badge.badge-beta-relnotes]#Beta#::
+
+You can now disable date intervals that are shorter than daily for date columns. That is, you can remove reference to seconds, minutes, hours. To enable this feature, contact {support-url}.
+// Mary. jira: SCAL-210168. docs jira: SCAL-220583
+// PM: Damian
 
 
 
@@ -186,6 +208,48 @@ Portuguese (Brazil) keywords::
 
 We have updated the Portuguese date keyword synonyms.
 
+Currency formatting for Japanese [.badge.badge-beta-relnotes]#Beta#::
+ThoughtSpot introduces whole number formatting for Japanese Yen (JPY) currency. To enable this feature, contact {support-url}.
++
+For more information, see xref:data-modeling-patterns.adoc[Set number, date, and currency formats].
+// Mary. jira: SCAL-235114. docs jira: SCAL-242800
+// PM: Vaibhav.
+
+Number formatting on attributes [.badge.badge-beta-relnotes]#Beta#::
+ThoughtSpot introduces enhanced number formatting controls for measures that are marked as attributes in the data source. Use this enhanced formatting to ensure that measures marked as attributes are formatted with the appropriate number format. To enable this feature, contact {support-url}.
++
+For more information, see xref:data-modeling-patterns.adoc#num-format-attr[Set number, date, and currency formats].
+// Mary. jira: SCAL-237236. docs jira: SCAL-246082
+// PM: Manan
+
+
+
+
+
+Query set groups [.badge.badge-early-access-relnotes]#Early Access#::
+
+ThoughtSpot users can now define groups for included query values using conditions in Query sets. Conditions allow you to create groups using operators, to specify the parameters of the group.
++
+To enable this feature, contact your administrator. For more information, see xref:query-sets.adoc[Query sets].
+// Mary. jira: SCAL-194093. docs jira: SCAL-226615
+
+Query set bins [.badge.badge-early-access-relnotes]#Early Access#::
+ThoughtSpot users can now create bins for aggregate results in query sets. This feature allows you to create groups based on bins of specified sizes with minimum and maximum values. To enable this feature, contact your administrator.
++
+To enable this feature, contact your administrator. For more information, see xref:query-sets.adoc[Query sets].
+// Mary. jira: SCAL-218966. docs jira: SCAL-238611
+
+
+Show only relevant filters and parameters on Liveboards [.badge.badge-early-access-relnotes]#Early Access#::
+
+Filters and parameters that are not relevant to a tab are hidden by default when you open and view a Liveboard. You can choose to view all filters and parameters, including those that are not relevant to the tab, so that you can quickly create a new view or download the Liveboard without having to switch tabs and apply filters individually.
+//The option to expand and view filters and parameters is only available when there are hidden filters and parameters on the tab.
++
+To enable this feature, contact your administrator. For more information, see xref:liveboard-filters.adoc[Apply filters to specific visualizations or tabs].
+// Mary. jira: SCAL-175792. docs jira: SCAL-238562
+// PM: Dilip - approved by PM.
+
+
 
 [#data-engineer-10-10-0-sw]
 === For the Data Engineer
@@ -310,6 +374,75 @@ Search data mandatory columns [.badge.badge-beta-relnotes]#Beta#::
 You can now use TML to define a list of associated columns that must be included in a search if a certain column is added. This allows you to make sure users do not remove necessary context from a search by removing a column. To enable this feature, contact {support-url}.
 +
 For more information, see xref:tml-models.adoc#is_mandatory[TML for Models].
+
+Import and export column properties for bulk edit::
+You can now make bulk edits to Model column properties by importing or exporting the Model as a CSV file from the Model editor.
++
+For more information, see xref:models.adoc[Building your Model].
+// Mary. jira: SCAL-233577. Docs jira: SCAL-254817
+// PM: Samridh
+
+
+Override null or empty values with a custom value [.badge.badge-beta-relnotes]#Beta#::
+
+ThoughtSpot introduces a feature to override displayed \{Null} and \{Empty} values with a customizable value. This allows you to define how null data values appear to better meet your organization's specific needs. To enable this feature, contact {support-url}.
++
+For more information, see xref:filter-null.adoc[How NULL and blank values are displayed].
+// Mary. jira: SCAL-231869. docs jira: SCAL-242802
+// PM: Vaibhav
+
+Row count connection configuration [.badge.badge-early-access-relnotes]#Early Access#::
+ThoughtSpot now allows you to assign different configurations when creating a connection, to run row count stats and keep them separate from other process and user queries. Use this feature to help with auditing and tracking your cloud data warehouse usage by user and process. Optimize costs by assigning the right resources to the right process and users. To enable this feature, contact your administrator.
+// Mary. jira: SCAL-221647. docs jira: SCAL-238896
+// PM: Prayansh - PM approved.
+
+Join cardinality change for global joins::
+Join cardinality change for global joins is now available to all users and on by default. You can now change the cardinality of a join (1:1, 1:Many, Many:1) without needing to delete and remake the join.
+For more information, see xref:join-add.adoc#change-join-cardinality[Change join cardinality].
+// Mary. jira: SCAL-224198. docs jira: SCAL-225298
+// PM: Samridh
+
+Allow only ThoughtSpot users and groups to be added to schedules::
+ThoughtSpot schedules can be configured to prevent new and existing schedules from being sent to external emails. To enable this feature, contact {support-url}.
++
+For more information, see xref:liveboard-schedule.adoc[Schedule a Liveboard job].
+// Mary. jira: SCAL-212742. docs jira: SCAL-223959
+// PM: Pitchika Dilip.
+
+Utilities schema viewer::
+ThoughtSpot's schema viewer connection picker is now on by default and available to all users. You can now use the dropdown or search to select your connection in the schema viewer.
++
+NOTE: You can no longer view objects across all connections. You must filter by a specific connection.
++
+For more information, see xref:schema-viewer.adoc[Schema viewer connection picker].
+// Mary. jira: SCAL-224758. docs jira: SCAL-?
+// PM: Samridh
+
+Query tags for Snowflake connections::
+ThoughtSpot introduces support for query tags on Snowflake connections. You can now set up query tags on your Snowflake connection to allow you to filter on users, groups, or other ThoughtSpot variables when auditing the Snowflake query logs.
++
+For more information, see xref:connections-snowflake-add.adoc[Add a Snowflake connection].
+// Mary. jira: SCAL-240367. docs jira: SCAL-238563
+// PM: Prayansh
+
+Org context for sharing links::
+ThoughtSpot's org context for sharing links is now available to all users and enabled by default. URLs in emails now include Org context so that users are taken directly to the correct Liveboard in the correct Org even if they belong to multiple Orgs. You can also move between different browser tabs that point to different Orgs. To enable this feature, contact your administrator.
++
+For more information, see xref:orgs-overview.adoc[Org context for sharing links].
+// Mary. jira: SCAL-232495. docs jira: SCAL-232812
+// PM: Aashica
+
+Import and export users and groups using TML [.badge.badge-early-access-relnotes]#Early Access#::
+Import and export users, groups, roles, and privileges programmatically, using ThoughtSpot Modeling Language. You can use this feature to migrate from one environment to another, and user, group, and role configurations do not need to be recreated. To enable this feature, contact your administrator.
++
+For more information, see xref:admin-portal-users.adoc[Managing users], xref:admin-portal-groups.adoc[Managing groups].
+// Mary. jira: SCAL-216546. docs jira: SCAL-220685
+// PM: Reshma
+
+
+Support cookieless authentication flow for OAuth::
+Authenticating your cloud data warehouse (CDW) with cookies disabled is now available for all users and enabled by default. Previously, you would encounter a 404 error and be unable to connect if cookies were disabled.
+// Mary. jira: SCAL-231977. docs jira: SCAL-243142
 
 [#it-ops-engineer-10-1-0-sw]
 === For the IT Ops Engineer
