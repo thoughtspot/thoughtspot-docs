@@ -4,6 +4,7 @@
 | `ts_groups` | Returns a list of all the groups the current logged-in user belongs to. For any row, if the expression evaluates to true for any of the groups, the user can see that row. `ts_groups` is available in RLS formulas and model or answer formulas.| `ts_groups = 'east'`
 
 | `ts_username` | Returns the user with the matching name. | `ts_username != 'mark'`
+| `ts_groups_int` | Returns a list of all groups (with integer IDs) that the current logged-in user belongs to. This variable can be used in row-level formulas to control data access. For any row, if the condition evaluates to `true` for any of the user's integer-ID groups, the user can see that row.| `ts_groups_int = 134`
 |===
 
 NOTE: You cannot use these variables (`ts_groups` and `ts_username`) within an expression.
@@ -35,3 +36,14 @@ Example 4: determine if all the ts_groups values are defined in the column
 Example 5: determine if at least one of the ts_groups values is defined in the column
 
 `max( if(column in ts_groups) then 'true' else 'false') → would evaluate to true if at least ONE of ts_groups values is contained in column, and false otherwise.`
+
+[#ts-groups-int]
+== Examples of ts_groups_int
+
+Suppose you have a table called project_access with a column group_id (integer) that represents which group can access each project. To restrict access so users only see projects for groups they belong to, set the RLS rule as:
+
+`group_id = ts_groups_int`
+
+This will generate SQL like: `WHERE group_id IN (101, 102)`
+
+Only users in groups 101 or 102 will see those rows. This approach is efficient and avoids string comparisons, leveraging the integer nature of both the group_id column and ts_groups_int values.
