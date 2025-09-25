@@ -75,37 +75,53 @@ Any of the configured changes done on IdP are reflected on your thoughtSpot clus
 NOTE: Low volume changes made in IdP may be reflected immediately in ThoughtSpot. Larger volume changes are usually reflected within 20 to 40 minutes.
 
 === Best Practices
+* Manage user and group provisioning exclusively from the Identity Provider (IdP). ThoughtSpot should not be used as the source of truth for SCIM managed/ IdP managed users and groups.
 * Regularly rotate SCIM tokens to maintain security and reduce risk from compromised credentials.
-* Set up logging and alerting for critical events, including high failure rates, authentication issues, and provisioning delays.
+* Monitor audit logs and set up alerting for critical events such as high failure rates, authentication issues, and provisioning delays within your ThoughtSpot instance.
 * Document and follow a structured incident response plan for SCIM-related issues.
-* Manage user and group provisioning exclusively from the Identity Provider (IdP); ThoughtSpot should not be used as the source of truth for SCIM-managed users or groups.
-* Use group-based access control to simplify user management—add or remove users from groups in the IdP to control their access in ThoughtSpot.
+* Use group based access control to simplify user management—add or remove users from groups in the IdP to control their access in ThoughtSpot.
 * Avoid enabling both SAML group mapping and SCIM provisioning simultaneously, as SAML group mapping will override SCIM group assignments on user login.
+* `com.thoughtspot.callosum.common.config.OIDCConfiguration#oidcOrgDelimiter` must be reviewed to ensure compatibility with groups provisioned via SCIM. If a group name contains this delimiter, the name may be truncated. You can either remove this flag or replace it with an alternative value. Note that each SCIM token has a validity of only six months.
 
 === FAQs
 
 * What are common issues and troubleshooting steps while using SCIM in ThoughtSpot?
 +
-User not created: Check SCIM token validity, API logs, and IdP settings.
+** User not created:
+*** Check if the SCIM token is valid and active.
+*** Review API logs for errors related to user creation.
+*** Verify IdP settings, ensuring the user is assigned to the correct application and SCIM is enabled for the app.
+*** Confirm that the user exists and is active in the IdP and that the correct attributes are being sent
 +
-Group not syncing: Validate group mapping and user assignments in the IdP.
+** Group not syncing:
+*** Validate group mapping in both ThoughtSpot and the IdP.
+*** Ensure the group exists in ThoughtSpot if required, or that group creation via SCIM is enabled.
+*** Check user assignments to the group in the IdP.
+*** Review API logs for group sync errors.
 +
-High provisioning latency: Check database performance and API logs.
+** High provisioning latency:
+*** Check ThoughtSpot database performance and health.
+*** Review API logs for delays or timeouts in SCIM processing.
+*** Monitor for bulk operations or high-volume syncs that may impact performance.
 +
-Unauthorized API requests: Regenerate SCIM token and update IdP settings.
+** Unauthorized API requests:
+*** Regenerate the SCIM token in ThoughtSpot and update the token in the IdP configuration.
+*** Ensure the token has not expired or been revoked.
+*** Review API logs for 401/403 errors and confirm the IdP is using the correct endpoint and credentials
 
 * How does group and role assignment work with SCIM?
 +
-Groups and roles can be managed via SCIM. Membership in a group in the IdP can automatically assign the corresponding role in ThoughtSpot, controlling access levels (e.g., viewer, explorer)
+Groups and roles can be managed via SCIM. Membership in a group in the IdP can automatically assign the corresponding role in ThoughtSpot, controlling access levels.
+When a user is added to a group in the IdP, SCIM syncs this membership to ThoughtSpot, and the user inherits the role privileges assigned to that group.
 
 * Is SCIM provisioning unidirectional or bidirectional?
 +
-SCIM provisioning in ThoughtSpot is unidirectional: changes in the IdP are pushed to ThoughtSpot, but not vice versa. This is standard for SCIM integrations.
+SCIM provisioning in ThoughtSpot is unidirectional; changes in the IdP are pushed to ThoughtSpot, but not vice versa. This is a standard for SCIM integrations.
 
-* What monitoring and alerting is available?
+* What monitoring and alerting are available with SCIM?
 +
-Key metrics such as API request success/failure rates, latency, and authentication failures are monitored. Alerts are configured for high failure rates and provisioning issues.
-
+Key metrics, including API request success and failure rates, latency, and authentication failures, are closely monitored. Alerts are configured for high failure rates and provisioning issues.
+This ensures that issues like high error rates, increased latency, or authentication problems are detected and addressed promptly to maintain reliability and performance.
 * Can SCIM be used with SAML or other SSO solutions?
 +
 SCIM can be used alongside SAML. SAML group mapping is also supported, which may be simpler if SAML is already configured.
