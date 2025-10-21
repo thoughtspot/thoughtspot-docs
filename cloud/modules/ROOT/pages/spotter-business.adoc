@@ -20,7 +20,22 @@ Examples;; by region, per store
 Where should Spotter look?:: Apply filters to narrow down the data to the specific subset you’re interested in.
 Examples;; for last week, for the East region
 
-A good question clearly defines the calculation, grouping, and filters. For example, a vague question might be “Which products should I reorder?” A structured question would be “List the products with less than 30 days of stock remaining, broken down by warehouse location, based on the last 90 days’ sales velocity.”
+A good question clearly defines the calculation, grouping, and filters. Here's how that looks in practice:
+
+[options="header"]
+|===
+| Vague question | Structured question
+
+| "How are my reps doing?" | "What is the total sales revenue (*What*) for each sales representative (*How*) in the Northeast region for Q2 (*Where*)?"
+
+| "Did our last campaign work?" | "Show me the customer acquisition cost (*What*) by marketing channel (*How*) for the 'Holiday 2024' campaign (*Where*)."
+
+| "Which products should I reorder?" | "List the products with less than 30 days of stock remaining (*What*), broken down by warehouse location (*How*), based on the last 90 days' sales velocity (*Where*)."
+
+| "Are we closing tickets fast enough?" | "What was the average time to resolution in hours (*What*) for each support agent (*How*) on 'High Priority' tickets created last month (*Where*)?"
+
+| "How profitable are our product lines?" | "Compare the net profit margin (*What*) across all product categories (*How*) for the last fiscal year (*Where*)."
+|===
 
 == Iterate
 
@@ -58,3 +73,61 @@ If you need a calculation like “percentage contribution,” briefly explain th
 If you find yourself repeatedly clarifying the same business term (like the <<southern,Southern region example>> above), teach Spotter what you mean.
 
 You can click *+ Add to coaching* below an Answer to create custom definitions. If you define the business term “Southern region” as `region= ‘South’ OR region = ‘Southwest’`, Spotter will use that interpretation in all your questions including that term, saving you time and ensuring consistent analysis across your team.
+
+For more information on coaching, reference xref:spotter-reference-questions.adoc[] and xref:spotter-business-terms.adoc[].
+
+== How to frame questions
+
+One of the approaches for asking questions that will help you get to the expected answer faster is to think of the question in parts:
+
+* What computation do you want Spotter to perform?
++
+Try to write it in a way that any new person will understand.
+* What groupings do you want to see in the final results?
+* What filters do you want to apply while generating the answer?
+
+A good question clearly defines all of these aspects in an unambiguous manner. Spotter is a conversational experience that allows you to define some of these aspects incrementally by starting with a simpler question and then adding more details as you continue the conversation.
+
+Let’s take the example of Sophia, a store manager at a retail company, who wanted to analyze the recent sales trend with Spotter. She asked the following series of questions to discover that bags and dresses were top-performing products in the last week and their corresponding contribution to total sales. She asked the following series of questions to get these insights:
+
+* What is the sales of top 5 products by category?
+* I wanted the top 5 products in each category
+* Show data for last week
+* What was the percentage contribution of bags in the total sales last week?
+
+As you can see in most of the questions Sophia was precise and in the cases where she got unexpected responses she was able to follow through in the next step with better instructions. See the conversation complete with charts link:{attachmentsdir}/Good_conversation_sample.pdf[here].
+
+
+=== Clear and precise instructions
+
+Clear and precise instructions help Spotter understand how to answer the questions correctly.
+
+Let’s say you want the total sales for Southern regions. You can ask Spotter: `What is the total sales for the Southern region?`. In order to answer this question, Spotter needs to make a judgment call whether to include the Southwest region as part of the southern region or whether to exclude it.
+
+Since the LLMs are probabilistic in nature, they will sometimes give the answer as 3 million (by excluding the Southwest region) while on some other occasions they may give the answer as 10 million ( by including the Southwest region).
+
+As a user, you would have a point of view on whether Southwest should be included as part of the southern region or whether it should not be included. Providing this instruction clearly while asking the question will help you get an accurate answer in the first question itself. You can frame the question as "What is the total sales for the Southern region? exclude southwest" or "What is the total sales for the southern region including southwest?"
+
+If as a user you are not aware of this while asking the question, you should check the AI-generated answer to understand what the system has done and then provide follow-up instructions as a next message to include or exclude the southwest region to get to the answer you want.
+
+[TIP]
+====
+Always specify the time period while asking questions. For example, in the question above, the user did not mention any time limit. In such cases, Spotter will provide the total sum of sales for all time periods in the Southern region (this query takes longer to execute, costs more on the CDW and isn’t the final answer users want in most cases).
+
+You can use the Spotter coaching experience to define “Southern region” as “region = south or southwest”. Once this definition is provided, Spotter will remember this and try to apply it in all follow-up questions you ask.
+====
+
+=== Reduce ambiguity
+
+Let’s say you want to identify the products that are sold the most. You can ask the question “What are my most-selling products?”. In this case, you are leaving it to the LLM to decide the criteria for the best-selling products and how many products to showcase.
+
+You should always try to reduce the ambiguity in the question by providing the required details, for example, "What are the top 5 products for last year in terms of revenue?"  or "What are the top 5 products in terms of quantity sold in the last month for east?"
+
+== Be descriptive about computations
+
+Try to be more descriptive when you want the LLM to perform some computations.
+Let’s say you want to know the percentage contribution of a region in total sales for each month. You can frame the question as “What is the percentage contribution of east for the last three months?”
+
+In this question, again, you are leaving it up to the LLM to decide how to calculate the percentage contribution. Being a little descriptive in explaining how the system should calculate the percentage contribution will help you get to the expected answer faster. You can frame the question as “What is the percentage contribution of east for the last three months? I am looking for a percentage contribution in terms of sales. Also split the results monthly.”
+
+Providing a more descriptive instruction helps Spotter understand your intent clearly. In your instructions,  try to include the exact column names and values (if you know them) to make sure the LLM doesn't select an unintended column.
