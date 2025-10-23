@@ -5,7 +5,7 @@
 :page-layout: default-cloud
 :page-aliases: /admin/ts-cloud/ts-cloud-embrace-cust-cal-create.adoc
 :description: Create a custom calendar for your connection.
-:jira: SCAL-172330, SCAL-197336, SCAL-182515 (doc enhancment jira), SCAL-208434 (remove default calendar), SCAL-224478, SCAL-176032 (rls calendar support)
+:jira: SCAL-172330, SCAL-197336, SCAL-182515 (doc enhancment jira), SCAL-208434 (remove default calendar), SCAL-224478, SCAL-176032 (rls calendar support), SCAL-274760
 
 == Before you begin
 
@@ -84,11 +84,175 @@ The Custom calendar page appears again, with the message "Custom calendar create
 +
 Your custom calendar appears in the list of calendars.
 
+[#upload]
 == Uploading a file for a custom calendar
 
 This option provides you the ability to upload a calendar file.
 You can xref:connections-cust-cal-update.adoc#updating-the-calendar-file[update] an existing calendar by downloading it, making changes to it, and then uploading it.
 
+Many organizations use unique fiscal calendars (for example, 4-4-5). Manually creating a full custom calendar table with around 30 columns can lead to errors that cause incorrect query results. The recommended approach is to start with a simplified 10-column table from your existing master date table, and then leverage ThoughtSpot's built-in routine to automatically generate the full, accurate calendar table. Follow these steps to prepare your data and upload it to ThoughtSpot.
+
+=== Prerequisites
+
+To complete this process, you'll need:
+
+* Access to your organization's master date table.
+* A SQL client to query and reformat your data.
+* Access to ThoughtSpot's data utilities.
+* Knowledge of your custom calendar's structure (for example, fiscal year start date, week definitions).
+
+=== Get and reformat the master date table
+
+First, you'll query your existing master date table to create a simplified, 10-column CSV file. This file will contain the core information ThoughtSpot needs to generate the full calendar. The key is to correctly name and reformat these columns using SQL.
+
+. Use a SQL query similar to the <<example,Example SQL>> provided below to select and format the 10 required columns.
+
+. Ensure the following columns are created with the exact specified names and data types. Note that the column names must be lowercase:
+
+* date: The date in MM/DD/YYYY format.
+* day_of_week: String representing the name of the day (for example, 'Monday' or 'Mon').
+* month: String representing name of the month (for example, 'January' or 'Jan').
+* quarter: String representing the fiscal quarter (for example, '1' or 'Q1').
+* year: String representing the fiscal year (for example, '2025' or 'FY2025').
+* day_number_of_week: The numerical day of the week (for example, 1 for Monday when Monday is the start of the week).
+* week_number_of_month: The week number within the fiscal month.
+* week_number_of_quarter: The week number within the fiscal quarter.
+* week_number_of_year: The week number within the fiscal quarter.
+* is_weekend: A boolean value (TRUE or FALSE) indicating if the date is a weekend. Note that this could be used to indicate a holiday rather than just limited to weekends. However, the users would need to be aware of this change.
+
+. Sort the data: Your SQL query should include ORDER BY date ASC to ensure the data is in chronological order, which is a mandatory requirement for the upload process.
+
+[#example]
+.Example SQL
+[source]
+----
+Select
+    ---A.CalendarDay AS “date_original”,
+    TO_CHAR(A.CalendarDay, ‘MM/DD/YYYY’) AS “date”,
+    --dayname(A.CalendarDay) AS day_of_week_short,
+    DECODE(DAYNAME(A.CalendarDay),
+           ‘Mon’,‘Monday’,
+           ‘Tue’,‘Tuesday’,
+           ‘Wed’,‘Wednesday’,
+           ‘Thu’,‘Thursday’,
+           ‘Fri’, ‘Friday’,
+           ‘Sat’, ‘Saturday’,
+           ‘Sun’, ‘Sunday’
+          ) as “day_of_week”,
+    --MONTHNAME(A.FISCALMONTH) as “month”,
+    DECODE(MONTHNAME(A.FISCALMONTH),
+           ‘Jul’,‘July’,
+           ‘Aug’,‘August’,
+           ‘Sep’,‘September’,
+           ‘Oct’,‘October’,
+           ‘Nov’, ‘November’,
+           ‘Dec’, ‘December’,
+           ‘Jan’, ‘January’,
+           ‘Feb’,‘February’,
+           ‘Mar’,‘March’,
+           ‘Apr’,‘April’,
+           ‘May’, ‘May’,
+           ‘Jun’, ‘June’
+          ) as “month”,
+    CONCAT(‘Q’,A.FISCALQUARTERNUMBER) as “quarter”,
+    CONCAT(‘FY’,A.FISCALYEAR) as “year”,
+    A.WEEKDAYNUMBER as “day_number_of_week”,
+    A.WEEKOFFISCALMONTH as “week_number_of_month”,
+    CASE
+        WHEN A.FISCALQUARTERNUMBER = 1 THEN A.FISCALWEEKNUMBER
+        ELSE A.FISCALWEEKNUMBER - MAX_FISCALWEEKNUMBER
+    END as “week_number_of_quarter”,
+    A.FISCALWEEKNUMBER as “week_number_of_year”,
+    DECODE(DAYNAME(A.CalendarDay),
+           ‘Mon’,FALSE,
+           ‘Tue’,FALSE,
+           ‘Wed’,FALSE,
+           ‘Thu’,FALSE,
+           ‘Fri’,FALSE,
+           ‘Sat’,TRUE,
+           ‘Sun’,TRUE
+          ) as “is_weekend”
+from “CUSTOM_CALENDAR”.“PUBLIC”.“MASTER_FISCAL_CALENDAR” A
+LEFT JOIN
+  (
+    Select
+      FISCALYEAR,
+      FISCALQUARTERNUMBER,
+      MAX(FISCALWEEKNUMBER) AS MAX_FISCALWEEKNUMBER
+    FROM “CUSTOM_CALENDAR”.“PUBLIC”.“MASTER_FISCAL_CALENDAR”
+    GROUP BY
+      FISCALYEAR,
+      FISCALQUARTERNUMBER
+  ) B ON A.FISCALYEAR=B.FISCALYEAR AND A.FISCALQUARTERNUMBER-1=B.FISCALQUARTERNUMBER
+  ORDER BY A.CalendarDay ASC
+;
+----
+
+=== Prepare the CSV file
+
+After running your SQL query, download the result set as a CSV file. Before uploading, double-check these critical requirements:
+
+* The file must be in UTF-8 format to prevent character encoding errors.
+* The data must be sorted chronologically by date in ascending order.
+* All dates must be in MM/DD/YYYY format.
+
+As a best practice for error handling, attempt to upload the CSV to a database like Snowflake first. Snowflake's robust error handling can quickly identify issues like special characters, malformed data, or incorrect column types that might case the ThoughtSpot upload to fail.
+
+[#upload]
+=== Upload the file in ThoughtSpot
+
+Now you're ready to use ThoughtSpot's data utilities.
+
+. Navigate to the Data workspace.
+
+. Click *Utilities* in the side navigation bar, and select *Add/modify custom calendar*.
++
+The Custom calendar page appears.
+
+. Select *Create Custom Calendar*.
++
+The Create Custom Calendar dialog appears.
++
+image::cust-cal-embrace.png[Create custom calendar dialog box]
+
+. For Calendar Name, enter a name for your calendar.
++
+NOTE: The calendar name must be unique in the cluster.
+
+. Open the *Choose Connection* menu, and select the connection where you want to use your custom calendar.
+. For Database, open the *Choose a database* menu, and select the database you want to use with your custom calendar.
+. For Schema, open the *Choose a schema* menu, and select the schema you want to use with your custom calendar.
+. Select *Upload File*.
++
+image::custom-cal-upload.png[Under choose a method, select upload file]
+
+. For Table, enter a name for the table that will be created for your custom calendar.
+. For File, select the *Upload* button, choose the file, and select *Open*. ThoughtSpot will use this file to automatically generate all columns (around 30) of the full custom calendar table. This new, complete table will be created in your Snowflake instance (or other connected database).
+. For Separator, select delimiter format used in your calendar file.
++
+Supported delimiters include: Comma(`,`), Pipe(`|`), Semicolon(`;`), and Tab.
++
+NOTE: If you do not have permissions to create a table in the database, you can click *Download as CSV*. You can then send the CSV file to your database administrator to edit and upload.
+
+. Select *Create*.
++
+The Custom calendar page appears again, with the message "Custom calendar created successfully!"
++
+Your custom calendar appears in the list of calendars.
+
+=== No database write access (optional)
+
+If your client's ThoughtSpot instance doesn't have write-back permissions to the database, you'll need to manually create the final table.
+
+. After <<upload,uploading the file into ThoughtSpot>>, download the newly-generated 30-column table from ThoughtSpot as a CSV.
+
+. Work with your database administrator or internal systems team to manually create a new table in the client's database using the downloaded file. This ensures the full, correct calendar table is available for other applications.
+
+. Once the table is in the database, go back to ThoughtSpot's data utilities.
+
+. Select Create a Custom Calendar, and this time reference the table you just created in the database. This final step connects the fully-defined calendar table to ThoughtSpot for use in your reporting and analytics.
+
+////
 To upload a file to use as a custom calendar, do the following:
 
 . Select *Data* in the top navigation bar.
@@ -129,6 +293,7 @@ NOTE: If you do not have permissions to create a table in the database, you can 
 The Custom calendar page appears again, with the message "Custom calendar created successfully!"
 +
 Your custom calendar appears in the list of calendars.
+////
 
 == Use an existing table for a custom calendar
 
