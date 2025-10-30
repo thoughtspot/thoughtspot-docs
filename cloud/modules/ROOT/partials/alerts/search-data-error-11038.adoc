@@ -1,0 +1,49 @@
+[#search-data-error-11038]
+
+=== 11038
+
+Description:: Range of data queried exceeds the configured time limit for a date column. This occurs when attempting to query data spanning more than the maximum allowed time range defined in the Model constraints.
+
+
+Details:: This error appears when a search query attempts to access data spanning a date range that exceeds the constraints defined in the ThoughtSpot Model's TML configuration. In the following example, the error occurs when trying to query order date data spanning more than 5 years.
++
+For example, if a user attempts to search without any date filter:
++
+----
+[Sales] by [Product] [Region]
+----
++
+The system would apply the error if the underlying data spans more than 5 years for the order date column.
+
+Cause:: ThoughtSpot Models can be configured with mandatory date range constraints to enforce query performance best practices. These constraints are applied before queries are dispatched to the underlying data warehouse, preventing overly broad date ranges that could result in performance issues, timeouts, or excessive resource consumption.
++
+The constraints are defined in the Model's TML file using the date_range_condition configuration, which specifies:
++
+--
+* The table containing the date column
+
+* The specific date column to constrain
+
+* The maximum duration allowed (for example, 5 years)
+
+* The time bucket (YEAR, MONTH, etc.)
+--
++
+When a search query would result in accessing data beyond the configured time range constraint, error 11038 is generated.
++
+Refer to the xref:tml-models.adoc#mandatory[documentation page] for TML definition.
+
+
+Resolution::
+For Spotter/Search data::: Add an explicit date filter to limit the date range within the allowed constraints:
++
+For example:
+----
+[Sales] by [Product] [Region] last 3 years
+----
+
+For the data model::: This error may also be displayed when applying a Model filter. In order to apply a filter to a Model with a constraint, the following options are available:
+
+* Remove the constraint, apply Model filter, and then re-apply constraint.
+
+* Add a temporary date filter to the Model, apply Model filter, and then remove temporary date filter.
