@@ -1,0 +1,66 @@
+= Data retention policy
+:categories: ["Administration"]
+:categories_weight: 10
+:date: 2025-11-12
+:description: The Data retention policy is a feature that allows Workspace Admins to set a data retention period for Report result data stored in Analyst Studio.
+:experimental:
+:page-layout: default-cloud
+:page-aliases: /analyst-studio/data-retention.adoc
+:product: Analyst Studio
+:jira: SCAL-281861
+
+The data retention policy is a feature that allows Workspace admins to set a data retention period for Report result data stored in the {product} platform.
+
+Once the feature is enabled:
+
+* Admins will be able to configure a Workspace-level data retention period.
+* An automated purge process will run daily.
+* Result data older than the retention period will be deleted from {product} platform.
+
+== What data will be deleted
+
+The following data will be deleted when the creation date is older than the retention period:
+
+* PDFs and preview images of Reports
+* Query run result data, Notebooks cell output, and Definitions result data
+* Datasets, including those backed by Google Sheets
+
+Query and run histories will remain, but the results will be deleted.
+
+If a Dataset isn't likely to be refreshed within the retention period, we recommend setting up a Schedule to regularly refresh the data to avoid empty states or downstream issues (for example, with imported Datasets).
+
+
+== Retention periods available
+
+* 1 year (default, initially applied to all Workspaces)
+* 90 days
+* 60 days
+* 30 days
+* 14 days
+* 7 days
+
+== Where to find it
+
+Navigate to *Workspace Settings* → *Default Settings* and click on the Data Retention tab.
+
+[.bordered]
+image::as-data-retention.png[Workspace settings -> Data retention]
+
+Note that this option is only available to Workspace admins.
+
+
+
+
+
+
+
+== FAQ
+
+Can I turn it off?::
+No. All Workspaces will have a default data retention policy to ensure consistency and compliance across the {product} platform.
+
+Is our result data permanently deleted?::
+Yes. Deleted data cannot be recovered. You can re-run the data to generate fresh results from your connected data source.
+
+What happens to my ‘Published’ datasets (Datasets which are available in ThoughtSpot)?::
+Published datasets in ThoughtSpot which have not been refreshed in the last 365 days will be purged of their data. If any of the dependents of that dataset break, do not panic. Simply refresh the dataset from {product}, it will bring new data and everything will work as usual.
