@@ -169,7 +169,8 @@ Our classic conversational analytics experience, which allows you to ask questio
 //It provides direct answers and visualizations based on the questions you ask.
 
 Spotter Agent::
-Spotter Agent is an AI analyst that delivers agentic data experiences with enterprise-grade trust and scale. Spotter Agent can suggest questions you can ask to improve your understanding of the data analysis, and you can ask Spotter to answer multiple questions at once. You can also ask questions about how calculated fields such as formulas are generated. Spotter Agent has also improved its responses for questions not related to the data model you selected. For more information about Spotter Agent, see xref:spotter-agent.adoc[].
+Spotter Agent is an AI analyst that delivers agentic data experiences with enterprise-grade trust and scale. Spotter Agent can suggest questions you can ask to improve your understanding of the data analysis, and you can ask Spotter to answer multiple questions at once. You can also ask questions about how calculated fields such as formulas are generated. Spotter Agent has also improved its responses for questions not related to the data model you selected.
+//For more information about Spotter Agent, see xref:spotter-agent.adoc[].
 
 == Spotter in action
 To see Spotter in action, you can view the following video (5:46 mins):
@@ -177,6 +178,77 @@ To see Spotter in action, you can view the following video (5:46 mins):
 +++
 <script src="https://fast.wistia.com/player.js" async></script><script src="https://fast.wistia.com/embed/ggc7dv4ve7.js" async type="module"></script><style>wistia-player[media-id='ggc7dv4ve7']:not(:defined) { background: center / contain no-repeat url('https://fast.wistia.com/embed/medias/ggc7dv4ve7/swatch'); display: block; filter: blur(5px); padding-top:56.25%; }</style> <wistia-player media-id="ggc7dv4ve7" aspect="1.7777777777777777"></wistia-player>
 +++
+
+== Coaching Spotter
+
+=== Why coach Spotter?
+
+Spotter is intelligent, but it doesn't automatically understand the unique terms and rules of your specific business. Large Language Models (LLMs) like the ones Spotter uses are coached on vast amounts of public data and general language.
+
+This means they don't automatically know things like:
+
+* What "active customers" specifically means for your business.
+** For instance, if you ask for "active customers," a general AI might assume this means "customers with a recent purchase." But in your business, "active customers" might specifically mean "customers with a current subscription, excluding those on internal trial accounts."
+
+* Whether "last month" in a particular context refers to an end_date or a closed_date in your dataset.
+* How to understand complex requests like "premium accounts in North America excluding internal partners."
+
+That's where coaching comes in. It provides Spotter with the necessary information about the semantics and context of your organization's data.
+
+.Benefits of coaching Spotter
+[options="header"]
+|===
+| Benefit |  Explanation
+
+| Higher accuracy
+| Spotter learns to define terms like “booked revenue” or “churned user” based on your business logic, not general assumptions.
+
+| Less dependency on analysts
+| Business users won’t need to memorize specific data field names or complex filter logic to get answers.
+
+| ️ Consistent definitions
+| Key metrics and filters are applied the same way for everyone, ensuring consistency across teams.
+
+|  Faster decisions
+| Spotter answers more questions correctly the first time, reducing back-and-forth and speeding up insights.
+
+|  Lower training burden
+| Users can ask questions naturally, without needing to learn new software or complex data structures.
+
+|===
+
+=== Understanding coaching tools
+
+Coaching is a multi-layered process. You must first create a strong metadata foundation  before using the active coaching tools.
+
+==== Metadata optimization
+
+This is the most critical first step. This involves preparing your underlying data so Spotter can understand it better. Key aspects include defining proper column names, adding clear column AI context, and including relevant column synonyms based on your business use case.
+
+This is required in all scenarios and should be addressed first. Well-defined metadata helps Spotter accurately identify and use the correct data fields when responding to user questions.
+For instance, if a column is named txn_dt but business users commonly refer to "transaction date" or "order date," renaming the column for clarity or adding these as synonyms (in case you don’t want to modify this) in your data model is a key metadata enrichment.
+
+Similarly, for columns with indicator codes (for example, 1/0 or true/false), such as "valid_indicator_cd", it's important to add clear AI context for the column —for example, "true means a valid transaction, false means an invalid transaction." This allows Spotter to interpret these codes accurately in business context, leading to more precise answers for your users.
+
+For date fields, where a data model might have multiple date columns (for example, "order_date," "ship_date" "close_date"), providing clear AI context on each date column-- specifying which measures or metrics should be used with which date-- can help Spotter choose the right date column for each type of analysis, improving the accuracy of responses.
+
+For more information on preparing your data for Spotter, see xref:spotter-model.adoc[].
+
+
+==== Coaching tools
+
+For coaching, the best practice is to start with the most foundational tool, xref:natural-language-instructions.adoc[Natural Language Instructions], to set global rules, and then use the other tools for more specific coaching.
+
+xref:natural-language-instructions.adoc[Natural Language Instructions]:: These provide global rules to guide Spotter's interpretation of a user's query and the data model itself. Unlike other coaching methods that have a limited scope, these instructions are used while processing every relevant query from every user.
+Best for::: You can consider this as the most important Do's and Don't for your new AI analyst. Set broad, consistent rules like applying default filters (for example, always excluding test accounts) to resolve ambiguity.
+
+xref:spotter-reference-questions.adoc[Reference Questions]:: After setting your global rules, use these to teach Spotter "If a user asks X, you should answer with Y". This is enhanced with natural language context, which lets you explain why the answer is correct.
+
+Best for::: Frequently asked questions by your users can be added here so that the most common questions are answered efficiently. Additionally, you can coach complex, multi-step formulas or resolve ambiguity for specific common questions that a global rule can't cover.
+
+xref:spotter-business-terms.adoc[Business Terms]:: This is your final, most specific tool. It should be used as a "last resort" to create a specific, reusable TML (ThoughtSpot Modeling Language) mapping for a term.
+
+Best for::: Use this feature to create simple, universally true definitions, such as mapping a value synonym (for example, "N.Am." → country = 'North America') or a very simple, universal formula.
 
 // Things you can do with Spotter:
 
