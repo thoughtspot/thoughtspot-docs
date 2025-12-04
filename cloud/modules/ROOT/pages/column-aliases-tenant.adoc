@@ -1,0 +1,135 @@
+= Tenant-based column aliasing
+:last_updated: 10/15/25
+:author: Naomi
+:page-layout: default-cloud-early-access
+:linkattrs:
+:experimental:
+:description: Use tenant-based column aliasing to define a column name or description based upon the user's membership in a ThoughtSpot Org or group.
+:jira: SCAL-273076, SCAL-281782
+
+Tenant-based column aliasing introduces the capability to define a column name or description based upon the user's membership in a ThoughtSpot Org or group. For example, Client 1 may refer to a column as Region, whilst Client 2 may refer to this as Department. This feature is an extension of the language-based aliasing.
+
+Data analysts can define these aliases via CSV upload or with TML. Note that for published Models, the alias must be defined in the primary Org. This feature is particularly useful for embedded scenarios where the same underlying Model is leveraged across multiple clients. We recommend applying row-level security to restrict rows by user group or Org. You can also set column security rules on the Model’s underlying tables to hide columns not in use.
+
+Tenant-based column aliasing is an extension of xref:column-aliases.adoc[locale-based column aliasing], and the tenant-based column alias key is supported by a combination of Org, group, and locale.
+
+If you want to set a value that encompasses all Orgs, or all groups, or all locales, set the column value as TS_WILDCARD_ALL. Note that if no alias is defined for a column, then the base column name is returned (for example, CUSTOM_STRING_1). If multiple keys conflict, then the base column is returned. Each new upload of a CSV or TML file replaces the previous definitions, that is, you cannot do a partial update.
+
+For programmatic interactions such as runtime filters, or the Search data API, use the base column name. The alias name is not supported in these scenarios.
+
+== Define aliases via CSV
+
+Reference the following example CSV file:
+
+.Example CSV file
+[options=”header”]
+|===
+| column | locale | org_name | group_name | alias | description
+
+| CUSTOM_STRING_1 | TS_WILDCARD_ALL | TS_WILDCARD_ALL | Vandelay Industries | Sales Region | regional sales areas
+
+| CUSTOM_STRING_1 | TS_WILDCARD_ALL | TS_WILDCARD_ALL | Kramerica Industries | Rubber Type | classification of rubber type used
+
+| CUSTOM_STRING_2 | TS_WILDCARD_ALL | TS_WILDCARD_ALL | Pendant Publishing | Paper Size | preferred publishing paper size
+|===
+
+Note that in this example, the column alias is defined at the group level, with different aliases and descriptions based on whether users are in the Vandelay Industries, Kramerica Industries, or Pendant Publishing groups.
+
+To upload an alias file to a Model, follow these steps:
+
+
+. Navigate to the Model in the Data workspace, and click the more options menu icon image:icon-more-10px.png[menu icon].
+
+. Select *Upload Translations* and upload your CSV file.
++
+[.bordered]
+image::upload-translations.png[Upload translations]
+
+Note that you can incrementally update aliases by downloading an existing alias file, modifying it externally, and reuploading it.
+
+
+== Define aliases via TML
+
+Reference the following example TML file:
+
+
+.Example TML file
+[source]
+—-
+column_alias:
+  model:
+    name: Column Aliasing by Tenant
+  columns:
+  - name: CUSTOM_STRING_1
+    locales:
+    - name: en-US
+      orgs:
+      - name: TS_WILDCARD_ALL
+        groups:
+        - name: Vandelay Industries
+          entries:
+          - alias: ' Sales Region'
+            description: ' regional sales areas'
+    - name: sv-SE
+      orgs:
+      - name: TS_WILDCARD_ALL
+        groups:
+        - name: Vandelay Industries
+          entries:
+          - alias: ' Försäljningsregion'
+            description: ' regionala försäljningsområden'
+    - name: en-AU
+      orgs:
+      - name: TS_WILDCARD_ALL
+        groups:
+        - name: Vandelay Industries
+          entries:
+          - alias: ' Sales Region'
+            description: ' regional sales areas'
+    - name: TS_WILDCARD_ALL
+      orgs:
+      - name: TS_WILDCARD_ALL
+        groups:
+        - name: Kramerica Industries
+          entries:
+          - alias: ' Material Type'
+            description: ' classification of material type used'
+  - name: CUSTOM_STRING_2
+    locales:
+    - name: TS_WILDCARD_ALL
+      orgs:
+      - name: TS_WILDCARD_ALL
+        groups:
+        - name: Pendant Publishing
+          entries:
+          - alias: ' Paper Size'
+            description: ' preferred publishing paper size'
+
+
+—-
+
+
+Note that in this example, the column alias is defined at the group level, with different aliases and descriptions based on whether users are in the Vandelay Industries, Kramerica Industries, or Pendant Publishing groups. There is also a section defining the column name and description for Vandelay Industries in three locales.
+
+To define aliases via the TML file, follow these steps:
+
+. Navigate to the Model in the Data workspace, and click the more options menu icon image:icon-more-10px.png[menu icon].
+
+. Click *TML > Edit TML*.
+
+. Make the desired changes to the TML file and click *Publish* in the upper right corner.
+
+
+
+
+== Limitations
+
+
+If you access Spotter on a Model using tenant-based column aliases, Spotter is not aware of the different contexts for each alias on a column.
+
+
+Aliasing is restricted to name and description. Therefore other column properties such as type, synonyms do not support this capability.
+
+For Models with no row-level security, Liveboard schedules are designed to create the output based upon the user that created the schedule. Therefore, the applied alias will be that of the creator.
+
+For Models with row-level security, the schedule will create a Liveboard for each ThoughtSpot user. Therefore, the alias definition will be applied to the output.
