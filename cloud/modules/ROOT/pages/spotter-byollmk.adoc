@@ -1,0 +1,172 @@
+= Connect to your Large Language Model (LLM)
+:last_updated: 10/29/25
+:author: Naomi
+:linkattrs:
+:page-layout: default-cloud
+:experimental:
+:jira: SCAL-276577, SCAL-277498
+
+ThoughtSpot provides a fully managed "ThoughtSpot Enabled Auto Select" LLM configuration that gives you access to the latest, high-performance models with no setup required. We strongly recommend this option for the best performance and experience.
+
+For organizations with strict compliance or governance requirements that prevent the use of a managed service, ThoughtSpot also supports connecting to your own private LLM endpoints. This "Bring Your Own LLM Key" (BYOLLM Key) option allows you to exercise full control over your AI stack.
+
+When you connect to your own LLM, you are responsible for its performance, cost, and maintenance.
+
+== Enabling your own LLM (BYOLLM Key)
+
+Enabling a BYOLLM Key connection is a guided process managed by our Support team to ensure compatibility and performance.
+
+To enable a custom LLM connection, please contact {support-url}. Our team will work with you to perform a compatibility check and guide you through the setup process.
+
+== Prerequisites for setup
+
+Before contact {support-url}, gather the required credentials for your specific LLM provider. This will expedite the setup and compatibility check.
+
+We currently support connections to Azure OpenAI, Google Vertex AI, and custom LLM gateways. We also support Snowflake Cortex as a native LLM provider, which allows you to leverage link:https://docs.snowflake.com/en/sql-reference/functions/complete-snowflake-cortex[LLM hosted by Snowflake] within your existing Snowflake security perimeter and infrastructure for generative AI operations within ThoughtSpot.
+
+NOTE: Snowflake Cortex as an LLM provider is secured by Key Pair authentication (JWT-based).
+
+=== For Azure OpenAI
+
+You will need:
+
+* Your endpoint URL.
+* An API key.
+* The deployment names for your Default models.
+
+For steps on how to create an Azure OpenAI resource, see link:https://learn.microsoft.com/en-us/azure/ai-foundry/openai/how-to/create-resource?pivots=web-portal[this article].
+
+//For steps on setting up and configuring a GPT deployment using the Azure OpenAI service, see link:https://techcommunity.microsoft.com/blog/startupsatmicrosoftblog/how-to-set-up-and-configure-a-gpt-deployment-using-the-azure-openai-service/3849854[this article].
+
+////
+[#azure]
+==== Configure your Azure OpenAI connection
+
+To configure your Azure OpenAI connection, follow these steps:
+
+. In the *Connect to Your LLM* setup, select *ThoughtSpot Enabled*. Click *Manual* and select *Azure OpenAI* from the list of providers.
+
+. In the configuration form, enter the following details:
+
+* Model Alias: A user-friendly name for your connection (e.g., Azure-Marketing-GPT4).
+* Endpoint: Your Azure OpenAI resource endpoint URL.
+* API Key: Your Azure OpenAI API key.
+
+. Configure your models:
+
+* Default Model (Required): Enter the Azure deployment name for your primary model.
+
+. Click *Save*.
+
+If you need to connect to Azure OpenAI using OAuth 2.0 (via Entra ID), you must set up an APi gateway. Follow the guide to <<llm,connect to an LLM Gateway>>.
+////
+
+=== For Google Vertex AI
+
+You will need:
+
+* The JSON key file for a service account with the *Vertex AI User* role.
+* Your Google Cloud Project ID.
+* The Region for your models (for example, us-central1).
+* The Model IDs for your models.
+
+For steps on how to create Service account keys, see link:https://docs.cloud.google.com/iam/docs/keys-create-delete[this article].
+
+//You will need an administrator to create a service account and give it the correct permissions to access Vertex AI models. Once created, you must grant the service account IAM roles of either a  “Vertex AI user” (roles/aiplatform.user) or “Vertex AI Administrator” (roles/aiplatform.admin) so it has permission to make API calls.
+////
+[#vertex]
+==== Configure your Google Vertex AI connection
+
+. In the *Connect to Your LLM* setup, select *ThoughtSpot Enabled*. Click *Manual* and select *Google Vertex AI* from the list of providers.
+
+. In the configuration form, enter the following details:
+
+* Model Alias: A user-friendly name for your connection (e.g., Vertex-Gemini-Finance).
+* Project ID: Your Google Cloud Project ID.
+* Region: The region where your Vertex AI models are deployed (e.g., us-central1).
+* Service Account JSON: Paste the entire content of your service account JSON key file into this field.
+
+. Configure your models:
+
+* Default Model : Enter the Model ID for your primary model.
+
+
+. Click *Save*.
+////
+
+[#llm]
+=== For a custom LLM gateway
+
+You will need:
+
+* Your Gateway URL (the base URL of your gateway endpoint).
+* The Default Model Name your gateway expects.
+* Authentication details:
+
+** For API Key Auth: Your API key.
+** For OAuth 2.0 Auth: Your Token Endpoint URL, Client ID, and Client Secret.
+
+Your gateway must be fully compatible with the OpenAI /v1/chat/completions API specification and have tool calling enabled.
+
+////
+Before you connect, check the following:
+
+
+* Your gateway must be fully compatible with the OpenAI /v1/chat/completions API specification and tool calling enabled
+* You will need the credentials for your gateway, which will vary based on the authentication method.
+
+=== Configure your connection
+
+. In the *Connect to Your LLM* setup, select *Connect Your Own LLM* from the list of providers.
+. Choose your *Authentication Method*.
+.. Select *Api Key* if your gateway is secured by a static API key. Enter the following information:
+
+* Model Alias: A user-friendly name for your connection.
+* Gateway URL: The base URL of your gateway endpoint.
+* API Key: The API key required to access your gateway.
+* Default Model Name: The model name your gateway expects.
+
+.. Select *Oauth2* if your gateway is secured by Machine-to-Machine OAuth 2.0. This is common for connecting to an Azure API Management gateway secured by Entra ID. Enter the following information:
+
+* Model Alias: A user-friendly name for your connection.
+* Gateway URL: The base URL of your gateway endpoint.
+* Token Endpoint URL: The URL of the authentication server that issues access tokens.
+* Client ID: The Client ID for your application.
+* Client Secret: The Client Secret for your application.
+* Default Model Name : The model name your gateway expects.
+
+. After filling in the details for your chosen method, click *Save*.
+////
+
+== Supported models
+
+For the best results with connecting to your own LLM, we recommend using the following models or their equivalents:
+
+* GPT-4.1
+* Claude Sonnet 4
+
+You must ensure that the models you configure are available at your specified endpoint.
+
+
+== Migration policy for existing connections
+
+If you already have Spotter enabled with an existing LLM configuration, it will continue to function without interruption. Previous configurations are migrated as follows:
+
+* *Azure OpenAI* configurations are automatically migrated to *ThoughtSpot Enabled: Auto Select*. If you wish to use only ThoughtSpot managed Azure OpenAI Connections, please configure the LLM configuration to ThoughtSpot Enabled Azure OpenAI.
+* *Google Gemini* configurations remain as Google Gemini.
+
+//NOTE: If you want to exclusively use Azure OpenAI in the future, switch to Azure OpenAI explicitly in the LLM configuration. In future releases, Auto Mode will intelligently select from multiple model families to provide the best experience.
+
+== Best practices
+
+For the best experience, access to the latest models, and the lowest maintenance overhead, we strongly recommend *ThoughtSpot Enabled Auto Select*. This ensures you always have access to the latest models, fully managed and optimized by ThoughtSpot.
+
+The BYOLLM Key path is a specialized option intended for organizations with specific, non-negotiable compliance or governance requirements that prevent the use of a managed LLM.
+
+////
+When you connect to your own LLM, you are responsible for its operational health and performance. This includes ensuring your models are available and have sufficient TPM and RPM quotas provisioned for your deployment size. ThoughtSpot is only responsible for the performance and accuracy of models that are recommended by us. Connecting to any non-supported models might lead to severe service quality degradation and loss of functionality.
+
+Our *ThoughtSpot Enabled (Auto Mode)* service is continuously updated with the latest models. When you connect your own LLM, you are responsible for manually updating your configuration to use newer model versions.
+
+Your endpoint must be fully compatible with the API specification for our connector (for example, the OpenAI-compatible API spec for the LLM Gateway option). Custom or non-compiant APIs will fail.
+////
