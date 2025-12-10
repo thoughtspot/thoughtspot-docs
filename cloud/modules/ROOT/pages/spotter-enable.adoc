@@ -5,37 +5,42 @@
 :linkattrs:
 :page-layout: default-cloud
 :description: Learn how to enable AI features in ThoughtSpot.
-:jira: SCAL-211072, SCAL-215955, SCAL-256741, SCAL-264258
+:jira: SCAL-211072, SCAL-215955, SCAL-256741, SCAL-264258, SCAL-271624
 
 
 To enable Spotter search and other AI features for users in your organization, you must first enable AI features from the Admin portal, add Spotter privileges to the specific users or groups, and enable Spotter on your desired Model(s).
 
 
-== Turn on AI features for your cluster
+== Turn on AI features for your instance
 
 
-To turn on AI features for your cluster, follow these steps:
+To turn on AI features for your instance, follow these steps:
 
 
-. Click on your profile and select *Admin settings*.
+. Navigate to the *Admin* tab. If you have multiple Orgs in your instance, select *All Orgs*.
 
 
 . Select *ThoughtSpot AI* under the *Application settings* section in the left side menu.
 +
 [.bordered]
-image:enable-ai-spotter.png[Edit Ask AI section]
+image:enable-ai-spotter2.png[Edit Ask AI section]
 
 
 . From the *Choose Spotter experience* section, you can choose either *Spotter* or *Sage & Ask Sage*.
 
 
-. From the *Choose Spotter answer experience* section, you can choose the answer experience as *Spotter agent* or *Classic experience*. You can also set Spotter Agent as on by default, if it has been enabled. For more information on the behavior of Spotter or Sage and Ask Sage in relation to Spotter Agent, see xref:spotter-agent.adoc[Spotter Agent].
+. From the *Choose Spotter answer experience* section, you can choose the answer experience as *Spotter agent* or *Classic experience*. You can also set Spotter Agent as on by default, if it has been enabled. For information about the Spotter answer experience, see xref:spotter-answer-experience[].
+
 +
 [#why]
 Set *Answer Why questions* to *Enabled* to facilitate asking questions about why your data has changed, and to receive natural language summaries of key change drivers.
++
+Set *Enable add to coaching from chat* to *Enabled* to allow users to add reference question and business term interpretations to Spotter without leaving their conversation.
 
 
-. From the *Choose where your users can access Spotter* section, you can enable Spotter on the Homepage and left navigation, and on Liveboards.
+. From the *Choose where your users can access Spotter* section, you can enable Spotter on the home page and left navigation, and on Liveboards.
++
+NOTE: If you select Spotter under *Choose Spotter experience*, but do not enable Spotter on the home page or on Liveboards, users on your instance will not be able to access Spotter.
 
 
 . From the *Other AI features* section, you can enable the following features:
@@ -44,8 +49,7 @@ Set *Answer Why questions* to *Enabled* to facilitate asking questions about why
 AI Sample Questions:: Enable this feature to see data set-specific suggested searches on the Home page. For more information, see xref:search-ai-suggested.adoc[].
 
 
-//AI Answers on Liveboards:: Also known as Ask Sage, this feature enables you to use natural language to ask follow-up questions about answers pinned to your Liveboards.
-//For more information, see xref:ask-sage.adoc[].
+//AI Answers on Liveboards:: Also known as Ask Sage, this feature enables you to use natural language to ask follow-up questions about answers pinned to your Liveboards. For more information, see xref:ask-sage.adoc[].
 
 
 //AI Synonyms:: This feature automatically creates synonyms to your Model column names when you save a new or edited Model. For more information, see xref:data-modeling-visibility.adoc#automatic-synonyms[AI-generated synonyms].
@@ -64,16 +68,102 @@ AI Highlights on Liveboard:: Enables an *AI Highlights* button that initiates Sp
 --
 
 
-. From the *LLM Configuration* section, you can choose whether to use the default ThoughtSpot LLM configuration with either a default or manual model provider, or connect your own LLM key. When you manually select a model provider, you can choose either OpenAI by Azure,Gemini or Claud Models by Vertex AI. We recommend choosing the default ThoughtSpot LLM configuration (ThoughtSpot Enabled Auto-select).
+. From the *LLM Configuration* section, you can choose which provider to use for ThoughtSpot's AI features. We currently support Azure OpenAI, and Google Gemini (Early Access).
 
 
-. From the *Data Models* section, you can disable AI search on all data models. To enable AI on a data model, you need to access them from the Data workspace and turn it on individually.
+. From the *Data Models* section, you can disable AI search on all data models. To enable AI on a data model, you need to access the individual Model from the Data workspace and turn it on.
 
 
 . From the *User privileges* section, you can click to be directed to Users and Groups in order to assign privileges.
++
+Note that users or groups must have *Can preview thoughtspot sage* permissions to access Spotter.
 
 
 . To revert to the previous settings, click *Reset configuration*.
+
+=== Enable Spotter for a user group
+
+
+
+
+To give Spotter privileges to a certain user group, follow these steps:
+
+
+
+
+. Navigate to the Admin panel, either by clicking on the Admin button in the top menu or by selecting Admin from the app switcher icon.
+
+
+
+
+. If your instance has Orgs enabled, navigate to the *Primary org* tab in the left menu and select *Groups* under *User management*. Otherwise, select *Groups* under *User management*.
+
+
+
+
+. Select the name of the desired user group to open the *Edit group* pop-up.
+
+
+
+
+. Scroll to the *Roles* section and select the checkbox next to the *can preview thoughtspot sage* privilege. Click *Review selection* and *Save*.
+
+=== Enable Spotter for a Liveboard
+
+In order for users to access Spotter on a Liveboard visualization, the underlying data source must be enabled for Spotter. To enable a Model for Spotter, follow these steps:
+
+. Navigate to the Data workspace, either by selecting *Data* in the top menu bar or by selecting *Data workspace* from the app switcher icon.
+. Select the Model from the list in the Data workspace.
+. Click the *More* icon image:icon-more-10px.png[more menu icon] in the upper right corner and select *Enable Spotter*.
++
+NOTE: If Spotter is disabled on a certain Model, users will still see the Spotter icon on visualizations built on any dependent Liveboard. Clicking *Spotter* will result in an error message prompting users to ask an admin to turn on AI features for the data source.
+
+[#classic-agent]
+=== Choose your Spotter experience
+
+If Spotter Agent has been enabled for your instance, you can choose between Spotter experiences in your user profile. To change your selection, follow these steps:
+
+. Navigate to your user profile and scroll to the Experience section.
+
+. Click *Edit*.
+
+. For *Spotter answer experience*, select *Spotter agent* or *Classic experience*.
+
+. Click *Save*.
++
+If you do not find _Spotter answer experience_ in your user profile, contact your ThoughtSpot administrator for assistance.
+
+[#spotter-answer-experience]
+=== Spotter answer experience behavior
+
+Refer to the following table to understand the behavior of the Spotter answer experience based on which settings are enabled.
+
+[options="header"]
+|===
+| Choose Spotter experience | Spotter answer experience | Make Spotter agent default experience for all users | User experience
+
+
+| Sage & Ask Sage | Spotter Agent | Enabled | We do not recommend this configuration.
+
+
+| Spotter | Classic experience | Disabled | Spotter Agent is disabled on the instance.
+
+
+| Spotter | Spotter Agent | Disabled | Spotter Agent is disabled by default, but you can opt in from your profile page.
+
+
+| Spotter | Spotter Agent | Enabled | All users experience Spotter Agent.
+|===
+
+
+
+== Security
+
+Spotter respects all existing security measures, including row-level security and column-level security.
+
+To access Spotter on a Model, three tiers of permissions are required. Spotter must be enabled for your instance, the Model must have Spotter enabled, and you must have Spotter user privileges.
+
+Users without proper privileges see a pop-up message indicating "Spotter is not enabled for you."
 
 
 == Data shared with LLM
@@ -81,7 +171,7 @@ AI Highlights on Liveboard:: Enables an *AI Highlights* button that initiates Sp
 
 
 
-The Answer Why questions feature is the only setting that shares data with the underlying LLM.
+The Answer why questions feature is the only setting that shares data with the underlying LLM.
 
 
 Enabling this feature allows Spotter to send query-related data, such as aggregated metrics and dimension values, to an LLM to identify the data points and generate explanations. Please ensure this complies with your organization’s policies. The data is not utilized for model training, and we maintain a zero-data retention policy with all our LLM providers.
