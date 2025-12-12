@@ -4,35 +4,34 @@
 :linkattrs:
 :experimental:
 :page-layout: default-cloud
-:page-aliases: spotter-worksheet-model.adoc, worksheet-readiness.adoc, worksheet-readiness.adoc#_guidelines_for_indexing_attribute_columns
+:page-aliases: spotter-worksheet-model.adoc
 :description:
-:jira: SCAL-228500, SCAL-232768, SCAL-243503, SCAL-240422, SCAL-251986, SCAL-264258, SCAL-269995, SCAL-283516
+:jira: SCAL-228500, SCAL-232768, SCAL-243503, SCAL-240422, SCAL-251986, SCAL-264258, SCAL-269995
+
+ 
+
+
+Set yourself up for success by taking the time to optimize your data model configuration. By taking the time to prepare your data for use with our AI systems, you gain more accurate responses to your questions.
 
 
 
 
-Spotter achieves accuracy through four primary channels: our AI model training, system post-processing, customer data preparation, and coaching of the AI tool. By taking the time to prepare your data for use with our AI systems, you not only achieve greater accuracy, but increase the intuitiveness and satisfaction your users have with its experience.
+There are several steps you can take to optimize Models and significantly improve Spotter accuracy. These steps include:
+
+
+
+* Reducing Model size to fewer than fifty columns.
+* Using human-readable and unique column names.
+* Turning on *Indexing* for relevant columns.
+* Adding synonyms for columns that have other nicknames or internal terms.
+
+
+Best practices for Spotter Models include paying attention to column names (making sure column names are intuitive and accurate to the terminology your business users use), synonyms (adding relevant synonyms for column names where users might use different terms for the same thing), column availability (ensuring that all data columns required to answer user queries are present in the Model, and that you don’t have excess columns that aren’t relevant), and column descriptions (providing clear column descriptions to aid Spotter’s understanding).
 
 
 
 
-There are several proactive steps you can take to optimize Models and significantly improve Spotter accuracy. These steps include:
-
-
-
-
-Reducing Model size to fewer than fifty columns.
-Using human-readable and unique column names.
-Turning on *Indexing* for relevant columns.
-Adding synonyms for columns that have other nicknames or internal terms.
-
-
-Key considerations for Spotter Model optimization include paying attention to column names (making sure column names are intuitive and accurate to the terminology your business users use), synonyms (adding relevant synonyms for column names where users might use different terms for the same thing), column availability (ensuring that all data columns required to answer user queries are present in the Model, and that you don’t have excess columns that aren’t relevant), and column descriptions (providing clear column descriptions to aid Spotter’s understanding).
-
-
-
-
-This article details each step of setting up a Model, and will help your company reach the highest accuracy with our AI systems.
+This article details each step of setting up a Model.
 
 
 == Prefer wider tables versus longer tables
@@ -73,8 +72,8 @@ Example;;
 Avoid similar column names::
 If identical strings appear in multiple columns, it may confuse Spotter’s judgement on column selection.
 Example;;
-For the query ‘Show customers by Product’, it is difficult for Spotter to understand which column to choose between `Product Line` and `Product Type`, and the answer generated may not use the column expected.
-Use user-friendly names over abbreviations and domain specific terms::
+For the query ‘Show customers by product’, it is difficult for Spotter to understand which column to choose between `Product Line` and `Product Type`, and the answer generated may not use the column expected.
+Use user-friendly names over abbreviations and domain-specific terms::
 When creating column names, avoid using abbreviations and internal jargon or acronyms, as they may not be easily understood by Spotter.
 Example;;
 For instance, for the query ‘Show the number of policies created last month’, it is difficult for Spotter to know whether to choose the `plc_date` or `crt_date` column to generate the answer.
@@ -86,11 +85,11 @@ Avoid mismatch between column values and data type::
 Ensure column values match their respective data types.
 Example;; If a column named `order_date` has values like `01 Jan 20` but is set to text data type, change it to date data type to improve accuracy.
 Use spaces as delimiters in column names::
-Avoid using other types of delimiters such as brackets (`[]`) and emojis as they may interfere with Spotter functionalities.
+Avoid using other types of delimiters such as brackets and emojis as they may interfere with Spotter functionalities.
 Avoid overlap in column names and keywords::
 Avoid overlap between column names and xref:keywords.adoc[ThoughtSpot search keywords], as it can impact accurate query interpretation.
 Example;;
-If a column is named `Sales growth`, indicating annual sales growth, and a user searches for 'What is the Sales growth month on month' Spotter might prioritize the `Sales growth` column instead of recognizing the user's intent to use the `growth` keyword on the `Sales` column in a monthly context.
+If a column is named `Sales growth`, indicating annual sales growth, and a user searches for 'What is the sales growth month on month', Spotter might prioritize the `Sales growth` column instead of recognizing the user's intent to use the `growth` keyword on the `Sales` column in a monthly context.
 
 
 Avoid column names that start with numbers:: You can still name columns with numbers in the middle of the title.
@@ -231,10 +230,10 @@ NOTE: Always disable indexing for Personally Identifiable Information (PII) Data
 
 
 Avoid indexing unused columns with overlapping values::
-Index only required columns.  Too many values from columns might confuse Spotter in selecting the right column.
+Index only required columns. Too many values from columns might confuse Spotter in selecting the right column.
 Example;;
 Consider a query such as 'Show sales for Washington area'. Spotter may find it challenging to determine whether the user is referring to 'Washington' within the context of the column names `District` or `State`, as the value is present for both columns. If it's unavoidable in your business context to disable indexing on a column as users can query for values on it, we suggest specifying the column name while querying to help Spotter in picking the right column. +
-For instance, changing the query to  ‘Show sales for Washington State’ will provide a more accurate result.
+For instance, changing the query to ‘Show sales for Washington state’ will provide a more accurate result.
 Avoid indexing descriptive text columns::
 This can impact accuracy as it confuses Spotter in picking the right column.
 Ensure indexing of low-cardinality columns::
@@ -264,15 +263,11 @@ To use Optimize for Spotter, do the following:
 
 
 . In the Data workspace, click the name of the Model you want to optimize for Spotter.
-. In the Model, click the *More* menu image:icon-more-10px.png[Chart configuration icon image], and select *Enable Spotter*.
+. In the Model, click the *More* menu image:icon-more-10px.png[more menu icon image], and select *Enable Spotter*.
 . Click the *Spotter optimization* tab.
 
 
 . Under *Enable indexing*, click *View suggestions*. The *Optimize for Spotter* window appears with a list of columns that are not currently indexed. Click *Optimize*.
-+
-After all selected columns are indexed, the _Indexing successful_ message appears at the bottom of the page.
-+
-image::optimize-spotter-success.png[Indexing successful]
 
 
 === Use Spotter optimization to fix date value issues
@@ -287,8 +282,7 @@ Correct date values help Spotter interpret queries and apply filters correctly. 
 
 
 . Under *Fix date value issues*, click *View suggestions*. Click *Optimize*.
-+
-After all selected columns are indexed, the _Indexing successful_ message appears at the bottom of the page.
+
 
 
 
@@ -305,9 +299,6 @@ Setting the correct type for columns (like attribute or measure) helps Spotter i
 
 
 . Under *Fix column type mismatches*, click *View suggestions*. Click *Optimize*.
-+
-After all selected columns are indexed, the _Indexing successful_ message appears at the bottom of the page.
-
 
 
 
@@ -321,7 +312,6 @@ If it is not possible to fully optimize the Model, or there are additional recom
 
 
 - The "Optimize for Spotter" guidance message appears when there are additional steps recommended for Spotter optimization.
-//In this case, refer to xref:model-readiness.adoc[Model readiness for Sage] for guidelines on how to prepare your Model to improve accuracy.
 +
 [.bordered]
 image::optimize-spotter-readiness.png[Optimize for Spotter readiness]

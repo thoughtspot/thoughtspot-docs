@@ -1,0 +1,167 @@
+= What to do after coaching Spotter
+:last_updated: 9/9/25
+:author: Naomi
+:linkattrs:
+:experimental:
+:page-layout: default-cloud
+:description: After coaching Spotter, follow these steps to prepare your data for the search experience.
+:jira: SCAL-267910
+
+To fine-tune Spotter’s understanding of your data, you will want to test and validate its responses after you coach reference questions and business terms. This article documents the steps you should take after coaching Spotter.
+ 
+[#step-6]
+== Step 1: Retest, validate, and save
+
+Once your reference questions and business terms are in place, you will validate the coaching with comprehensive test queries, test with an internal pilot group for feedback, and refine and finalize your coaching.
+
+=== Validate with comprehensive test queries
+
+. Run various sample questions (a set of test queries defined when you xref:spotter-deploy.adoc#step-2[collected real questions] and xref:spotter-deploy.adoc#step-4[tested Spotter]) to check if Spotter applies the logic correctly.
++
+[.bordered]
+image::spotter-test-ref.png[A sample question in the Spotter search bar reading “show me the win rate in the last quarter for David”]
+
+. Test if the answer is being generated as you expected. For instance, if you coached “win rate” and ask for “win rate this quarter”, check if Spotter correctly applies the formula and adapts to “this quarter”.
++
+[.bordered]
+image::spotter-test-result.png[A “review AI-generated Answer” screen, showing search tokens for ‘win rate (this quarter)’ and ‘david mehan’. In the side bar, you can see three formulas, “won deals (this quarter)”, “concluded deals (this quarter)”, and “win rate (this quarter)”. “Win rate (this quarter)” is selected.]
++
+Here, you can see that three formulas (originally defined in the coaching) defined for win rate are automatically getting generated and updated to leverage “this quarter” instead of last quarter, with the correct date column for each.
++
+You can now be more assured of Spotter applying this logic anywhere “win rate” is used, even in follow-up questions or comparisons.
+
+. Update and fine-tune your decisions based on these tests. If you are testing terms internally and don’t want to impact other user queries, keep it on user level. If you are ready for this to impact all queries on the data model, keep it on global level.
++
+[.bordered]
+image::spotter-make-global.png[Change business term access modal appears, with global selected.]
+
+For more information on user and group level coaching, see xref:spotter-coaching-permissions.adoc[Understand coaching levels].
+
+=== Test with an internal pilot group for feedback
+
+. Engage a select group of internal users (ideally some of the target personas identified earlier or power users familiar with the data) to conduct pilot testing. This group is focused on validating the coaching and Spotter’s performance before it’s finalized.
+
+. Provide them with access to Spotter with the new coaching.
+
+. Encourage them to ask their typical business questions.
+
+. Review the types of questions they ask from the conversation log in the xref:spotter-conversations-liveboard.adoc[Spotter Conversations Liveboard].
+
+. Gather the users’ feedback on the accuracy and relevance of answers, ease of getting the information they need, and any confusing responses or unexpected behavior.
+
+
+NOTE: If your selected users do not have Model editing access, their feedback remains on user level, affecting only their queries.
+
+Note that feedback, or upvoting or downvoting an Answer using the thumbs up and thumbs down icons below the Answer, is only visible to users reviewing the Spotter Conversations Liveboard. Submitting feedback on an Answer *does not* add coaching to the system, it just adds context to the conversations recorded in the system Liveboard.
+
+=== Use TML for version control and safe testing
+
+A best practice for safely validating your coaching, especially before a major launch or data model update, is to use the TML import/export feature. This allows you to:
+
+Achieve version control:: Regularly export your existing coaching as a TML file. This serves as a backup and a "version" of your coaching that you can roll back to if needed.
+
+Test in isolation:: You can create a copy of your data model for testing purposes. Then, use the TML import feature to quickly migrate all your existing coaching to this new, non-production data model.
+
+Validate changes safely:: This isolated environment allows you and your internal pilot group to test new coaching, experiment with changes, and validate fixes without impacting the live Spotter experience for your general users.
+
+=== Refine and finalize coaching
+
+Based on the results from your test queries and the feedback from the internal pilot group, iterate on your coaching.
+
+This may involve:
+
+* Potentially xref:spotter-deploy.adoc#step-3[revisiting the data model] if fundamental issues are identified.
+* Enriching metadata by modifying AI context in columns.
+* Adjusting reference questions as per user queries.
+* Modifying business term definitions.
+* Adding new coaching for unanticipated scenarios.
+
+
+Continue this test-and-refine cycle until you achieve a satisfactory level of accuracy and usability.
+
+[#step-7]
+== Step 2: Prepare for launch
+
+Once your coaching has been thoroughly tested and validated, the next crucial phase is to prepare for a smooth and effective rollout of the coached Spotter experience to your broader community.
+
+Leverage your pilot group as champions:: Ask internal users from your <<step-6,pilot testing>> to act as champions for Spotter. Encourage them to share their positive experiences and assist colleagues, as their advocacy can significantly boost initial adoption.
+
+Develop and share user resources:: Create concise user resources like a “Spotter FAQ” or a quick-start guide. Include a list of well-coached example questions relevant to their use cases to help users achieve early success with Spotter.
+
+Coach business users effectively:: Conduct focused coaching sessions that teach users how to interact with Spotter for their specific business questions and workflows. Emphasize the importance of verifying the answers Spotter provides. Encourage users to critically assess this information. Instruct them how to provide feedback (by using available rating tools, and noting issues for the coaching team) or try rephrasing their question if an answer seems incorrect.
+
+Establish clear support channels:: Clearly define and communicate how end users can get help with Spotter, whether for questions, technical issues, or improvement suggestions.
+
+Communicate the launch effectively:: Formally announce Spotter’s availability to the target user groups. Highlight the benefits for their roles, explain how to access Spotter, and point them to coaching resources and support channels. Consider a phased rollout, starting with enthusiastic or high-impact teams.
+
+Completing these preparation steps will significantly enhance the adoption, perceived value, and overall effectiveness of Spotter within your organization, setting the stage for a successful deployment.
+
+[#step-8]
+== Step 3: Launch, monitor, and iterate
+
+Once you’re confident, launch the use case with your end users. Coaching doesn't stop at launch; ongoing monitoring is key to improving accuracy and adoption.
+
+Roll out Spotter according to your communication plan and monitor how Spotter is being used and how it's performing. Use the xref:spotter-conversations-liveboard.adoc[Spotter conversations Liveboard] to track key metrics such as:
+
+* Most common questions asked by users.
+* Perceived accuracy of responses (for example, through upvoted and downvoted answers or other feedback mechanisms).
+* Coverage gaps in your current coaching (that is, questions Spotter struggles with or answers incorrectly).
+* User adoption rates across different teams or personas.
+* Common terms or phrasing used by users that may not yet be part of your coaching.
+
+The insights gained from monitoring, coupled with changes in your business environment, will guide your ongoing efforts to enhance Spotter.
+
+Usage-driven refinements (proactive and iterative):: Identify coaching opportunities by regularly analyzing the data and feedback gathered from monitoring.
+
+TIP: Pay close attention to “downvoted” conversations, queries where Spotter provided no answer, or instances where users rephrased their questions multiple times. These are excellent candidates for new reference questions, business term definitions, or refinements to existing coaching.
+
+Event-driven updates (reactive and planned):: Beyond continuous usage-based refinement, plan to revisit and update your Spotter coaching in response to specific business or data changes. Key triggers include:
++
+--
+* New business metrics, KPIs, or important concepts being introduced in your organization.
+* Changes in the definitions or calculation logic of existing metrics or business terms.
+* Significant modifications to your data model, or when new data sources, tables, or critical columns are added that users will want to query via Spotter.
+* Direct user feedback (outside of automated monitoring) that highlights consistent misunderstandings or areas for improvement.
+* Evolution in your overarching business strategy or reporting requirements, necessitating changes in how data is interpreted or presented.
+--
+
+TIP: Use TML export for advanced analysis.
+
+While the Spotter Conversations Liveboard is excellent for monitoring, you can use the TML export functionality to analyze your coaching at scale. By exporting all your coaching (reference questions, business terms, and natural language instructions), you can"
+
+Identify conflicting coaching at scale:: Use an LLM or other analysis tools on the exported TML file to find contradictory coaching. THis helps ensure that at no point are two different things being coached for the same concept, allowing you to rationalize your coaching.
+
+Analyze column usage:: You can perform further analysis to see how many columns show up in multiple coaching examples. If a specific column is frequently a part of coaching, it strongly highlights the need to provide clearer AI context for it directly on the data model.
+
+Find redundancies:: Identify and remove redundant formulas or similar business terms.
+
+Validate alignment:: Share your global natural language instructions along with your exported TML to confirm that your specific coaching examples are in line with your global rules.
+
+By establishing a cycle of launching, actively monitoring, and iteratively refining your coaching based on both real-world usage and business evolution, you ensure that Spotter remains an accurate, relevant, and valuable tool.
+
+[#step-9]
+== Step 4: Troubleshoot common coaching scenarios
+
+Even with careful data modeling and dedicated coaching, you might occasionally encounter scenarios where Spotter’s responses aren’t what you expect, or you might have questions about the best coaching approach. This section covers common issues and provides guidance.
+
+.Quick troubleshooting: Common issues and initial actions
+[options=”header”]
+|===
+| Issue | What to do
+
+| Spotter uses the wrong column or value (for example, pick ship date instead of order date) a| This is a data model foundation problem.
+
+. Evaluate the data model. Check the column names and, most importantly, the AI context for both the column Spotter used and the one you expected.
+
+. Refine the AI context, making it explicit in both columns. This must be refined before proceeding with any other coaching mechanism.
+
+| Spotter answers incorrectly (for example, the formula is wrong, or the logic is flawed) a| Consider ambiguity:: Is the user’s original question ambiguous? Sometimes rephrasing the question can help.
+
+Check your coaching hierarchy:: Is the AI context on the relevant columns missing, incorrect, or ambiguous? Is a global, conceptual rule in natural language instructions missing or written unclearly? For a complex formula, did you add a clear reference question with natural language context? Do any of your coaching tools contradict each other?
+
+| A business term isn’t being applied | Confirm that the exact phrase used in the question matches to the defined business term (for example, “win rate” is not the same as “win_ratio”).
+
+| Conflicting results with slight variation | You might have duplicate or conflicting coaching examples. For example, your AI context or natural language instructions say "Exclude test accounts", but you coached a reference question that forgets to add that filter. Try to remove or clarify context in such situations. If stuck, contact {support-url}.
+|===
+
+For more examples on how to refine your coaching, see xref:spotter-coach-not-coach.adoc#coaching-strategy[How many examples and when?]

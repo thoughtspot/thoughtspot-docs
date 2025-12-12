@@ -1,25 +1,41 @@
 = Natural language instructions in Spotter
 :last_updated: 8/20/25
 :author: Naomi
-:page-layout: default-cloud
+:page-layout: default-cloud-early-access
 :page-aliases: spotter-instructions.adoc
 :linkattrs:
 :experimental:
 :description: You can add instructions in a natural language conversation to teach Spotter how to answer similar questions on the data model.
-:jira: SCAL-267909, SCAL-267381, SCAL-282720
+:jira: SCAL-267909
 
-The natural language instructions feature allows you to provide the Spotter system with global rules that it should follow across all relevant queries. Unlike xref:spotter-context.adoc[Spotter context], which is tied to a specific reference question, a natural language instruction is a standalone directive designed to teach the system a core concept, a default behavior, or a specific data nuance. These instructions are sent along with the user’s query to guide the system toward a more accurate and consistent response.
+The natural language instructions feature allows you to provide the Spotter system with global rules that it should follow across all relevant queries. Unlike xref:spotter-context.adoc[Spotter context], which is tied to a specific reference question, a natural language instruction is a standalone directive designed to teach the system a core concept, a default behavior, or a specific data nuance.
 
-NOTE: These instructions are globally applicable and influence all queries made by any user on the data model, unlike other coaching methods that also have a user-level scope.
+These instructions are globally applicable and influence all queries made by any user on the data model, unlike other coaching methods that also have a user-level scope.
 
+.See *Natural language instructions* in action.
 +++
 <div class="border">
 <script src="https://fast.wistia.com/player.js" async></script><script src="https://fast.wistia.com/embed/u44wyiigfc.js" async type="module"></script><style>wistia-player[media-id='u44wyiigfc']:not(:defined) { background: center / contain no-repeat url('https://fast.wistia.com/embed/medias/u44wyiigfc/swatch'); display: block; filter: blur(5px); padding-top:62.92%; }</style> <wistia-player media-id="u44wyiigfc" aspect="1.5894039735099337"></wistia-player>
 </div>
 +++
 
+////
+[%collapsible]
+.See *Natural language instructions* in action.
+====
+--
++++
+<div class="border">
+<script src="https://fast.wistia.com/player.js" async></script><script src="https://fast.wistia.com/embed/u44wyiigfc.js" async type="module"></script><style>wistia-player[media-id='u44wyiigfc']:not(:defined) { background: center / contain no-repeat url('https://fast.wistia.com/embed/medias/u44wyiigfc/swatch'); display: block; filter: blur(5px); padding-top:62.92%; }</style> <wistia-player media-id="u44wyiigfc" aspect="1.5894039735099337"></wistia-player>
+</div>
++++
+--
+====
+////
 
+NOTE: Natural language instructions are in Early Access and off by default. To enable this feature, contact your administrator.
 
+ 
 == Access and permissions
 
 To add or manage natural language instructions, you must have data model editing access.
@@ -42,10 +58,10 @@ Example;; If a query for "market" could ambiguously use a `City` or `Canvas Mark
 Example;; To ensure counts are always accurate, you can specify the column to use for counting: "For counting customers, always use the unique count of ‘Customer Cred ID’".
 
 Answer enrichment:: Automatically add more detail to answers to make them more comprehensive without requiring the user to ask for every column explicitly.
-Example;; If a user asks for basic provider information, you can enrich the answer with more detail using the instruction: "Provider demographic info is name, address, tax info, class and state code".
+Example;; If a user asks for basic provider information, you can add more detail to the answer using the instruction: "Provider demographic info is name, address, tax info, class, and state code".
 
 Date handling:: Manage how the system handles date and time analysis, especially when a user omits a time frame.
-Example;; To prevent expensive, wide-ranging queries and align with common user preferences, you can set a default time period: "If a query does not specify a time period, apply a default filter for the 'last 30 days'".
+Example;; To prevent expensive, wide-ranging queries, you can set a default time period: "If a query does not specify a time period, apply a default filter for the 'last 30 days'".
 
 
 == Give instructions in Spotter
@@ -56,7 +72,7 @@ To give instructions in Spotter, follow these steps:
 
 . Let’s say your company defines “last month” as the last 30 days. If Spotter answers your question with the date filter “last month,” you can add context to correct its answer.
 
-. Click the information pane icon  in the top right corner of the conversation. The instructions pop-up appears.
+. Click the information pane icon in the top right corner of the conversation. The instructions pop-up appears.
 
 . Click the *+* icon to add an instruction. In the text box that appears, type your instruction. For example, you could say, “When I ask for last month, use ‘last 30 days’ as a filter.”
 
@@ -64,22 +80,23 @@ To give instructions in Spotter, follow these steps:
 
 . When the pop-up closes, Spotter displays an acknowledgement that Instructions have been updated. Click *Regenerate last answer* to see the updated answer to your question and verify that Spotter has understood your instructions.
 
-== Give instructions in the Model
+== Give instructions on a Model
 
-To give instructions in the Model, follow these steps:
+To give instructions on a Model, follow these steps:
 
-. Navigate to the Data workspace and select the Model. Click the *Instructions* tab. You must have edit access to the Model to add instructions.
+. Open the Data workspace and select your Model. You must have edit access to the Model to add instructions.
 
-. In the text box, type your instruction. For example, you could say, “When I ask for last month, use ‘last 30 days’ as a filter.”
+. Click the *Instructions* tab.
 
-You can access the instructions in Spotter when you search on the Model, and edit them in conversation as well as in the Model view.
+. In the text box that appears, type your instruction. For example, you could say, “When I ask for last month, use ‘last 30 days’ as a filter.”
+
+. Click *Save changes*.
 
 == Best practices for writing instructions
 
 Be specific and direct:: Write your instruction as a clear command to ensure the system applies your rule correctly and predictably. For example, "Exclude all sales from 'Internal Test' accounts" is better than "I don't usually want to see our internal test accounts in reports."
-
-
-Pro tip;; In many cases, using preferential language like "Prefer A over B" can be more effective than a hard command like "Use A".
++
+In many cases, using preferential language like "Prefer A over B" can be more effective than a hard command like "Use A".
 
 Group instructions by concept:: Instead of creating many separate instructions for small, related rules, it is better to group them. Focus on teaching all the logic related to a particular business concept in a single, well-structured instruction. This helps the system understand the full context and know which rules to apply when a user's query mentions that concept.
 
@@ -92,9 +109,9 @@ Example;; *Instead of a generic (less effective) instruction*: "Exclude canceled
 
 No automatic override behavior:: A natural language instruction does *not* automatically override a user’s direct query if they conflict. Instead, both the user’s query and the instruction are sent to the Model, which can lead to unpredictable results or confusing answers. This makes writing clear, specific instructions critical.
 
-Not recommended for mathematical formulas:: Natural language instructions are not well-suited for teaching the system mathematical formulas or complex calculations. For these scenarios, other coaching methods, such as providing a reference question with xref:spotter-context.adoc[natural language context], are strongly recommended.
+Not recommended for mathematical formulas:: Natural language instructions are not well-suited for teaching the system mathematical formulas or complex calculations. For these scenarios, we recommend other coaching methods, such as providing a reference question with xref:spotter-context.adoc[natural language context].
 
-Avoid conflicting coaching:: The instructions you provide must be coherent with each other and with other coaching assets like reference questions and business terms. Contradictory information will confuse the model and lead to unpredictable results.
+Avoid conflicting coaching:: The instructions you provide must be coherent with each other and with  reference questions and business terms. Contradictory information will confuse the model and lead to unpredictable results.
 
 Unsupported capabilities:: To set clear expectations, please note that several advanced “agentic” behaviors are not currently supported by natural language instructions. These include:
 +
