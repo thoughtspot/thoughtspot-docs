@@ -1,0 +1,43 @@
+= Enabling conversation history
+:last_updated: 1/12/26
+:author: Naomi
+:linkattrs:
+:experimental:
+:page-layout: default-cloud-early-access
+:description: By preserving the logic and context of previous questions, users can return to complex analyses days or weeks later without losing progress.
+:jira: SCAL-287506
+
+
+Saved Conversation History (Save Chat) enables Spotter 3 to transform from a session-based search tool into a persistent analytical assistant. By preserving the logic and context of previous questions, users can return to complex analyses days or weeks later without losing progress.
+
+== Key capabilities
+
+* Workflow continuity: Resume previous threads to ask follow-up questions with full conversational context.
+* Automatic organization: Conversations are automatically named based on the initial query and sorted by the most recent activity.
+* Governance-first retention: A strict 180-day retention policy ensures compliance while reducing manual data management.
+
+== Governance and administration
+
+This feature is designed with a "secure by default" posture. Administrators have full control over the lifecycle of conversational data.
+
+=== Feature enablement (opt-in)
+
+Saved Conversation History is disabled by default.
+
+* Enabled State: When an administrator opts in, Spotter 3 begins auto-saving user interactions to the history rail.
+* Disabled (Ephemeral) State: If the feature is not enabled, all conversations are strictly ephemeral. No history is stored, and data logic is cleared upon the conclusion of a session.
+
+=== Data retention and TTL
+
+To align with enterprise data privacy standards, ThoughtSpot enforces a single, streamlined retention policy:
+
+* 180-day TTL: Conversations are retained for exactly 180 days from the last interaction.
+* No soft delete: Once a conversation exceeds the 180-day limit, it is permanently purged from the system.
+* Purge on disablement: If an administrator disables the feature, all existing history is removed within the next 24 hours, and this is non-reversible, and the environment reverts to a zero-persistence state.
+
+=== Security and data integrity
+
+Spotter 3 maintains security by separating the _logic_ of a conversation from the _raw data_:
+
+* Access-aware resumption: Spotter does not store static data results. Upon resuming a chat, Spotter refetches the data from the source, ensuring that row-level security (RLS) and column-level security (CLS) are applied in real-time.
+* Permission Sync: If a user's access to a data model is revoked, they can no longer interact with saved conversations associated with that model.
