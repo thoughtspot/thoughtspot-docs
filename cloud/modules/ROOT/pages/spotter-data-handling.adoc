@@ -1,5 +1,5 @@
-= Spotter 3 Data handling
-:page-last_updated: Jan 14, 2026
+= #Spotter 3 data handling#
+:page-last_updated: Jan 16, 2026
 :author: Mark
 :linkattrs:
 :experimental:
@@ -9,62 +9,62 @@
 
 This article describes the changes in how ThoughtSpot handles your data in Spotter 3.
 
-== #Security and governance#
-#While previous versions of Spotter only processed data, Spotter 3 is able to read user prompts and its responses and correct its own mistakes. This allows Spotter to access the same filtered, security-trimmed data a user views on their screen. This enables deeper analytical insights, natural language summaries, and “Why” question analysis. To support this, ThoughtSpot has implemented a robust security framework ensuring that your organization’s security rules are Spotter’s security rules.#
+== Security and governance
+While previous versions of Spotter only processed data, Spotter 3 is able to read user prompts and its responses and even correct its own mistakes. This allows Spotter to access the same filtered data a user sees in ThoughtSpot, and provide deeper analytical insights, natural language summaries, and “Why” question analysis. To support Spotter 3 security, ThoughtSpot has created a robust data protection architecture to ensure that your organization’s security rules are Spotter’s security rules.
 
-=== #Data protection architecture#
+=== Data protection architecture
 
-#Spotter 3 utilizes a security mirroring architecture to ensure data integrity and privacy throughout the analytical process.#
+Spotter 3 utilizes a security mirroring architecture to ensure data integrity and privacy throughout the analytical process.
 
-#Security parity#:: #Spotter strictly honors existing data permissions. If a user cannot see a specific row or column in ThoughtSpot due to row-level security or column-level security, that data is *never* sent to the Large Language Model (LLM).#
+Security parity:: Spotter strictly honors existing data permissions. If a user cannot see a specific row or column in ThoughtSpot due to row-level  or column-level security, that data is *never* sent to the Large Language Model (LLM).
 
-#Minimalist transmission#:: #Spotter never sends entire tables or databases to LLM providers. It only transmits the relevant, filtered query results necessary to answer the specific question asked.#
+Minimalist transmission:: Spotter never sends entire tables or databases to LLM providers. It only transmits the relevant, filtered query results necessary to answer the specific question that is asked.
 
-#Stateless processing#:: #While data context is sent to an LLM for real-time analysis, the LLMs provided by ThoughtSpot do not retain any data after processing.#
+Stateless processing:: While data context is sent to an LLM for real-time analysis, the LLMs provided by ThoughtSpot do not retain any data after processing.
 
-#Encryption standards#:: #All data in transit to the LLM is protected via HTTPS, and AI-generated artifacts are encrypted at rest within ThoughtSpot’s application databases.#
+Encryption standards:: All data in transit to the LLM is protected using HTTPS, and LLM-generated data is encrypted at rest within ThoughtSpot’s application databases.
 
-=== #Administrative controls and governance#
+=== Administrative controls
 
-#Administrators have centralized, granular switches to manage data awareness and information persistence.#
+Administrators can manage data awareness and information persistence using the following controls:
 
-[options=”header”]
+[options=”header”,stripes="even"]
 |===
-| Control type | Description
+| Control | Description | Location
 
-| Spotter version | An instance-level setting in *Admin* > *ThoughtSpot AI* > *Spotter version* enables Spotter 3. It is *disabled by default* for existing instances. Only the Spotter 3 version is data ware.
+| Spotter version | An instance-level setting which is *disabled by default* for existing instances. | *Admin* > *ThoughtSpot AI* > *Spotter version*.
 
-| xref:spotter-byollmk.adoc[LLM] | Organizations can provide their own Azure OpenAI keys. This ensures prompts and data remain within your organization’s self-managed cloud environment.
+| LLM | Organizations can provide their own Azure OpenAI keys. This ensures prompts and data remain within your organization’s self-managed cloud environment. | For details, see xref:spotter-byollmk.adoc[].
 
-| Column exclusion | Administrators can leverage the xref:tml-models.adoc#is_hidden[hidden column] feature in data models to prevent specific sensitive fields from ever being shared with an LLM.
+| Column exclusion | Administrators can leverage the hidden column feature in data models to prevent specific sensitive fields from ever being shared with an LLM. | For details, see xref:data-modeling-visibility.adoc[].
 
-| Previous Chats and data pipeline | Admins can disable *Previous Chats* in the *Admin > ThoughtSpot AI* page, or contact {support-url} to disable the data pipeline to the xref:spotter-conversations-liveboard.adoc[Spotter Conversations Liveboard] to immediately stop the recording of user interactions.
+| Previous Chats and data pipeline | Admins can disable *Previous Chats* or contact {support-url} to disable the data pipeline to the xref:spotter-conversations-liveboard.adoc[Spotter Conversations Liveboard] to immediately stop the recording of user interactions. | For Previous Chats, see *Enable chat history* under *Spotter 3 capabilities* on *Admin > ThoughtSpot AI*.
 |===
 
-=== #Artifact retention and storage#
+=== LLM data retention and storage
 
-#ThoughtSpot enforces strict retention and isolation protocols for all AI-generated artifacts such as summaries, insights, and logs.#
+ThoughtSpot enforces strict retention and isolation protocols for all LLM-generated data such as summaries, insights, and logs.
 
-#Previous Chats#:: #Textual insights generated by Spotter are stored in the conversations for later consumption. These are retained for a default period of six months. Previous chats is an opt-in capability at the instance level. If you opt out, then data is persisted temporarily for up to six hours in the ThoughtSpot layer.#
+Previous Chats:: Textual insights generated by Spotter are stored in the conversations for later consumption. These are retained for a default period of six months. Previous chats is an opt-in capability at the instance level. If you opt out, then data is persisted temporarily for up to six hours in the ThoughtSpot layer.
 
-#Monitoring logs#:: #Interaction logs are available in the Spotter Conversations Liveboard for administrative oversight. Admins can manually clean this storage or disable the pipeline entirely.#
+Monitoring logs:: Interaction logs are available in the Spotter Conversations Liveboard. Administrators can manually clean this storage or disable the pipeline entirely.
 
-#Data sovereignty#:: #ThoughtSpot utilizes region-specific models to honor local data residency laws, ensuring data is processed within the required jurisdiction (for example, EU-based models for EU customers).#
+Data sovereignty:: ThoughtSpot utilizes region-specific models to honor local data residency laws, ensuring data is processed within the required jurisdiction (for example, EU-based models for EU customers).
 
-#Tenant isolation#:: #Data is logically isolated per tenant. For customers requiring physical isolation, Virtual Private ThoughtSpot (VPT) is available upon request.#
+Tenant isolation:: Data is logically isolated per tenant. For customers requiring physical isolation, Virtual Private ThoughtSpot (VPT) is available upon request.
 
-=== #LLM provider compliance#
+=== LLM provider compliance
 
-#ThoughtSpot maintains strict contractual agreements with LLM sub-processors to protect enterprise data.#
+ThoughtSpot maintains strict contractual agreements with LLM sub-processors to protect enterprise data.
 
-#Zero training policy#:: #Your data is *never used to train* the foundation models of foundational LLM providers.#
+Zero training policy:: Your data is *never used to train* the foundation models of foundational LLM providers.
 
-#Exclusive use#:: #Your data is used exclusively to generate insights for your current session and is never co-mingled or shared with other entities.#
+Exclusive use:: Your data is used exclusively to generate insights for your current session and is never co-mingled or shared with other entities.
 
-=== #Implementation considerations#
+=== Implementation considerations
 
-#Standard search limitation#:: #If a column is hidden to restrict it from being shared with the LLM, it will also be hidden from standard ThoughtSpot Search.#
+Standard search limitation:: If a column is hidden to restrict it from being shared with the LLM, it is also hidden from standard ThoughtSpot Search.
 
-#User experience#:: #If sensitive columns are visualized on a Liveboard but hidden from Spotter, the AI will not have access to those columns, which may result in a degraded experience for follow-up questions.#
+User experience:: If sensitive columns are visualized in a Liveboard but hidden from Spotter, the LLM will not have access to those columns, which may result in a suboptimal experience for follow-up questions.
 
 
