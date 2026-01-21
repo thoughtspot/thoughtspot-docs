@@ -5,11 +5,135 @@
 :experimental:
 :page-layout:default-cloud
 :description: By learning how to frame your questions effectively, you can get to the answers you need faster and with greater accuracy.
-:jira: SCAL-271621, SCAL-287506
+:jira: SCAL-271621, SCAL-287506, SCAL-287506
 
 Spotter is a powerful tool for finding insights into your data. Like any good analyst, it performs best when you provide clear, thoughtful instructions. By learning how to frame your questions effectively, you can get to the answers you need faster and with greater accuracy. Here are five best practices to help you master your conversations with Spotter.
 
-== Structure your questions
+== Best practices for Spotter 3
+
+Spotter 3 introduces significant improvements over previous versions:
+
+- **Autonomous analysis** — Translates natural language to data queries, plans analysis, and delivers insights
+- **Smarter context** — Detects new questions vs. follow-ups automatically
+- **Clarification requests** — Asks questions when uncertain instead of guessing
+- **Transparent reasoning** — Shows analysis steps in plain language
+- **Narrative summaries** — Provides insights, not just charts
+
+
+
+=== Ask effective questions
+
+==== Be specific about your intent
+
+Spotter handles open-ended questions but uses its own judgment to plan analysis. Specify dimensions explicitly if needed.
+
+[options="header"]
+|===
+| Less effective | More effective
+
+| "How are sales doing?" | "How are sales doing? I expect analysis at region and store level."
+| "Show me customer data" | "Show me customer acquisition by channel."
+| "What's our performance?" | "Revenue performance this quarter. Compare it against last quarter and same quarter last year."
+|===
+
+==== Use xref:spotter-research-mode.adoc[Research Mode] for complex analysis
+
+1. Ask a high-level question (for example, "Analyze customer retention trends and identify risk factors").
+2. Review the proposed analysis plan.
+3. Add or remove steps as needed.
+4. Approve the plan.
+5. Receive a comprehensive report.
+
+TIP: Research Mode works best for quarterly reviews, root cause analysis, and multidimensional investigations.
+
+==== Use xref:spotter-auto-mode.adoc[Auto-mode]
+
+Use Auto-mode if you don't know which model to use. Auto Mode also supports cross-source queries in case you want to query data from multiple sources to generate insights:
+
+----
+"Show high-usage customers and their open support tickets."
+"Which sales reps have the most deals but lowest close rate?"
+----
+
+NOTE: Manual data model selection improves accuracy when models have overlapping data.
+
+==== Brainstorm with Spotter
+
+Provide role context to get analysis suggestions:
+
+----
+"I'm a PM focused on engagement. What metrics should I track?"
+"I manage sales. What questions should I ask about our pipeline?"
+----
+
+
+
+=== Verify and use results
+
+==== Review the reasoning
+
+1. Expand the reasoning block in the response.
+2. Check how Spotter interpreted your question.
+3. Verify the data sources used.
+4. Review key decisions made during analysis.
+
+==== Unsure about a response
+
+1. Ask Spotter to explain its analysis.
+2. Ask Spotter to verify its analysis or double-check a specific result.
+
+==== Request clarification
+
+If results seem incorrect, ask Spotter to explain:
+
+----
+"How did you calculate that percentage?"
+"Why did you exclude those records?"
+"Double-check this calculation"
+----
+
+==== Identify non-data responses
+
+Spotter can answer open-ended questions, but ambiguous queries may produce responses from general knowledge instead of your data.
+
+**Signs of a non-data response:**
+- Generic-sounding answer
+- No specific numbers from your data
+- Reasoning block shows no data queries
+
+To fix this:: Be more specific, or select a data model before asking.
+
+
+
+=== Feature-specific guidance
+
+==== Research Mode
+
+NOTE: Always review the analysis plan before approval. Add specific dimensions or comparisons you need.
+
+- Expect longer processing time for thorough analysis.
+- Remove irrelevant steps to save time and cost.
+- Don't close the tab while running Research Mode to ensure Spotter finishes its analysis.
+
+==== Auto Mode
+
+NOTE: Works best when the overlap between available data models is low.
+
+- For overlapping models, specify the data model name if you already know it.
+- Ask Spotter to run queries on multiple models if you cannot choose.
+- Ask Spotter to share more details about suggested data models if you need help deciding.
+
+For analysts:: End users may have access to fewer Models. Results vary based on user permissions.
+
+==== xref:spotter-connectors.adoc[Connectors]
+
+- Specify the connector name and how to use it for better results.
+- Add external context using Connectors to bring unstructured content into Spotter.
+- Use Connectors to take actions or share insights from Spotter.
+
+== Best practices for Spotter 1 and 2
+
+=== Structure your questions
 
 The most effective way to get a precise answer is to structure your questions with three key components in mind. Think of it as providing a clear brief to your analyst. A good rule of thumb is to specify the “what”, the “how”, and the “where” you are looking for in your answer.
 
@@ -37,7 +161,7 @@ A good question clearly defines the calculation, grouping, and filters. Here's h
 | "How profitable are our product lines?" | "Compare the net profit margin (*What*) across all product categories (*How*) for the last fiscal year (*Where*)."
 |===
 
-== Iterate
+=== Iterate
 
 You don’t need to ask the perfect, complex question on your first try. Spotter is designed for a conversational flow. Start with a broader question and refine it based on the results.
 
@@ -49,7 +173,7 @@ Try adding a filter: “Show data for last week.” The analysis is now filtered
 
 Ask a follow-up calculation: “What was the percentage contribution of bags in the total sales last week?” Spotter performs a new calculation based on the context of the conversation.
 
-== Be specific
+=== Be specific
 
 AI models are powerful, but they shouldn't be left to guess your intent. Ambiguity is the primary cause of unexpected or inconsistent answers.
 
@@ -60,7 +184,7 @@ One option is to coach Spotter’s business terms to clarify that South should i
 
 You should also be clear about the criteria when asking for rankings. If you ask “What are my most selling products?”, how should Spotter interpret “most selling”? Does it mean highest revenue, greatest quantity sold, or highest profit margin? Instead, ask “What are the top 5 products by revenue for last year?” or “Show me the products with the highest quantity sold last month in the East region.”
 
-== Provide details on time frames and calculations
+=== Provide details on time frames and calculations
 
 To get the right answer quickly and efficiently, always be explicit about time frames and complex calculations.
 
@@ -68,7 +192,7 @@ If you don’t provide a time frame, Spotter will query your entire data history
 
 If you need a calculation like “percentage contribution,” briefly explain the logic. This ensures Spotter builds the formula exactly as you intend. Instead of asking “What is the percentage contribution of the East region for the last three months?”, say “For the last three months, show me the East region’s sales as a percentage of total sales, and break the results down monthly.”
 
-== Teach Spotter your business language
+=== Teach Spotter your business language
 
 If you find yourself repeatedly clarifying the same business term (like the <<southern,Southern region example>> above), teach Spotter what you mean.
 
@@ -77,7 +201,7 @@ You can click *+ Add to coaching* below an Answer to create custom definitions. 
 For more information on coaching, reference xref:spotter-reference-questions.adoc[] and xref:spotter-business-terms.adoc[].
 
 
-== How to validate the results generated by Spotter
+=== How to validate the results generated by Spotter
 
 
 
@@ -92,7 +216,7 @@ You can verify Spotter’s results by checking the query and by comparing it to 
 
 
 
-=== Verify the query
+==== Verify the query
 
 
 
@@ -130,7 +254,7 @@ Glancing at the above query quickly reveals that the system has done most of the
 
 
 
-=== Validate the change from the previous step in the conversation
+==== Validate the change from the previous step in the conversation
 
 
 
