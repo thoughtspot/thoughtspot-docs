@@ -1,5 +1,5 @@
 = Managing search and SpotIQ settings
-:page-last_updated: 6/28/2022
+:page-last_updated: 1/27/2026
 :linkattrs:
 :experimental:
 :page-layout: default-cloud
@@ -25,29 +25,81 @@ You can update the <<search,search>>, <<spotiq,SpotIQ>>, <<thoughtspot-experienc
 NOTE: Changing these settings results in a service interruption for all users for approximately 2 minutes.
 To minimize disruption, consider making your changes during a scheduled maintenance window.
 
-[#search]
-== Search settings
+[#index]
+== Index settings
 
-Under *Search settings*, you can configure ThoughtSpot's indexing behavior, and enable or disable summaries.
+Under *Index settings*, you can configure ThoughtSpot's indexing behavior.
 
 To learn more about ThoughtSpot's default indexing behavior, refer to xref:data-modeling-index.adoc[Manage suggestion indexing].
 
 To manage search settings, follow these steps:
 
 . Select the *Edit* button in the *Search Settings* section.
-. *Index columns*: Select the toggle to enable or disable ThoughtSpot's indexing of columns in new connections.
+. *Index columns (effective for new tables/columns only)*: Select the toggle to enable or disable ThoughtSpot's indexing of columns in new connections.
 If you disable this feature, all columns from new connections are set to `DONT_INDEX`.
 Note that this change only applies to columns from _new_ connections.
 You must manually set columns that already exist to `INDEX` or `DONT_INDEX`.
-. *Index frequency*: Select a frequency for column indexing from the dropdown list.
-The options are 8 hours, 16 hours, 24 hours, or 7 days. The new default indexing frequency is 7 days. To further customize your indexing frequency and the index start time, contact {support-url}.
-. *Table summaries in ad hoc search*: Select the toggle to enable or disable the display of summaries in ad hoc search.
+. *Indexing frequency*: Select a frequency for column indexing from the dropdown list.
+The options are _8 hours_, _16 hours_, _24 hours_, or _7 days_. The default indexing frequency is 7 days. To further customize your indexing frequency and the index start time, contact {support-url}.
+. *Indexing scope*: Select which columns you want to index. The options are _Index only columns used in Models_ (default), or _Index all columns_.
 +
-NOTE: This setting does not affect the display of summaries in saved objects, such as saved Answers, pinned tables, or metric tiles in Liveboards.
-
+TIP: Indexing only columns used in your Models significantly reduces the number of queries sent to your cloud data warehouse and reduces memory usage. This option does not apply to SQL views, CSV tables, or datasets, which are always indexed.
 . Select *Save*.
+
 Alternatively, you can select *Reset configuration* to reset to the default.
 By default, ThoughtSpot indexes new columns at a frequency of 24 hours, and enables summaries.
+
+[#formula]
+== Formula Settings
+Under *Formula Settings*, you can enable or disable the following formula opt-in features:
+
+SQL Passthrough Functions::
+Enables the use of SQL passthrough functions in search. These functions allow users to send SQL expressions directly to the database to expose custom database functions not yet implemented by ThoughtSpot. Enabling these functions, however, may pose a security risk as the SQL passed cannot be validated by TS and could be used to circumvent our row and column-level security.
+
+Lowercase strings in formulas::
+When enabled, strings defined in formulas are saved as lowercase. To respect the entered string's case, disable this setting. The ability to respect the case is important when leveraging pass-through functions. This is because functions defined in the underlying data platforms are often case-sensitive.
+
+To enable or disable SQL Passthrough Functions or Lowercase strings in formulas, follow these steps:
+
+. Select the *Edit* button in the *Formula Settings* section.
+. Select the toggle to enable or disable the feature.
+. Select *Save*.
+
+Alternatively, you can select *Reset configuration* to reset to the default.
+By default, both settings are enabled.
+
+[#query]
+== Query Settings
+Under *Query Settings*, you can enable or disable the following sql query generation rules:
+
+Table summaries in ad hoc search (applies only to new answer experience)::
+This setting enables you to control whether column summaries in a table should be visible or not by default in the ad hoc search / answer page. Changing the value of the flag has no effect on saved objects i.e saved answers, pinned tables, headline tiles in Liveboards etc.
+
+Search Data, Go button re-run query::
+Clicking the *Go* button a second time allows the user to execute the same query. The user will be prompted to confirm.
+
+Measure SQL includes null check::
+When enabled, all measures are wrapped in a case statement to consider `NULL` as `ZERO`. When disabled, the underlying query is simplified.
+
+Default date bucket for date columns::
+Default date bucket for date columns.
+
+Disable auto-date bucketing::
+When disabled, defaults to monthly date buckets.
+
+Optimize custom calendar filters::
+Some data sources might not be able to optimize data partitions when custom calendars are enabled. This setting adds an approximate(wide) filter to improve data fetches.
+
+Whether count/unique count should include null::
+When enabled, count/unique account includes `NULL`.
+
+To enable or disable query settings, follow these steps:
+
+. Select the *Edit* button in the *Query Settings* section.
+. Select the toggle to enable or disable the feature.
+. Select *Save*.
+
+Alternatively, you can select *Reset configuration* to reset all settings to their defaults.
 
 [#spotiq]
 == SpotIQ settings
@@ -77,7 +129,7 @@ To change the shortest time period to check alerts for your cluster, follow thes
 * monthly
 . Select *Save changes*.
 Alternatively, you can *Reset to default*. The default frequency is "hourly".
-
+////
 [#visualization-footer]
 == Visualization footer settings
 
@@ -110,6 +162,7 @@ Answer PNG or PDF:: Text appears at the bottom of the page.
 Answer CSV or XLSX:: Text appears between the *Data extracted information* row and the *Filter* rows.
 
 Liveboard PDF:: Text appears at the bottom of every page in the PDF.
+////
 
 '''
 > **Related information**
