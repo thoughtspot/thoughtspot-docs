@@ -17,7 +17,7 @@ The secure data flow of Spotter ensures that your data remains protected at ever
 
 The diagram below illustrates how your query moves through our secure layers, showing exactly how we maintain privacy from the moment you ask a question to the moment Spotter delivers an insight to you.
 
-image::secure-data-flow2.png[]
+image::secure-data-flow3.png[]
 
 [cols="5%,95%" stripes="even"]
 |===
@@ -28,16 +28,15 @@ image::secure-data-flow2.png[]
 
 
 |2
-|Users interact with ThoughtSpot Cloud to view liveboards, generate queries, and use Spotter.
+|Users interact with ThoughtSpot Cloud to view Liveboards, generate queries, and use Spotter.
 
 
 |3
-|Based on user queries, Spotter creates prompts that are sent to LLMs for processing.
+|Spotter creates prompts that are sent to LLMs for processing.
 
 
 |4
-|ThoughtSpot Cloud generates SQL queries that are securely sent to the customer’s cloud data warehouse (CDW) using Transport Layer Security (TLS). For enhanced security, ThoughtSpot supports VPN, proxy, or private networking.
-Spotter multi-step analysis creates additional prompts for processing.
+|ThoughtSpot Cloud generates SQL that is securely sent to a customer’s cloud data warehouse (CDW).  Spotter’s 3 multi-step analytics creates additional LLM prompts, sending CDW query results to LLMs for analysis. Spotter 3 leverages LLM-created Python for advanced analysis, which is cached in Azure for 1 hour before deletion.
 
 |5
 |Customer CDW executes SQL and returns only results to ThoughtSpot Cloud.
@@ -47,11 +46,11 @@ Spotter multi-step analysis creates additional prompts for processing.
 |ThoughtSpot Cloud renders the SQL results as HTML and sends it to the user.
 
 |7
-|Customer’s users receive reports and visualization in browser.
-
+|Customer’s users receive reports and visualizations in the browser.
 
 |X
-|Daily ThoughtSpot Cloud backups are taken and encrypted using AES-256.
+|Daily ThoughtSpot Cloud backups are taken and encrypted using AES-256. Backups include Spotter chat history and insights, if enabled.
+
 
 |C
 |ThoughtSpot ensures high availability and security with proactive monitoring and monthly updates.
