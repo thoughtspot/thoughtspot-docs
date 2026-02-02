@@ -1,10 +1,10 @@
 = Creating charts with Muze Studio
-:page-last_updated: Jan 20, 2026
+:page-last_updated: Feb 2, 2026
 :linkattrs:
 :experimental:
 :page-layout: default-cloud
 :description: Create your own charts in ThoughtSpot.
-:jira: SCAL-242708, SCAL-246838, SCAL-261138, SCAL-266798, SCAL-268357, SCAL-276014
+:jira: SCAL-242708, SCAL-246838, SCAL-261138, SCAL-266798, SCAL-268357, SCAL-276014, SCAL-291486
 
 You can now create your own charts inside ThoughtSpot using Muze Studio. With Muze studio, you can use ThoughtSpot's in-product charting library called Muze to create a chart in any Answer. Muze supports a lot of different chart types and customizations. For information about Muze, see https://developers.thoughtspot.com/charts/muze/{muze-version}/Documentation/Guide%20to%20Muze%20Studio/muze[Introduction to Muze^].
 
@@ -76,8 +76,31 @@ If you are a ThoughtSpot administrator, you can enable Muze Studio by doing the 
 +
 Muze Studio is now available on your ThoughtSpot instance.
 
+== How to migrate custom Muze Studio charts
+* For customers who enabled Muze charts in the version 10.14.0.cl or earlier: to resolve limitations regarding exports, schedules, version control, and formatting, we recommend switching to native Muze charts.
+** For version 10.15.0.cl, enable the charting library from *Admin settings* > *Early access features* > *New Charts Library*.
+** For version 26.2.0.cl onwards, native Muze chart is available by default in the charting library.
+* To change the chart type from old Muze studio chart (10.14.0.cl or earlier) to native Muze, you can:
+** Edit the chart.
+** Select a chart type from the *New* charts.
+** By doing this, the code will automatically transfer from the old chart to the new one, resolving existing Muze Studio chart limitations. Please note that some configurations may be lost during this transition.
+** Click *Save*.
++
+[IMPORTANT]
+====
+For customers using third party libraries in muze studio i.e. if users have written custom JavaScript or used a third-party library by importing their cdn image through an html script, when they switch the chart from old Muze studio to New native Muze studio, they will have to add the following line of code at the logical end of their JavaScript code:
+
+`viz.events.emitRenderCompletedEvent();`.
+
+This line is mandatory when using custom JavaScript or third-party libraries; it ensures that the chart's rendering completion is communicated to ThoughtSpot, providing seamless support for schedules, exports, and other services.
+For more information, see https://developers.thoughtspot.com/charts/muze/{muze-version}/Documentation/Guide%20to%20Muze%20Studio/Tutorials/08%20Exporting%20Charts%20Built%20with%20Third-Party%20Libraries[Charts Built with Third-Party Libraries].
+====
+
+
+
 '''
 > **Related information**
 >
 > * https://developers.thoughtspot.com/charts/muze/{muze-version}/Documentation/Guide%20to%20Muze%20Studio/muze[Introduction to Muze Studio^]
 > * https://developers.thoughtspot.com/charts/muze/{muze-version}/use-muze[Use Muze in ThoughtSpot^]
+
