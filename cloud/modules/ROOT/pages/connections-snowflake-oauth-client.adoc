@@ -15,7 +15,8 @@ ThoughtSpot supports {connection}'s OAuth with Client Credentials for a {connect
 With OAuth, each ThoughtSpot user authenticates with {connection} and authorizes ThoughtSpot to query the database using their {connection} user account.
 
 
-For OAuth, we recommend checking the {connection} link:https://docs.snowflake.com/en/user-guide/oauth-ext-overview[documentation^] to confirm any IDP support and their details. This article documents only the most frequently set-up IDP.
+//For OAuth, we recommend checking the {connection} link:https://docs.snowflake.com/en/user-guide/oauth-ext-overview[documentation^] to confirm any IDP support and their details.
+For more information on creating external OAuth tokens, see link:https://community.snowflake.com/s/article/Create-External-OAuth-Token-Using-Azure-AD-For-The-OAuth-Client-Itself[the Snowflake documentation]. This article documents only the most frequently set-up IDP.
 
 
 NOTE: If your IdP supports rotation of refresh tokens with every usage, please ensure that this option is NOT chosen. ThoughtSpot does not support one-time use refresh tokens.
@@ -123,6 +124,20 @@ Example: `KdKBb0aOxPzml+RJvMP1/eIEMlFxM/su6rPh2wLZ`
 . In the {connection} connection details page in ThoughtSpot, paste the OAuth client secret in the *OAuth Client Secret* field.
 +
 NOTE: Once a connection is created the token associated with the user login credentials for the connection is stored in ThoughtSpot for 90 days.
+
+Note that the `authenticationType` parameter is only included in the JSON payload:
+
+----
+{
+   "configuration":{
+     "key1": "val1",
+    "key2": "val2"
+   },
+authenticationType": "OAUTH_CLIENT_CREDENTIALS",
+   "externalDatabases":[
+   ]
+}
+----
 
 
 == Sharing a Model built from tables in a {connection} connection that uses OAuth
