@@ -1,0 +1,64 @@
+= Spotter security
+:page-last_updated: Jan 28, 2026
+:author: Naomi
+:linkattrs:
+:experimental:
+:page-layout: default-cloud
+:description: Learn about Spotter’s security for Azure OpenAI and Google Gemini.
+:jira: SCAL-264258, SCAL-287506
+
+// #UPDATES NEEDED FROM AAGHRAN, about:#
+
+// #* not storing or training on the data and adding a link to the trust center#
+
+// #* update for the LLMs used#
+
+
+The following security features apply to *all* versions of Spotter:
+
+
+Azure OpenAI:
+
+- https://learn.microsoft.com/en-us/legal/cognitive-services/openai/data-privacy?context=%2Fazure%2Fcognitive-services%2Fopenai%2Fcontext%2Fcontext[Azure OpenAI Service^] complies with SOC2 Type II for data security and privacy, and has passed the ThoughtSpot Vendor Security Risk Assessment (https://learn.microsoft.com/en-us/compliance/regulatory/offering-home?view=o365-worldwide[Azure cloud compliances)^].
+- ThoughtSpot communication with the Azure OpenAI Service is encrypted in transit using TLS 1.2.
+- ThoughtSpot sends the natural language search query along with additional metadata such as Model column names, descriptions and sample values as part of the GPT prompt in order to provide accurate, in-context responses.
+- GPT does not store the sample data or metadata that ThoughtSpot sends, nor does it use this data or metadata for retraining the model. We have turned off persistence of the prompt. Though Microsoft allows you to persist data for 30 days to do troubleshooting, we have explicitly disabled this and also retraining.
+- ThoughtSpot Spotter does not use ChatGPT. We use a combination of the latest models, such as GPT-4o created by Open AI, because they are better suited for natural language translation to SQL. As the models progress, we will update the versions if they improve the performance of our features.
+
+
+Google Gemini:
+
+- Google Gemini is accessed through the Google Vertex AI platform.
+- ThoughtSpot communication with Google Gemini is encrypted in transit using TLS 1.2.
+- Google Cloud does not use customer data to train its foundation models by default. ThoughtSpot does not enable training of Google’s Gemini models.
+- Customer data is not persisted nor logged as part of Google safety monitoring processes. ThoughtSpot has set Google’s context caching to off.
+
+== How Spotter uses your data
+
+ThoughtSpot ensures that our use of AI prioritizes the security, privacy, and governance of your data.
+
+=== Your data is not used for AI model training
+
+A core principle of our AI implementation is that customer data is not used to train or improve the underlying AI models.
+
+Our third-party LLMs, provided by Microsoft Azure and Google Cloud, do not use customer data to train their foundation models, and neither does ThoughtSpot. ThoughtSpot does not enable model training with customer data.
+
+The statistical models used for SpotIQ forecasts are custom-fit for each specific request. They are not reused for other requests or improved based on any data they process.
+
+=== Your data is not stored by AI technologies
+
+Customer data is not persisted by the AI technologies ThoughtSpot uses, it is deleted immediately after processing.
+
+Azure OpenAI:: Data sent to these models is only held for the time necessary to process a user’s query. ThoughtSpot has been approved for “modified” abuse monitoring, meaning customer data is not persisted or logged.
+
+Google Gemini:: Customer data is not persisted or logged during Google’s safety monitoring processes. Additionally, ThoughtSpot has disabled Google’s context caching feature to prevent data storage.
+
+Audit logs:: While audit logs are maintained for services, they do not include any customer data, user prompts, or results.
+
+=== AI features are opt-in only
+
+ThoughtSpot ensures that customers have complete control over the use of AI features.
+
+All AI-powered features– including Spotter, SpotIQ, AI Highlights, and AI Assist– are disabled by default. You can choose to enable these features for specific Models or columns, ensuring that AI is only applied where you want it. This opt-in approach gives you the power to govern how and when AI interacts with your data.
+
+

@@ -1,0 +1,124 @@
+= Adding context to reference questions
+:page-last_updated: Aug 18, 2025
+:author: Naomi
+:linkattrs:
+:experimental:
+:page-layout: default-cloud-beta
+:description: Use natural language context in Spotter to clarify how coaching is applied.
+:jira: SCAL-264111, SCAL-264626
+ 
+Use the natural language context feature to add clear, natural language explanations to reference questions. This additional context helps Spotter understand the intent and logic behind a specific answer, reducing ambiguity and improving Spotter’s ability to generalize the learning from a reference question to similar future queries.
+
+[%collapsible]
+.See *Natural language context* in action.
+====
+--
++++
+<div class="border">
+<script src="https://fast.wistia.com/player.js" async></script><script src="https://fast.wistia.com/embed/u1c1k36t0t.js" async type="module"></script><style>wistia-player[media-id='u1c1k36t0t']:not(:defined) { background: center / contain no-repeat url('https://fast.wistia.com/embed/medias/u1c1k36t0t/swatch'); display: block; filter: blur(5px); padding-top:62.92%; }</style> <wistia-player media-id="u1c1k36t0t" aspect="1.5894039735099337"></wistia-player>
+</div>
++++
+--
+====
+
+NOTE: Context in Spotter is in beta and off by default. To enable this feature, contact {support-url}.
+
+== How to use natural language context
+
+
+To add context from the Spotter reference question page:
+
+. *Ask a question*: Start by asking a question within Spotter and adding the question to coaching. For example, "Show me the most active users".
+
+. *Identify the need for coaching*: Observe the initial response and notice if the system misunderstands the query. For example, it might not use the correct measure for "activity" or might not include the user's name alongside their ID. Example: `Top 10 [User ID] [sort by sum User Message Count descending]`
++
+[.bordered]
+image:ref-ques-review.png[The Review AI-generated Answer page, displaying the search tokens as "top 10 User GUID User Wala Name User Message Count
+sort in descending order."]
+
+. *Initiate coaching*: Correct the response to what you expect to see. In this case, you would adjust the query to count the number of conversations and include both the user's ID and their name. Example: `Top 10 [user ID] [user name] [sort by Conversations Count descending]`
++
+[.bordered]
+image::ref-ques-correct.png[The Review AI-gnereated Answers page, displaying "top 10 User GUID User Wala Name Conversations sort by Conversations descending" tokens.]
+
+. *Add natural language context*: In the coaching interface, along with the corrected query, click *Add context* to add a clear and concise explanation of the logic, referencing specific column names when possible. For this example, you could add: "When I ask for 'most active users,' always show me the top 10 users by their conversation count. For identification, also include the User Name and User ID columns in the answer."
++
+[.bordered]
+image::add-context.png[Add context.]
++
+[.bordered]
+image::context-added.png[Add context text box with "When I ask for 'most active users,' always show me the top 10 users by their conversation count. For identification, also include the User Name and User ID columns in the answer" entered.]
+
+. *Save and test*: Save the coaching example with the added natural language context. To verify that the system has learned correctly, ask a similar question, such as "Which users have actively engaged with the product last month?" The system should now apply the logic you provided to deliver the correct answer.
+
+To add context from within a conversation:
+
+. *Ask a question*: Start by asking a question to Spotter. For example, "Show me the most active users".
+
+. *Identify the need for coaching*: Observe the initial response and notice if the system misunderstands the query. For example, it might not use the correct measure for "activity" or might not include the user's name alongside their ID. Example: `Top 10 [User ID] [sort by sum User Message Count descending]`
++
+[.bordered]
+image::ref-ques-incorrect.png[A Spotter interaction showing the answer to "show me the most active users" as "top 10 User GUID User Wala Name User Message Count sort in descending order."]
+
+. *Initiate coaching*: Correct the response to what you expect to see. In this case, you would click *Edit* to adjust the query to count the number of conversations and include both the user's ID and their name. Example: `Top 10 [user ID] [user name] [sort by Conversations Count descending]`
++
+[.bordered]
+image::ref-ques-revise.png[An Edit Answer modal showing the search tokens as "top 10 user GUID User Wala Name Conversations sort by Conversations descending."]
++
+Click *Done editing*.
+
+. *Add natural language context*: Click *+Add to coaching* to add the corrected query to coaching. Select *Add context* to add a clear and concise explanation of the logic, referencing specific column names when possible. For this example, you could add: "When I ask for 'most active users,' always show me the top 10 users by their conversation count. For identification, also include the User Name and User ID columns in the answer."
++
+[.bordered]
+image::coaching-context-add.png[Click *Add context*.]
++
+[.bordered]
+image::coaching-context-added.png[Add context text box displaying "When I ask for 'most active users,' always show me the top 10 users by their conversation count. For identification, also include the User Name and User ID columns in the answer."]
+
+. *Save and test*: Save the coaching example with the added natural language context. To verify that the system has learned correctly, ask a similar question, such as "Which users have actively engaged with the product last month?" The system should now apply the logic you provided to deliver the correct answer.
+
+== Edit context
+
+You can edit context connected to a reference question. To edit context:
+
+. Begin by navigating to the Reference question page in the Data workspace, and scroll or search for the desired reference question.
+
+. Click the More menu image:icon-more-10px.png[more options icon] and select *Fix the answer*.
++
+[.bordered]
+image::ref-ques-more.png[Options from the More menu include *Fix the answer*, *Change access*, or *Delete*.]
+
+. Click *Edit context* and make your changes.
++
+[.bordered]
+image::ref-ques-edit-context.png[Click *Edit context*.]
+
+
+== Key use cases
+Natural language context is particularly effective in the following scenarios:
+
+Clarifying reference questions:: It makes the logic behind a reference question explicit, which helps the system better understand and apply the context to other relevant situations.
+Defining implicit logic (data nuances):: It is highly effective for teaching the model how to handle logic that isn't explicitly stated in a query.
+Example;; Imagine a retail data model listing user transactions. These transactions have different statuses like 'Placed', 'Shipped', 'Fulfilled', and 'Returned'. A user might ask, "show me our sales for last month."
++
+A simple sum of sales might incorrectly include returned or unshipped orders. The final expected response is `[sales] [fulfillment date=last month][ Order_Status = 'Fulfilled']`. The implicit business rule is that "sales" should only be calculated on completed/fulfilled transactions.
++
+You can correct the answer by adding a filter `Order_Status = 'Fulfilled'`. In the natural language context box, you would explain this rule: "When calculating sales or revenue, only include orders with a status of 'Fulfilled’ and refer to ‘Fulfillment date’ unless the user specifically requests a different status (for example, 'Shipped').”
+Resolving ambiguity:: Natural language context can help the system distinguish between similar-sounding terms or resolve ambiguity in filter values and column selections.
+Handling complex logic (business concepts):: This feature excels at defining complex business concepts and aggregations that have multiple conditions.
+Example;; Imagine your business defines a "High-Value Customer" as someone who has spent over $1,000, made a purchase in the last 90 days, AND has a return rate below 5%. Asking Spotter for "high-value customers" would likely fail. Using natural language context, you can build the correct answer with all three conditions and then explain the concept:
++
+"A 'High-Value Customer' must meet three criteria: lifetime spend over $1000, at least one purchase in the last 90 days, and a return rate below 5%. Apply all three conditions when this concept is mentioned."
+
+== Best practices and key considerations
+
+* *Maintain coherency*: The information provided in the natural language context should not conflict with other coaching examples, standalone instructions, or default system behaviors. Contradictory information can confuse Spotter and degrade performance.
+* *Ensure consistency across examples*: If you add context to one reference question (for example, "always apply this filter for active clusters"), you should provide the same context in other similar reference questions. Providing conflicting or incomplete context across similar examples may confuse the system, as it may not know how much importance to give the context if it only appears inconsistently.
+* *Be clear and unambiguous*: The system requires clear instructions to perform predictably. The way users write context can vary, leading to different interpretations, so clarity is essential.
+* *Iterate and refine*: Coaching is an iterative process. We recommend starting with a small set of coaching examples and gradually refining them based on the system's performance to avoid overcoaching.
+
+== Known Limitations
+
+* *May not drastically increase accuracy scores*: While natural language context improves answer quality, it may not always cause a large jump in the number of correct answers.
+* *Does not guarantee perfect generalization*: Even with clear context, the system's application of the logic may not be flawless.
+* *May struggle with highly complex logic*: While it helps, adding natural language context does not resolve all issues, particularly with very complex logic or formulas.

@@ -1,0 +1,83 @@
+= Login flow with Multiple IdPs
+:page-last_updated: Jan 7, 2025
+:linkattrs:
+:experimental:
+:author: Rani
+:page-layout: default-cloud
+:page-aliases:
+:description:
+:jira: SCAL-286585
+
+
+With IAMv2 you can configure multiple Identity Providers (IdPs) or unique IdPs for the ThoughtSpot instance or for a particular Org, or for multiple Orgs within the same ThoughtSpot instance.
+Following can be a few scenarios with multiple IdPs:
+
+* Each Org hosts a different department of the same organization. The Orgs can or cannot have the same IdP. Multi Org membership is possible.
+* Each Org hosts a different, independent, organization. In most cases each Org authenticates through a different IdP. Multi Org membership is generally not possible, other than exceptions.
+
+For enabling per Org IdP, open a Salesforce support ticket requesting *Per Org Subdomain* or contact ThoughtSpot support.
+Once per Org IdP is enabled:
+
+* Each Org will have its own SAML IdP configuration.
+* Each Org gets its own DNS subdomain. The Org subdomain is derived from the Org’s name but must be DNS‑safe. This means, once this feature is turned on, all Orgs need to have DNS friendly name:
+** Lowercase letters, digits, and hyphens only.
+** No spaces, no underscores, no special characters.
+** No leading or trailing hyphen.
++
+Format for the subdomain: `<ORG_SUBDOMAIN>.<CLUSTER_NAME>.thoughtspot.cloud`
+
+== ThoughtSpot initiated login
+When the user attempts to login from ThoughtSpot using the ThoughtSpot instance url or the Org url instead of clicking on a tile on their IdP.
+
+=== Multiple IdPs configured
+[IMPORTANT]
+Users with multiple IdPs have to use an IdP initiated login for their first login. For all subsequent logins, they can use the steps as listed below.
+
+* User goes to the root URL for the ThoughtSpot instance: `https://CLUSTER_NAME.thoughtspot.cloud`
+* The user sees the default ThoughtSpot login page.
+* Since there are multiple IdPs, the user will not see the *Login with SSO* button.
+* The user enters their username
+* The IdP discovery flow identifies which IdP the user belongs to (based on entered username) and logs them/ redirects them to that IdP (if auto-redirect is enabled)
+*For the first time, they have to use an IdP initiated login.*
+* Once the user logs in, they are routed to their Org.
+* If the user has membership to single Org, then it is the same Org they land in
+* If the user has membership to multiple Orgs, then they land in the “last logged out” Org” and they can switch Orgs from the Org switcher.
+* Whether they have membership to multiple Orgs is determined by the addition of a user to multiple Orgs either from ThoughtSpot OR if group / Org claims contain multiple Orgs.
+* Once the user logs in via a particular IdP, for all succeeding logins, it is the same IdP that ThoughtSpot chooses to login the user. If the user is part of multiple IdPs and wants to login via another IdP,
+either the user has to use IdP initiated logins for the other IdPs or
+* Use incognito, or clear cache to login to another IdP in TS initiated login flow.
+
+=== Multiple IdPs with the per Org subdomain configured
+[IMPORTANT]
+Users with multiple IdPs have to use an IdP initiated login for their first login. For all subsequent logins, they can use the steps as listed below.
+
+* User goes to the per Org URL: `https://ORG_SUBDOMAIN.CLUSTER_NAME.thoughtspot.cloud`
+* With SAML auto-redirect enabled and a single IdP for that Org, the user is sent directly to the IdP login page (no ThoughtSpot login screen)
+* The user enters their username
+* The IdP discovery flow identifies which IdP the user belongs to (based on entered username) and logs them/ redirects them to that IdP (if auto-redirect is enabled)
+* Once the user logs in, they are routed to the Org as mentioned in the subdomain.
+** If the user has membership to single Org, then it is the same Org they land in
+** If the user has membership to multiple Orgs, then, they still land in the Org mentioned in the subdomain, but they can switch Orgs from the Org switcher.
++
+Whether they have membership to multiple Orgs is determined by the addition of a user to multiple Orgs either from ThoughtSpot OR if group / Org claims contain multiple Orgs.
+* Once the user logs in via a particular IdP, for all succeeding logins, it is the same IdP that ThoughtSpot chooses to login the user. If the user wants to login via another IdP, use incognito, or clear cache to login to another IdP in ThoughtSpot initiated login flow.
+
+[NOTE]
+====
+* Even while using per Org IdP, it is important to pass the “@org” suffix to group claims so that the right groups get provisioned in the right Org.
+* If you pass group claims for other Orgs, (other than the one mentioned by the Org subdomain) they are considered, and the user automatically gets access to multiple Orgs as per the Org claims.
+* If the two users with the same username are added via two different  IdPs, ThoughtSpot considers it as the same user - uniqueness is in the username, and the user gets access to multiple Orgs.
+====
+
+== IdP initiated login
+When the user attempts to login from IdP tile instead of coming to ThoughtSpot URL.
+
+* User goes to the IdP and clicks on the ThoughtSpot tile.
+* User automatically logs into ThoughtSpot.
+* Once the user logs in, they are routed to their Org.
+** If the user has membership to single Org, then it is the same Org they land in
+** If the user has membership to multiple Orgs, then they land in the “last logged out” Org, and they can switch Orgs from the Org switcher.
++
+Whether they have membership to multiple Orgs is determined by the addition of a user to multiple Orgs either from ThoughtSpot or if group / Org claims contain multiple Orgs.
+* Once the user logs in via a particular IdP by clicking on the tile, for all succeeding logins, it is the same IdP that ThoughtSpot chooses to login the user. If the user is part of multiple IdPs and wants to login via another IdP, the user can use IdP initiated logins for the other IdPs.
+* While using IdP initiated flow, ensure the relay state is set correctly in the customer’s IdP.
