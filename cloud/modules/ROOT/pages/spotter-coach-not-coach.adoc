@@ -1,5 +1,5 @@
 = Coaching best practices
-:page-last_updated: Jan 27, 2026
+:page-last_updated: Feb 4, 2026
 :author: Naomi
 :linkattrs:
 :experimental:
@@ -7,6 +7,149 @@
 :description: Avoid overcoaching or trying to coach Spotter for scenarios it’s not designed for.
 :jira: SCAL-287506
 
+
+Coaching helps Spotter respond more accurately by shaping how it reasons about questions, not by enforcing fixed answers.
+
+Before adding coaching, it is critical to ensure that your xref:spotter-model.adoc[data model is well-optimized]. In many cases, improving the data model eliminates the need for coaching altogether. Coaching should only be used when ambiguity remains after model optimization.
+
+This article explains how to think about coaching, how to choose the right coaching tool, and how to apply coaching responsibly.
+
+== Start with xref:spotter-model.adoc[data model optimization]
+
+Coaching is not a substitute for a clear and well-structured data model.
+
+Before adding any coaching, make sure you have:
+
+* Clear, unambiguous column names.
+* Accurate column descriptions and AI context.
+* Column synonyms for common business language.
+* Consistent data types and date columns.
+* Well-defined joins and grain.
+* Model-level formulas where appropriate.
+
+Always begin by testing Spotter on common questions. If incorrect behavior can be fixed by improving metadata or context, do that first instead of coaching.
+
+In practice, the most effective way to improve accuracy is to reduce ambiguity in the data model, not to add more coaching.
+
+== How to think about coaching
+
+Coaching provides guidance signals that Spotter uses during interpretation and reasoning.
+
+Spotter:
+
+* Weighs multiple coaching signals together.
+* Adapts responses based on conversational context.
+* May generate different responses to similar questions when appropriate.
+
+As a result, coaching should teach patterns, not outcomes. The goal is better reasoning, not deterministic answers. High-quality, minimal coaching is more effective than exhaustive coverage.
+
+== Coaching tools
+
+Each coaching tool serves a distinct role. They are complementary, not interchangeable.
+
+xref:data-model-instructions.adoc[]::
+Establish global rules and defaults that apply broadly across questions.
+
+xref:spotter-reference-questions.adoc[]:: Act as guiding examples that Spotter can draw from when reasoning within a conversation or across similar questions.
+
+xref:spotter-business-terms.adoc[]:: Define rigid, universally true meanings for specific business vocabulary.
+
+=== Choosing the right coaching tool
+
+When deciding how to coach, ask, "Is this a global rule, a recurring reasoning pattern, or a fixed definition?"
+
+Use data model instructions when:
+
+* A rule should apply across many questions.
+* Spotter needs a default interpretation.
+* The logic should apply even when user queries are vague or incomplete.
+
+Think of instructions as foundational constraints, not examples.
+
+Use reference questions when:
+
+* You want to guide how Spotter interprets a type of question.
+* Users ask similar questions in different ways.
+* The correct logic is not obvious from the model alone.
+
+Consider reference questions as guiding examples, not stored answers. They influence how Spotter reasons, rather than forcing a specific response.
+
+Reference questions work best when they include xref:spotter-context.adoc[natural language context] that explains the intent behind the answer. This context should describe:
+
+* What the user is trying to understand.
+* Why certain columns, filters, or logic are appropriate.
+* Any implicit business assumptions Spotter should carry forward.
+
+The goal is not to restate the answer, but to explain the reasoning behind it.
+
+Use business terms when:
+
+* A term has a single, universal meaning. That meaning must never vary by context.
+* Ambiguity needs to be fully eliminated.
+
+If a term's meaning changes by scenario, you should not define it as a business term.
+
+== Recommended coaching sequence
+
+To avoid rigidity and over-coaching, follow this sequence:
+
+. Optimize the data model first. Reduce ambiguity through metadata, context, and structure.
+
+. Add data model instructions. Establish global defaults and rules.
+
+. Add reference questions. Teach recurring reasoning patterns using strong examples.
+
+. Add business terms selectively. Lock down only the definitions that must always be true.
+
+This order keeps Spotter flexible while steadily improving accuracy.
+
+== How much coaching is enough?
+
+Coaching is sufficient once Spotter can generalize correctly.
+
+After adding coaching:
+
+* Ask similar but uncoached questions.
+* Observe behavior across a conversation.
+* Look for consistent reasoning improvements.
+
+If failures are inconsistent, adding more reference questions is usually not the right fix. Revisit the data model or global instructions instead.
+
+Teams see the best results when they:
+
+* Use reference questions to teach intent and logic, not phrasing.
+* Pair reference questions with concise context. Write context as guidance you would give to a human analyst reviewing the question.
+* Keep global rules explicit and limited.
+* Treat business terms as long-term definitions.
+
+Effective coaching improves accuracy without making Spotter brittle.
+
+=== What not to coach
+
+Avoid using coaching to compensate for structural issues or subjective interpretation.
+
+Do not coach for:
+
+* Broken or unclear data models.
+* Logic that changes frequently.
+* Subjective concepts without strict definitions.
+* User-specific or personalized interpretations.
+* Visualization or formatting preferences.
+
+Coaching influences data interpretation, not presentation.
+
+== Coaching guidelines
+
+Good coaching is intentional, restrained, and iterative.
+
+* Start with the data model.
+* Teach patterns, not exceptions.
+* Prefer clarity over completeness.
+* Revisit coaching as data and usage evolve.
+
+When used thoughtfully, coaching allows Spotter to reason more accurately and contextually, without sacrificing flexibility.
+
+////
 == Before coaching
 
 We recommend taking the time to xref:spotter-model.adoc[set up your data model] before using coaching tools like data model instructions, reference questions, and business terms. The more context Spotter can find in your Model, the more accurate its responses will be. To that end, we recommend you pay attention to the following:
@@ -108,3 +251,4 @@ Avoid over-coaching or trying to coach Spotter for scenarios it’s not designed
 | Personalization (for example, “my team’s performance”) | While users can create user-level coaching, global coaching takes precedence. Avoid creating global coaching for highly personalized scenarios that don’t apply broadly.
 
 |===
+////
