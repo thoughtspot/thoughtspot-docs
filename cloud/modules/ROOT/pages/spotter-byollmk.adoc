@@ -14,25 +14,26 @@ When you connect to your own LLM, you are responsible for its performance, cost,
 
 == Enabling your own LLM (BYOLLM Key)
 
-Enabling a BYOLLM Key connection is a guided process managed by our Support team to ensure compatibility and performance.
+Enabling a BYOLLM Key connection is a guided process managed by our support team to ensure compatibility and performance.
 
 To enable a custom LLM connection, please contact {support-url}. Our team will work with you to perform a compatibility check and guide you through the setup process.
+
 
 == Prerequisites for setup
 
 Before contact {support-url}, gather the required credentials for your specific LLM provider. This will expedite the setup and compatibility check.
 
-We currently support connections to Azure OpenAI, Google Vertex AI, and custom LLM gateways.
+We currently support connections to Azure OpenAI, Google Vertex AI, Amazon Bedrock and custom LLM gateways.
 
 === For Azure OpenAI
 
-You will need:
+You need:
 
-* Your endpoint URL.
-* An API key.
-* The deployment names for your Default models.
+* Your endpoint URL
+* An API key
+* The deployment names for your default models
 
-For steps on how to create an Azure OpenAI resource, see link:https://learn.microsoft.com/en-us/azure/ai-foundry/openai/how-to/create-resource?pivots=web-portal[this article].
+For steps on how to create an Azure OpenAI resource, see link:https://learn.microsoft.com/en-us/azure/ai-foundry/openai/how-to/create-resource?pivots=web-portal[Create and deploy an Azure OpenAI in Microsoft Foundry Models resource] in Microsoft's Azure documentation.
 
 //For steps on setting up and configuring a GPT deployment using the Azure OpenAI service, see link:https://techcommunity.microsoft.com/blog/startupsatmicrosoftblog/how-to-set-up-and-configure-a-gpt-deployment-using-the-azure-openai-service/3849854[this article].
 
@@ -63,12 +64,12 @@ If you need to connect to Azure OpenAI using OAuth 2.0 (via Entra ID), you must 
 
 You will need:
 
-* The JSON key file for a service account with the *Vertex AI User* role.
-* Your Google Cloud Project ID.
-* The Region for your models (for example, us-central1).
-* The Model IDs for your models.
+* The JSON key file for a service account with the *Vertex AI User* role
+* Your Google Cloud project ID
+* The region for your models (for example, us-central1)
+* The model IDs for your models
 
-For steps on how to create Service account keys, see link:https://docs.cloud.google.com/iam/docs/keys-create-delete[this article].
+For steps on how to create Service account keys, see link:https://docs.cloud.google.com/iam/docs/keys-create-delete[Create and delete service account keys] in Google Cloud's IAM documentation.
 
 //You will need an administrator to create a service account and give it the correct permissions to access Vertex AI models. Once created, you must grant the service account IAM roles of either a  “Vertex AI user” (roles/aiplatform.user) or “Vertex AI Administrator” (roles/aiplatform.admin) so it has permission to make API calls.
 ////
@@ -92,17 +93,26 @@ For steps on how to create Service account keys, see link:https://docs.cloud.goo
 . Click *Save*.
 ////
 
+=== For Amazon Bedrock
+
+You need:
+
+* Your AWS region
+* An API key (long-term API keys required)
+* Inference profile ARN for the supported LLM
+
+For steps on creating a long-term API key, see link:https://docs.aws.amazon.com/bedrock/latest/userguide/api-keys-generate.html[Generate an Amazon Bedrock API key] in the AWS documentation.
+
 [#llm]
 === For a custom LLM gateway
 
-You will need:
+You need:
 
-* Your Gateway URL (the base URL of your gateway endpoint).
-* The Default Model Name your gateway expects.
+* Your gateway URL (base URL of your gateway endpoint)
+* The default model name your gateway expects.
 * Authentication details:
-
-** For API Key Auth: Your API key.
-** For OAuth 2.0 Auth: Your Token Endpoint URL, Client ID, and Client Secret.
+** For API Key Auth: your API key
+** For OAuth 2.0 Auth: your token endpoint URL, client ID, and client secret
 
 Your gateway must be fully compatible with the OpenAI /v1/chat/completions API specification and have tool calling enabled.
 
@@ -136,28 +146,63 @@ Before you connect, check the following:
 . After filling in the details for your chosen method, click *Save*.
 ////
 
-== Supported models
+== Recommended LLMs
 
-For the best results with connecting to your own LLM, we recommend using the following models or their equivalents:
+For the best results, we recommend using the following LLMs or their equivalents for each version of Spotter.
 
-* GPT-4.1
-* Claude Sonnet 4
+[#spotter-llms]
+=== Recommended LLMs for each Spotter version
+[cols="15%,85%" stripes="even"]
+|===
+.<|Version .<|Recommended LLM
+
+.<|Spotter 3
+.<|Claude Opus 4.5 / Sonnet 4.5 + GPT 4.1
+
+.<|Spotter 2
+.<|Claude Opus 4.5/ Sonnet 4.5
+
+.<|Spotter 1
+.<|GPT 4.1 / Sonnet 4.5 / Opus 4.5
+|===
 
 You must ensure that the models you configure are available at your specified endpoint.
 
+.Important notes about Spotter 3 LLM support
+[IMPORTANT]
+====
+* LLM configurations in Spotter 3 require multiple models and have a dependency on GPT 4.1 using Microsoft Azure for code execution.
+* Manual presets for Microsoft Azure and Google Gemini are not supported in Spotter 3 at the moment.
+====
 
-== Migration policy for existing connections
+// == Migration policy for existing connections
 
-If you already have Spotter enabled with an existing LLM configuration, it will continue to function without interruption. Previous configurations are migrated as follows:
+// If you already have Spotter enabled with an existing LLM configuration, it will continue to function without interruption. Previous configurations are migrated as follows:
 
-* *Azure OpenAI* configurations are automatically migrated to *ThoughtSpot Enabled: Auto Select*. If you wish to continue using your specific Azure OpenAI instance, please configure the LLM configuration to ThoughtSpot Enabled Azure OpenAI Connection.
-* *Google Gemini* configurations remain as Google Gemini.
+// * *Azure OpenAI* configurations are automatically migrated to *ThoughtSpot Enabled: Auto Select*. If you wish to continue using your specific Azure OpenAI instance, please configure the LLM configuration to ThoughtSpot Enabled Azure OpenAI Connection.
+// * *Google Gemini* configurations remain as Google Gemini.
 
 //NOTE: If you want to exclusively use Azure OpenAI in the future, switch to Azure OpenAI explicitly in the LLM configuration. In future releases, Auto mode will intelligently select from multiple model families to provide the best experience.
 
+== LLM update policy
+
+The following policies apply to updates of LLMs used with ThoughtSpot.
+
+=== Updates for ThoughtSpot-managed LLMs
+
+We are dedicated to providing you with a best-in-class experience and continuously evolving with advancements in AI. Therefore, we will notify you of updates to our LLMs through our public documentation and weekly release notes.
+
+=== Updates for BYOLLM Keys
+
+If you use your own LLM keys, we will notify you of changes to our recommended LLMs directly through our customer support teams and documentation.
+
+=== Mandatory update period for BYOLLM
+
+We provide you a *three-week* period to update your models according to the new recommendations. This update is essential to ensuring optimal performance and continued access to our latest features. If you fail to comply with this update within the specified time period, you may experience diminished performance or inaccessibility to certain features. ThoughtSpot support is committed to communicating and collaborating with you to guarantee the best possible experience.
+
 == Best practices
 
-For the best experience, access to the latest models, and the lowest maintenance overhead, we strongly recommend *ThoughtSpot Enabled Auto Select*. This ensures you always have access to the latest models, fully managed and optimized by ThoughtSpot.
+For the best experience, access to the latest LLMs, and the lowest maintenance overhead, we strongly recommend *ThoughtSpot Enabled Auto Select*. This ensures you always have access to the latest models, fully managed and optimized by ThoughtSpot.
 
 The BYOLLM Key path is a specialized option intended for organizations with specific, non-negotiable compliance or governance requirements that prevent the use of a managed LLM.
 
