@@ -1,5 +1,5 @@
 = Coaching Spotter
-:page-last_updated: Aug 19, 2025
+:page-last_updated: Feb 4, 2026
 :author: Naomi
 :linkattrs:
 :experimental:
@@ -9,13 +9,90 @@
 
 
 
+Coaching helps Spotter understand how your organization thinks about data by providing guidance that shapes how questions are interpreted and answered.
 
-Spotter coaching provides you options to map data to your business questions and terms.
+Rather than enforcing fixed responses, coaching supplies examples, rules, and definitions that Spotter can draw from to reason more accurately-- both within a conversation and across similar questions.
 
 
 +++<script src="https://thoughtspot.wistia.com/medias/a46ybhizbb" async></script><script src="https://thoughtspot.wistia.com/assets/external/E-v1.js" async></script><span class="wistia_embed wistia_async_a46ybhizbb popover=true popoverAnimateThumbnail=true popoverBorderColor=4E55FD popoverBorderWidth=2" style="display:inline-block;height:252px;position:relative;width:450px">&nbsp;</span>
 +++
 
+== What is coaching in Spotter?
+
+Coaching in Spotter is the process of teaching the system how to interpret intent, apply logic, and resolve ambiguity when answering questions.
+
+Coaching does not store answers or guarantee identical responses. Instead, it provides signals that influence how Spotter reasons about questions over time.
+
+== When to use coaching
+
+Coaching is intended as a next step after xref:spotter-model.adoc[data model optimization].
+
+Before applying coaching, ensure that your data model has clear column names, accurate descriptions, and appropriate context. In many cases, improving metadata or model structure resolves issues without requiring any coaching.
+
+Coaching should be applied only when Spotter notes ambiguity after the data model has been optimized.
+
+For detailed guidance on prerequisites and the recommended order of using coaching tools, see xref:spotter-coach-not-coach.adoc[].
+
+== How coaching improves responses
+
+When applied thoughtfully, coaching helps Spotter:
+
+* Better interpret ambiguous or incomplete questions.
+* Apply consistent business logic and defaults.
+* Generalize correct reasoning across similar questions.
+* Reduce repeated clarification.
+
+Coaching works best when paired with a well-structured data model and clear metadata.
+
+== Spotter coaching tools
+
+Spotter offers multiple coaching tools, each designed for a different type of guidance.
+
+=== xref:data-model-instructions.adoc[Data model instructions]
+
+Define global rules and defaults that apply broadly across questions on a data model.
+
+Use instructions to establish consistent behavior and resolve recurring ambiguity.
+
+Learn more about xref:data-model-instructions.adoc[Data model instructions].
+
+=== xref:spotter-reference-questions.adoc[Reference questions]
+
+Provide guiding examples that Spotter can use when reasoning about similar questions.
+
+Reference questions help Spotter learn patterns of intent and logic, expecially when paired with clear xref:spotter-ai-context.adoc[natural language context].
+
+Learn more about xref:spotter-reference-questions.adoc[Reference questions].
+
+=== xref:spotter-business-terms.adoc[Business terms]
+
+Define rigid, universally true meanings for specific business vocabulary and metrics.
+
+Business terms ensure Spotter uses your organization's exact definitions rather than generic assumptions.
+
+Learn more about xref:spotter-business-terms.adoc[Business terms].
+
+== Where coaching is stored
+
+Coaching is applied and managed at the data model level, though some tools can be created from different areas of ThoughtSpot.
+
+* Data model instructions and business terms are managed on the data model.
+* Reference questions can be added from within a Spotter conversation or managed and edited from the Data workspace.
+
+All coaching influences how Spotter responds to relevant questions on the Model.
+
+== Get started
+
+If you're new to coaching, we recommend this approach:
+
+. xref:spotter-model.adoc[Optimize your data model] and metadata.
+. Test Spotter with common questions.
+. Add coaching only where Spotter gets confused.
+. Start with global rules, then add examples and definitions as needed.
+
+For guidance on choosing the right coaching tool and avoiding common pitfalls, see xref:spotter-coach-not-coach.adoc[].
+
+////
 == Why coach Spotter?
 
 Spotter is intelligent, but it doesn't automatically understand the unique terms and rules of your specific business. Large Language Models (LLMs) like the ones Spotter uses are coached on vast amounts of public data and general language.
@@ -84,7 +161,7 @@ For coaching, the best practice is to start with the most foundational tool, xre
 xref:data-model-instructions.adoc[Data model instructions]:: These provide global rules to guide Spotter's interpretation of a user's query and the data model itself. Unlike other coaching methods that have a limited scope, these instructions are used while processing every relevant query from every user.
 Best for::: You can consider this as the most important dos and don'ts for your new AI analyst. Set broad, consistent rules like applying default filters (for example, always excluding test accounts) to resolve ambiguity.
 
-xref:spotter-coach-conversation.adoc[Reference questions]:: After setting your global rules, use these to teach Spotter "If a user asks X, you should answer with Y". This is enhanced with natural language context, which lets you explain why the answer is correct.
+xref:spotter-reference-questions.adoc[Reference questions]:: After setting your global rules, use these to teach Spotter "If a user asks X, you should answer with Y". This is enhanced with natural language context, which lets you explain why the answer is correct.
 
 Best for::: Frequently asked questions by your users can be added here so that the most common questions are answered efficiently. Additionally, you can coach complex, multi-step formulas or resolve ambiguity for specific common questions that a global rule can't cover.
 
@@ -186,7 +263,7 @@ NOTE: Please note that the visualization settings provided in query coaching may
 Ensure good column coverage:: As mentioned above, Spotter learns how to use columns for analysis when they are used in reference questions. Hence, we recommend that you provide enough reference questions so that all the important columns in your Models are represented in the reference questions. +
 For newly created data sets with no Liveboards, the reference questions play an extremely critical role in coaching Spotter.
 
-For details on how to create reference questions, see xref:spotter-coach-conversation.adoc[].
+For details on how to create reference questions, see xref:spotter-reference-questions.adoc[].
 
 
 
@@ -254,7 +331,7 @@ For details on how to define business terms, see xref:spotter-business-terms.ado
 == Limitations
 
 When you ask a question that matches an existing reference question, Spotter 3 does not retain the same chart and configuration. Spotter Classic and Spotter Agent continue to retain the chart and configuration of existing reference questions.
-
+////
 ////
 [#coaching-strategy]
 == Coaching strategy: How many examples and when?
@@ -301,4 +378,4 @@ If Spotter fails on the combined question, analyze why. Did the initial examples
 When to add more:: Only consider adding another reference question example if testing reveals that Spotter consistently fails to generalize for a common and important variation, and you believe an additional example will clarify a specific pattern or nuance that was missed.
 ////
 
-For more information on your coaching strategy, see xref:spotter-coach-not-coach.adoc[].
+//For more information on your coaching strategy, see xref:spotter-coach-not-coach.adoc[].

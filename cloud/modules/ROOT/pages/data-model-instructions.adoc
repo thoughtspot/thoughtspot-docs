@@ -1,5 +1,5 @@
 = Data model instructions
-:page-last_updated: 8/20/25
+:page-last_updated: Feb 4, 2026
 :author: Naomi
 :page-layout: default-cloud
 :page-aliases: natural-language-instructions.adoc
@@ -8,9 +8,9 @@
 :description: You can add instructions in a data model conversation to teach Spotter how to answer similar questions on the data model.
 :jira: SCAL-267909
 
-The data model instructions feature allows you to provide the Spotter system with global rules that it should follow across all relevant queries. Unlike xref:spotter-context.adoc[Spotter context], which is tied to a specific reference question, a data model instruction is a standalone directive designed to teach the system a core concept, a default behavior, or a specific data nuance.
+Data model instructions let you define global rules that guide how Spotter interprets and answers questions on a data model.
 
-These instructions are globally applicable and influence all queries made by any user on the data model, unlike other coaching methods that also have a user-level scope.
+These instructions apply broadly across queries and users, helping Spotter consistently handle default behavior, ambiguity, and recurring data nuances.
 
 .See *Data model instructions* in action.
 +++
@@ -19,36 +19,18 @@ These instructions are globally applicable and influence all queries made by any
 </div>
 +++
 
+== What are data model instructions?
 
-== Access and permissions
+The data model instructions feature allows you to provide the Spotter system with global rules that it should follow across all relevant queries.
+Unlike xref:spotter-context.adoc[Spotter context], which is tied to a specific reference question, a data model instruction is a standalone directive designed to teach the system a core concept, a default behavior, or a specific data nuance.
 
-To add or manage data model instructions, you must have data model editing access.
+These instructions are globally applicable and influence all queries made by any user on the data model, unlike other coaching methods that may also apply at user-level.
 
-== Key use cases
+== Create data model instructions
 
-Data model instructions are a versatile tool for shaping how the system interprets queries and presents answers. The primary use cases are:
+You can create data model instructions either during a conversation or directly on the data model.
 
-Data filtering and refinement:: Apply automatic filters to ensure analyses are consistent and accurate. This can be broken down into two main types:
-
-Applying conditional filters::: Teach Spotter to apply different logic based on the user’s query.
-Example;; To use different fulfillment centers based on the product line, you can instruct: "For queries about 'Electronics' sales, filter for Fulfillment_Center = 'FC-West'. For 'Apparel' sales, filter for Fulfillment_Center = 'FC-East'".
-
-Applying default filters::: Set up a rule that always applies a filter to clean up data.
-Example;; To ensure internal test data is always excluded from revenue analysis, you can instruct: "When calculating revenue, always exclude transactions where Account_Type = 'Internal Test'".
-
-Column selection and prioritization:: Guide the system to use the correct columns for analysis, filtering, or aggregations.
-Example;; If a query for "market" could ambiguously use a `City` or `Canvas Market` column, you can direct the system with: "Prefer Canvas Market column over City column for filtering market values".
-
-Example;; To ensure counts are always accurate, you can specify the column to use for counting: "For counting customers, always use the unique count of ‘Customer Cred ID’".
-
-Answer enrichment:: Automatically add more detail to answers to make them more comprehensive without requiring the user to ask for every column explicitly.
-Example;; If a user asks for basic provider information, you can add more detail to the answer using the instruction: "Provider demographic info is name, address, tax info, class, and state code".
-
-Date handling:: Manage how the system handles date and time analysis, especially when a user omits a time frame.
-Example;; To prevent expensive, wide-ranging queries, you can set a default time period: "If a query does not specify a time period, apply a default filter for the 'last 30 days'".
-
-
-== Give instructions in Spotter
+=== Give instructions in Spotter
 
 To give instructions in Spotter, follow these steps:
 
@@ -56,15 +38,21 @@ To give instructions in Spotter, follow these steps:
 
 . Let’s say your company defines “last month” as the last 30 days. If Spotter answers your question with the date filter “last month,” you can add context to correct its answer.
 
-. Click the information pane icon in the top right corner of the conversation. The instructions pop-up appears.
+. Click the caret next to the name of the data source in the search bar and select *Data model instructions*.
++
+[.bordered]
+image::data-model-instructions-caret.png[Select caret.]
++
+[.bordered]
+image::data-model-instructions-select.png[Select Data model instructions]
 
-. Click the *+* icon to add an instruction. In the text box that appears, type your instruction. For example, you could say, “When I ask for last month, use ‘last 30 days’ as a filter.”
+. In the text box that appears, type your instruction. For example, you could say, “When I ask for last month, use ‘last 30 days’ as a filter.”
 
-. Click the check mark to save your instructions, and select *Close*.
+. Click *Save*.
 
 . When the pop-up closes, Spotter displays an acknowledgement that Instructions have been updated. Click *Regenerate last answer* to see the updated answer to your question and verify that Spotter has understood your instructions.
 
-== Give instructions on a Model
+=== Give instructions on a Model
 
 To give instructions on a Model, follow these steps:
 
@@ -72,7 +60,7 @@ To give instructions on a Model, follow these steps:
 
 . Click the *Instructions* tab.
 
-. In the text box that appears, type your instruction. For example, you could say, “When I ask for last month, use ‘last 30 days’ as a filter.”
+. In the text box, type your instruction. For example, you could say, “When I ask for last month, use ‘last 30 days’ as a filter.”
 
 . Click *Save changes*.
 
@@ -89,13 +77,21 @@ Match your data’s language:: Write instructions using the exact names for colu
 Example;; *Instead of a generic (less effective) instruction*: "Exclude canceled orders when calculating total revenue", use a more *precise (more effective) instruction*: "Exclude orders where `order_status = 'CANCELLED-USER'` when calculating total revenue".
 
 
+== Scope and access
+
+To add or manage data model instructions, you must have data model editing access.
+
+Data model instructions apply at the Model level and affect all users querying the Model.
+
+Because these instructions influence many queries, they should be written carefully and reviewed for accuracy and consistency.
+
 == Limitations and key considerations
 
 No automatic override behavior:: A data model instruction does *not* automatically override a user’s direct query if they conflict. Instead, both the user’s query and the instruction are sent to the Model, which can lead to unpredictable results or confusing answers. This makes writing clear, specific instructions critical.
 
 Not recommended for mathematical formulas:: Data model instructions are not well-suited for teaching the system mathematical formulas or complex calculations. For these scenarios, we recommend other coaching methods, such as providing a reference question with xref:spotter-context.adoc[natural language context].
 
-Avoid conflicting coaching:: The instructions you provide must be coherent with each other and with  reference questions and business terms. Contradictory information will confuse the model and lead to unpredictable results.
+Avoid conflicting coaching:: The instructions you provide must be coherent with each other and with reference questions and business terms. Contradictory information will confuse the model and lead to unpredictable results.
 
 Unsupported capabilities:: To set clear expectations, please note that several advanced “agentic” behaviors are not currently supported by data model instructions. These include:
 +
