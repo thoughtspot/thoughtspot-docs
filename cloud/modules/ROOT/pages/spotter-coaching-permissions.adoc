@@ -5,71 +5,153 @@
 :page-layout: default-cloud
 :experimental:
 :jira:
-:jira: SCAL-228500, SCAL-244132, SCAL-245651, SCAL-254069, SCAL-265156, SCAL-264258
+:jira: SCAL-228500, SCAL-244132, SCAL-245651, SCAL-254069, SCAL-265156, SCAL-264258, SCAL-295963
 :description: When you provide coaching to Spotter, this coaching can impact either just your own experience or the experience of all users interacting with that data.
 
-When you provide coaching to Spotter, this coaching can impact either just your own experience or the experience of all users interacting with that data. We define these levels of coaching as user level and global level. Global-level coaching is used to refine answers for _all users_ querying that specific Model. It represents a verified, common understanding or definition that the organization wants Spotter to use universally for that data set.
+When you coach Spotter, whether through reference questions, business terms, or data model instructions, that coaching can apply to just you or to everyone who searches on the Model. Understanding these levels helps you manage coaching effectively across your organization.
 
-If you have Model editing access (that is, if you’re a Model editor or an admin user), the reference questions and business term coaching you create or approve are applied at the global level by default, as you are considered a primary coach for the system on that data.
+== Understanding coaching levels
 
-== Who can provide what kind of feedback?
+Spotter coaching operates at two levels:
 
-General business users (view access):: When these users provide feedback, it defaults to user level. This allows them to flag issues or suggest improvements without deep technical knowledge of the data model or global definitions.
+User level:: Coaching applies only to your own Spotter experience. Other users querying the same Model won't see your coaching. This is the default for business users with view-only access.
 
-Primary coaches (edit or admin access):: When these users create reference questions, define business terms, or approve coaching, it is usually applied at the global level. This is because these roles are entrusted with shaping the common analytical understanding for this data set.
+Global level:: Coaching applies to *all users* querying the Model. This represents verified, organization-wide definitions and rules. Global coaching is the default for Model editors and administrators.
+
+== How levels apply to coaching tools
+
+[options="header"]
+|===
+| Coaching tool | User level | Global level
+
+| Reference questions | Your curated question and answer pairs apply only to you. | Question and answer pairs apply to all users of the Model.
+
+| Business terms | Your term definitions apply only to you. | Term definitions apply to all users of the Model.
+
+| Data model instructions | Not available at user level. | Instructions apply to all users (applied at global level only).
+|===
+
+== Coaching roles
+
+Your role determines what coaching you can create and at what level.
+
+Business users (view access)::
+
+* Can create reference questions and business terms at user level.
+* Cannot create data model instructions.
+* Cannot see or change coaching created by others.
+
+Users with Spotter coaching access on a data model::
+
+* Can create reference questions and business terms at global level.
+* Can write data model instructions.
+* Can view, modify, and delete all coaching on the specific data model.
+* Can promote user-level coaching to global level.
+* Can grant coaching access to other users.
+* Cannot modify Model metadata or generate/modify AI context.
+
+Model editors (edit access)::
+
+* Can create all coaching types at global level.
+* Can view, edit, and delete coaching from all users.
+* Can promote user-level coaching to global level.
+* Can modify Model metadata and AI context.
+
+Administrators (admin privilege)::
+
+* Have full coaching permissions across all Models in the Org.
+* Can manage coaching from an user on any Model.
 
 [#grant]
-== Grant coaching access
+== Grant Spotter coaching access
+
+You can delegate coaching responsibilities to power users without giving them full data model editing permissions. This allows them to create global-level coaching while keeping the Model's structure protected.
+
+NOTE: Coaching access can be granted on non-editable data models, such as system data models (like Query Stats), and published data models on secondary Orgs.
+
+=== Prerequisites
+
+You must have edit access to the data model, be an administrator, or have Spotter coaching access to the Model. For non-editable data models, admin access is required.
+
+The data model must be Spotter-enabled.
+
+=== Steps
 
 To grant coaching access to a user or group, follow these steps:
 
-. Navigate to the Model in the Data workspace. Note that the Model must have Spotter enabled.
+. Navigate to the Model in the Data workspace.
 
 . Click the More menu image:icon-more-10px.png[more menu icon] and select *Spotter coaching access*.
 
-. Click the *Add users or groups* drop-down menu and search for the user or group name.
+. Click the *Add users or groups* dropdown and search for the user or group name.
 
-. You may see a yellow warning icon to the right of the user or group name. This indicates they do not have view access to the Model. Select the *Give view access to the model for the added users or groups* checkbox at the bottom of the pop-up to resolve this issue.
+. If you see a yellow warning icon next to the name, the user doesn't have view access to the Model. Select *Give view access to the model for the added users or groups* to resolve this.
 
 . Click *Save*.
 
-NOTE: At any time, you can navigate to the Coaching Access pop-up and click the *X* icon to the right of the user or group name to remove this access.
 
-== Permissions
+=== Remove coaching access
 
-The following table clarifies each permission level, the coaching a user can view, and the actions you can take.
+To remove coaching access, return to the Spotter coaching access dialog and click the *X* icon next to the user or group name.
+
+== Manage coaching
+
+Model editors and administrators can fix, promote, or delete coaching entries from all users.
+
+. Navigate to the Data workspace and scroll to the *Spotter coaching* section.
+
+. Select the *Reference questions* or *Business terms* tab.
+
+. Find the entry you want to manage.
+
+. Click the *More* menu icon image:icon-more-10px.png[more options icon] and select an action:
++
+--
+* *Fix the answer*: Edit the coaching entry to improve accuracy.
+* *Change access*: Promote user-level coaching to global, or vice versa.
+* *Delete*: Remove the coaching entry.
+--
++
+[.bordered]
+image::coaching-more-menu.png[]
+. Save your changes.
+
+
+== Permissions reference
+
+The following table provides a detailed breakdown of permissions by access level.
 
 
 [options="header"]
 |===
-| Permission level | What coaching can you see? | What actions can you take?
+| Access level | Can view | Can do
 
 
-| `NO_ACCESS`: User does not have access to a data set. | User cannot see any coaching from this data set, including any coaching they submitted before losing access. | Not applicable. User cannot see the coaching.
+| No access | Nothing (including previously submitted coaching) | Nothing
 
 
-| `TABLE_READ_PERMISSION`: User has read access to a data set. a| User can view their own coaching for this data set. +
-User cannot see coaching provided by others for this data set. a| User can *fix the answer* and *delete* the coaching submitted by all the users on the data set. +
-If the access is changed to *Global*, users cannot change the coaching. +
-Users cannot *change access* of any coaching submitted on the data set.
+| View access a| Your own coaching only a| Create user-level coaching +
+Fix or delete your own coaching
 
-| Spotter coaching access: User does not have edit permissions to a Model but has been assigned coaching access to the Model. a| User can view all coaching on the Model. | User can create global-level coaching and write instructions on the Model, but cannot use the AI Context feature or modify data model metadata.
-
-
-| `TABLE_MODIFY_PERMISSION`: User has edit access to a data set. | User can view coaching submitted by all the users on the data set. | User can *change access*, *fix the answer*, and *delete* the coaching submitted by all users on the data set.
+| Spotter coaching access a| All coaching on the Model | Create global-level coaching +
+Write data model instructions
 
 
-| Administrator | User can view coaching submitted by all the users for all the data sets in the selected Org. | User can *change access*, *fix the answer*, and *delete* the coaching submitted by all the users for all the data sets in the selected Org.
+| Edit access | All coaching on the Model | All coaching actions +
+Change access levels +
+Modify Model metadata
+
+
+| Administrator | All coaching across all Models in the Org | All coaching actions across all Models
 |===
 
 
-IMPORTANT: For an Org-enabled cluster, only the coaching from the selected Org is visible.
+IMPORTANT: For Org-enabled instances, you can only view and manage coaching from the currently selected Org.
 
-== Delete, fix, or promote coaching
-
-Primary coaches (like analysts or Model editors) can manage coaching contributions from all users on the datasets they oversee. Through the “Coach Spotter” interface, they can:
-
-* Review feedback submitted by any user.
-* Delete irrelevant or incorrect coaching.
-* Fix/edit existing coaching to improve its accuracy or clarity.
-* Promote valuable user-level coaching to global level, so it benefits all users of that data set.
+'''
+> **Related information**
+>
+> * xref:spotter-reference-questions.adoc[Reference questions]
+> * xref:spotter-business-terms.adoc[Business terms]
+> * xref:natural-language-instructions.adoc[Data model instructions]
+> * xref:spotter-coach-not-coach.adoc[Coaching best practices]
