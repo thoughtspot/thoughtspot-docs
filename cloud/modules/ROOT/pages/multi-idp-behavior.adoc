@@ -32,29 +32,21 @@ GCP environments currently do not support the enablement of per Org subdomain.
 == ThoughtSpot initiated login
 When the user attempts to login from ThoughtSpot using the ThoughtSpot instance url or the Org url instead of clicking on a tile on their IdP.
 
-=== Multiple IdPs configured
-[IMPORTANT]
-Users with multiple IdPs have to use an IdP initiated login for their first login. For all subsequent logins, they can use the steps as listed below.
-
-* User goes to the root URL for the ThoughtSpot instance: `https://CLUSTER_NAME.thoughtspot.cloud`
-* The user sees the default ThoughtSpot login page.
-* Since there are multiple IdPs, the user will not see the *Login with SSO* button.
-* The user enters their username
-* The IdP discovery flow identifies which IdP the user belongs to (based on entered username) and logs them/ redirects them to that IdP (if auto-redirect is enabled)
-*For the first time, they have to use an IdP initiated login.*
-* Once the user logs in, they are routed to their Org.
-* If the user has membership to single Org, then it is the same Org they land in
-* If the user has membership to multiple Orgs, then they land in the “last logged out” Org” and they can switch Orgs from the Org switcher.
-* Whether they have membership to multiple Orgs is determined by the addition of a user to multiple Orgs either from ThoughtSpot OR if group / Org claims contain multiple Orgs.
-* Once the user logs in via a particular IdP, for all succeeding logins, it is the same IdP that ThoughtSpot chooses to login the user. If the user is part of multiple IdPs and wants to login via another IdP, the user has to use IdP initiated logins for the other IdPs.
-
 
 === Multiple IdPs with the per Org subdomain configured
 
 ThoughtSpot integrates with SAML for per Org authentication. This would allow you to create custom URLs per org and then log into that org using the specific URL directly.
 
+[WARNING]
+If the two users with the same username are added via two different IdPs, ThoughtSpot considers it as the same user (uniqueness is in the username) and the user gets access to multiple Orgs.
+
 [IMPORTANT]
-Users with multiple IdPs have to use an IdP initiated login for their first login. For all subsequent logins, they can use the steps as listed below.
+====
+* Users with multiple IdPs have to use an IdP initiated login for their first login. For all subsequent logins, they can use the steps as listed below.
+* Even while using per Org IdP, it is important to pass the “@org” suffix to group claims so that the right groups get provisioned in the right Org.
+* If you pass group claims for other Orgs, (other than the one mentioned by the Org subdomain) they are considered, and the user automatically gets access to multiple Orgs as per the Org claims.
+====
+
 
 * User goes to the per Org URL: `https://ORG_SUBDOMAIN.CLUSTER_NAME.thoughtspot.cloud`
 * With SAML auto-redirect enabled and a single IdP for that Org, the user is sent directly to the IdP login page (no ThoughtSpot login screen). The user enters their username.
@@ -70,14 +62,23 @@ Users with multiple IdPs have to use an IdP initiated login for their first logi
 Whether they have membership to multiple Orgs is determined by the addition of a user to multiple Orgs either from ThoughtSpot or if group or the Org claims contain multiple Orgs.
 * Once the user logs in via a particular IdP, for all succeeding logins, it is the same IdP that ThoughtSpot chooses to login the user.
 
-[NOTE]
-====
-* Even while using per Org IdP, it is important to pass the “@org” suffix to group claims so that the right groups get provisioned in the right Org.
-* If you pass group claims for other Orgs, (other than the one mentioned by the Org subdomain) they are considered, and the user automatically gets access to multiple Orgs as per the Org claims.
-====
 
-[WARNING]
-If the two users with the same username are added via two different IdPs, ThoughtSpot considers it as the same user (uniqueness is in the username) and the user gets access to multiple Orgs.
+
+=== Multiple IdPs configured
+[IMPORTANT]
+Users with multiple IdPs have to use an IdP initiated login for their first login. For all subsequent logins, they can use the steps as listed below.
+
+* User goes to the root URL for the ThoughtSpot instance: `https://CLUSTER_NAME.thoughtspot.cloud`
+* The user sees the default ThoughtSpot login page.
+* Since there are multiple IdPs, the user will not see the *Login with SSO* button.
+* The user enters their username
+* The IdP discovery flow identifies which IdP the user belongs to (based on entered username) and logs them/ redirects them to that IdP (if auto-redirect is enabled)
+*For the first time, they have to use an IdP initiated login.*
+* Once the user logs in, they are routed to their Org.
+* If the user has membership to single Org, then it is the same Org they land in
+* If the user has membership to multiple Orgs, then they land in the “last logged out” Org” and they can switch Orgs from the Org switcher.
+* Whether they have membership to multiple Orgs is determined by the addition of a user to multiple Orgs either from ThoughtSpot OR if group / Org claims contain multiple Orgs.
+* Once the user logs in via a particular IdP, for all succeeding logins, it is the same IdP that ThoughtSpot chooses to login the user. If the user is part of multiple IdPs and wants to login via another IdP, the user has to use IdP initiated logins for the other IdPs.
 
 
 == IdP initiated login
