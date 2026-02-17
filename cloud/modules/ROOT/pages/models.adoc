@@ -213,3 +213,47 @@ CAUTION: Copies/aliases of tables that are on the "many" side of a join are not 
 [NOTE]
 Each alias table must be replaced with its own unique view. The view should be an aggregated or logically distinct form of the alias table, not an exact replica. You cannot reuse the same view for multiple alias table replacements; each must be a separate view object in the data model, even if they are based on the same underlying table. This ensures the model remains valid and avoids unsupported configurations.
 ////
+
+== Cyclic dependencies
+A cyclic dependency occurs when models and views reference each other directly or indirectly, forming a loop in the dependency graph.
+For instance references such as, Model M1 → View V1 → Model M2 → View V2 → back to Model M1
+Even though each step may look valid in isolation, the overall graph becomes cyclic. These cycles introduce risks during cluster upgrade and must be avoided.
+
+Where cyclic dependencies seem unavoidable, models should not directly reference each other. Instead, a view needs to be created at the CDW level which encapsulates the required logic and reuse that View across models, or create a new Model that combines the View with the required base tables. This approach preserves reuse and consistency while breaking direct model-to-model dependency chains, keeping the overall dependency graph acyclic and more resilient to upgrades and query planning issues.
+
+
+First‑Level Dependency (Direct cycle)::
+
+. Create a model M1 using:
+.. Product table (T1)
+.. Product Category table (T2)
+. Select all columns and save M1
+. Create a view V1 from M1
+. Select all columns and save V1
+. Add V1 back into M1
+
+This creates a direct cycle: M1 → V1 → M1
+
+Multi‑Level Dependency (Indirect Cycle)::
+
+. Create a model M1 using:
+.. Product table (T1)
+.. Product Category table (T2)
+.. Select all columns
+. Create a view V1 from M1
+. Select columns only from Product (T1) and save V1
+. Create a second model M2 using:
+.. Purchase Transactions table (T3)
+.. View V1
+. Create a view V2 from M2
+. Select columns from Purchase Transactions (T3) and save V2
+. Add V2 back into M1
+
+This creates an indirect (multi‑level) cycle: M1 → V1 → M2 → V2 → M1
+
+
+
+
+
+
+
