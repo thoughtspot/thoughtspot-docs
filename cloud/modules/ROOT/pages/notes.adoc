@@ -263,25 +263,35 @@ The latest release of ThoughtSpot Cloud contains several new and enhanced featur
 [#26-3-0-cl-business-user]
 === For the Business User
 
-#KPI chart settings# [.badge.badge-early-access]#Early Access#::
+// Naomi – jira: SCAL-265718. docs jira: SCAL-265719
+// PM: Anshul Mehta
+#KPI chart settings# [.badge.badge-early-access-relnotes]#Early Access#::
 ThoughtSpot introduces more granular controls for KPI charts. You can now:
-
++
+--
 * Decide how missing dates are displayed (as gaps, ignored, or treated as 0).
 * Specify whether to show or hide the current date, previous date, and previous value.
 
 * Abbreviate previous month (PM) or previous quarter (PQ).
 
 * Specify whether the measure’s increase or decrease is positive or negative.
+--
 +
 To enable this feature, contact your administrator.
 
-#Support for CSV and XLSX downloads for Liveboards# [.badge.badge-early-access]#Early Access#::
+// Mary – jira: SCAL-244743. docs jira: SCAL-294280
+// PM: Siddhant
+#Improved experience for Liveboard downloads and schedules# [.badge.badge-early-access-relnotes]#Early Access#::
 
 ThoughtSpot introduces improved support for CSV and XLSX downloads. You can now download entire Liveboards as structured data and select specific visualizations when scheduling tabular reports. When you choose CSV and XLSX download, a bulk download of the Liveboard data is triggered instead of a static image. You can then pick a subset of visualizations.
 
+// Mark. jira: SCAL-260580. docs jira: SCAL-269159
+// PM: Manan? Vaibhav?
 #Enhanced dynamic parameters in charts#::
 Enhanced dynamic parameters are now generally available (GA) and on by default. You can use any parameter from an axis or column name of a chart in the title or description of the Answer which contains that chart. A parameter used in the title or description always displays the value of the same parameter used in the chart itself.
 
+// Mark. jira: SCAL-271016. docs jira: SCAL-271017
+// PM: Manan/Anshul
 #Improved chart recommendations#::
 
 Improved chart recommendations are now generally available (GA) and on by default. When you search, ThoughtSpot can automatically suggest a chart type based on your search query. The following capabilities are improved:
@@ -290,30 +300,76 @@ Improved chart recommendations are now generally available (GA) and on by defaul
 * If you modify an existing query by adding or removing fields, ThoughtSpot retains the existing chart type unless it is forced to change.
 * When you drill down into data, ThoughtSpot maintains the current chart type whenever possible.
 
-#Suggestion settings#::
-Suggestion settings are now generally available (GA) to all users who opt in. We have added the Suggestion Settings column to allow you to control data that shows in typeahead suggestions and column knowledge cards. Previously, on Models with row-level security defined, you would see suggested names of data that you could not access in typeahead suggestions or in column knowledge cards.
+
+
+[#26-3-0-cl-analyst]
+=== For the Analyst
+
+// Rani. jira: SCAL-230831. docs jira: SCAL-230835
+// PM: Akshat
+#Add user-defined ID (object ID) in TML#::
+You can now manage content across multiple Orgs without having to manually change the GUID of an object each time you move it between Orgs. You can directly add or edit an object ID in the TML of an Answer, table, Model, Liveboard, or View.
 +
-For example, if you only had access to data in California, you could see that data for Texas existed, although you could not access the data. Set the Suggestion Settings column as Secure Suggestions to ensure users never see references to data they shouldn’t be able to access. To enable this feature, contact your administrator.
-
-#Publishing coaching to Orgs#::
-ThoughtSpot now supports publishing Spotter coaching to Orgs. In addition to Org admins, now non-admin users with Spotter coaching management access on published data models in secondary Orgs can provide coaching access permissions to other users. They can also export/import coaching TML and share the data model with other users. Previously, coaching was Org-specific. Coaching changes made in the primary Org are synced with the secondary Orgs where the Model is published.
-
-#Support for formula variables in query generation#::
-The use of formula variables in query generation is now generally available (GA) and on by default. Formula variables can be of any data type that ThoughtSpot supports, and can be associated with a single value or list of values. For more information, see Formula variables.
-+
-NOTE: Formula variables created in the primary Org can be shared with other Orgs. A formula variable created in a non-primary Org is only visible in that Org.
-
-// [#26-3-0-cl-analyst]
-// === For the Analyst
+For more information, see
+xref:tml.adoc#object-id[Object ID in TML files].
 
 [#26-3-0-cl-data-engineer]
 === For the Data Engineer
 
+// Mary. jira: SCAL-286048. docs jira: SCAL-286049
+// PM: Sidharth
 #Admin settings#::
 ThoughtSpot introduces a new and improved user experience for Administration. Administration is now part of the left navigation panel.
 
 #Rename Spotter privilege#::
 We have renamed the privilege that grants users access to Spotter to *Can use Spotter*.
+
+// Naomi. jira: SCAL-263976. docs jira: SCAL-281408
+// PM: Sejal, Anant
+#Spotter coaching access#::
+You can now grant coaching access to users or groups from the Spotter-enabled Model you want them to coach. Users with Spotter coaching access on a data model can import or export associated coaching TML, as well as grant Spotter coaching access to other users or groups. Sharing Spotter coaching access is no longer restricted to data model editors. You can also grant Spotter coaching access to system-level Models like the Query Stats Model, and on published data models. Spotter coaching access does not require users to have edit access to the Model.
++
+For more information, see xref:spotter-coaching-permissions.adoc#grant[Grant Spotter coaching access].
+
+// Rani. jira: SCAL-287600. docs jira: SCAL-287601
+// PM: Shreyash Sharma
+#Object Tracking# [.badge.badge-beta-relnotes]#Beta#::
+ThoughtSpot now has a new data model, *Object Tracking*, to capture creation date, creator, last modification date, and last modifier for any supported Liveboard, Model, and Answer.
+Administrators can leverage this data model to build custom monitoring Liveboards, offering visibility into who created or modified objects and when these actions occurred.
+
+
+
+#Suggestion settings column#::
+Suggestion settings are now generally available (GA). We have added the Suggestion Settings column to Models to allow you to control data that shows in typeahead suggestions and column knowledge cards. Previously, on Models with row-level security defined, you would see suggested names of data that you could not access in typeahead suggestions or in column knowledge cards.
++
+For example, if you only had access to data in California, you could see that data for Texas existed, although you could not access the data. Set the Suggestion Settings column as *Secure Suggestions* to ensure users never see references to data they shouldn't be able to access. To enable this feature, contact {support-url}.
++
+For more information, see
+xref:data-modeling-suggestion-settings.adoc[Suggestion settings].
+
+// Mary. jira: SCAL-287376, SCAL-282499. docs jira: SCAL-287377, SCAL-270663, SCAL-282500, SCAL-284624
+// PM: Damian
+#Column-level property for strict indexing and disabling typeahead#::
+Column-level properties for strict indexing and disabling typeahead are now generally available (GA). To enable this feature, contact {support-url}.
+
+// Mary. jira: SCAL-281407. docs jira: SCAL-281408
+// PM: Sejal.
+#Publishing coaching to Orgs#::
+ThoughtSpot now supports publishing Spotter coaching to Orgs. In addition to Org admins, now non-admin users with Spotter coaching management access on published data models in secondary Orgs can provide coaching access permissions to other users. They can also export/import coaching TML and share the data model with other users. Previously, coaching was Org-specific. Coaching changes made in the primary Org are synced with the secondary Orgs where the Model is published.
+
+// Rani. jira: SCAL-279485. docs jira: SCAL-279486
+// PM: Sidharth Misra
+#Delete subobjects in Collections#::
+To reduce the risk of accidental data loss while deleting objects from a Collection, ThoughtSpot now has an additional step to the deletion process. If you choose to delete the objects along with or without the Collection, you must explicitly type the word DELETE (in all caps) to confirm the action. If you do not type DELETE exactly as required, the deletion will not proceed.
+
+
+// Mary. jira: SCAL-268026. docs jira: SCAL-291455
+// PM: Damian
+#Support for formula variables in query generation#::
+The use of formula variables in query generation is now generally available (GA) and on by default. Formula variables can be of any data type that ThoughtSpot supports, and can be associated with a single value or list of values. Formula variables created in the primary Org can be shared with other Orgs. A formula variable created in a non-primary Org is only visible in that Org.
++
+For more information, see
+xref:formula-reference.adoc#formula-variables[Formula variables].
 
 [#26-3-0-cl-developer]
 === For the Developer
