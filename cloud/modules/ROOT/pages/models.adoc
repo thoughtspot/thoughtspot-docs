@@ -220,9 +220,11 @@ For instance references such as, Model M1 → View V1 → Model M2 → View V2 �
 
 Even though each step may look valid in isolation, the overall graph becomes cyclic. These cycles introduce risks during cluster upgrade and must be avoided.
 
-To resolve circular dependencies, avoid linking two Models directly to one another. Instead, move the shared logic into a View at the warehouse level. You can then reference this View in both Models, or create a new Model that combines the View with the required base tables. This approach preserves reuse and consistency while breaking direct model-to-model dependency chains, keeping the overall dependency graph acyclic and more resilient to upgrades and query planning issues.
+To resolve circular dependencies, avoid linking two Models directly to one another. Instead, move the shared logic into a View at the data warehouse level. You can then reference this View in both Models, or create a new Model that combines the View with the required base tables. This approach preserves reuse and consistency while breaking direct model-to-model dependency chains, keeping the overall dependency graph acyclic and more resilient to upgrades and query planning issues.
 
-First‑Level Dependency (Direct cycle)::
+The following is a few ways in which cyclic dependency gets created:
+
+First‑level dependency (Direct cycle)::
 
 . Create a Model M1 using:
 .. Product table (T1)
@@ -234,7 +236,7 @@ First‑Level Dependency (Direct cycle)::
 
 This creates a direct cycle: M1 → V1 → M1
 
-Multi‑Level Dependency (Indirect Cycle)::
+Multi‑level dependency (Indirect cycle)::
 
 . Create a Model M1 using:
 .. Product table (T1)
