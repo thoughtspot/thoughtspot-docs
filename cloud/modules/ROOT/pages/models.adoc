@@ -17,7 +17,7 @@ Models are created in the Model editor which provides a more visual and intuitiv
 
 Benefits of the Model editor include:
 
-- Building a data model visually, by dragging and dropping tables and columns
+- Building a data Model visually, by dragging and dropping tables and columns
 - Creating joins between tables is faster and easier
 - Using the tabbed interface allows you to quickly switch between table and column views, as well as formulas, filters, parameters, and settings.
 
@@ -56,7 +56,7 @@ This provides access to the data without requiring an understanding of how it is
 [#create-model]
 == Creating a {model}
 
-To create a data model:
+To create a data Model:
 
 . Go to the *Data workspace* tab.
 . Select the *+ Create new* button in the side navigation bar.
@@ -215,16 +215,16 @@ Each alias table must be replaced with its own unique view. The view should be a
 ////
 
 == Cyclic dependencies
-A cyclic dependency occurs when models and views reference each other directly or indirectly, forming a loop in the dependency graph.
+A cyclic dependency occurs when Models and views reference each other directly or indirectly, forming a loop in the dependency graph.
 For instance references such as, Model M1 → View V1 → Model M2 → View V2 → back to Model M1
+
 Even though each step may look valid in isolation, the overall graph becomes cyclic. These cycles introduce risks during cluster upgrade and must be avoided.
 
-Where cyclic dependencies seem unavoidable, models should not directly reference each other. Instead, a view needs to be created at the CDW level which encapsulates the required logic and reuse that View across models, or create a new Model that combines the View with the required base tables. This approach preserves reuse and consistency while breaking direct model-to-model dependency chains, keeping the overall dependency graph acyclic and more resilient to upgrades and query planning issues.
-
+To resolve circular dependencies, avoid linking two Models directly to one another. Instead, move the shared logic into a View at the warehouse level. You can then reference this View in both Models, or create a new Model that combines the View with the required base tables. This approach preserves reuse and consistency while breaking direct model-to-model dependency chains, keeping the overall dependency graph acyclic and more resilient to upgrades and query planning issues.
 
 First‑Level Dependency (Direct cycle)::
 
-. Create a model M1 using:
+. Create a Model M1 using:
 .. Product table (T1)
 .. Product Category table (T2)
 . Select all columns and save M1
@@ -236,13 +236,13 @@ This creates a direct cycle: M1 → V1 → M1
 
 Multi‑Level Dependency (Indirect Cycle)::
 
-. Create a model M1 using:
+. Create a Model M1 using:
 .. Product table (T1)
 .. Product Category table (T2)
 .. Select all columns
 . Create a view V1 from M1
 . Select columns only from Product (T1) and save V1
-. Create a second model M2 using:
+. Create a second Model M2 using:
 .. Purchase Transactions table (T3)
 .. View V1
 . Create a view V2 from M2
