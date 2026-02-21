@@ -10,7 +10,7 @@
 
 The data model instructions feature allows you to provide the Spotter system with global rules that it should follow across all relevant queries. Unlike xref:spotter-context.adoc[Spotter context], which is tied to a specific reference question, a natural language instruction is a standalone directive designed to teach the system a core concept, a default behavior, or a specific data nuance. These instructions are sent along with the user’s query to guide the system toward a more accurate and consistent response.
 
-NOTE: These instructions are globally applicable and influence all queries made by any user on the data model, unlike other coaching methods that also have a user-level scope.
+NOTE: Crucially, these instructions are globally applicable and influence all queries made by any user on the data model, unlike other coaching methods that also have a user-level scope.
 
 +++
 <div class="border">
@@ -25,6 +25,44 @@ NOTE: Data model instructions are in early access and off by default. To enable 
 == Access and permissions
 
 To add or manage data model instructions, you must have data model editing access.
+
+== Give instructions in Spotter
+
+To give instructions in Spotter, follow these steps:
+
+. Open Spotter and ask a question. For example, you could say, “Show me the sales for the last month.”
+
+. Let’s say your company defines “last month” as the last 30 days. If Spotter answers your question with the date filter “last month,” you can add context to correct its answer.
++
+[.bordered]
+image::data-model-instructions.png[Spotter answer showing a filter for order date = last month.]
+
+. Click the information pane icon  in the top right corner of the conversation. The instructions pop-up appears.
+
+. Click the *+* icon to add an instruction. In the text box that appears, type your instruction. For example, you could say, “When I ask for last month, use ‘last 30 days’ as a filter.”
++
+[.bordered]
+image::dmi-last-month.png[Data model instructions displaying "When I say 'last month', show the last 30 days."]
+
+. Click *Save*.
+
+. When the pop-up closes, Spotter displays an acknowledgement that Instructions have been updated. Click *Regenerate last answer* to see the updated answer to your question and verify that Spotter has understood your instructions.
++
+[.bordered]
+image::dmi-regenerate.png[Regenerate last answer.]
+
+== Give instructions in the Model
+
+To give instructions in the Model, follow these steps:
+
+. Navigate to the Data workspace and select the Model. Click the *Instructions* tab. You must have edit access to the Model to add instructions.
+
+. In the text box, type your instruction. For example, you could say, “When I ask for last month, use ‘last 30 days’ as a filter.”
++
+[.bordered]
+image::dmi-model.png[Instructions in a Model]
+
+You can access the instructions in Spotter when you search on the Model, and edit them in conversation as well as in the Model view.
 
 == Key use cases
 
@@ -49,39 +87,18 @@ Example;; If a user asks for basic provider information, you can enrich the answ
 Date handling:: Manage how the system handles date and time analysis, especially when a user omits a time frame.
 Example;; To prevent expensive, wide-ranging queries and align with common user preferences, you can set a default time period: "If a query does not specify a time period, apply a default filter for the 'last 30 days'".
 
-
-== Give instructions in Spotter
-
-To give instructions in Spotter, follow these steps:
-
-. Open Spotter and ask a question. For example, you could say, “Show me the sales for the last month.”
-
-. Let’s say your company defines “last month” as the last 30 days. If Spotter answers your question with the date filter “last month,” you can add context to correct its answer.
-
-. Click the information pane icon  in the top right corner of the conversation. The instructions pop-up appears.
-
-. Click the *+* icon to add an instruction. In the text box that appears, type your instruction. For example, you could say, “When I ask for last month, use ‘last 30 days’ as a filter.”
-
-. Click the check mark to save your instructions, and select *Close*.
-
-. When the pop-up closes, Spotter displays an acknowledgement that Instructions have been updated. Click *Regenerate last answer* to see the updated answer to your question and verify that Spotter has understood your instructions.
-
-== Give instructions in the Model
-
-To give instructions in the Model, follow these steps:
-
-. Navigate to the Data workspace and select the Model. Click the *Instructions* tab. You must have edit access to the Model to add instructions.
-
-. In the text box, type your instruction. For example, you could say, “When I ask for last month, use ‘last 30 days’ as a filter.”
-
-You can access the instructions in Spotter when you search on the Model, and edit them in conversation as well as in the Model view.
-
 == Best practices for writing instructions
 
 Be specific and direct:: Write your instruction as a clear command to ensure the system applies your rule correctly and predictably. For example, "Exclude all sales from 'Internal Test' accounts" is better than "I don't usually want to see our internal test accounts in reports."
 
 
 Pro tip;; In many cases, using preferential language like "Prefer A over B" can be more effective than a hard command like "Use A".
+
+Be clear about when the instruction should apply:: Every instruction should make it obvious to the system whether it applies to all queries or only in specific situations.
+For rules that should always be in effect, use the word 'always' explicitly::: For example, "Always apply the filter 'Customer_Type = 'paid' when analyzing customer data on this data model." "Always exclude rows where Account_Name = 'thoughtspot, inc.' from all analysis."
+For rules that are situational or should yield to the user's intent, use "unless" or "if... then" language to define the boundary::: For example, "Always apply a default filter for 'last 30 days' unless the user specifies a different time period in their query." "For queries about 'Electronics' sales, filter for Fulfillment_Center = 'FC-West'. For 'Apparel' sales, filter for Fulfillment_Center = 'FC-East'."
++
+If you do not specify when the instructions should apply, the system must guess-- and guessing leads to inconsistent behavior across queries.
 
 Group instructions by concept:: Instead of creating many separate instructions for small, related rules, it is better to group them. Focus on teaching all the logic related to a particular business concept in a single, well-structured instruction. This helps the system understand the full context and know which rules to apply when a user's query mentions that concept.
 
@@ -96,7 +113,7 @@ No automatic override behavior:: A natural language instruction does *not* autom
 
 Not recommended for mathematical formulas:: Data model instructions are not well-suited for teaching the system mathematical formulas or complex calculations. For these scenarios, other coaching methods, such as providing a reference question with xref:spotter-context.adoc[natural language context], are strongly recommended.
 
-Avoid conflicting coaching:: The instructions you provide must be coherent with each other and with other coaching assets like reference questions and business terms. Contradictory information will confuse the model and lead to unpredictable results.
+Avoid conflicting coaching:: The instructions you provide must be coherent with each other and with other coaching assets like reference questions and business terms. Before adding a new instruction, review your existing instructions, reference questions, and business terms to ensure they tell a consistent story. If two coaching assets define the same concept differently, the system cannot reliably choose between them and results will be unpredictable.
 
 Unsupported capabilities:: To set clear expectations, please note that several advanced “agentic” behaviors are not currently supported by data model instructions. These include:
 +
@@ -106,3 +123,13 @@ Unsupported capabilities:: To set clear expectations, please note that several a
 * Defining conditional query logic (for example, “if the first query returns no data, run a second query”).
 * Question deflection (preventing the system from answering certain questions).
 --
+
+== How to validate your instructions
+
+After adding an instruction, it is important to verify that it works as intended and does not interfere with unrelated queries.
+
+. Test the target query. If adding instructions from a conversation, click *Regenerate last answer* to confirm the instruction is being applied to the query you wrote it for. Review the generated answer and verify that the expected filter, column, or behavior is reflected.
+
+. Test with unrelated queries. Ask two or three questions that are not related to the instruction and verify the instruction is not incorrectly applied. For example, if you added an instruction to always filter to paid customers, try a query like, "What are the top 5 product categories by revenue?" and confirm the paid customer filter is not being forced onto a query where it does not belong.
+
+. Test edge cases. If your instruction uses conditional logic like "unless the user specifies a time period," test both paths: a query without a time period (to confirm the default applies), and a query with an explicit time period (to confirm the exception is upheld).
