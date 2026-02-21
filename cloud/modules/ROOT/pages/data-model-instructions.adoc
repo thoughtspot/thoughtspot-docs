@@ -37,6 +37,9 @@ To give instructions in Spotter, follow these steps:
 . Open Spotter and ask a question. For example, you could say, “Show me the sales for the last month.”
 
 . Let’s say your company defines “last month” as the last 30 days. If Spotter answers your question with the date filter “last month,” you can add context to correct its answer.
++
+[.bordered]
+image::data-model-instructions.png[Spotter answer showing a filter for order date = last month.]
 
 . Click the caret next to the name of the data source in the search bar and select *Data model instructions*.
 +
@@ -47,10 +50,16 @@ image::data-model-instructions-caret.png[Select caret.]
 image::data-model-instructions-select.png[Select Data model instructions]
 
 . In the text box that appears, type your instruction. For example, you could say, “When I ask for last month, use ‘last 30 days’ as a filter.”
++
+[.bordered]
+image::dmi-last-month.png[Data model instructions displaying "When I say 'last month', show the last 30 days."]
 
 . Click *Save*.
 
 . When the pop-up closes, Spotter displays an acknowledgement that Instructions have been updated. Click *Regenerate last answer* to see the updated answer to your question and verify that Spotter has understood your instructions.
++
+[.bordered]
+image::dmi-regenerate.png[Regenerate last answer.]
 
 === Give instructions on a Model
 
@@ -61,14 +70,46 @@ To give instructions on a Model, follow these steps:
 . Click the *Instructions* tab.
 
 . In the text box, type your instruction. For example, you could say, “When I ask for last month, use ‘last 30 days’ as a filter.”
++
+[.bordered]
+image::dmi-model.png[Instructions in a Model]
 
 . Click *Save changes*.
+
+== Key use cases
+
+Data model instructions are a versatile tool for shaping how the system interprets queries and presents answers. The primary use cases are:
+
+Data filtering and refinement:: Apply automatic filters to ensure analyses are consistent and accurate. This can be broken down into two main types:
+
+Applying conditional filters::: Teach Spotter to apply different logic based on the user’s query.
+Example;; To use different fulfillment centers based on the product line, you can instruct: "For queries about 'Electronics' sales, filter for Fulfillment_Center = 'FC-West'. For 'Apparel' sales, filter for Fulfillment_Center = 'FC-East'".
+
+Applying default filters::: Set up a rule that always applies a filter to clean up data.
+Example;; To ensure internal test data is always excluded from revenue analysis, you can instruct: "When calculating revenue, always exclude transactions where Account_Type = 'Internal Test'".
+
+Column selection and prioritization:: Guide the system to use the correct columns for analysis, filtering, or aggregations.
+Example;; If a query for "market" could ambiguously use a `City` or `Canvas Market` column, you can direct the system with: "Prefer Canvas Market column over City column for filtering market values".
+
+Example;; To ensure counts are always accurate, you can specify the column to use for counting: "For counting customers, always use the unique count of ‘Customer Cred ID’".
+
+Answer enrichment:: Automatically add more detail to answers to make them more comprehensive without requiring the user to ask for every column explicitly.
+Example;; If a user asks for basic provider information, you can enrich the answer with more detail using the instruction: "Provider demographic info is name, address, tax info, class and state code".
+
+Date handling:: Manage how the system handles date and time analysis, especially when a user omits a time frame.
+Example;; To prevent expensive, wide-ranging queries and align with common user preferences, you can set a default time period: "If a query does not specify a time period, apply a default filter for the 'last 30 days'".
 
 == Best practices for writing instructions
 
 Be specific and direct:: Write your instruction as a clear command to ensure the system applies your rule correctly and predictably. For example, "Exclude all sales from 'Internal Test' accounts" is better than "I don't usually want to see our internal test accounts in reports."
 +
 In many cases, using preferential language like "Prefer A over B" can be more effective than a hard command like "Use A".
+
+Be clear about when the instruction should apply:: Every instruction should make it obvious to the system whether it applies to all queries or only in specific situations.
+For rules that should always be in effect, use the word 'always' explicitly::: For example, "Always apply the filter 'Customer_Type = 'paid' when analyzing customer data on this data model." "Always exclude rows where Account_Name = 'thoughtspot, inc.' from all analysis."
+For rules that are situational or should yield to the user's intent, use "unless" or "if... then" language to define the boundary::: For example, "Always apply a default filter for 'last 30 days' unless the user specifies a different time period in their query." "For queries about 'Electronics' sales, filter for Fulfillment_Center = 'FC-West'. For 'Apparel' sales, filter for Fulfillment_Center = 'FC-East'."
++
+If you do not specify when the instructions should apply, the system must guess-- and guessing leads to inconsistent behavior across queries.
 
 Group instructions by concept:: Instead of creating many separate instructions for small, related rules, it is better to group them. Focus on teaching all the logic related to a particular business concept in a single, well-structured instruction. This helps the system understand the full context and know which rules to apply when a user's query mentions that concept.
 
@@ -91,7 +132,7 @@ No automatic override behavior:: A data model instruction does *not* automatical
 
 Not recommended for mathematical formulas:: Data model instructions are not well-suited for teaching the system mathematical formulas or complex calculations. For these scenarios, we recommend other coaching methods, such as providing a reference question with xref:spotter-context.adoc[natural language context].
 
-Avoid conflicting coaching:: The instructions you provide must be coherent with each other and with reference questions and business terms. Contradictory information will confuse the model and lead to unpredictable results.
+Avoid conflicting coaching:: The instructions you provide must be coherent with each other and with reference questions and business terms.  Before adding a new instruction, review your existing instructions, reference questions, and business terms to ensure they tell a consistent story. If two coaching assets define the same concept differently, the system cannot reliably choose between them and results will be unpredictable.
 
 Unsupported capabilities:: To set clear expectations, please note that several advanced “agentic” behaviors are not currently supported by data model instructions. These include:
 +
@@ -101,3 +142,13 @@ Unsupported capabilities:: To set clear expectations, please note that several a
 * Defining conditional query logic (for example, “if the first query returns no data, run a second query”).
 * Question deflection (preventing the system from answering certain questions).
 --
+
+== How to validate your instructions
+
+After adding an instruction, it is important to verify that it works as intended and does not interfere with unrelated queries.
+
+. Test the target query. If adding instructions from a conversation, click *Regenerate last answer* to confirm the instruction is being applied to the query you wrote it for. Review the generated answer and verify that the expected filter, column, or behavior is reflected.
+
+. Test with unrelated queries. Ask two or three questions that are not related to the instruction and verify the instruction is not incorrectly applied. For example, if you added an instruction to always filter to paid customers, try a query like, "What are the top 5 product categories by revenue?" and confirm the paid customer filter is not being forced onto a query where it does not belong.
+
+. Test edge cases. If your instruction uses conditional logic like "unless the user specifies a time period," test both paths: a query without a time period (to confirm the default applies), and a query with an explicit time period (to confirm the exception is upheld).
