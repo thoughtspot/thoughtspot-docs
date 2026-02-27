@@ -1,0 +1,55 @@
+= Hide restricted data
+:page-last_updated: Jan 29, 2026
+:linkattrs:
+:experimental:
+:page-layout: default-cloud
+:page-aliases:
+:description: Hide restricted data from typeahead suggestions and knowledge cards.
+:jira: SCAL-264775
+
+We have added the Suggestion Settings column to Models to allow you to control data that shows in typeahead suggestions and column knowledge cards, and data that is leveraged as part of Spotter accuracy. Previously, on Models with row-level security defined, you may see suggested names of data that you could not access in typeahead suggestions or in column knowledge cards. This occurs only when you define the RLS rule on a different table than the one that contains the column you want to restrict.
+
+For example, if you only had access to data in California, you could see that data for Texas existed, although you could not access the data. Now, you can restrict suggested data for Models with row-level security, ensuring that your security is complete.
+
+NOTE: To enable this feature, contact {support-url}.
+
+== Set secure suggestions
+
+You can set the suggestion settings on any column, and specify to not show suggestions, inherit table settings, or use secure suggestions.
+
+
+
+When you set a column to *Inherit table settings*, the column data will only be secure in typeahead suggestions and column knowledge cards if the row-level security rule is defined on the same table containing the referenced column.
+
+We recommend setting columns with sensitive data to *Secure suggestions*. This recommendation is only required if the indexes are not secured with the underlying RLS rule. Note that when secure suggestions are set for a Model, typeahead suggestions in Search Data will be disabled to prevent data leaks.
+
+=== Prerequisites
+
+In order for secure suggestions to be supported, there are the following prerequisites:
+
+* Strict row-level security must be enabled for the instance.
+* Secure suggestions must be enabled for the instance.
+* Row-level security must be applied to the Model.
+* The table column's index type must be set to *Default*. (Requirement for restricting data in Spotter. Sample values in knowledge cards do not require table columns to be indexed.)
+* The column in the Model must be set to *Secure suggestions* (rather than *Inherit table settings* or *Don't show suggestions*).
+
+[.bordered]
+image::secure-suggestions.png[]
+
+=== Suggestion settings
+
+To change the suggestion settings for a column, follow these steps:
+
+. Open the Model you plan to modify, and make sure you are on the Columns tab.
+
+. Scroll across the column settings until you reach *Suggestion settings*.
+
+. For the desired column, select *Secure Suggestions* from the dropdown.
+
+. Click *Save changes*.
+
+
+'''
+> **Related information**
+>
+> * xref:data-modeling.adoc[Model the data for searching]
