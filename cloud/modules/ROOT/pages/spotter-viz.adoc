@@ -1,0 +1,74 @@
+= SpotterViz
+:page-last_updated: Mar 6, 2026
+:author: Naomi
+:experimental:
+:linkattrs:
+:page-layout: default-cloud-early-access
+:description: ThoughtSpot can now autonomously create Liveboards based on your prompts, populating them with relevant visualizations and KPIs.
+:jira: SCAL-297930
+
+ThoughtSpot can now autonomously create Liveboards based on your prompts, populating them with relevant visualizations and KPIs. In response to your query, ThoughtSpot evaluates available data sources, creates analysis, and lays out the information for you. After creating a Liveboard, you can enter more prompts in SpotterViz at any time to revise and refine it. You can also give feedback by using the thumbs up and thumbs down buttons.
+
+== Prerequisites
+
+* SpotterViz is only accessible in Edit mode. To begin using this feature on a new Liveboard, click the More menu image:icon-more-10px.png[more icon] and select *Edit*.
+* Spotter must be enabled on the underlying Model for SpotterViz to create an answer on that Model.
+* You must have TML edit permission for SpotterViz to work.
+* Once SpotterViz is enabled for an instance, it is accessible by everyone who has Liveboard edit access. Currently, there are no user-level privileges for SpotterViz.
+
+=== SpotterViz LLM configuration
+
+SpotterViz uses Spotter APIs to create answers, and you cannot configure the Spotter version associated with SpotterViz. SpotterViz uses the LLM(s) set at the LLM gateway, and functions best with Claude Opus 4.5. Using other models affects SpotterViz’s accuracy.
+
+== Create a Liveboard using SpotterViz
+
+Let’s say you want to create a Liveboard to analyze your Airbnb business.
+
+
+. Navigate to the home page, and click the plus icon. Select *Create Liveboard*.
+
+. Enter a name and description. Note that you can select or de-select the *Make this Liveboard discoverable* option, controlling whether other users will be able to see the Liveboard in their home page list.
+
+. The Liveboard you created appears. Select the *More* menu image:icon-more-10px.png[more icon] and click *Edit*. Click the *SpotterViz* button in the top right corner. The SpotterViz panel appears, with suggested Liveboard prompts and a chat box.
+
+. Begin with a more detailed prompt to see better initial results. For example, you could enter, “ Create this Liveboard for my host manager to view the performance of listings on the basis of reviews and ratings to analyze which properties are performing better. Analyze this by factors like location, room type, and host qualities. When creating large groups of answers, ensure they span the complete row for reachability.” Hit the blue arrow to send your prompt to SpotterViz.
+
+. SpotterViz begins by analyzing all the data sources you have access to, matching them to your prompt to select the correct source to begin its analysis. Once it finds the Airbnb data source, it begins analyzing the relevant data.
+
+. SpotterViz next considers the business questions this Liveboard needs to answer, creating answers on the fly to populate your Liveboard. It breaks down the answers by grouping. In this case, it groups answers as KPIs, location analysis, room type analysis, and host quality analysis.
+
+. After creating the answers, SpotterViz comes up with the best structure to present them in, then populates the Liveboard. Each answer is grouped with relevant similar answers.
+
+. SpotterViz’s functionality does not end with creating the Liveboard. You can open it at any stage, and enter further prompts to edit the existing Liveboard for better understanding.
+
+. For example, you could say, “ We also have the latitude and longitude information for location analysis, can you use that to visualize location performance better?”
+
+. SpotterViz analyzes the data and your prompt, and reviews its answers. It creates a new answer, incorporating your request for latitude and longitude analysis. The Liveboard reloads, with a new answer added to the location analysis group.
+
+. You can also prompt SpotterViz to edit the styling of the Liveboard, such as suggesting a color theme, or asking for certain visualizations to be highlighted.
+
+. When you are satisfied, click *Save*.
+
+== Limitations
+
+Chart-level color and branding:: SpotterViz can apply colors at the Liveboard level, but cannot currently apply brand colors to individual charts. You can manually edit the chart color on the Liveboard. SpotterViz can only style Liveboards according to the preexisting options in Liveboard Edit mode.
+
+Dark themes:: SpotterViz does not currently support dark background colors.
+
+Label and font control:: You cannot currently adjust label sizes, font styles, and grid lines.
+
+Chart configuration editing:: SpotterViz can create charts, but has limited ability to modify internal chart settings after creation. SpotterViz cannot control chart color and chart settings. You can manually edit the charts for granular adjustments.
+
+Parameter creation:: SpotterViz can add or modify parameters in Liveboards where answers already have parameters, but cannot reliably create new answers using parameter-based formulas. We recommend building parameterized answers manually first, then using SpotterViz for layout and organization.
+
+Note tiles:: SpotterViz does not fully support note tile creation.
+
+== FAQs
+
+Do I need to know our data model structure to use SpotterViz?:: No. SpotterViz automatically identifies the most relevant data models based on your prompt. If there's ambiguity, it will ask you to clarify. However, having some familiarity with your key metrics (for example, "revenue," "churn," "NPS") helps you craft more effective prompts.
+Can SpotterViz modify a Liveboard someone else created?:: Yes, provided you have edit permissions on that Liveboard. SpotterViz respects all ThoughtSpot permission settings.
+Is the data in SpotterViz-created Liveboards live?:: Yes. Liveboards created by SpotterViz use the same live data connections as any Liveboard in ThoughtSpot. They query your data warehouse in real-time.
+Can I share a SpotterViz-created Liveboard with my team?:: Absolutely. Liveboards created by SpotterViz are standard ThoughtSpot Liveboards and can be shared, scheduled, exported, and embedded just like any other.
+How does SpotterViz handle sensitive data?:: SpotterViz inherits all ThoughtSpot security and governance settings, including row-level Security (RLS), column-level permissions, and data access controls. Users only see data they are authorised to access.
+Can I undo changes SpotterViz makes?:: Yes. All Liveboard changes can be reverted through SpotterViz’s checkpoint feature. You can revert to a previous checkpoint, with a limitation of the past ten checkpoints.
+What's the difference between SpotterViz and the "Pin to Liveboard" feature in Spotter?:: Spotter allows you to pin individual insight charts to a Liveboard one at a time. SpotterViz creates complete, structured Liveboards with multiple visualizations, tabs, layout, and styling in a single workflow. Think of it as the difference between clipping individual photos into a scrapbook versus having a designer create a complete photo album.
