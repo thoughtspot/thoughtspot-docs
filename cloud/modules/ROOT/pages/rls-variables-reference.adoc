@@ -1,11 +1,11 @@
 = Variables in row-level security
-:page-last_updated: 11/12/2025
+:page-last_updated: Mar 27, 2025
 :author: Naomi
 :experimental:
 :page-layout: default-cloud-beta
 :linkattrs:
 :description:
-:jira: SCAL-268027
+:jira: SCAL-268027, SCAL-294851
 
 You can now create variables for use in row-level security definitions, assigning values individually to users rather than using the xref:security-rls-concept.adoc#examples-of-rls-rules[ts_username, ts_groups, or ts_groups_int system variables]. The previously defined system variables had a few limitations; they required maintaining multiple group memberships, they sometimes created inefficient SQL statements, and the names for the groups could be confusing if they were the same as values for existing columns (for example, a South group when the data included a South region).
 
@@ -23,7 +23,7 @@ To enable this feature, contact {support-url}.
 
 To create a row-level security variable, you must be an admin in all Orgs, or an admin user in a specific Org. You also need access to the Developer playground, as you create and maintain these variables in the Developer playground, and reference them within row-level security rules on a table.  For more information on how to use APIs to create variables, see link:https://developers.thoughtspot.com/docs/rest-apiv2-reference#_variable_beta[Variable].
 
-Note that for every variable you create, you must set the value for a user as either a value or list of values from the data set. You can also set the value as TS_WILDCARD_ALL, which assigns all values in the column. If you do not assign a value for a created variable, searches including row-level security rules for that variable will generate errors indicating that a mandatory variable has not been defined. This ensures that data is not leaked.
+Note that for every variable you create, you must set the value for a user as either a value or list of values from the data set. You can also set the value as TS_WILDCARD_ALL, which assigns all values in the column, or as TS_WILDCARD_NONE, which resolves the rule as false and denies access to the data. If you do not assign a value for a created variable, searches including row-level security rules for that variable will generate errors indicating that a mandatory variable has not been defined. This ensures that data is not leaked.
 
 == Defining a row-level security rule with variables
 

@@ -1,11 +1,11 @@
 = Tenant-based column aliasing
-:page-last_updated: 10/15/25
+:page-last_updated: Mar 27, 2026
 :author: Naomi
 :page-layout: default-cloud-early-access
 :linkattrs:
 :experimental:
 :description: Use tenant-based column aliasing to define a column name or description based upon the user's membership in a ThoughtSpot Org or group.
-:jira: SCAL-273076, SCAL-281782
+:jira: SCAL-273076, SCAL-281782, SCAL-294851
 
 Tenant-based column aliasing introduces the capability to define a column name or description based upon the user's membership in a ThoughtSpot Org or group. For example, Client 1 may refer to a column as Region, whilst Client 2 may refer to this as Department. This feature is an extension of the language-based aliasing.
 
@@ -14,6 +14,41 @@ Data analysts can define these aliases via CSV upload or with TML. Note that for
 Tenant-based column aliasing is an extension of xref:column-aliases.adoc[locale-based column aliasing], and the tenant-based column alias key is supported by a combination of Org, group, and locale.
 
 If you want to set a value that encompasses all Orgs, or all groups, or all locales, set the column value as TS_WILDCARD_ALL. Note that if no alias is defined for a column, then the base column name is returned (for example, CUSTOM_STRING_1). If multiple keys conflict, then the base column is returned. Each new upload of a CSV or TML file replaces the previous definitions, that is, you cannot do a partial update.
+
+If you want to set a value that resolves the RLS rule to false, set the column value as TS_WILDCARD_NONE.
+
+An example of an equal rule:
+
+`department =ts_vars(vDepartment)`
+
+if the variable value is:
+`vDepartment: TS_WILDCARD_ALL`
+
+then the resulting SQL is:
+`TRUE`
+
+if the variable value is:
+`vDepartment: TS_WILDCARD_NONE`
+
+then the resulting SQL is:
+`FALSE`
+
+An example of a not equal rule:
+
+`department != ts_vars(vDepartment)`
+
+if the variable value is:
+`vDepartment: TS_WILDCARD_ALL`
+
+then the resulting SQL is:
+`FALSE`
+
+if the variable value is:
+`vDepartment: TS_WILDCARD_NONE`
+
+then the resulting SQL is:
+`TRUE`
+
 
 For programmatic interactions such as runtime filters, or the Search data API, use the base column name. The alias name is not supported in these scenarios.
 
