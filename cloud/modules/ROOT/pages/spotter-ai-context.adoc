@@ -1,0 +1,86 @@
+= AI Context
+:page-last_updated: Feb 18, 2026
+:author: Naomi
+:linkattrs:
+:experimental:
+:page-layout: default-cloud
+:jira: SCAL-269831, SCAL-296785
+
+The AI Context feature is a powerful tool for data modelers and analysts to embed deep, foundational business knowledge directly into a data model. Its purpose is to provide the Spotter AI with clear, permanent, and reusable instructions on how to interpret and use specific columns and their values.
+
+By adding this layer of "tribal knowledge" to your data, you can dramatically improve Spotter's reasoning, reduce ambiguity, and ensure it answers questions more accurately and reliably for all users.
+
+== How is AI Context different from natural language context?
+
+xref:spotter-context.adoc[Natural language context] in reference questions is used for one-off coaching. It teaches Spotter the logic behind a _specific answer_ to help it generalize to _similar future questions_.
+
+AI Context is a permanent part of the data model's metadata. It provides a foundational understanding that helps Spotter choose the correct columns and values for _all_ queries on that data model.
+
+== How to use AI Context
+
+NOTE: You must have edit access to the data model to use this feature.
+
+=== Prerequisites
+
+The quality of the auto-generated context is highly dependent on its inputs: the column name, its description, and its indexed values. Before generating AI context, ensure these elements are in an optimal state.
+
+Review names and descriptions:: Ensure column names are descriptive (for example, Monthly_Revenue instead of col_rev) and the column descriptions are clear, accurate, and up to date.
+
+Enable indexing (critical):: Enabling indexing on attribute columns provides the AI with visibility into the actual values within your columns, which significantly improves the quality and relevance of the generated context. You can take a shortcut to enable indexing by selecting the *Spotter optimization* tab in the Model and selecting *Enable indexing > View suggestions*.
++
+NOTE: Please be aware that it may take five to ten minutes for the index to finish building after you enable it. For the best results, wait for the index to complete before generating AI Context.
+
+=== Generate AI Context
+
+To generate AI Context, follow these steps:
+
+. Navigate to the data model you plan to enhance.
+. From the More menu image:icon-more-10px.png[more menu icon], select *AI Context > Generate AI Context*.
++
+[.bordered]
+image::generate-ai-context.png[Select Generate AI Context]
+
+. Once the process is complete (should take several minutes), the AI Context field located next to the Column Description field will be populated for columns in your Model.
+
+. Review the auto-generated suggestions. You can directly edit, add to, or completely rewrite the context for any column to perfectly match your data model context and business logic.
+
+== Key use cases
+
+AI Context is particularly effective for resolving common data challenges.
+
+Column prioritization (disambiguation):: When a Model has multiple similar columns, you can tell Spotter which one to prefer.
+Example;; For a Model with both "Order Date" and "Ship Date", the AI Context for "Order Date" could be: "Describes the date on which item was purchased/ ordered. For general queries about sales or business activity, prefer using this column over Ship Date unless specified by the user."
+
+Define business rules:: Enforce default filtering logic that an analyst would automatically apply.
+Example;; For a "Revenue" column, the context could be: "Exclude null values from this column when using it for analysis."
+
+Interpret non-standard data:: Teach Spotter how to handle unique data formats or company-specific abbreviations.
+Example (shortforms);; For a column containing the value "MP", the context could be: "Contains medicine names as shortforms. Medicine name 'Metoprolol' is stored as 'MP'."
+Example (date formats);; For a column with values like "Jan14", the context could be: "This date is in 'MonYY' format. 'Jan14' means January 2014."
+
+== Best practices
+
+To get the most out of AI Context, consider the following best practices:
+
+Start with auto-generation:: Use the *Generate AI Context* feature as your starting point. It provides a solid first draft that you can then refine.
+
+////
+Optimize your inputs (garbage in, garbage out)::: The auto-generation process uses a column's name, description, and values to create context. For the highest quality results, ensure your column names are descriptive and that column descriptions are clear and accurate before you begin.
+Enable indexing::: Enable indexing on attribute columns (wherever possible) to provide the system the visibility on values improving the quality of AI Context generated.
+////
+
+Be direct and instructional:: When editing the context column, write context as a clear command for the AI, not a descriptive note for a human. The context's purpose is to instruct Spotter. Keep instructions concise and to the point, ideally around 200 characters for the best performance.
+
+Focus on high-impact columns:: Prioritize adding and editing context to columns that are frequently used in questions, are known to be ambiguous, or have complex business rules associated with them.
+
+Iterate and test:: After adding or editing context, ask Spotter a few test questions to see how its behavior has changed. Coaching is an iterative process.
+
+== Key behaviors and limitations
+
+Be aware of the following behaviors:
+
+Overwrite behavior:: If you re-run the "Generate AI Context" process, the system rewrites all existing AI Context, including your manual edits. This is to ensure the context is consistent across the entire Model.
+
+Model-level column scope:: In this release, AI Context is bound to the data model column. It does not sync back to the underlying physical table, and is only applied in reference to that particular column.
+
+Character limit:: The AI Context field has a maximum length of 400 characters. The auto-generation process is optimized to create context between 150 and 250 characters, and manually written context should also be concise for the best results.
