@@ -1,0 +1,171 @@
+= Managing authentication with SAML using IAMv2
+:last_updated: 8/4/2022
+:linkattrs:
+:experimental:
+:description: Learn how to integrate with SAML for authentication.
+
+
+ThoughtSpot integrates with SAML for authentication.
+
+[NOTE]
+====
+This article contains instructions for managing SAML authentication if your company uses Identity and Access Management V2 (IAMv2). IAMv2 is *_off_* by default. If the *SAML* section of the Admin Console is called *SAML integration*, your company is using IAMv2. If you are using xref:orgs-overview.adoc[], we do not currently support using IAMv2.
+
+If the *SAML* section of the Admin Console is called *Authentication: SAML*, your company is *_not_* using IAMv2. Refer to xref:authentication-integration.adoc[].
+====
+
+== SAML SSO authentication
+
+ThoughtSpot supports the Single Sign-On (SSO) authentication method with the Security Assertion Markup Language (SAML) authentication and authorization framework.
+With SAML SSO, users can authenticate to the SAML identity provider (IDP) at your federation to access the ThoughtSpot application, or the embedded ThoughtSpot content in an external web application.
+It also allows them to navigate seamlessly between different application interfaces with their existing credentials.
+
+By default, xref:authentication-local.adoc[local authentication] is enabled. After you configure SAML authentication, you can configure the ThoughtSpot login page to default to SSO login by contacting {support-url}. Note that if you change the default login experience to SSO, local users cannot authenticate.
+
+Use this article to learn how to configure a SAML integration with an external IDP.
+To configure SAML in an embedded environment, refer to https://developers.thoughtspot.com/docs/?pageid=saml-sso[SAML SSO authentication^].
+
+=== SAML authentication with multiple IDPs
+
+You may have multiple groups of users who need to sign in to ThoughtSpot but are managed by separate IDPs.
+You can configure SAML SSO login for more than one Identity Provider.
+To configure this, contact {support-url}.
+
+== About SAML authentication
+
+The SAML SSO authentication involves several entities and components.
+
+=== SAML entities
+
+SAML is an XML standard that allows secure exchange of user authentication and authorization data between trusted partners.
+It enables the following entities to exchange identity, authentication, and authorization information:
+
+* *Identity Provider (IDP)*
++
+The Identity Management system that maintains the user identity information.
+IDP acts as a SAML authority and authenticates SSO users.
+ThoughtSpot supports SAML authentication framework with popular Identity Providers such as https://developer.okta.com/docs/guides/build-sso-integration/saml2/before-you-begin/[Okta^], https://docs.microsoft.com/en-us/powerapps/maker/portals/configure/configure-saml2-settings-azure-ad[Azure Active Directory^], https://docs.pingidentity.com/bundle/pingfederate-102/page/ikb1564003000542.html[PingFederate^], https://docs.microsoft.com/en-us/powerapps/maker/portals/configure/configure-saml2-settings[Microsoft AD FS^], and https://developers.onelogin.com/saml[Onelogin^].
+This is not an exhaustive list.
+To determine if ThoughtSpot supports your preferred IDP, talk to your ThoughtSpot contact.
++
+After you complete the SAML configuration in ThoughtSpot that this article describes, refer to your Identity Provider's SAML documentation for specific information on setting up SAML with that IDP.
+
+* *Service Provider (SP)*
++
+The provider of a business function or application service;
+for example ThoughtSpot.
+The SP relies on the IDP to authenticate users before allowing access to its services.
+
+* *Federated user*
++
+A user whose identity information is managed by the IDP.
+The federated users have SSO credentials and authenticate to IDP to access various application services.
+
+[#saml-assertion]
+=== SAML assertion and attributes
+
+Both SP-initiated and IDP-initiated authentication workflows rely upon assertions that are exchanged between the SAML endpoints through a web browser.
+
+Some of the most commonly used elements are:
+
+* *SAML assertion*
++
+The user authentication and authorization information issued by the IDP.
+SAML assertions contain all the information necessary for a service provider to confirm if the user identity is valid.
++
+ThoughtSpot supports 2 methods to increase the duration of validity for your SAML assertion: the `SessionNotOnOrAfter` attribute and the `maxAuthenticationAge` parameter. You can ask ThoughtSpot to disable either one of these checks. If you use both, and either check fails, ThoughtSpot does not authenticate the user. Some IDPs do not support use of `SessionNotOnOrAfter`. If your IDP does not support use of `SessionNotOnOrAfter`, remove that attribute from your IDP assertion and ask {support-url} to enable `maxAuthenticationAge`.
+
+* *Metadata*
++
+Data in the XML format to establish interoperability between the IDP and SP.
+It contains the URLs of the endpoints, entity ID, and so on.
+
+* *Assertion Services Consumer (ACS) URL*
++
+The endpoint URL to which the user's browser sends the SAML response received from the IDP after authenticating a user.
+
+* *Entity ID*
++
+A unique service name to identify the client application from which the SSO login request originates.
+
+* *SAML attributes*
++
+The attributes associated with the user;
+for example, username and email address.
+
+== Enable SAML authentication
+
+You need admin privileges to enable SAML SSO authentication.
+
+. Configure the ThoughtSpot application instance on your IDP server.
+.. For the *Single sign on URL* and the *Audience URI* in your IDP provider, you must enter dummy values. You return to these fields in step 15, after completing SAML configuration in ThoughtSpot.
+.. Make a note of the names you use when you map your IDP's version of the `mail` and `username` attributes. You must use these names to map the email and username attribute in ThoughtSpot later. The `display name` attribute is optional; if you would like to map it as well, make a note of the name you use.
+. Sign in to your ThoughtSpot application instance.
+. From the top navigation bar, select the *Admin* tab.
+. Select *SAML* from the side navigation bar that appears.
+. Select the *+ Add identity provider* button in the middle of the screen.
+. Under *Specify identity provider details*, fill in the following parameters:
++
+//image::admin-portal-saml-configure.png[Configure SAML]
+Connection name:: Provide a name for the configuration of the connection to your identity provider. This appears as the connection name on the SAML page of the Admin Console.
+IDP provider certificate:: Upload or copy/paste your IDP public key certificate. This verifies SAML messages and assertion signatures.
+IDP issuer ID:: IDP issuer URI.
+IDP single sign on URL:: Your IDP endpoint. Receives the authentication request from ThoughtSpot.
+Advanced configuration:: Select this dropdown menu to optionally configure *Request binding*, *Request signature algorithm*, *Response signature algorithm*, and *Max clock skew time in seconds*.
+Request binding;; Binding used for mapping the SAML protocol message. The default is `HTTP-POST`.
+Request signature;; Signature algorithm used to sign the authentication request to your IDP. The default is `SHA-256`.
+Response signature algorithm;; The minimum signature algorithm used to validate the SAML assertion from the IDP. The default is `SHA-256`.
+Max clock skew time in seconds;;
+The allowed skew time, after which the authentication response is rejected and sent back from the IDP.
+The default is `86400`.
+. Select *Continue*.
+. Under *Map attributes*, you can map values between ThoughtSpot and your IDP manually.
+This allows the ThoughtSpot system to automatically pick up certain attributes and subjects, such as a user's email address, display name, and username.
+. In the *SAML attribute* text box for *Username*, enter the name of the username attribute in your IDP's SAML assertion. This attribute maps to the *Username* field for a ThoughtSpot user, which must be unique. The default is `subjectNameId`. It is *mandatory* to fill out the Username field.
+If your company cannot meet this requirement, contact {support-url}.
+. In the *SAML attribute* text box for *Email*, enter the name of the mail/email attribute in your IDP's SAML assertion. This attribute maps to the *Email* field for a ThoughtSpot user, which does not need to be unique. It is *mandatory* to fill out the Email field.
+If your company cannot meet this requirement, contact {support-url}.
+. In the *SAML attribute* text box for *Display name*, enter the name of the display name attribute in your IDP's SAML assertion. This attribute maps to the *Display name* field for a ThoughtSpot user, which does not need to be unique.
+. For additional support with the attribute statements, refer to your IDP's SAML documentation.
+ThoughtSpot supports the SAML authentication framework with popular Identity Providers such as https://developer.okta.com/docs/guides/build-sso-integration/saml2/before-you-begin/[Okta^], https://docs.microsoft.com/en-us/powerapps/maker/portals/configure/configure-saml2-settings-azure-ad[Azure Active Directory^], https://docs.pingidentity.com/bundle/pingfederate-102/page/ikb1564003000542.html[PingFederate^], https://docs.microsoft.com/en-us/powerapps/maker/portals/configure/configure-saml2-settings[Microsoft AD FS^], and https://developers.onelogin.com/saml[Onelogin^].
+This is not an exhaustive list.
+To determine if ThoughtSpot supports your preferred IDP, talk to your ThoughtSpot contact.
+. Select *Save and continue*.
+. Under *Add ThoughtSpot to your identity provider*, collect the information required to add the ThoughtSpot application to your IDP.
+.. To copy and paste the *Assertion consumer service URL* and the *Audience* directly from this page, select the *copy* icons next to those parameters, and paste the information into a separate document.
++
+image::saml-ts-params-copy.png[Copy ThoughtSpot information]
+.. To download the *ThoughtSpot SAML metadata*, select *Download metadata*, and save this information for later use.
+. Return to your IDP server.
+.. Replace the dummy value you used for the *Single sign on URL* with the *Assertion consumer service URL* provided by ThoughtSpot on the *Add ThoughtSpot to your identity provider* page in the SAML configuration.
+.. Replace the dummy value you used for the *Audience URI* with the *Audience* provided by ThoughtSpot on the *Add ThoughtSpot to your identity provider* page in the SAML configuration.
+. Return to the ThoughtSpot SAML configuration.
+. Select *Enable*.
+
+=== Configure the IDP
+
+To enable the IDP to recognize your host application and ThoughtSpot as a valid service provider, you must configure the IDP with required attributes and metadata.
+
+ThoughtSpot supports SAML authentication with several identity and access management providers, such as https://developer.okta.com/docs/guides/build-sso-integration/saml2/before-you-begin/[Okta^], https://docs.microsoft.com/en-us/powerapps/maker/portals/configure/configure-saml2-settings-azure-ad[Azure Active Directory^], https://docs.pingidentity.com/bundle/pingfederate-102/page/ikb1564003000542.html[PingFederate^], https://docs.microsoft.com/en-us/powerapps/maker/portals/configure/configure-saml2-settings[Microsoft AD FS^], https://developers.onelogin.com/saml[Onelogin^] and so on.
+If you want to use one of these providers as your IDP, make sure you read the SAML configuration steps described in the Identity provider's documentation site.
+
+To determine if ThoughtSpot supports your preferred IDP, contact {support-url}.
+
+Complete your configuration of the IDP using the IDP's SAML documentation.
+Upload or copy the contents of the `spring_saml_metadata.xml` to your IDP server.
+This file contains the public key you need if you want to encrypt your SAML assertions. It also contains the *Assertion Consumer Service URL* and *Audience*. If you did not download the `spring_saml_metadata.xml` file, navigate to the SAML configuration page in ThoughtSpot: *Admin > SAML*. Select *Download sp metadata xml*. If you do not see this option, you have not completed configuration of SAML in ThoughtSpot.
+
+NOTE: When configuring SAML 2.0, make sure you map the SAML user attributes and subjects to appropriate fields.
+This allows the ThoughtSpot system to automatically pick up certain attributes and subjects, such as a user's email address, display name, and username.
+The username and email attributes are mandatory. If your company cannot meet this requirement, contact {support-url}. You must ensure that the values you use for these attributes are the same in your IDP and in the *SAML attribute* field in the ThoughtSpot SAML configuration flow.
+
+== SAML group mapping
+
+You can map your SAML groups from your IDP to your ThoughtSpot groups.
+This means that you do not have to manually recreate your groups in ThoughtSpot, if they are already present in your IDP.
+Refer to xref:saml-group-mapping.adoc[Configure SAML group mapping].
+
+== Use SSO login by default
+After you configure SAML authentication, a new option appears on the login page that allows users to sign in using SSO, while still allowing local users to sign in.
+
+To only allow SSO login by default, contact {support-url}. Note that if you change the default login experience to SSO, local users cannot authenticate.

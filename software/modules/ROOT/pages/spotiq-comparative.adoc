@@ -1,0 +1,141 @@
+= Comparative analysis
+:last_updated: 11/02/2022
+:experimental:
+:page-aliases: /spotiq/comparative-analysis.adoc
+:linkattrs:
+:description: With SpotIQ comparative analysis, you can compare two data points for complex measures.
+
+
+With SpotIQ comparative analysis, you can compare two data points for complex measures.
+
+SpotIQ comparative analysis compares data points of simple or complex measures using these aggregates:
+
+* _Sum_
+* _Count_
+* _Sum over sum_, which generate a Liveboard that has 'what-if' percentage insights
+* _Average_, which generate a Liveboard that has 'what-if' percentage insights
+* Other functions which use a 'versus' analysis to show the absolute change grouped by different drill attributes
+
+////
+[#basic-comparative-analysis]
+== Basic comparative analysis in SpotIQ
+
+To perform this analysis, follow these steps:
+
+. On a column chart, hold down the command key (Mac OS) or control key (Linux or Windows).
+. Select the two columns you plan to compare.
+Here, we are comparing the results for the _San Francisco_ and _Atlanta_ stores.
+. Right-click to see the dropdown menu, and select *SpotIQ Analyze*.
++
+image:comparative-analysis-1.png[Dropdown menu that appears when you right-click two data points]
+. The SpotIQ window modal appears. Make sure that you select *Change analysis*.
+. Select *Continue*.
+. Select the columns for SpotIQ to compare.
+By default, SpotIQ picks the most relevant columns, based on what it learned from your past activity.
+. Optionally, <<advanced-comparative-analysis,customize the analysis parameters>>.
+. Select *Analyze*.
+////
+
+[#change-analysis-contextual]
+== Contextual change analysis
+
+ThoughtSpot supports contextual change analysis for area, line, column, bar, line-column, pie, and KPI charts. You do not need SpotIQ privileges to run contextual change analysis.
+
+To perform this analysis, follow these steps:
+
+. On an area, line, column, bar, line-column, pie, or KPI chart, hold down the command key (MacOS) or control key (Linux or Windows).
+. Select the two columns or data points you plan to compare. +
+Note that if you are analyzing a KPI chart, you must either click the percent change label or select two points from the sparkline visualization. You cannot run change analysis on a KPI chart with no sparkline visualization.
+
+. Right-click to see the dropdown menu, and select *Run change analysis*.
+
+. The SpotIQ window modal appears with the results of your analysis.
+By default, SpotIQ picks the top 5 most relevant columns, based on what it learned from your past activity.
++
+image:contextual-change.png[Contextual change analysis window]
++
+To select other columns to analyze, click *Customize attributes* in the lower left corner of the window and select the desired column from the window that appears.
++
+NOTE: Each colored section of a SpotIQ insight represents a statistically significant outlier among the values of your chosen columns. For more information on how statistically significant outliers are calculated, see <<z-score,Z-scores>>.
+
+
+. You can now examine each visualization of the analysis for details of comparison.
++
+NOTE: In some instances, ThoughtSpot may point out that certain attribute values account for more than 100% of the total change. This is generally for cases where attribute values contribute to a trend that is opposite to the total change (positive change when the overall trend is negative, for example). You may see cases, for example, where two attribute values account for a 300% increase in sales, while the remaining attribute values indicated account for 200% of the total decrease.
+
+. You can add the specific visualization to an existing Liveboard, or create a new Liveboard and add it there.
+
+. You can run another round of SpotIQ analysis, download the data as a CSV file, edit this visualization, or make a copy of the visualization.
+
+////
+[#viewing-results]
+== View results
+
+Notice that ThoughtSpot saves the results of SpotIQ analysis for 24 hours.
+
+To view the results of your analysis, follow these steps:
+
+. On the top navigation bar, select *SpotIQ*.
+. If you do not see your analysis, select *Yours*. This filters the list of analyses.
++
+Your analysis may be in progress.
+Wait until its *Status* changes to _Done_.
+
+. Select your analysis.
+
+. In the report, SpotIQ generates a Liveboard with insights that compare the two selected points, grouped by the columns you chose for analysis. Note that each colored section of a SpotIQ insight represents a statistically significant outlier among the values of your chosen columns.
++
+image::comparative-analysis-6.png[SpotIQ comparative analysis sample Liveboard]
+
+. You can now examine each visualization of the analysis for details of comparison, give feedback on its usefulness, and so on.
++
+image:comparative-analysis-7.png[Diagram of actions you can take. There is a 1 next to the "Is this insight useful?" feedback area. There is a 2 next to the pin icon. There is a 3 next to the information icon. There is a 4 next to the more menu icon.]
+
+1.&nbsp;Give feedback:: SpotIQ learns how to improve its feedback based on the information you provide. If you dislike a specific type of insight, SpotIQ pushes that type of insight to the bottom of any future SpotIQ analyses you run. The feedback you provide is specific to you and does not affect the SpotIQ experience of other users.
+2.&nbsp;Add to a Liveboard:: You can add the specific visualization to an existing Liveboard, or create a new Liveboard and add it there.
+3.&nbsp;Analysis details:: Get the name of the algorithm.
+4.&nbsp;More options:: You can run another round of SpotIQ analysis, download the data as a CSV file, edit this visualization, or edit a copy of the visualization.
+////
+
+[#advanced-comparative-analysis]
+== Advanced comparative analysis in SpotIQ
+
+ThoughtSpot ships with a number of comparative algorithms.
+Using the *Advanced* option of SpotIQ, you can adjust the parameters of the analysis, or choose a different comparative algorithm for your data.
+
+After selecting the relevant analysis columns, select *Customize parameters*.
+
+Under *Select Algorithms*, select the name of the algorithm.
+You may have several options available, or only a single one.
+In this example, the only valid option is *Change Analysis*.
+
+Under *Refine parameters for change*, adjust the options.
+In this example, the algorithm parameters are *Maximum Difference Elements*, *Max Fraction*, *Min Abs Change Ratio*, and *Min Change Ratio*.
+
+image::comparative-analysis-advanced-new.png[Advanced parameters]
+
+=== How SpotIQ calculates outliers
+
+[#z-score]
+==== Z-Score
+
+
+A Z-score represents the number of standard deviations from the mean a data point is. Z-scores are a way to compare results from a test to a “normal” population. The basic Z-score formula for a sample is:  z = (x – μ) / σ where
+
+* σ is the standard deviation
+* μ is the mean
+* x is the data value.
+
+Currently, any value outside μ +/- N * σ (i.e. Z-score less than or greater than N) is an anomaly. N is determined based on the number of rows. It is chosen such that the max or min has < 0.1 probability of crossing the threshold. SpotIQ uses the following table to approximately choose the value of N, that is, how many standard deviations we want to be able to use as threshold:
+
+
+[options=”header”]
+|===
+| Cardinality | N (number of standard deviations from mean)
+
+
+| < 20 | 2
+| < 500 | 3
+| < 10000 | 4
+| >= 10000 | 5
+|===

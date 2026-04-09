@@ -1,0 +1,313 @@
+= Configure Azure AD OAuth for a {connection} connection
+:experimental:
+:last_updated: 1/25/2022
+:linkattrs:
+:connection: Starburst
+:description: Learn how to configure Azure Ad OAuth for a Starburst connection in ThoughtSpot Software.
+
+With Azure AD OAuth, the authorization server generates an access token from Azure AD on behalf of the ThoughtSpot user which authenticates them with {connection} and authorizes ThoughtSpot to query the database using their {connection} user account.
+
+NOTE: The steps provided here are an example of how you can configure Azure AD OAuth for external OAuth. You can use any OAuth flow provided that you can get the information required for the security integration. The following steps provide a guide for getting the information required to create the security integration for {connection}.
+
+IMPORTANT: Be sure to consult your organization's security policies for configuring an authorization server to make sure you meet all requirements.
+
+[#part-1]
+== Creating an external OAuth token using Azure AD on behalf of the user
+
+=== Part 1: Creating a {connection} OAuth resource
+
+To create a {connection} OAuth resource, do the following:
+
+. Sign in to the https://portal.azure.com/[Microsoft Azure Portal^].
+. Navigate to *Azure Active Directory*.
++
+image::azure-portal-ad.png[Select Azure Active Directory]
+
+. Select *App registrations*, then *New registration*.
++
+image::azure-portal-reg.png[Select App registrations > New registration]
+
+. For Name, enter a name for your application.
++
+Example: `{connection} Oauth User Resource`
+
+. Make sure Supported account types is set to *Single Tenant*.
+. Select *Register*.
++
+image::azure-portal-reg-ten-starburst.png[Specify a name and the supported account type]
+
+. After the application is created, select *Expose an API*.
++
+image::star-expose-api.png[Select Expose an API]
+. [#step-8]#Next to Application ID URI, select *Set* and change its value from *api://<alphanumeric value>* to *\https://<alphanumeric value>* and click *Save*.#
++
+// []({{ site.baseurl }}/images/snow-app-uri.png)
++
+image::star-app-uri-oauth-client2.png[Change the Application ID URI]
++
+NOTE: If the Application ID URI is not used, you must create a security integration with audiences using the {connection} Account URL (i.e.
+`<account_identifier>.starburst.com)`.
++
+IMPORTANT: The Application ID URI must be unique within your organization's directory, such as `\https://your.company.com/4d2a8c2b-a5f4-4b86-93ca-ack45667`.
+
+. Select *Add a scope*.
+. For Scope name, enter the name of the {connection} role (example: `session:role-any`).
+. Select who can consent.
+. Enter an Admin consent display name (example: `Any`).
+. Enter an Admin consent description.
+. Select *Add Scope*.
++
+image::snow-add-scope.png[Add Scope modal]
+
+IMPORTANT: When you create the scope in your Azure AD application, you must set it to "`any`" so that a user can later switch to any of their allowed roles when making a JDBC connection using the obtained token.
+
+=== Part 2: Creating a {connection} OAuth client app
+
+To create a {connection} OAuth client app, do the following:
+
+. Sign in to the https://portal.azure.com/[Microsoft Azure Portal^], and navigate to *Azure Active Directory*, if needed.
+. Select *App registrations*, and then click *New registration*.
+. For Name, enter a name for the client (example: `{connection} OAuth Client`).
+. For Supported account types, make sure it is set to *Single tenant*.
+. Select *Register*.
+. Once the app is created, select *Overview*.
+. From the Application (client) ID field, copy the ID.
+This ID is referred to as the `<OAUTH_CLIENT_ID>` in the steps that follow.
++
+image::star_oauth_user.png[Copy the Application (client) ID]
+
+. Select *Authentication*, and under Web, specify the redirect URI using the following format:
++
+`<\https://<public> url of your ThoughtSpot Instance>/callosum/v1/connection/generateTokens`
++
+image::redirect_uri.png[Specify the redirect URI]
+
+. Select *Certificates & secrets* and then *New client secret*.
++
+image::star_certs_secr.png[Select Certificates & secrets > New client secret]
+
+. Copy the *Value* of the secret you just created.
+This is referred to as `<OAUTH_CLIENT_SECRET>` in the steps that follow.
++
+image::snow_secr.png[Make a note of the Value of the secret]
+
+. Select *API permissions*, then click *Add a permission*.
++
+image::star_api_perm.png[Select API permissions > Add a permission]
+
+. Select *My APIs*.
+. Select the name of the {connection} OAuth Resource you created in <<part-1,Part 1>>.
+
+. On the Request API permissions page, click the *Delegated permissions* box, and select the permission related to scope you defined in the application you want to grant to this client.
+. Select *Add permissions*.
++
+image::snow_req_api_2_perm.png[Add delegated permissions]
+
+. Under Configured permissions, select *Grant admin consent for Default Directory*, and then click *Yes* in the confirmation message.
++
+image::snow_grant_admin.png[Grant admin consent]
+
+=== Part 3: Collecting Azure AD information for {connection}
+
+To collect Azure AD information for {connection}, do the following:
+
+. Sign in to the https://portal.azure.com/[Microsoft Azure Portal^], and navigate to *Azure Active Directory*, if needed.
+. Go back to the {connection} OAuth Resource App ({connection} Oauth User Resource) to collect the following information:
+.. Select *Endpoints* in the *Overview* interface.
+.. On the right side, copy the *OAuth 2.0 token endpoint (v2)* and note the URLs for *OpenID Connect metadata* and *Federation Connect metadata*.
+
+... The *OAuth 2.0 token endpoint (v2)* is referred to as the `<AZURE_AD_OAUTH_TOKEN_ENDPOINT>` in the following configuration steps.
+The endpoint should be similar to `+https://login.microsoftonline.com/<tenant_id>/oauth2/v2.0/token/+`.
+... For the *OpenID Connect metadata*, open in a new browser window.
++
+.... Locate the "jwks_uri" parameter and copy its value.
++
+.... This parameter value will be known as the `<AZURE_AD_JWS_KEY_ENDPOINT>` in the following configuration steps.
+The endpoint should be similar to `+https://login.microsoftonline.com/<tenant_id>/discovery/v2.0/keys+`.
+
+. For the *Federation metadata document*, open the URL in a new browser window.
++
+.. Locate the `"entityID"` parameter in the `XML Root Element` and copy its value.
++
+.. This parameter value will be known as the `<AZURE_AD_ISSUER>` in the following configuration steps.
+The entityID value should be similar to `+https://sts.windows.net/<tenant_id>/+`.
+
+. The *OAuth 2.0 authorization endpoint (v2)* should be similar to  `+https://login.microsoftonline.com/<tenant_id>/oauth2/v2.0/authorize+`.
++
+image::star_oauth_user_res_1.png[Overview > Endpoints page]
++
+image::snow_oauth_user_res_2.png[List of endpoints]
+
+=== Part 4: Creating an OAuth authorization server in {connection}
+
+In this part you must do the following:
+
+* Create a security integration in {connection} to ensure that {connection} can  securely communicate with Microsoft Azure AD.
+* Validate the tokens from Azure AD.
+* Provide the appropriate {connection} data access to users based on the user role associated with the OAuth token.
+
+IMPORTANT: If you use _SESSION:ROLE-ANY_ in scope, you must configure the following flag in the security integration: `external_oauth_any_role_mode = ‘ENABLE’`. This is shown in the optional line of the security integration format example.
+
+==== Security integration format
+[source]
+----
+create security integration external_oauth_azure_2
+    type = external_oauth
+    enabled = true
+    external_oauth_type = azure
+    external_oauth_issuer = '<AZURE_AD_ISSUER>'
+    external_oauth_jws_keys_url = '<AZURE_AD_JWS_KEY_ENDPOINT>'
+    external_oauth_audience_list = ('<STARBURST_APPLICATION_ID_URI>')
+    external_oauth_token_user_mapping_claim = 'upn'
+    external_oauth_any_role_mode = 'ENABLE' (optional)
+    external_oauth_starburst_user_mapping_attribute = 'login_name';
+----
+
+Example:
+
+image::snow-sec-int-example.png[Security integration example]
+
+NOTE: When you create the {connection} OAuth Resource Application in Azure AD, if you enter an `Application ID URI` that is not the {connection} Account URL (i.e.
+`<account_identifier>.starburst.com`), you must add the `external_oauth_audience_list` parameter to the command with the value `<STARBURST_APPLICATION_ID_URI>`.
+
+==== {connection} commands
+
+===== Create user as Azure AD user
+
+`CREATE USER testuser PASSWORD = '' LOGIN_NAME = '\testuser@thoughtspot.com' DISPLAY_NAME = 'AD_TEST_USER';`
+
+===== Validate access token
+
+`select system$verify_external_oauth_token('<ACCESS_TOKEN>');`
+
+===== Grant sysadmin role to TESTUSER
+
+`GRANT ROLE sysadmin TO USER TESTUSER;`
+
+===== Altering user
+
+`ALTER USER testuser SET DEFAULT_ROLE = SYSADMIN;`
+
+[#validate-config]
+=== (Optional) Validating your Azure configuration
+
+To ensure your Azure configuration is correct for use with ThoughtSpot, you can generate an access token.
+
+NOTE: This following example is for Azure. The process for other providers is similar.
+
+You can use either of the following methods to generate your access token:
+
+* Postman
+* cURL
+
+==== Method 1: Postman
+
+To validate your configuration using Postman, do the following:
+
+. Sign in to Postman.
+. Go to the *Authorization* tab.
+. For Token Name, enter a token name.
+. For Grant Type, select *Authorization Code* from the menu.
+. For Callback URL, select *Authorize using browser*.
++
+This should be defined in your OAuth User app(Ex: {connection} OAuthUser).
+The default is `+https://oauth.pstmn.io/v1/callback+`.
+
+. For Auth URL, enter the OAuth 2.0 authorization endpoint (v2) value from "`Endpoints`" in the app.
++
+Example: `+https://login.microsoftonline.com/<tenant_id>/oauth2/v2.0/authorize+`
+
+. For Access Token URL, enter the access token URL.
++
+Example: `+https://login.microsoftonline.com/<tenant_id>/oauth2/v2.0/token/+`
+
+. For Scope, you must provide "`offline_access`" as the scope, along with the actual scope.
+The refresh token is only provided if the offline_access scope was requested.
++
+image::postman_get_token.png[Configure new token in Postman]
++
+Example: `\https://<application_id>/session:role-any offline_access`
++
+IMPORTANT: When you create the scope in the Azure AD application setup, it must be set as "`any`" so that a user can later switch to any of his allowed roles when making a JDBC connection using the obtained token.
+
+. Select *Get New Access Token*.
+. Sign in to your Microsoft Azure account.
++
+image::ms_sign_in.png[Sign in to Microsoft Azure]
+
+. On the Token Details page, select *Use Token*.
++
+image::token_det_starburst_1.png[Token Details > Use Token]
++
+image::token_det_2.png[Token details]
+
+. Verify the validity of the generated access token by running this SQL in {connection}:
++
+[source]
+----
+select system$verify_external_oauth_token('<access_token>');
+----
+
+==== Method 2: cURL
+
+To validate your configuration using cURL, do the following:
+
+. Execute the following command to get access token with password grant_type:
++
+----
+ curl -X POST -H "Content-Type: application/x-www-form-urlencoded;charset=UTF-8" \
+   --data-urlencode "client_id=<OAUTH_CLIENT_ID>" \
+   --data-urlencode "client_secret=<OAUTH_CLIENT_SECRET>" \
+   --data-urlencode "username=<AZURE_AD_USER>" \
+   --data-urlencode "password=<AZURE_AD_USER_PASSWORD>" \
+   --data-urlencode "grant_type=password" \
+   --data-urlencode "scope=<SCOPE_AS_IT_APPEARS_IN_AZURE_APP>" \
+   '<AZURE_AD_OAUTH_TOKEN_ENDPOINT>'
+----
++
+Example:
++
+----
+ curl -X POST -H "Content-Type: application/x-www-form-urlencoded;charset=UTF-8" \
+ --data-urlencode "client_id=<client_id>" \
+ --data-urlencode "client_secret=<client_secret>" \
+ --data-urlencode "username=testuser@thoughtspot.com" \
+ --data-urlencode "password=*****" \
+ --data-urlencode "grant_type=password" \
+ --data-urlencode "scope=https://<application_id>/session:role-any offline_access"\
+ `https://login.microsoftonline.com/ <tenant_id>/oauth2/v2.0/token'
+----
++
+image::curl_1.png[Sample cURL command in terminal]
+
+. Execute the following command for getting access token with refresh_token as grant_type:
++
+----
+ curl -X POST -H "Content-Type: application/x-www-form-urlencoded;charset=UTF-8" \
+   --data-urlencode "client_id=<client_id>" \
+   --data-urlencode "client_secret=<client_secret>" \
+     --data-urlencode "grant_type=refresh_token" \
+     --data-urlencode "refresh_token=<Replace_Refresh_Token>" \
+     --data-urlencode "scope=https://<application_id>/session:role-any offline_access" \
+   'https://login.microsoftonline.com/<tenant_id>/oauth2/v2.0/token'
+----
++
+image::curl_2.png[Sample cURL command in terminal]
+. Verify the validity of the generated access token by running this SQL in {connection}:
++
+[source]
+----
+select system$verify_external_oauth_token('<access_token>');
+----
+
+'''
+> **Related information**
+>
+> * xref:connections-starburst-add.adoc[]
+> * xref:connections-starburst-edit.adoc[]
+> * xref:connections-starburst-remap.adoc[]
+> * xref:connections-starburst-delete-table.adoc[]
+> * xref:connections-starburst-delete-table-dependencies.adoc[]
+> * xref:connections-starburst-delete.adoc[]
+> * xref:connections-starburst-oauth.adoc[]
+> * xref:connections-starburst-reference.adoc[]

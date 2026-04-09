@@ -1,0 +1,29 @@
+[#search-data-error-11035]
+
+=== 11035
+Description:: Unsupported query: unique count and a rank-related function coming from the same fact table.
+
+Details::
+`last_value` is a ThoughtSpot formula function introduced in 9.12.0.cl . This function is designed to provide analysts the capabilities to create formulas for semi-additive measures. An example could be inventory balances.
++
+For example: "How much stock does Acme Corp maintain for each Region?"
++
+A secondary metric could be Average Stock on Hand. A common definition for this is: balance of stock divided by the unique count of locations.
++
+In ThoughtSpot this formula could be defined as:
++
+`last_value(sum(balance),query_groups(),{transaction date}) / unique count(location id)`
++
+An alternative example could be a user asking the question as separate measures. For example: "Show me the balance and unique count of locations for each region".
++
+In this scenario the search would return two measure columns: Balance & Unique Count Locations.
+
+Cause::
+In the example defined, the last value aggregate column is ‘balance’ and the unique count column is ‘location id’. Error 11035 is returned when the unique count column, ‘location id’, is derived from either the same fact table as balance or as a dimensional table that is joined to the fact table.
+
+Resolution::
+Unique count can be combined with last_value across a chasm trap query. Therefore pending resolution for this limitation an analyst can leverage group_aggregate to force a chasm trap query.
++
+For example: The group_aggregate definition ensures a chasm trap is generated and the inclusion of query_groups()+{} ensures that this query plan is not optimized.
++
+`group_aggregate(unique count(location id), query_groups()+{}, query_filters())`

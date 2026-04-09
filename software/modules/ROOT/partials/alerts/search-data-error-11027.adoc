@@ -1,0 +1,19 @@
+[#search-data-error-11027]
+
+=== 11027
+
+Description:: Query must include at least one base table column.
+
+Details:: This error is displayed when the search data query has not selected a token that references a column from the underlying database.
+
+
+
+Cause:: With formulas it is possible to create ThoughtSpot columns that do not reference the underlying database. The following is a simple example formula. If a search is defined with this single token, then the error will be displayed.
++
+`Current Date = today()`
++
+A second example could involve a parameter, where the user has created a formula to calculate the number of days between the date specified by the parameter and the current date. As this formula does not reference a column in the database, this would return an error if this formula was the only token in the search.
++
+`Days Difference = diff_days(parameterDate, today())`
+
+Resolution:: Update the search to include a column that references the underlying database.
