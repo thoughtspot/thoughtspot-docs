@@ -5,7 +5,7 @@
 :experimental:
 :page-layout: default-cloud
 :description:
-:jira: SCAL-228500, SCAL-244132, SCAL-253102, SCAL-258782, SCAL-265156, SCAL-264258, SCAL-267209, SCAL-291083
+:jira: SCAL-228500, SCAL-244132, SCAL-253102, SCAL-258782, SCAL-265156, SCAL-264258, SCAL-267209, SCAL-291083, SCAL-300551
 
 ++++
 <style>
@@ -96,7 +96,7 @@ bd-placeholder-img {
 </style>
 ++++
 
-Coaching helps Spotter understand how your organization thinks about data by providing guidance that shapes how questions are interpreted and answered.
+Coaching helps Spotter understand how your organization thinks about data by providing guidance assets that shapes how questions are interpreted and answered.
 
 Rather than enforcing fixed responses, coaching supplies examples, rules, and definitions that Spotter can draw from to reason more accurately-- both within a conversation and across similar questions.
 
@@ -117,9 +117,9 @@ Coaching is intended as a next step after xref:spotter-model.adoc[data model opt
 
 Before applying coaching, ensure that your data model has clear column names, accurate descriptions, and appropriate context. In many cases, improving metadata or model structure resolves issues without requiring any coaching.
 
-Coaching should be applied only when Spotter signals that it notices ambiguity after the data model has been optimized.
+Coaching should be applied only when genuine ambiguity remains after the data model has been optimized.
 
-For detailed guidance on prerequisites and the recommended order of using coaching tools, see xref:spotter-coach-not-coach.adoc[].
+For detailed guidance on prerequisites and sequencing, see xref:spotter-coach-not-coach.adoc[].
 
 == How coaching improves responses
 
@@ -130,7 +130,7 @@ When applied thoughtfully, coaching helps Spotter:
 * Generalize correct reasoning across similar questions.
 * Reduce repeated clarification.
 
-Coaching works best when paired with a well-structured data model and clear metadata.
+Coaching works best when paired with a well-structured data model and clear metadata, also known as semantics.
 
 == Spotter coaching tools
 
@@ -148,7 +148,7 @@ Learn more about xref:data-model-instructions.adoc[Data model instructions].
 
 Provide guiding examples that Spotter can use when reasoning about similar questions.
 
-Reference questions help Spotter learn patterns of intent and logic, expecially when paired with clear xref:spotter-ai-context.adoc[natural language context].
+Reference questions help Spotter learn patterns of intent and logic, especially when paired with clear xref:spotter-ai-context.adoc[natural language context].
 
 Learn more about xref:spotter-reference-questions.adoc[Reference questions].
 
@@ -160,13 +160,21 @@ Business terms ensure Spotter uses your organization's exact definitions rather 
 
 Learn more about xref:spotter-business-terms.adoc[Business terms].
 
-== Where coaching is stored
+=== xref:spotter-memory.adoc[Memory]
+
+Memory is a new, AI-generated context layer that works alongside your existing coaching. Where coaching requires you to author and maintain every rule and example manually, Memory is generated automatically from trusted Liveboards you specify to Spotter, or from definitions and corrections shared during a conversation.
+
+Memory is additive. Your existing coaching continues to work exactly as before, and is not affected.
+
+Learn more about xref:spotter-memory.adoc[Memory].
+
+== Where coaching lives
 
 Coaching is applied and managed at the data model level, though some tools can be created from different areas of ThoughtSpot.
 
-* Data model instructions are global and apply to all queries on the data model.
-* Reference questions and business terms are specific to the data model but can be applied specifically at the user level (that is, only the user who created the coaching will have it apply to their searches).
-* Reference questions can be added from a conversation. Business terms can be added directly from the Data workspace.
+* Data model instructions are managed on the data model, and can alos be modified directly from within a Spotter conversation.
+* Reference questions, business terms, and Memory from Liveboards are managed from the Memory sources page in the Data workspace.
+* Memory generated from Liveboards or conversation can be fine-tuned directly in a Spotter conversation-- corrections and new definitions taught mid-conversation are saved as memory and apply to future questions.
 
 All coaching influences how Spotter responds to relevant questions on the Model.
 
@@ -176,8 +184,9 @@ If you're new to coaching, we recommend this approach:
 
 . xref:spotter-model.adoc[Optimize your data model] and metadata.
 . Test Spotter with common questions.
-. Add coaching only where Spotter gets confused.
-. Start with global rules, then add examples and definitions as needed.
+. Add relevant Liveboards that contain your business logic on the associated data model to help Spotter understand basic definitions.
+. Verify with similar common questions and correct any learnings that are inaccurate.
+. Add instructions, reference questions, and learning from conversation to fine-tune the experience.
 
 For guidance on choosing the right coaching tool and avoiding common pitfalls, see xref:spotter-coach-not-coach.adoc[].
 
