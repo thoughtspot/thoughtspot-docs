@@ -1,0 +1,112 @@
+= Upload a CSV file in your {connection} connection
+:page-last_updated: Jan 13, 2026
+:linkattrs:
+:experimental:
+:connection: Google BigQuery
+:description: You can upload a CSV file that will become a table you can join to existing tables in your Google BigQuery connection.
+:jira: SCAL-278562, SCAL-279328
+
+
+
+
+You can upload a CSV file that will become a table you can join to existing tables in your {connection} connection. When uploaded, the data goes to memory and is then pushed to {connection}. No uploaded CSV data is stored in ThoughtSpot.
+
+
+NOTE: To enable this feature, contact your administrator.
+
+
+== Prerequisites
+
+
+- Before you can upload a CSV file in your {connection} connection, CSV Upload must be configured for your {connection} connection. This must be done by an administrator for your ThoughtSpot cluster.
++
+For details, see xref:connections-gbq-csv-upload-config.adoc[Configure CSV upload for your {connection} connection].
+
+
+
+
+- To upload a CSV file, you must have the *Can upload user data* privilege and have the appropriate write permissions in the {connection} database.
+
+
+== Uploading a CSV file in your {connection} connection
+
+
+To upload a CSV file to your {connection} connection:
+
+
+. Select *Data* in the top navigation bar.
+. Select the *Utilities* tab in the left navigation bar
+. In the Upload CSV tile, select *Upload CSV*.
++
+image::csv-upload-app.png[CSV upload]
+. In the Upload Data window, click *Browse Files* and select your CSV file or drag your CSV file into the window.
+. For *Column Names* and *Fields Separation*, make any changes necessary.
++
+.When multiple connections have CSV Upload enabled
+****
+If there are multiple {connection} connections in your cluster that have CSV Upload enabled, you will see *Do you want this table to be collocated with other tables/models?* at the bottom of the Upload Data window.
+
+
+If so, this means that you have the option of choosing a table or Model you plan to join with your imported table after you upload it.
+
+
+If you choose *Yes* and select a table or Model, your table will be imported into the same {connection} database as that table or Model, making it easy to set up a join later.
+****
++
+If you see *Do you want this table to be collocated with other tables/models?* at the bottom of the Upload Data window, go to the next step. If not, skip to step 7.
+
+
+. Choose whether you want to import your into the same {connection} database as an existing table or Model:
++
+_If you want to import into the same database as an existing table or Model_:
+
+
+.. Select *Yes*.
+.. Open the *select source here* menu, and select the table or Model you plan to join your imported table to.
++
+NOTE: If you see tables and Models that are greyed out, it means those are not currently shared with you.
++
+_If you don't want to import into the same database as an existing table or Model_:
+
+
+* Select *No*.
+
+
+. Select *Next*.
+. In the Review and upload data page, review the data to correct any errors and make any changes necessary before uploading.
+. Select *Upload*.
++
+The data is written into the appropriate database and schema. When the upload is complete, a success message appears which confirms the number of rows that were imported.
+
+
+. At this point, you have the option to either join the data you uploaded with existing data or start searching the data.
+
+
+* To join the data with existing data, select *Join with existing data*
+** This takes you to the table you imported, where you can add joins.
+** If you want to load more data into the imported table, select *Load Data*.
++
+This takes you to the Upload Data window where you have the option to append data to the table or overwrite the data completely.
++
+NOTE: If you choose to overwrite data, a new table is created in {connection} and mapped to ThoughtSpot. The old table remains, but goes stale.
+* To search the data you uploaded, select *Start search on your data*.
+
+
+== Limitations
+
+
+CSV upload is not supported for files containing a new line in any cell.
+
+
+
+
+'''
+> **Related information**
+>
+> * xref:connections-gbq-add.adoc[Add a {connection} connection]
+> * xref:connections-gbq-edit.adoc[Edit a {connection} connection]
+> * xref:connections-gbq-remap.adoc[Remap a {connection} connection]
+> * xref:connections-gbq-delete-table.adoc[Delete a table from a {connection} connection]
+> * xref:connections-gbq-delete-table-dependencies.adoc[Delete a table with dependent objects]
+> * xref:connections-gbq-delete.adoc[Delete a {connection} connection]
+> * xref:connections-gbq-reference.adoc[Connection reference for {connection}]
