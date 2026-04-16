@@ -71,6 +71,10 @@ The following are limitations of the New Pivot Table:
 * Total size limit for a pivot table is 100,000/the number of measures in the pivot table.
 * If the query the pivot table is based on contains the `top` or `bottom` keyword, column and row summaries are not accurate.
 * You cannot add conditional formatting to a pivot table in heatmap mode.
+* In new pivot tables, conditional formatting can only reference columns that are
+actively visualized (present in the Rows, Columns, or Values sections of the pivot).
+Columns moved to the *Not Visualized* section are excluded from the pivot's data model
+instance and therefore cannot be used as conditions.
 * You cannot filter aggregated columns or columns with aggregated formulas.
 * Pivot tables do not support xref:formulas-cumulative.adoc[cumulative functions].
 * Pivot tables do not support xref:formulas-moving.adoc[moving functions].
@@ -208,6 +212,27 @@ image::conditional-formating.png[Display menu]
 
 . Select the measure you would like to add number or conditional formatting to.
 . Refer to xref:search-conditional-formatting.adoc#table[Apply conditional formatting] and xref:chart-table.adoc#number-formatting[Number formatting] for more information.
+
+=== Differences between old and new pivot tables
+
+The following table describes the differences in conditional formatting behavior between
+old and new pivot tables:
+
+[cols="1,2,2", options="header"]
+|===
+| Feature
+| Old Pivot Tables
+| New Pivot Tables
+
+| Conditional formatting scope
+| Value-based only: you can only format a column based on its *own* values.
+| You can format a column based on *any other visualized column's* values — more flexibility.
+
+| Non-visualized columns in conditional formatting
+| Not supported
+| Not supported (known limitation). New pivot tables offer expanded conditional formatting
+capabilities for visualized columns.
+|===
 
 ////
 .Pivot table Enhancements [.badge.badge-beta]#Beta#
