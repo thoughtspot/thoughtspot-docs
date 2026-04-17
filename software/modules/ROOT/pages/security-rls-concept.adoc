@@ -46,18 +46,20 @@ Members of groups with *Can Administer and Bypass RLS*:
 
 This behavior is true regardless of whether the privilege is from a direct group membership or indirect (through a group hierarchy, where the user is part of a group that is part of a larger, top-level group with the RLS privilege).
 
-[#rls-rule-examples]
+[#examples-of-rls-rules]
 == Examples of RLS rules
 
 An RLS rule evaluates against two system variables:
 
 include::partial$func-variables.adoc[]
 
+== ThoughtSpot rules and filters
+
 ThoughtSpot filters a table's rows by evaluating a rule against the authenticated user.
 
 A rule is an expression that returns a boolean, `TRUE` or `FALSE`.
 If the rule evaluates to `TRUE`, a user can see that row.
-If the rule evaluates to `FALSE` for the user, then the user can't view the data and instead they see the message `No data to display`.
+If the rule evaluates to `FALSE` for the user, then the user cannot view the data and instead they see the message `No data to display`.
 
 Rule expression can be implicit or explicit.
 And rules may or may not contain logic.
@@ -72,17 +74,16 @@ An example of an explicit rule that contains logic would be:
 Rules can also reference tables other than the table you are securing.
 
 Consider a simple RLS rule example.
-Your company has `vendor-purchase` table such as:
+Your company has a `vendor-purchase` table like the following image:
 
-image::rls-example0.png[Table with date, vendor, and amount columns]
+image::rls-example0.png[Simple table with date, vendor, and amount columns]
 
 You want to give your vendors the ability to see trends in company purchases.
 You give vendor personnel access to ThoughtSpot _and_ add them to self-titled vendor groups.
 So, all users from the Starbucks vendor are in the `Starbucks` group and all users from `round table` are in the `Round Table` group.
 Then, you set a *Row security* on the `vendor-purchase` table as follows:
-----
-VENDOR = ts_groups
-----
+
+`VENDOR = ts_groups`
 
 Only users in `Starbucks` group see `starbucks` data and so forth.
 Rules ignore case inconsistencies and spaces are evaluated so `round table` in the data matches the `Round table` group but not a group named `RoundTable` .
@@ -98,7 +99,7 @@ In this way, a well-written rule is _self maintaining_, meaning you don't have t
 You can also create rules that reference tables other than the table you are securing.
 For example, if you have a `sales` table and `store` dimension table, you can use attributes from the `store` table to secure the `sales` table.
 
-NOTE: RLS rules don't support use of aggregate functions.
+NOTE: RLS rules do not support use of aggregate functions.
 
 == Multiple rules and multiple group membership
 
