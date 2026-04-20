@@ -1,24 +1,25 @@
-= Integrate with dbt
-:page-last_updated: 8/20/2025
+= Integrate with dbt MetricFlow
+:page-last_updated: 4/20/2026
 :linkattrs:
 :experimental:
 :page-layout: default-cloud
-:author: Teresa Killmond, Naomi
-:jira: SCAL-157885, SCAL-157886, SCAL-157887, SCAL-157890, SCAL-157889, SCAL-119947, SCAL-182271, SCAL-182987, SCAL-186187, SCAL-132886, SCAL-169614, SCAL-180960, SCAL-126451, SCAL-201301, SCAL-201304, SCAL-208784, SCAL-263318
-:description: ThoughtSpot's dbt sync allows you to provide your existing dbt models and create ThoughtSpot Models, which you can use to search your data.
+:author: Mary
+:jira: SCAL-282744
+:description: ThoughtSpot's dbt MetricFlow integration allows you to import your dbt semantic layer into ThoughtSpot Models.
 
+ThoughtSpot’s integration with dbt MetricFlow allows customers to seamlessly bring dbt’s semantic models, including metrics, measures, and calculated fields, directly into ThoughtSpot. Users can leverage centralized metric definitions from dbt for data exploration and reporting in ThoughtSpot. This ensures consistency and reduces manual rework. Changes in dbt MetricFlow can be refreshed and reflected in ThoughtSpot, but edits made in ThoughtSpot do not sync back to dbt. The integration streamlines analytics workflows by automatically generating user-friendly models in ThoughtSpot based on dbt’s relationships and metadata, supporting scalable and governed self-service analytics for users. To enable this feature, contact {support-url}.
 
-ThoughtSpot's dbt sync allows you to easily provide your existing dbt models and automatically create ThoughtSpot xref:models.adoc[Models], which you can use to xref:search-data.adoc[search your data].
+ThoughtSpot's dbt sync allows you to easily provide your existing dbt models and automatically create ThoughtSpot xref:models.adoc[Models].
 
 dbt takes your raw data in your data warehouse and transforms and validates it. ThoughtSpot's dbt sync connects users to their cloud data warehouse, integrates with your dbt models using an API key or zip file, and generates the relationships between the tables defined in the dbt model that you select. It also brings any logical tables into ThoughtSpot. Then, ThoughtSpot creates new Models, based on the relationships between the tables. If a table does not have any relationships, ThoughtSpot creates a Model based only on that table. These Models provide user-friendly logical views of your complex datasets. Users can use these Models to easily search their complex data. This process may replace existing dbt tables you imported into ThoughtSpot, but it will not replace existing Models.
 
-NOTE: Integration with dbt is certified only for Amazon Redshift, Databricks, Google BigQuery, and Snowflake connections.
+NOTE: Integration with dbt MetricFlow is certified only for Snowflake connections.
 
 [#prerequisites]
 == Prerequisites
 Before you can integrate with dbt, you must satisfy the following prerequisites
 
-* Create a xref:connections.adoc[connection] to your external cloud data warehouse: Amazon Redshift, Databricks, Google BigQuery, or Snowflake. This cloud data warehouse must contain the tables that are created from your dbt models.
+* Create a xref:connections.adoc[connection] to your external Snowflake cloud data warehouse. This cloud data warehouse must contain the tables that are created from your dbt models.
 * If you are using a single-tenant dbt environment, you must ask your dbt contact to enable access to the https://docs.getdbt.com/dbt-cloud/api-v2[dbt Cloud API v2 (2.0.0)^].
 * The following dbt permissions are required:
 ** Metadata only
@@ -126,6 +127,13 @@ To inspect the table and Model details, select any of the table or Model names. 
 +
 To xref:search-data.adoc[search the data] on the Models, select *Search Model* next to any Model.
 +
+Click the *Download summary* button in the banner to download a JSON summary report that details the status of all imported dbt MetricFlow semantic layer objects and any formula conversion failures.
++
+[.bordered]
+image::dbt-MetricFlow.png[dbt semantic layer translation]
++
+NOTE: Importing dbt semantic translations is only available on Snowflake connections.
+
 . Select *Exit*.
 
 . To see the objects that you just created from dbt, navigate to the *Data workspace* page.
@@ -252,7 +260,7 @@ Once selected, access will automatically be granted to the user or group. To rem
 
 * You must import at least 1 table.
 
-* Integration with dbt is certified only for Amazon Redshift, Databricks, Google BigQuery, and Snowflake connections.
+* Integration with dbt MetricFlow semantic layer translation is certified only for Snowflake as the CDW layer.
 
 * If you make changes to your dbt models in dbt, ThoughtSpot does not automatically reflect those changes. You must integrate with dbt again. This may affect changes you made to the tables and Models in ThoughtSpot.
 
