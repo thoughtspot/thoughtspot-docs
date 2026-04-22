@@ -1,0 +1,155 @@
+= New charts library
+:page-last_updated: Jan 30, 2026
+:linkattrs:
+:experimental:
+:page-layout: default-cloud-early-access
+:page-aliases:
+:description: ThoughSpot's new chart library
+:jira: SCAL-285344
+
+
+ThoughtSpot's new highly flexible charting library allows you to create and customize a wide range of visualizations directly within ThoughtSpot.
+The library enables pixel-perfect and highly customizable visualizations, and supporting advanced use cases like trellis charts. The library currently supports the following new charts:
+
+
+* xref:chart-column-new.adoc[New column charts]
+* xref:chart-column-stacked-new.adoc[New stacked column charts]
+* xref:chart-line-new.adoc[New line charts]
+* xref:chart-bar-new.adoc[New bar charts]
+* xref:chart-bar-stacked-new.adoc[New stacked bar charts]
+* xref:chart-line-column-new.adoc[New line column charts]
+* xref:chart-area-new.adoc[New area charts]
+* xref:chart-area-stacked-new.adoc[New stacked area charts]
+* xref:chart-line-column-stacked-new.adoc[New line stacked column charts]
+
+
+To enable this feature, contact your ThoughtSpot administrator.
+
+
+== Why move to the new charts library?
+With the new charts, ThoughtSpot offers the following key features:
+
+
+* Wider flexibility and more granular control over all visualization aspects with multiple new settings across tooltips, data-labels, and axes.
+* Sophisticated charting capabilities like faceting, cross-tab, trellis, multivariates, dual axes, and more.
+* Overcomes existing limitations with charts. You can now plot multiple bar or column series within a single line-column chart, and apply attribute slicing even when you are using multiple measures on your Y-axis.
+
+
+== New axis types
+In new charts, ThoughtSpot supports several axis types and configurations:
+
+
+=== Individual axis
+Use individual axis when a single measure represents information on its own measuring line.
+These individual axes can be used to build multivariate charts which are perfect for visualizing multiple measures that have vastly different ranges or distinct business contexts without visual clutter. When multiple measures are added into the measure axis (Y-axis), the system detects ungrouped chips and automatically generates a dedicated chart section.
+
+
+=== Grouped axis
+Use a grouped axis when there is need to add a second layer of dimension to your visualization. It allows you to compare sub-categories within a primary category side-by-side. For instance, when you want to see how different segments sold within a larger group.
+You are looking at sales by region, but you want to see which Product Category is driving the numbers in each specific region.
+In such a case, instead of one bar per region, you get a cluster of bars (one for each product) for every region on the X-axis.
+
+
+A grouped axis is considered as a single entity.
+
+
+To create a grouped drag a measure chip onto another measure or drop it into an existing group to merge them.
+An encompassing container immediately wraps the measures, signaling that they are grouped and will share a unified axis scale.
+
+
+=== Dual axis
+Use a dual axis chart to plot two different measures on the same chart using two separate Y-axes—one on the left and one on the right. These entities on the Y-axes can either be a group or a standalone measure.
+Dual axis is very useful when you want a performance metrics, like goal versus actual.
+
+
+== New chart modes
+ThoughtSpot currently supports these new chart modes in its enhanced charting library:
+
+
+=== Facets
+Facets partition the chart into a hierarchical grid of sub-sections. Instead of forcing multiple dimensions onto a single, crowded axis, Facets nest your data into distinct, side-by-side modules. This results in enhanced readability, and you
+can scan complex, multi-dimensional relationships instantly.
+
+
+Faceting will be the default behavior when there are ≥1 attributes in the X-axis. You cannot create a concatenated single axis.
+
+
+
+
+[.bordered]
+image::facet.png[Faceted chart]
+
+
+=== Trellis
+Trellis charts, also known as small multiples, are a series of similar graphs arranged in a grid format, where each individual panel displays a different subset of a dataset using the same scale and axes.
+By partitioning data into manageable chunks, these charts enhance scalability and ensure clarity by preventing a single view from becoming overloaded. The side-by-side layout drives improved comparisons, making it easy to spot emerging patterns or trends across complex datasets. Furthermore, granular customization settings provide total control over subplot aesthetics, from titles and borders to specific color schemes, ensuring the final output is both professional and precise.
+
+
+Dragging an attribute in the trellis section, will create these small multiples based on the values of the attribute.
+
+
+[.bordered]
+image::trellis.png[Trellis]
+
+
+
+
+== Current limitations
+* Natural language chart recommendations, such as `Top` and `Growth`, will not trigger the specialized visualizations.
+* SpotIQ analysis is not available for new charts.
+* Spotter does not support the new charts yet.
+* Any exploration of data within a Liveboard is not yet supported for the new charts.
+* Limited style customization options for the ThoughtSpot embedded users.
+* Handling nulls and 0s differently is not supported.
+* Non-visualized fields cannot be added to tooltips.
+* This chart library is currently not supported in the ThoughtSpot mobile application.
+* Any custom font setting will not be reflected in these new charts.
+* Localization is currently not supported.
+
+
+== FAQs
+
+
+*Are my existing charts automatically migrated?*
+
+
+No, they will not be auto migrated.
+
+
+* Existing charts are not automatically migrated.
+* Admins control whether the new charts are enabled.
+* You can choose when to adopt the new charts.
+
+
+
+
+*Can I switch from these new charts back to old charts?*
+
+
+Yes. Until the charts become generally available, you can switch individual charts back to classic charts. Some configurations may be lost during the switch. You will see a set of generic warnings during the switch.
+
+
+*What happens if admins disable these new charts and go back to old charts?*
+
+
+* Charts created using the new charts library continue to render in a read-only state.
+* You retain access to insights.
+* New charts cannot be created from the new charts library while disabled.
+
+
+*Why are multiple attributes no longer combined into a single axis?*
+
+
+Combining multiple attributes into a single axis can hide patterns and make comparisons difficult. The new charts use faceting to present each attribute clearly, improving interpretability across dimensions.
+
+
+*Why do charts support only two axes?*
+
+
+Supporting more than two axes significantly reduces readability and increases the risk of misinterpretation. ThoughtSpot limits charts to two axes to preserve analytical clarity.
+
+
+*Why does time-based sorting behave differently?*
+
+
+Datetime fields are treated as continuous rather than discrete. This preserves accurate trend analysis in line and area charts, where sorting time buckets can distort patterns.
