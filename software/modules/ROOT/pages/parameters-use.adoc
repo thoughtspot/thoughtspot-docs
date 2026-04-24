@@ -1,15 +1,15 @@
 = Using parameters
 :experimental:
-:last_updated: 1/9/2023
+:page-last_updated: 12/10/2025
 :author: Teresa Killmond
 :linkattrs:
+:page-layout: default-cloud
 :description: Use parameters to run multiple scenarios with adjustable values, without changing your answer.
+:jira: SCAL-280006
 
 A parameter is a container or a placeholder such as a number, date, or string that can replace a constant value or a list of values. Create Model and Answer parameters to optimize your data inquiries. Use parameters to run different scenarios with adjustable values, without creating or modifying the constants in formulas for each new value.
 
 parameters are useful for 'what-if' analysis, financial planning, cohort analysis, and so on. When you create parameters for your Models, you guide users in their exploration of the data as they search on your Models or use Liveboards based on your Models. When you create parameters for your Answers, you empower yourself and other viewers of your Answers to run scenarios on the data in the Answer, using adjustable values.
-
-To learn how to create parameters, see xref:parameters-create.adoc[].
 
 == Using parameters
 Use parameters within formulas to run different scenarios when searching on your data or viewing Liveboards or Answers. For example, you may want to forecast your sales for the next month, based on various rates of growth. You might create a parameter, called `growth %`, with a range from 0 to 1 and a default value of .1. Then, you create a formula called `profit forecast`, defined by `profit * (1 + growth %)`. You can then create Answers and Liveboards that use this formula and change the parameter value to view your forecasted profit if your sales grow by 25%, 53%, and so on.
@@ -18,10 +18,12 @@ parameters work like column names in formulas, but appear in green. For more inf
 
 [#reorder-parameters]
 
-NOTE: You can now reorder the parameters in Liveboards and Answers, in the same way that you can reorder filters. When you edit a Liveboard or Answer to reorder the parameters and save your changes, the new order is reflected when anyone opens the Liveboard or Answer.
+You can reorder the parameters in Liveboards and Answers, in the same way that you can reorder filters. When you edit a Liveboard or Answer to reorder the parameters and save your changes, the new order is reflected when anyone opens the Liveboard or Answer.
+
+CAUTION: Parameter reordering is blocked if the Liveboard has any hidden parameters, if the parameters are being updated by runtime/JWT, or if you don't have access to the data source.
 
 
-== Changing parameter values in an Answer
+=== Changing parameter values in an Answer
 
 When you create or view an Answer that contains a formula with a parameter, you'll know: ThoughtSpot displays the name of the parameter and its current value below the Answer description, in the row where it displays filters.
 
@@ -47,7 +49,7 @@ If there is a list of values, select the value you would like to use.
 
 . After you enter a new value or reset the value to the default value, select *Apply*.
 
-== Changing parameter values in a Liveboard
+=== Changing parameter values in a Liveboard
 
 When you create or view a Liveboard that contains a formula with a parameter, you'll know: ThoughtSpot displays the name of the parameter and its current value below the Liveboard description, in the row where it displays filters.
 
@@ -99,12 +101,17 @@ If there is a list of values, select the value you would like to use.
 
 . After you enter a new value or reset the value to the default value, select *Apply*.
 
+[#parameters-link-models]
+=== Linking parameters across Models
+Liveboard creators can link parameters of the same data type across multiple different Models. This allows you to control multiple parameters from a single parameter chip and reduces the repetitive effort required for Liveboard users to individually set identical parameters for each Model. For more information, see xref:liveboard-parameters-link.adoc[].
+
 [#runtime-overrides]
-== Runtime overrides
+=== Runtime overrides
 You can adjust parameter values at runtime from Liveboard or Answer URLs, or using REST API v1 requests. To learn more about applying parameter runtime overrides in REST API v1 requests, see https://developers.thoughtspot.com/docs/?pageid=runtime-params[Runtime parameters,window=_blank]. To apply runtime overrides for parameters in Liveboard or Answer URLs, see xref:developer-user.adoc#parameters[Runtime overrides for parameters].
 
 '''
 > **Related information**
 >
-> * xref:charts.adoc#parameters[Parameters in axis and column names of charts and tables]
+> * xref:parameters-create.adoc[Creating parameters]
+> * xref:charts.adoc#parameters[Dynamic parameters in charts and Answers]
 
