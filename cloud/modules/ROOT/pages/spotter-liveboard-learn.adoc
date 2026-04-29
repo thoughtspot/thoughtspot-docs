@@ -8,7 +8,7 @@
 :description:
 :jira: SCAL-300551, SCAL-289467
 
-Learning from Liveboard lets you point Spotter at a trusted Liveboard — one that already reflects how your team queries a dataset — and generate memory from it. Spotter analyzes the charts and their underlying queries, extracts xref:spotter-memory.adoc#rule-recipe[rules and recipes], and uses them as context when answering future questions on the associated data models.
+Learning from Liveboard lets you point Spotter at a trusted Liveboard — one that already reflects how your team queries a dataset — and generate memory from it. Spotter analyzes the visualizations, extracts xref:spotter-memory.adoc#rule-recipe[rules and recipes], and uses them as context when answering future questions on the associated data models.
 
 NOTE: To enable this feature, contact your administrator.
 
@@ -39,7 +39,7 @@ What happens when the feature is turned off:
 
 Users with coaching access or data model edit access on the data models associated with the Liveboard can generate memory.
 
-If a Liveboard touches Models the user cannot access, those Models are excluded — memory generation proceeds on the accessible models only.
+If a Liveboard touches Models the user cannot access or cannot coach, those Models are excluded — memory generation proceeds on the accessible models only.
 
 == How to generate memory from a Liveboard
 
@@ -50,14 +50,26 @@ If a Liveboard touches Models the user cannot access, those Models are excluded 
 [.bordered]
 image::select-liveboard-learn.png[Select Liveboards]
 
-. The *Define context* modal appears. Optionally add context to help guide generation. All accessible data models associated with the Liveboard are selected by default; deselect any you don't want to generate memory for.
+. The *Define context* modal appears. Use context to describe the Liveboard — what it tracks, who it is for, and what use case it serves. This helps Spotter generate memory that reflects the right analytical intent.
++
+Good examples:
++
+--
+- *"This Liveboard tracks pipeline health for the EMEA sales team."*
+- *"Used by CSM leadership to review quarterly retention metrics."*
+- *"Focuses on product adoption for enterprise accounts post-onboarding."*
+--
++
+Avoid using context to tell Spotter which charts to focus on, which to skip, or to modify how specific values are interpreted during learning. These instructions will not be acted on.
++
+All accessible data models associated with the Liveboard are selected by default; deselect any you don't want to generate memory for.
 +
 [.bordered]
 image::liveboard-add-context.png[Add context to memory.]
 
 . Click *Generate memory*. Generation runs asynchronously, and typically takes ten to twenty minutes depending on the size of the Liveboard.
 
-== What is not stored as memory
+== What will not be remembered as memory
 
 The following are not stored as memory:
 
@@ -73,7 +85,7 @@ If a Liveboard is built entirely on tables or Views, memory will not generate. I
 After generation completes, verify what Spotter has learned before relying on it in production. There are three ways to check:
 
 * Download memory. Select the *More* image:icon-more-10px.png[more icon] for the Liveboard entry and select *Download memory*. See xref:spotter-memory-manage.adoc[Managing memory] for how downloads work and what is included.
-* Ask Spotter. In a conversation, ask "What do you remember about this dataset?" and Spotter will surface relevant rules it is holding.
+* Ask Spotter. In a conversation, ask "What do you remember about this dataset?" and Spotter will surface relevant memory entries it is holding.
 * Spotter thinking view. While asking questions in Spotter, expand the Thinking view to see exactly which memory context is being fetched and applied for that query.
 
 The most reliable approach is to run five to ten representative questions on the data model after generation and compare answers to your baseline.
