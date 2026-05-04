@@ -1,0 +1,201 @@
+= Data and object security
+:page-last_updated: 5/1/26
+:author: Teresa Killmond, Naomi
+:experimental:
+:linkattrs:
+:page-layout: default-cloud
+:description: Learn about data and object security in ThoughtSpot.
+:jira: SCAL-230550, SCAL-264258, SCAL-270725, SCAL-235787
+
+ThoughtSpot provides many features for protecting data.
+
+
+video::exNqEoKsQ6A[youtube,title="ThoughtSpot Success Series: Group Design, Privileges & Sharing",width="375",height="210",frameborder="0",allow="accelerometer"]
+
+
+[#object_security]
+== Object security
+
+
+Object security controls what content users see within ThoughtSpot.
+Objects are tables, columns in tables, Models, Liveboards, and saved Answers.
+
+
+Users gain access to objects when an object owner shares access with them.
+Owners can share with individual users or with entire groups, giving access to everyone within that group.
+Objects may be shared with edit or view-only options.
+A user can automatically share objects with anyone else in the groups to which they belong.
+This has implications on setting up privileges, and on applying row-level security.
+
+
+=== Permissive Security mode
+
+
+The default Permissive Security mode of ThoughtSpot means that when someone shares an object with you, you can see all the data it uses, regardless of explicit permissions to the parent object data.
+You can see a shared Liveboard without having access to its underlying Model or table.
+
+
+[#advanced-security-mode]
+=== Advanced Security mode
+
+
+ThoughtSpot's Advanced Security mode, or strict column-level security (CLS), is the opposite of the default permissive mode.
+Unless the user has explicit permissions to the entire stack of parent objects, they cannot see the data in the child object.
+For example, in a shared Liveboard, you can see data only if you have explicit permissions to the relevant columns of the parent Model.
+Similarly, you can only see the data in a Model to which you have access if you have explicit permissions to its parent table object.
+
+NOTE: We recommend using <<csr,column security rules>> rather than Advanced Security or Strict CLS.
+
+
+Work with your {support-url} team to enable the Advanced Security Mode on the relevant clusters.
+
+==== Limitations of users who can see a Liveboard when Strict CLS/Advanced Security Mode is set
+
+In the following situations, a Liveboard will NOT be visible in the Liveboards page and users will not be able to access the Liveboard using a link:
+
+* If the Liveboard has a hidden column as a filter and the users who have access to the Liveboard are NOT the Model and table editors.
+* If the Liveboard has a column which a user doesn’t have access to as a filter.
+* If the Liveboard uses a Model which a user doesn’t have access to and there are filters in the Liveboard.
+
+[NOTE]
+====
+To ensure that ThoughtSpot applies <<cls,column-level security>> to *table dependents*, such as Models, Liveboards, and Answers, you must enable <<advanced-security-mode,Advanced Security>>, also called *Strict CLS*.
+
+
+If you do not enable Advanced Security, users may see data in table _dependents_ that is restricted to them in the tables themselves.
+
+
+After enabling Advanced Security, make sure you share *all* underlying data (both tables and Models) when you share Answers or Liveboards. If you do not share *all* underlying data, users can't see the Answers or Liveboards. ThoughtSpot will return an error.
+====
+
+
+== Row-level security (RLS)
+
+
+xref:security-rls.adoc[Row-level security] controls what data a user can see in each shared piece of content.
+Even if a user has access to a Model, they can only see rows from the tables they have permission to see.
+
+
+RLS applies at the table level, so it automatically extends to all Models, saved answers, and Liveboards based on that table, every time.
+Also, in queries where there are tables with table filters, all joins are always enforced to avoid accidentally allowing users access to data they shouldn't see.
+
+
+RLS requires three things:
+
+
+* A table filter with a column (possibly in a joined table) that can be used to determine who can see a row, such as account id or tenant id.
+* A group that can be associated with the row of data by name.
+For example, if the column is `account_id` and has values of `1`, `2`, `3`, users can be assigned to groups `group_1`, `group_2`, `group_3` and then only see their data.
+* Users must be assigned to the group.
+If they are not assigned to a group that has access, they do not see any data.
+
+
+Administrative users can always see all rows of data because RLS does not apply to them.
+
+
+RLS supports a hierarchy of groups, which makes it possible to grant access to some users across multiple groups.
+
+
+Keep in mind that users within a group can share with one another.
+If you put everyone in your organization into the same group for RLS, they can share with anyone in the company.
+
+
+[#csr]
+=== Column security rules
+
+You can now set column security rules at the table level, and they will automatically be inherited to associated Models. These rules do not require you to use the Strict CLS setting. We recommend this approach to column-level security over Strict CLS.
+
+
+To set column security rules, follow these steps:
+
+
+. Click the *Column Security* tab. Click *Add columns*.
++
+[.bordered]
+image::csr-add-column.png[Navigate to the Column Security tab and add columns.]
+
+. A pop-up appears with a list of columns in the table. Select the checkbox next to the column(s) you want to restrict. You can also select all. Click *Save*.
++
+[.bordered]
+image::csr-popup.png[Add Columns popup with Price and Price_Change selected.]
+
+. Columns you selected by default become inaccessible to all user groups. To grant access to certain groups, click *Manage access*. Select a group or groups from the pop-up to control access.
++
+NOTE: You cannot specify column security rules at user level.
++
+[.bordered]
+image::csr-manage-access.png[Click Manage access.]
++
+[.bordered]
+image::csr-add-user-groups.png[Add user groups popup with Administrator selected]
+
+
+. Toggles appear for each column and group you selected. You can set the toggle to *Has access* in a cell to grant access to a particular group, or toggle to *No access* to deny access to the group.
++
+[.bordered]
+image::csr-toggle.png[A table showing the Price column is accessible to the administrator group, and Price_Change is not.]
+
+
+. If you select the checkbox next to the column name, you have the following options:
++
+--
+* Grant access to all: Makes the column accessible to all user groups.
+* Remove access for all: Makes the column inaccessible to all user groups.
+* View user groups with access: A list of user groups with access to the column appears.
+* Remove: Removes the column from the column security rules tab and makes it accessible to all users.
+--
++
+[.bordered]
+image::csr-checkbox.png[Options appear when you select the checkbox.]
+
+[#csr-liveboard]
+=== Column security rules on Liveboards
+
+If column security rules apply to a Liveboard and you have partial access to columns on the underlying data sources, you will still be able to access the Liveboard and interact with accessible filters and visualizations. Any inaccessible filters will not be visible to you. Users without full access to the underlying data cannot edit the Liveboard, even if you have edit access.
+
+Liveboard schedules and version history respect column security rules, ensuring that data is not leaked. Similar to scheduling with row-level security, if multiple users with different levels of access schedule a Liveboard, they each receive individual reports based on their column security rule assignment.
+
+
+[#cls]
+== Column-level security (CLS)
+
+
+Column-level security lets users see certain columns in a table, but not other columns.
+This can be accomplished by sharing a limited set of columns in a table with specific users or groups.
+
+
+Because someone can share with anyone in the same group, they can potentially share restricted columns.
+For example, if a _Human Resources_ repository has a column with salary information, and it appears in a Model, any _Human Resources_ group member could create an answer with visible salary information and mistakenly share with someone outside of _Human Resources_.
+That 'outside' person now has access to the salary information.
+In such cases, we recommend that you work with your {support-url} team to enable <<advanced-security-mode,Advanced Security mode>>, which allows table dependents (such as Models, Liveboards, and Answers) to inherit a table's CLS.
+
+////
+[NOTE]
+====
+To ensure that ThoughtSpot applies CLS to *table dependents*, such as Models, Liveboards, and Answers, you must enable <<advanced-security-mode,Advanced Security>>, also called *Strict CLS*.
+
+
+If you do not enable Advanced Security, users may see data in table _dependents_ that is restricted to them in the tables themselves.
+
+
+After enabling Advanced Security, make sure you share *all* underlying data (both tables and Models) when you share Answers or Liveboards. If you do not share *all* underlying data, users can't see the Answers or Liveboards. ThoughtSpot will return an error.
+====
+////
+
+
+
+== System privileges
+
+
+System privileges refer to what a user can do in ThoughtSpot.
+For example, can they upload or download data or share with all users.
+These privileges are defined on a group level and inherit downwards.
+So, if Group A had child groups Group B and Group C, then any privilege given to Group A is also available to Group B and Group C.
+What this often means is that separate sets of groups are required to manage privileges.
+
+
+'''
+> **Related information**
+>
+> * xref:security-rls.adoc[]
+

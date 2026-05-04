@@ -1,0 +1,94 @@
+= Integrate your tools into Spotter with Connectors
+:author: Naomi
+:page-last_updated: Apr 27, 2026
+:linkattrs:
+:experimental:
+:page-layout: default-cloud-early-access-spotter-3
+:description: In addition to bringing Spotter into other platforms, you can now integrate connectors to Spotter to make connections to wherever your data is stored.
+:jira: SCAL-287506, SCAL-301858, SCAL-297359, SCAL-309104
+
+In addition to bringing Spotter into other platforms, you can now integrate connectors to Spotter to make connections to wherever your data is stored. This allows you to do things like search Confluence or Snowflake for unstructured data to add to your analysis, or send direct messages from Spotter to Slack with your data. By connecting your third-party ecosystem (Slack, Jira, Confluence, Snowflake, Glean) directly to ThoughtSpot, you can transition from insight to execution without needing to switch tabs.
+
+The following connectors are available to connect to by default:
+
+Asana:: You can now prompt the AI to instantly create and assign tasks based on your conversation, pull real-time project health metrics into your chat for status updates, or identify overdue dependencies across your team’s workspace without leaving Spotter.
+Confluence/Jira:: You can now prompt the AI to query your backlog using natural language to surface relevant Jira issues, pull technical context from Confluence pages to inform your work, or instantly publish your analysis as new, formatted Confluence pages for your team to reference.
+Slack:: You can now contextualize analysis by bringing in information from your Slack conversations, share insights instantly, and distribute comprehensive reports in Canvas format.
+
+
+== Understanding the MCP architecture
+
+ThoughtSpot’s integration works as a two-way street. Understanding these roles is crucial for proper configuration.
+
+* *Spotter as an MCP Host (Inbound)*:
+** ThoughtSpot acts as the primary interface. It hosts external tools. When you ask a question about a Slack thread or a Jira ticket, Spotter reaches out to those services to pull data in or push actions out.
+* *ThoughtSpot as an MCP Server (Outbound)*:
+** ThoughtSpot acts as a data provider for other AI agents (like Claude or custom internal bots). These agents can “call” ThoughtSpot analytics to answer questions elsewhere in your organization. For more information, see link:https://developers.thoughtspot.com/docs/mcp-integration[MCP server integration].
+
+== Configuration guide
+
+Administrators must whitelist and configure connectors before they are available to end-users.
+
+NOTE: Spotter as an MCP host is only available with Spotter 3 and must be enabled separately. Once enabled, any MCP tools enabled by the admin will be available to all users of Spotter. Each user must enable the tools for themselves from the Spotter prompt bar and authenticate.
+
+=== Enable Spotter 3.0 capabilities
+
+. Navigate to *Admin settings* > *ThoughtSpot AI*.
+. In the *Spotter 3 capabilities* section, click *Edit*.
+. Ensure *Enable Connectors/MCP* is set to *Enabled*.
+. Click *Save*. Note that this may cause a brief service interruption.
+
+=== Register a new connector
+
+. Navigate to *Admin settings* > *ThoughtSpot AI*. Scroll to the *Spotter Connectors* section and click *Edit*.
+. You can enable a connector from the pre-defined list or *Add custom connector*.
+. When adding a connector from the pre-defined list, simply click *Add*.
+. When adding a custom connector, you must provide the following details:
++
+--
+* *Connector Display Name*: The name users will see within Spotter (for example, “Engineering Jira”).
+* *MCP URL*: The specific endpoint where your MCP-compliant server is hosted.
+* *Authentication*:
+** *None*
+** *OAuth*: Required for most enterprise apps such as Slack or Jira. You may need to enter the *Client ID* and *Client Secret*.
+*** *Redirect URL*: Copy this ThoughtSpot callback URL (https://oauth.thoughtspot.app/callback) and paste it into your third-party app’s developer settings to allow the handshake.
+** *Bearer*: Used for token-based access.
+--
+
+NOTE: When adding a custom connector and using the OAuth authentication method, you must whitelist ThoughtSpot’s callback URL: https://oauth.thoughtspot.app/callback.
+
+== Authentication methods
+
+When configuring a connector, you will need to specify an authentication method. The sections below cover the supported transport protocols, authentication methods, and known limitations.
+
+=== Transport protocols
+
+Spotter Connectors support two transport protocols for connecting the Spotter backend to MCP servers:
+
+* SSE (Server-Sent Events) — A unidirectional, HTTP-based protocol where the MCP server pushes events to the Spotter backend over a persistent connection.
+
+* Streamable HTTP — A bidirectional HTTP-based transport that supports streaming responses, providing a more flexible and modern alternative to SSE.
+
+=== Authentication
+
+Spotter Connectors support the following authentication methods when connecting to MCP servers:
+
+* None — No authentication. Suitable for MCP servers that are publicly accessible or secured at the network level.
+
+* OAuth 2.0 — Industry-standard authorization framework. Spotter handles the OAuth flow to obtain and refresh access tokens for secure, delegated access to MCP servers.
+
+* Bearer Token — A static or pre-issued token passed in the Authorization header of each request. These are tenant-scoped and not user-scoped, so all the users will be using the same token provided by the admin while creating the connector. Suitable for simpler integrations or development environments.
+
+=== OAuth 2.0 limitations
+
+* Spotter does not support passing the OAuth client_id and client_secret in request headers.
+
+* Client credentials must be provided via the request body (i.e., as form-encoded parameters in the token request), which is the method recommended by the OAuth 2.0 specification (RFC 6749).
+
+* MCP servers that require header-based client authentication are not currently supported.
+
+== Security and privacy
+
+* Enterprise-Grade OAuth: Your third-party credentials are never stored by ThoughtSpot. We use secure tokens to communicate with your apps.
+* Role-Based Access: Spotter can only "see" what *you* have permission to see. If you don't have access to a private Slack channel, Spotter cannot pull data from it for you.
+* Audit Logs: Admin settings allow for the monitoring of tool usage and connector health.
