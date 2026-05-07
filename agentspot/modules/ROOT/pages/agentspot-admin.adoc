@@ -80,7 +80,7 @@ In the Admin Settings page you can view and manage the AgentSpot workspace. It i
 * *Connectors*: Allows you to manage connectors to different applications. See <<#managing-connectors,Managing connectors>>.
 * *Usage*: Allows you to see the overall usage of AgentSpot. See <<#usage, Monitoring usage>>.
 * *Users*: Allows you to see details about AgentSpot users. See <<#users, Monitoring users>>.
-* *Settings*: Coming soon (based on the UI). See <<#settings, Setttings>>.
+* *Settings*: Coming soon (based on the UI). See <<#settings, Settings>>.
 
 [#managing-connectors]
 === Managing connectors
@@ -88,54 +88,43 @@ Connectors allow AgentSpot to interact with external applications like Jira, Sla
 
 As an administrator, you have the authority to:
 
-* **Add/Delete:** specific connectors for your entire organization.
+* **Add, delete, and remove for all users:** specific connectors for your entire organization.
 * **Test and share:** You can activate a connector for yourself to test its functionality before "publishing" or sharing it with the rest of the organization.
 
-In the *Admin Settings* > *Connctors* page, you can see the list of Available Connectors. Once you add a connector, it appears in the list of Already Added connectors near the top of the page.
+In the *Admin Settings* > *Connectors* page, you can see the list of Available Connectors. Once you add a connector, it appears in the list of Already Added connectors near the top of the page.
 
 ==== Requirements for adding a connector
 
-* You must know the URL of the MCP server for that connector. Refer to the documentation for the product you want to connect to for the specific MCP server URL.
-* Your company must have a license for the
+* You must know the URL of the MCP server for the external application you are connecting to. For details, refer to the documentation for the external application.
+* Your company must have a license for the external application.
+* You must have access to that external application.
 
-==== Available connectors
-AgentSpot ships with native connectors for popular applications.
+==== Adding a connector
+AgentSpot ships with native connectors for popular applications, listed under *Available Connectors*. If you want to connect to an external application that is not included, you can add it using a custom connector.
 
-To add an available connector, do the following:
+To add a connector, do the following:
 
 . Log in to AgentSpot.
 . Click the *Admin Settings* image:settings-agent-spot.svg[10,Admin Settings] icon in the upper-right corner.
-. Under the _Connectors_ tab, find the connector in the list of _Available Connectors_.
-. In the box for the connector you want to add, click *Add*.
+. Under the _Connectors_ tab, do either of the following:
+.. For an available connector: In the box for the connector, click *Add*.
+.. For a custom connector: Click *+ Custom Connector*.
 . In the _Register_ window, do the following:
-.. (optional) Change the Connector Name if you want to.
-.. Enter the Connector URL for the connector's MCP server. (Refer to the product's documentation for that.)
+.. For *Connector Name*, do either of the following:
+... For an available connector (Optional): A name is already provided, but you can change it if you want.
+... For a custom connector: Create a name for your connector.
+.. For *Server URL*, enter the connector's MCP server URL. (Refer to the product's documentation for that.)
 .. (Optional) For *Transport Type*, select either of the following:
-... Streamable HTTP (Recommended)
+... Streamable HTTP (Default and recommended)
 ... Server-Sent Events (SSE)
 .. (Optional) Enter a *Description*.
-.. (Optional) Enter a *Logo URL*.
 .. (Optional) Choose an *Authentication* method.
-.. Click *Add Connector*.
+.. (Optional) Enter a *Client ID* (or leave it empty for auto-registration)
+.. (Optional) Enter a *Client Secret* (or leave it empty for PKCE flow)
+.. Click *Register Connector*.
 
 ==== Custom connectors
-If a required application is not in the list of available connectors, you can add a custom connector using **MCP (Model Context Protocol) servers**. Simply provide the URL for the MCP server and complete the setup to enable any compatible tool.
-
-To add a custom connector in AgentSpot, do the following:
-
-. Log in to AgentSpot.
-. Click the *Admin Settings* image:settings-agent-spot.svg[10,Admin Settings] icon in the upper-right corner.
-. Under the _Connectors_ tab, click *+Custom Connector*.
-. In the _Custom Connector_ window, do the following:
-.. Enter a *Connector Name*.
-.. Enter a *Connector URL*.
-.. (Optional) For *Transport Type*, select either of the following:
-... Streamable HTTP (Recommended)
-... Server-Sent Events (SSE)
-.. (Optional) Enter a *Description*.
-.. (Optional) Enter a *Logo URL*.
-.. (Optional) Choose an *Authentication* method.
-.. Click *Add Connector*.
+If an application is not in the list of available connectors, you can add it using a custom connector. Simply provide the URL for the MCP server and complete the setup to enable any compatible tool. Refer to the documentation for the product you want to connect for its MCP server URL.
 
 ==== User authentication and security
 Connectors do not require any setup for authentication because they follow the form of authentication that the user already uses to connect with the application.
@@ -168,6 +157,30 @@ It provides the following information:
 ** *Last Active*: Last time user was active
 * *Groups*
 
+You can download a .csv file containing a complete list of AgentSpot users by clicking image:download-agent-spot.svg[10,Admin Settings] *Export*.
+
+TIP: To add or remove AgentSpot users, you must go to the *Admin Settings* > *Users* tab in your ThoughtSpot instance.
+
+[#audit-log]
+=== Audit log
+
+The audit log page displays a chronological list of logged events, most recent first.
+
+Each entry shows:
+
+* Time: Month, day, year and time (based on user's timezone?)
+* Actor: Firstname, lastname, and email address of the user
+* Action: Specific action performed (link to full reference to provide more detail)
+* Resource: Which resource was used (which tool call)
+* IP: IP address of user
+
+==== Filtering the audit log
+
+You can filter the audit log by a specific action, actor user ID, and a date range.
+
+You can download a .csv file of the audit log by clicking image:download-agent-spot.svg[10,Admin Settings] *Export*.
+If you filter the audit log before downloading it, the downloaded file will only include your filtered version.
+
 [#settings]
 === Settings
 
@@ -191,7 +204,7 @@ As an administrator, you have access to all agents and workflows created within 
 
 To see all agents in your organization do the following:
 
-. From the AgentSpot homepage, under _My Team_, click *View All*.
+. From the AgentSpot homepage, under _My Team_, click *Browse existing agents*.
 . Click *From My Org*.
 
 === Share an agent in your organization
