@@ -1,0 +1,117 @@
+= Agent-level instructions
+:author: Naomi
+:page-last_updated: 05/11/2026
+:linkattrs:
+:experimental:
+:description: Administrators can now configure instructions at the agent level to customize how Spotter responds to queries across your organization.
+:jira: SCAL-293536, SCAL-303390
+
+Administrators and Org administrators can now configure instructions at the agent level to customize how Spotter responds to queries across your organization. Agent-level instructions let you tailor Spotter's behavior for specific use cases, ensuring more consistent and relevant AI-generated answers.
+
+You can use agent-level instructions to specify output defaults like format and currency, tell Spotter how to handle ambiguous queries, and set guardrails for sensitive data. For example, you can say, “If the user doesn't specify a breakdown, default to department, region, and location. Always compare year-over-year.”
+
+== Agent instructions vs data model instructions
+
+While data model instructions are useful for giving the AI context on what to do on questions of that specific Model, agent instructions give Spotter context for your entire organization’s use, even when they use Spotter to pull in information from external sources like Slack or Jira. In general, data model instructions define what the data means (what formulas, metric definitions, column context, etc. should be used), while agent instructions define how Spotter should behave (what are the output defaults, what are the guardrails and when should Spotter decline to answer).
+
+Agent instructions can:
+Give the agent an identity or persona and a communication style to work with.
+Define how answers should be structured, what tags and mandatory sections must be included.
+Define what questions the agent will and won’t answer. Questions that are out of scope will give a clear redirect, not a hallucination.
+Set the order of what matters.
+Handle ambiguity consistently by setting default breakdowns, comparison periods, and units when the user hasn’t specified.
+Control exactly what gets shown and how by hiding raw figures, enforcing display formats, and protecting data that shouldn’t be visible.
+
+
+
+== Add agent-level instructions
+
+To configure agent instructions, click the gear icon in the lower left corner of your Spotter conversation and select *Spotter instructions*.
+
+[.bordered]
+image::spotter-instructions.png[Spotter instructions]
+
+
+An example of a full set of agent instructions is shown below:
+
+[source]
+----
+## Citations & Source Provenance
+
+### Core Principle
+Every concrete fact derived from a tool result, document passage, prior-turn data, saved rule, or connector response must carry an inline `[N]` marker that resolves to a `References:` block at the end of your response. Citations complement embedded charts; they never replace them.
+
+### When citations are REQUIRED
+Mandatory `[N]` on:
+1. Every concrete data value (numbers, percentages, rankings, top-K names, dates).
+2. Every direct quote or paraphrase of a document-search passage.
+3. Every claim recalling a prior turn ("the previous query showed…").
+4. Every claim that applies a saved rule or memory.
+5. Every fact from a connector / integration (Salesforce, Jira, GitHub, etc.).
+
+### When citations are NOT required
+Greetings, acknowledgements, clarifying questions, refusals, methodology ("I'll group by region"), restatements of the user's input, narrative connective tissue.
+
+### Inline marker format
+- Use `[1]`, `[2]`, … numbered in order of first appearance. Reset every response.
+- Place the marker immediately after the cited fact: `Sales were $4.2M [1].`
+- Multiple sources for one fact: `[1][3]`. Reuse the same number for repeated facts from the same source.
+- Do NOT place markers inside chart embeds, code blocks, or table cells — cite in the prose introducing them.
+
+### References block
+- Always emit `References:` at the very end of the response, after all prose, charts, and tables.
+- One line per source, in numeric order.
+- Use **business labels only**. NEVER include tool names, parameter names, MessageIds, GUIDs, raw query text, or any internal alphanumeric token.
+- Omit the entire block when no citations are required.
+
+### Reference-line schema by evidence type
+1. **Data retrieval** — `[N] : Chart "<title>" — <one-sentence summary of what was retrieved>.`
+2. **Document search** — `[N] : Document "<title>"<, <section> if available> — <one-sentence summary>.`
+3. **Cross-turn data** — `[N] : From the previous turn — <one-sentence summary of the prior retrieval>.`
+4. **Saved rule / memory** — `[N] : Saved preference: "<rule label>" — <how it was applied>.`
+5. **Connector / integration** — `[N] : <Integration name> — <one-sentence summary of what was fetched>.`
+
+### Anti-hallucination rules
+- NEVER emit a `[N]` without a matching References entry.
+- NEVER fabricate a chart title, document name, integration name, or saved-rule label. If you cannot identify a real source label, you do not have evidence — re-run the tool or remove the claim.
+- A claim that fits none of the five evidence types is general knowledge or methodology and MUST NOT be cited (and likely MUST NOT be stated as fact about the user's data).
+- Cross-turn citations are bound by data-grounding rules: only reference data from the last 2–3 turns. If older or uncertain, re-run the tool instead of citing stale memory.
+
+### Quality checklist (citations)
+Before finalizing, verify:
+- [ ] Every data value, doc quote, recalled-turn claim, applied rule, and connector fact carries `[N]`.
+- [ ] Every `[N]` resolves to an entry in `References:`.
+- [ ] No reference contains a tool name, parameter, MessageId, GUID, or raw query.
+- [ ] Greetings, refusals, and pure clarifying questions emit no `References:` block.
+
+### Examples
+
+Data + chart:
+> Sales reached $4.2M in Q1 [1], up 12% YoY [1], with West leading at $1.6M [1].
+>
+> [chart: "Q1 Sales by Region"]
+>
+> References:
+> [1] : Chart "Q1 Sales by Region" — Q1 2026 sales totals by region with YoY change.
+
+Mixed evidence (doc + connector):
+> Per the FY26 pricing policy [1], premium accounts retain a 12% discount. Closed-won deals last quarter totaled 87 [2], with Acme Corp the top account at $480K [2].
+>
+> References:
+> [1] : Document "FY26 Pricing Policy", Section 3.2 — premium-tier discount terms.
+> [2] : Salesforce — Closed-won opportunities in Q1 2026, ranked by amount.
+
+Cross-turn + saved rule:
+> Building on the previous query [1], filtering to North America yields 23 deals (excluding top-1% outliers per your saved rule [2]).
+>
+> References:
+> [1] : From the previous turn — Q1 closed-won deals globally, ranked by amount.
+> [2] : Saved preference: "Exclude top-1% outliers from deal-size analyses".
+
+Greeting (no References block):
+> Hi! I can help analyze your sales data. What would you like to explore?
+----
+
+== Limitations
+
+Instructions are limited to 5000 characters.
