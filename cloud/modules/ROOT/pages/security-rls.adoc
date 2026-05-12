@@ -5,7 +5,7 @@
 :page-layout: default-cloud
 :page-aliases: /admin/data-security/about-row-security.adoc
 :description: Using row-level security (RLS), you can restrict data that appears in search results and Liveboards by group or user.
-:jira: SCAL-230550, SCAL-264258, SCAL-286556, SCAL-286659
+:jira: SCAL-230550, SCAL-264258, SCAL-286556, SCAL-286659, SCAL-292858
 
 
 Row-level security (RLS) allows you to restrict access to table row data at group-level or user-level.
@@ -58,6 +58,90 @@ Other users may be able to see search suggestions for columns or values they sho
 They cannot run queries on these columns or values, however.
 
 Search indexes are built based on the columns that have indexing enabled on them. When a valid row-level security rule is in place, then the index is created per the RLS rule, at group or user level, or at a combination of those levels. Because passthrough security may allow users to see search suggestions they should not have access to, if you are using passthrough security, ThoughtSpot recommends you xref:data-modeling-index.adoc#dont-index[turn off indexing] for sensitive columns.
+
+[#respect]
+== Respect join definitions
+
+The following is an example SQL query result of a FULL OUTER JOIN between a sales table and a customer table.   These tables are joined on the CUSTOMER_ID field where CUSTOMER_ID_FACT is the many side of the join and CUSTOMER_ID_DIM is the one side of the join.
+
+As per the following table:
+
+C1 has a corresponding row on both tables.
+
+C2 only has a record on the customer table. That is, this is a customer with no sales.
+
+C5 only has a record on the fact table. That is, this is a customer that has been removed from the master customer dimension table.
+
+[options="header"]
+|===
+| CUSTOMER_ID_FACT | CUSTOMER_ID_DIM
+
+| C1 | C1
+
+| C1 | C1
+
+| C5 |
+
+| | C2
+|===
+
+=== RLS rule definition
+
+For this example the RLS rule will be defined based upon group membership. That is, the user must be a member of group with the same name as the CUSTOMER_ID field, where the valid values are: C1, C2, C5.
+
+This rule could be defined in the following ways:
+
+. Defined on the fact and reference the fact table.
+
+. Defined on the fact and references the dimension table.
+
+. Defined on the dimension.
+
+Importantly, these definitions impact the final setup required for joins to be respected.
+
+=== Right outer join → Return all customers, including those that have not made a sale
+
+1. Defined on the fact and reference the fact table. This requires an additional OR condition to check for NULL customer_id values on the fact. That is, return all customers from the dimension.
++
+`ts_groups = customer_id_fact or is_null(customer_id_fact)`
+
+2. Defined on the fact and references the dimension table.
++
+`ts_groups = customer_id_dim`
+
+3. Defined on the dimension.
++
+`ts_groups = customer_id_dim`
+
+=== Left outer join → Return all transactions irrespective of if there is a matching row in the customer dimension table.
+
+. Defined on the fact and reference the fact table.
++
+`ts_groups = customer_id_fact`
+
+. Defined on the fact and references the dimension table. This requires an additional OR condition to check for NULL customer_id values on the customer table.
++
+`ts_groups = customer_id_dim or is_null(customer_id_dim)`
+
+. Defined on the dimension. This requires an additional OR condition to check for NULL customer_id values on the customer table.
++
+`ts_groups = customer_id_dim or is_null(customer_id_dim)`
+
+=== Full outer join → Return all transactions and all customers.
+
+No matter the RLS definition location, additional RLS rules are required to check for NULL customer IDs on both the fact and customer tables.
+
+. Defined on the fact and reference the fact table.
++
+`ts_groups = customer_id_fact or is_null(customer_id_fact) or is_null(customer_id_dim)`
+
+. Defined on the fact and references the dimension table.
++
+`ts_groups = customer_id_dim or is_null(customer_id_fact) or is_null(customer_id_dim)`
+
+. Defined on the dimension.
++
+`ts_groups = customer_id_dim or is_null(customer_id_fact) or is_null(customer_id_dim)`
 
 [#reasons]
 == Why use RLS?
