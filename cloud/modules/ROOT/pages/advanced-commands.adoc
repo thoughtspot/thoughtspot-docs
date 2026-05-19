@@ -1,0 +1,129 @@
+= Cluster-level settings
+:page-last_updated: 9/2/2025
+:linkattrs:
+:experimental:
+:page-aliases:
+:page-layout: default-cloud
+:description: This reference identifies the commands you can use to modify search data query generation at cluster-level.
+:jira: SCAL-222443, SCAL-266780, SCAL-240707, SCAL-240706, SCAL-292858
+
+This reference identifies the commands you can use to modify search data query generation at cluster-level. These commands must be enabled by {support-url}.
+
+== Commands
+
+[#formulas]
+=== Formulas
+
+Enable / disable case-sensitive formulas:: The default setting is `TRUE`. When `TRUE`, the string case for formula definitions is saved as lower case. When `FALSE`, the case entered in the formula definition is respected.
+The ability to respect the case is important when leveraging passthrough functions. This is because functions defined in the underlying data platforms are often case-sensitive.
++
+*Example when true*
++
+Entered formula = if(city_name = “New York”) then ‘YES’ else ‘NO’
++
+Saved formula = if(city_name = “new york”) then ‘yes’ else ‘no’
++
+*Example when false*
++
+Entered formula = if(city_name = “New York”) then ‘YES’ else ‘NO’
++
+Saved formula = if(city_name = “New York”) then ‘YES’ else ‘NO’
+
+[#query-generation]
+=== Query generation
+
+Measures in case statements considered zero if null:: The default setting is `TRUE`. When `TRUE`, all measures are wrapped in a case statement to consider NULL as ZERO. When `FALSE`, the underlying query is simplified.
++
+--
+*Example when true*
+----
+SELECT CASE
+WHEN sum("ta_1"."Sales_Dollar_Amount") IS NOT NULL THEN sum("ta_1"."Sales_Dollar_Amount")
+ELSE 0
+END "ca_1"
+FROM "HO_RETAIL"."PUBLIC"."HO_RETAIL_SALES_FACT" "ta_1"
+ORDER BY "ca_1" ASC NULLS LAST
+----
+--
++
+--
+*Example when false*
+----
+SELECT sum("ta_1"."Sales_Dollar_Amount") "ca_1"
+FROM "HO_RETAIL"."PUBLIC"."HO_RETAIL_SALES_FACT" "ta_1"
+----
+--
+
+Non-shared filters in chasm trap:: The default setting is `FALSE`. This setting affects how non-shared filters are applied in a chasm trap Model. That is, the filter is only applied to one side of the chasm trap. Assume a filter is applied to the LEFT HAND side of the chasm trap.
++
+When `TRUE`, the query is a FULL OUTER JOIN.
+When `FALSE`, the resulting query is a LEFT OUTER JOIN. This is normally a much more performance query.
++
+NOTE: Where multiple filters are applied from both sides of the chasm trap, then ThoughtSpot will intelligently determine the join type.
++
+link:https://community.thoughtspot.com/customers/s/article/What-is-Attribution-and-Chasm-Traps[This article^] provides further details when this setting is `FALSE`.
+
+Approximate date filtering::
+This feature was developed specifically for Google BigQuery. When enabled, the resulting query generation automatically infers date boundaries based on the search range. Query generation then adds a direct filter to the fact table and dimension tables date columns. This results in a reduction to the initial data scanned.
++
+Because this is an approximate date filter, it is designed to apply a predicate that applies a filter that returns slightly more data than the dynamic period.
++
+That means:
++
+--
+* `Last Month` will calculate the start date of the Gregorian prior month.
+
+* `Last Week` will calculate the start of the prior Gregorian week.
+--
++
+The reason for this design is that weeks, months, years, etc. do not align with Gregorian calendars. This approximate filter ensures that data is partitioned and then the actual filter is applied to ensure that the results are correct.
+
+Separate Common Table Expressions for custom calendar joins::
+
+This option moves DATE DIM and Custom Calendar table joins to a separate Common Table Expression (CTE). It uses this CTE in joins against fact tables to enable partition pruning. It prevents optimizer from deferring crucial joins that would otherwise block partition pruning.
++
+This option is applicable when the data model includes a dimensional date table. That is, this CTE pattern will not be invoked if the date column is from the fact table itself. To enable this option, contact {support-url}.
+
+[#row-level-security]
+=== Row-level security
+
+Apply RLS rules on joined tables:: The default setting is `TRUE`. Assume a Model where fact1 joins to dimension1 and an RLS rule is applied to fact.
++
+When `TRUE`, if a column is selected from dimension1 then a join to fact1 is included. That is, the RLS rule is applied. In this case, only the values from dimension1 which meet the rule on fact1 are returned.
+When `FALSE`, if a column is selected from dimension1, then no RLS rule is applied. That is, all the values are returned as the results for the query.
++
+Refer to link:https://youtu.be/dK5hOnPdwLA?si=GERTXA50_GE6lKFD[this video^] for further information regarding row level security.
+
+Accept parent groups as ts_groups() values in RLS:: When `FALSE`, only immediate groups are values of ts_groups(). When `TRUE`, parent groups are also included.
+
+Respect join definitions for RLS rules:: The default setting is FALSE. When FALSE RLS rules are applied as an INNER join. When TRUE the join condition defined on the logical tables will be respected by the RLS rules. For more information, see xref:security-rls.adoc#respect[Respect join definitions].
+
+[#pivot-table]
+=== Pivot table
+
+Calculate pivot table summaries as separate SQL queries:: The default setting is `TRUE`.
+When `FALSE`, the pivot table calculations are calculated in the front end. These results are limited to a SUM of the numbers displayed in the pivot table. This is also limited to 100k rows of data.
++
+When `TRUE`, the summaries are calculated as separate SQL queries. This supports the ability to define different aggregation rules. For example, Average, Min, Max.
+
+[#column-level-security]
+=== Column-level security
+
+Implement column-level security:: The default setting is `FALSE`.
+To implement column-level security, this setting should be set to `TRUE`. This results in a stricter object security Model. In short, all data objects must be shared with consumers rather than just Models.
+Refer to link:https://docs.thoughtspot.com/cloud/latest/security-data-object#_object_security[this article^] and link:https://youtu.be/exNqEoKsQ6A?si=MiORIJgNiTeCCNHP[this video^].
+
+[#column-level-security-ui]
+==== Column-level security -- UI controls
+
+In column-level security, hide underlying tables:: The default setting is `FALSE`.
+This setting is used in conjunction with the setting for column-level security. That is, with column-level security, the underlying tables must be shared with consumers.
++
+When `TRUE`, this ensures that the underlying tables are not available as data sources from the search data source selection. That is, consumers are limited to selecting Models or Views.
+
+
+[#date-bucket]
+=== Set default date bucket at instance level
+You can set the default date bucket at the instance level. The options are detailed, daily, weekly, monthly, quarterly, yearly, hourly, or no_bucket. Note that hourly is only available for datetime data. If you set the default date bucket, users can use the TML default_date_bucket property to override the instance's default.
+
+To enable this feature, contact {support-url}.
