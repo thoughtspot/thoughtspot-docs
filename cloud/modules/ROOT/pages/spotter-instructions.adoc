@@ -1,18 +1,19 @@
-= Agent-level instructions
+= Spotter instructions
 :author: Naomi
 :page-last_updated: 05/11/2026
 :linkattrs:
+:page-aliases: spotter-agent-instructions.adoc
 :experimental:
-:description: Agent-level instructions let an administrator shape how Spotter behaves across an Org — its tone, persona, output format, scope, and guardrails.
+:description: Spotter instructions let an administrator shape how Spotter behaves across an Org — its tone, persona, output format, scope, and guardrails.
 :jira: SCAL-293536, SCAL-303390
 
-Agent-level instructions let an administrator shape how Spotter behaves across an Org — its tone, persona, output format, scope, and guardrails. They are written in plain language and apply to every user in the Org.
+Spotter instructions let an administrator shape how Spotter behaves across an Org — its tone, persona, output format, scope, and guardrails. They are written in plain language and apply to every user in the Org.
 
 This page covers what they are, how they differ from data model instructions, when to use them, what to put in them, and several examples you can adapt.
 
-== What are agent-level instructions
+== What are Spotter instructions
 
-Agent-level instructions are a system-level prompt that Spotter follows on every conversation in your Org. They sit alongside ThoughtSpot's built-in agent prompt and tell Spotter how your organization wants it to act.
+Spotter instructions are a system-level prompt that Spotter follows on every conversation in your Org. They sit alongside ThoughtSpot's built-in agent prompt and tell Spotter how your organization wants it to act.
 
 You can use them to:
 
@@ -34,15 +35,15 @@ What is the scope?:: Org-level. One set of instructions per Org applies to all u
 
 What format should I use?:: Plain language. No code, no schema. Up to 5,000 characters.
 
-What will agent-level instructions not do?:: Agent-level instructions cannot override ThoughtSpot's core safety guardrails, and they cannot manipulate data. Spotter still respects the row-level security and data permissions configured on your data models.
+What will Spotter instructions not do?:: Spotter instructions cannot override ThoughtSpot's core safety guardrails, and they cannot manipulate data. Spotter still respects the row-level security and data permissions configured on your data models.
 
-== Agent-level instructions vs data model instructions
+== Spotter instructions vs data model instructions
 
-Both agent-level instructions and xref:data-model-instructions.adoc[data model instructions] affect Spotter, but they answer different questions.
+Both Spotter instructions and xref:data-model-instructions.adoc[data model instructions] affect Spotter, but they answer different questions.
 
 [options="header"]
 |===
-| | Data model instructions | Agent-level instructions
+| | Data model instructions | Spotter instructions
 
 | Answers the question | What does this data mean? | How should the agent behave?
 
@@ -57,14 +58,14 @@ Both agent-level instructions and xref:data-model-instructions.adoc[data model i
 | Example | "Default time period is the last 30 days." | "Decline questions about HR data and redirect users to the People workspace."
 |===
 
-The one-line test:: If the rule would still be true if a different team used the same data, it belongs in the data model. If the rule is about _how the agent should respond_ — tone, format, what to flag, what to refuse — it belongs in agent-level instructions.
+The one-line test:: If the rule would still be true if a different team used the same data, it belongs in the data model. If the rule is about _how the agent should respond_ — tone, format, what to flag, what to refuse — it belongs in Spotter instructions.
 
-When you have both, Spotter applies data model instructions first (because they define the data) and then layers agent-level instructions on top (because they shape the response).
+When you have both, Spotter applies data model instructions first (because they define the data) and then layers Spotter instructions on top (because they shape the response).
 
-== When to add agent-level instructions
+== When to add Spotter instructions
 
 
-Add agent-level instructions when any of the following are true:
+Add Spotter instructions when any of the following are true:
 
 * *Your users span more than one role, and you want the agent to default to a specific audience.* A revenue Org might want answers framed for AEs and CSMs; a clinical Org might want answers framed for operations, not for clinicians.
 * *You operate in a regulated industry and need consistent disclaimers or topic deflection.* Healthcare, financial services, legal, and pharma teams typically need both.
@@ -73,11 +74,11 @@ Add agent-level instructions when any of the following are true:
 * *You want the agent to be proactive about a known business signal.* For example, always surface stockouts before any other supply chain question.
 * *xref:spotter-auto-mode.adoc[Auto mode] is reaching for the wrong data model or tool.* Use instructions to declare which models or tools to prefer in which contexts.
 
-If none of these apply yet, you do not need to set agent-level instructions. The default Spotter behavior is a generic, balanced data analyst that works well out of the box.
+If none of these apply yet, you do not need to set Spotter instructions. The default Spotter behavior is a generic, balanced data analyst that works well out of the box.
 
 == What you can control
 
-Agent-level instructions can shape eight aspects of Spotter's behavior. Use the list below as a checklist when drafting your own. Each aspect is paired with a short example you can adapt.
+Spotter instructions can shape eight aspects of Spotter's behavior. Use the list below as a checklist when drafting your own. Each aspect is paired with a short example you can adapt.
 
 Persona and focus:: Who the agent is and what domain it operates in.
 Example;; "You are SalesPulse, a revenue intelligence assistant for the GTM team at Acme. Operate as a senior revenue operations analyst."
@@ -270,7 +271,7 @@ If you are starting from a blank text box, an external AI assistant — Claude, 
 
 [source]
 ----
-I'm writing agent-level instructions for ThoughtSpot Spotter, an AI data
+I'm writing Spotter instructions for ThoughtSpot Spotter, an AI data
 analytics agent. These instructions are a system-level prompt that shapes
 how Spotter behaves for everyone in our organization — its persona, tone,
 output format, scope, guardrails, proactive signals, and tool preferences.
@@ -289,7 +290,7 @@ My context:
   [e.g., responses are too long; quota numbers are exposed; the agent
   doesn't proactively flag pipeline coverage issues]
 
-Please draft agent-level instructions that cover the relevant aspects below.
+Please draft Spotter instructions that cover the relevant aspects below.
 Skip any that don't apply.
 
 1. Persona and focus — who the agent is, what domain it operates in
