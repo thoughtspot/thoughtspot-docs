@@ -76,6 +76,95 @@ Any of the configured changes done on IdP are reflected on your thoughtSpot clus
 
 NOTE: Low volume changes made in IdP may be reflected immediately in ThoughtSpot. Larger volume changes are usually reflected within 20 to 40 minutes.
 
+
+== User deactivation and de-provisioning behavior
+
+When you configure SCIM provisioning with an Identity Provider (IdP) such as
+Microsoft Entra ID (formerly Azure AD) or Okta, the IdP controls de-provisioning
+events. ThoughtSpot receives and processes the SCIM requests that the IdP sends.
+The following sections explain what happens in common de-provisioning scenarios.
+
+=== Unassigning a group from the SCIM application
+
+When you unassign or disable a group from the SCIM application in your IdP,
+the IdP sends a de-provisioning request to ThoughtSpot for every user who
+falls out of provisioning scope as a result of that action.
+
+[WARNING]
+====
+ThoughtSpot's SCIM implementation treats a de-provisioning request as a
+*permanent (hard) delete*. When ThoughtSpot receives a de-provisioning signal
+from your IdP — indicating that a user is no longer active or in scope —
+the user account is permanently deleted from ThoughtSpot. The user is *not*
+suspended or soft-deactivated.
+
+There is currently no SCIM configuration or workaround to change this behavior
+so that de-provisioned users are deactivated instead of deleted.
+====
+
+The following table summarizes the end-to-end behavior:
+
+[cols="1a,1a,1a", options="header"]
+|===
+| Action in IdP
+| De-provisioning signal sent to ThoughtSpot
+| Result in ThoughtSpot
+
+| Unassign or disable a group from the SCIM application
+| ThoughtSpot is notified to deactivate each user who is no longer in scope
+| All affected users are *permanently deleted* from ThoughtSpot
+
+| Disable a specific user account in the IdP (while the user remains
+in provisioning scope)
+| ThoughtSpot is notified to deactivate that individual user
+| The user is *permanently deleted* from ThoughtSpot
+
+| Remove a user from an assigned group, but the user remains in scope
+via another group or a direct assignment
+| No de-provisioning signal is sent — the user is still in scope
+| No change — the user account in ThoughtSpot is unaffected
+|===
+
+[NOTE]
+====
+The exact de-provisioning signals that your IdP sends depend on your IdP
+configuration — for example, scoping filters, provisioning settings, and
+group assignment type. ThoughtSpot only receives and processes the signals
+that the IdP sends. Refer to your IdP documentation for details on how
+de-provisioning events are triggered:
+
+* https://learn.microsoft.com/en-us/entra/identity/app-provisioning/user-provisioning[Microsoft Entra ID — User provisioning^]
+* https://help.okta.com/en-us/content/topics/apps/apps_apps.htm[Okta — Manage application provisioning^]
+====
+
+[IMPORTANT]
+====
+Deleted users cannot be recovered through the ThoughtSpot UI or SCIM API.
+If users are accidentally deleted, they must be re-provisioned from the IdP,
+which creates new ThoughtSpot user accounts. Any user-specific content — such
+as personal Liveboards, saved answers, and customizations — associated with
+the deleted accounts will be permanently lost.
+====
+
+=== Protecting users from accidental deletion
+
+Because ThoughtSpot permanently deletes users when it receives a de-provisioning
+signal from an IdP, consider the following precautions before making group changes
+in your IdP:
+
+* *Review provisioning scope before unassigning a group.* Verify that the users
+in the group are not uniquely assigned through that group alone. If a user
+belongs to multiple groups or has a direct assignment in your IdP, unassigning
+one group will not trigger a de-provisioning signal for that user — and their
+ThoughtSpot account will remain intact.
+
+* *Use IdP scoping filters.* Configure attribute-based scoping filters in your
+IdP to control which users are in provisioning scope, reducing the risk of
+unintentional de-provisioning events being sent to ThoughtSpot.
+
+* *Audit before making changes.* Use your IdP's provisioning logs to preview
+which users will be affected before unassigning or disabling a group.
+
 === Best Practices
 * Manage user and group provisioning exclusively from the Identity Provider (IdP). ThoughtSpot should not be used as the source of truth for SCIM managed/ IdP managed users and groups.
 * Regularly rotate SCIM tokens to maintain security and reduce risk from compromised credentials.
