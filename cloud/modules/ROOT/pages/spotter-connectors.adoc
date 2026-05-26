@@ -5,7 +5,7 @@
 :experimental:
 :page-layout: default-cloud-early-access-spotter-3
 :description: In addition to bringing Spotter into other platforms, you can now integrate connectors to Spotter to make connections to wherever your data is stored.
-:jira: SCAL-287506, SCAL-301858, SCAL-297359, SCAL-309104, SCAL-312267
+:jira: SCAL-287506, SCAL-301858, SCAL-297359, SCAL-309104, SCAL-312267, SCAL-313800
 
 In addition to bringing Spotter into other platforms, you can now integrate connectors to Spotter to make connections to wherever your data is stored. This allows you to do things like search Confluence or Snowflake for unstructured data to add to your analysis, or send direct messages from Spotter to Slack with your data. By connecting your third-party ecosystem (Slack, Jira, Confluence, Snowflake, Glean) directly to ThoughtSpot, you can transition from insight to execution without needing to switch tabs.
 
@@ -82,7 +82,13 @@ Spotter Connectors support the following authentication methods when connecting 
 
 * None — No authentication. Suitable for MCP servers that are publicly accessible or secured at the network level.
 
-* OAuth 2.0 — Industry-standard authorization framework. Spotter handles the OAuth flow to obtain and refresh access tokens for secure, delegated access to MCP servers.
+* OAuth 2.0 — Industry-standard authorization framework. Spotter handles the OAuth flow to obtain and refresh access tokens for secure, delegated access to MCP servers. The following client credential configurations are supported:
+
+** Dynamic — Client ID and secret are discovered automatically using Dynamic Client Registration. No credentials are required during connector configuration.
+
+** Public Client — A client ID is required, but the client secret can be omitted.
+
+** Static — Both client ID and secret are provided upfront at configuration time.
 
 * Bearer Token — A static or pre-issued token passed in the Authorization header of each request. These are tenant-scoped and not user-scoped, so all the users will be using the same token provided by the admin while creating the connector. Suitable for simpler integrations or development environments.
 
