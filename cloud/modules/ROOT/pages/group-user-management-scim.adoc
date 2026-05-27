@@ -5,13 +5,13 @@
 :page-layout: default-cloud
 :description: ThoughtSpot works with SCIM to streamline user group management.
 
-System cross domain Identity Management (SCIM) allows you to synchronise user management between your IdP and ThoughtSpot. SCIM automates identity management and user provisioning across different identity management systems so that you no longer need to manage users, groups and privileges in multiple platforms. If you use an IdP like Okta, Azure, or Active Directory, with SCIM you can provision users to groups and Orgs and ensure they remain in sync with changes made in the IdP.
+System for Cross-domain Identity Management (SCIM) allows you to synchronize user management between your IdP and ThoughtSpot. SCIM automates identity management and user provisioning across different identity management systems so that you no longer need to manage users, groups and privileges in multiple platforms. If you use an IdP like Okta, Azure, or Active Directory, with SCIM you can provision users to groups and Orgs and ensure they remain in sync with changes made in the IdP.
 
 NOTE: By default, SCIM is enabled for a cluster. If your ThoughtSpot instance uses Orgs, you must enable SCIM at the Org level to ensure that users are provisioned to a particular group in a particular Org. To enable SCIM per Org, contact {support-url}.
 
 ThoughtSpot supports the following:
 
-* Automatic provisioning of users with their corresponding groups and Orgs when the users authenticate via SSO (SAML).
+* Automatic provisioning of users with their corresponding groups and Orgs when the users authenticate via SSO.
 * Automatic updates of user attributes in ThoughtSpot when they are updated in the IdP.
 * When you delete a user from IdP, they are automatically deleted from ThoughtSpot.
 
@@ -30,10 +30,13 @@ To configure SCIM on your cluster and automate updates between your IdP and Thou
 NOTE: Before you configure, ensure that your IdP supports SCIM 2.0 for a seamless integration with ThoughtSpot.
 
 . Enter the *SCIM Base URL*. This URL identifies the SCIM API endpoint your Identity provider communicates with for every user management and user provisioning change.
-. Click *Generate Token* to generate and copy the authentication toke. This token is used to authenticate the SCIM service (ThoughtSpot application) in your IdP.
+. Click *Generate Token* to generate and copy the authentication token. This token is used to authenticate the SCIM service (ThoughtSpot application) in your IdP.
 +
 [.bordered]
 image::scim.png[SCIM TS screen]
++
+[NOTE]
+Each SCIM token has a validity of only six months.
 
 === Connecting to Okta
 
@@ -72,7 +75,7 @@ For detailed information on enabling SCIM provisioning in Microsoft Entra, see l
 . Navigate to ThoughtSpot cluster and refresh the page.
 . You should see the newly created user in the user management page in your cluster.
 
-Any of the configured changes done on IdP are reflected on your thoughtSpot cluster.
+Any of the configured changes done on IdP are reflected on your ThoughtSpot cluster.
 
 NOTE: Low volume changes made in IdP may be reflected immediately in ThoughtSpot. Larger volume changes are usually reflected within 20 to 40 minutes.
 
@@ -125,25 +128,34 @@ via another group or a direct assignment
 | No change — the user account in ThoughtSpot is unaffected
 |===
 
-[NOTE]
-====
 The exact de-provisioning signals that your IdP sends depend on your IdP
 configuration — for example, scoping filters, provisioning settings, and
 group assignment type. ThoughtSpot only receives and processes the signals
-that the IdP sends. Refer to your IdP documentation for details on how
-de-provisioning events are triggered:
+that the IdP sends.
+
+For Microsoft Entra:
+In the attribute mapping for your ThoughtSpot app:
+
+* Go to Enterprise Apps → ThoughtSpot → Provisioning → Mappings → Provision Microsoft Entra ID Users
+* Under Target Object Actions, uncheck Delete. 
+This prevents Entra from sending SCIM DELETE requests when a user is unassigned — Entra will only update/disable, never delete in ThoughtSpot.
+
+For Okta:
+In your ThoughtSpot app → Provisioning → To App → uncheck Deactivate Users.
+This stops Okta from sending de-provisioning signals to ThoughtSpot on unassignment.
+
+Refer to your IdP documentation for more details on how de-provisioning events are triggered:
 
 * https://learn.microsoft.com/en-us/entra/identity/app-provisioning/user-provisioning[Microsoft Entra ID — User provisioning^]
 * https://help.okta.com/en-us/content/topics/apps/apps_apps.htm[Okta — Manage application provisioning^]
-====
 
 [IMPORTANT]
 ====
-Deleted users cannot be recovered through the ThoughtSpot UI or SCIM API.
-If users are accidentally deleted, they must be re-provisioned from the IdP,
-which creates new ThoughtSpot user accounts. Any user-specific content — such
-as personal Liveboards, saved answers, and customizations — associated with
-the deleted accounts will be permanently lost.
+When a user is removed from ThoughtSpot through SCIM de-provisioning, their content — including personal Liveboards, saved Answers, and scheduled jobs — is automatically transferred to the `tsadmin` user. No content is deleted.
+
+* Deleted user accounts cannot be restored.
+* Re-adding the user from your Identity Provider (IdP) creates a new account. Content previously transferred to `tsadmin` is not automatically reassigned to the new account.
+* An administrator must manually transfer ownership from `tsadmin` back to the re-provisioned user.
 ====
 
 === Protecting users from accidental deletion
