@@ -1,29 +1,83 @@
 = Custom charts
-:page-last_updated: 27th Nov 2025
+:page-last_updated: May 28, 2026
 :linkattrs:
 :experimental:
-:author: Mark
+:author: Mark, Rani
 :page-layout: default-cloud
 :page-aliases: chart-byoc.adoc, byoc.adoc
 :description: With custom charts, you can add your own custom charts to ThoughtSpot.
-:jira: SCAL-179003, SCAL-202002, SCAL-214870 (gauge chart), SCAL-221883 (remove line about gauge chart), SCAL-234248, SCAL-236450
+:jira: SCAL-179003, SCAL-202002, SCAL-214870 (gauge chart), SCAL-221883 (remove line about gauge chart), SCAL-234248, SCAL-236450, SCAL-305206
 
-Custom charts give you the ability to create chart types to visualize your data, by using any charting library created outside of ThoughtSpot. You can also access ready-to-use charts created by partners. Custom charts are compatible with native ThoughtSpot features like drill down, explore, and more, for rich interactivity.
+ThoughtSpot's built-in charting library, Muze, powers a rich set of native chart types — including bar, line, area, scatter, pie, donut, funnel, waterfall, trellis, and more — designed to handle the majority of analytical visualization needs directly out of the box.
 
-This article describes how you use a custom chart and how your ThoughtSpot administrator can add, edit, and delete custom charts.
+When you need a visualization beyond what's built in, ThoughtSpot gives you several ways to build it:
 
-Options for custom charts:
+* *Muze Studio* — A code execution sandbox built into ThoughtSpot, where you can write Muze code, plain JavaScript/CSS/HTML, or use third-party libraries like Chart.js or D3.js.
+* *ThoughtSpot Charts SDK* — For developers who build and host fully custom chart applications.
+* *Partner charts* — Ready-to-use chart collections from ThoughtSpot partners such as Vitara.
 
-- Access a library of custom charts that can be installed in seconds, with our partner Vitara. Vitara requires a separate subscription. For more information, see xref:chart-vitara.adoc[VitaraCharts for ThoughtSpot].
-- Use Muze Studio to create your own charts in ThoughtSpot. For more information, see xref:chart-create.adoc[Creating charts with Muze Studio].
-- Developers can create custom charts in Javascript using charting libraries such as https://www.highcharts.com/[Highcharts^]. For more information, refer to the https://github.com/thoughtspot/ts-chart-sdk/blob/main/README.md/[ThoughtSpot Charts SDK documentation^].
-- ThoughtSpot professional services can create custom charts for you. For more information, contact {support-url}.
+All custom charts support ThoughtSpot-native features including drill-down, Explore, and conditional formatting.
 
 To enable the custom charts feature, contact your administrator.
 
+== Muze Studio
+
+Muze Studio is a code execution sandbox built into ThoughtSpot. Unlike native Muze charts, Muze Studio gives you a full editor environment where you can bring any chart type to life — using Muze code, plain web code, or any browser-compatible charting library.
+
+[cols="1,2,2", options="header"]
+|===
+|
+| Native Muze charts
+| Muze Studio
+
+| *What it is*
+| ThoughtSpot's built-in chart types, powered by the Muze library
+| A code execution sandbox for building custom chart types
+
+| *Setup required*
+| None — available by default in the chart selector
+| Available by default; administrator registers third-party charts via *Admin > Chart customization*
+
+| *Code required*
+| No
+| Yes (JavaScript, CSS, and HTML)
+
+| *Supported code*
+| Muze API (automatic)
+| Muze syntax, custom JS/CSS/HTML, and third-party libraries (Chart.js, D3.js, and others)
+
+| *Facet, trellis, and color limits*
+| Yes
+| No — these limits do not apply in Muze Studio
+
+| *Export, schedule, and version control*
+| Fully supported
+| Supported from version 26.2.0.cl onwards
+
+| *Best for*
+| Standard analytical charts for all users
+| Developers building bespoke or highly customized visualizations
+|===
+
+Muze Studio is the recommended option for custom chart development because it is:
+
+* *Built-in:* Available directly in the ThoughtSpot interface — no external hosting required.
+* *Flexible:* Supports Muze syntax, custom JS/CSS/HTML, and third-party charting libraries.
+* *Performant:* Optimized for ThoughtSpot's data model for high-performance rendering.
+//* *AI-assisted:* Describe your chart in natural language and ThoughtSpot generates the code.
+* *Natively integrated:* Supports drill-down, Explore, and conditional formatting.
+
+For step-by-step instructions, see xref:chart-create.adoc[Creating charts with Muze Studio].
+
+== Other options for custom charts
+
+* *ThoughtSpot Charts SDK*: Developers can create custom charts in JavaScript using charting libraries such as https://www.highcharts.com/[Highcharts^]. For more information, see the https://github.com/thoughtspot/ts-chart-sdk/blob/main/README.md/[ThoughtSpot Charts SDK documentation^].
+* *Vitara Charts*: Access a library of custom charts installable in seconds with ThoughtSpot partner Vitara. Vitara requires a separate subscription. For more information, see xref:chart-vitara.adoc[VitaraCharts for ThoughtSpot].
+* *ThoughtSpot Professional Services*: ThoughtSpot professional services can create custom charts for your organization. For more information, contact {support-url}.
+
 == Using custom charts
 
-To use a custom chart, do the following:
+To use a custom chart:
 
 . Click the *Change visualization* button image:icon-chart-type-10px.png[chart type].
 . Below the list of default charts, select a custom chart.
@@ -32,61 +86,56 @@ image::custom-chart-select.png[Select custom chart]
 
 == Administering custom charts
 
-A ThoughtSpot administrator can add custom charts to your cluster, as well as edit and delete them. Before adding custom charts, the administrator must add the domains where the custom chart and chart icon are hosted to the list of permitted iFrame and CSP img-src domains in ThoughtSpot. Without performing this step, the custom chart cannot be loaded.
+A ThoughtSpot administrator can add, edit, and delete custom charts. Before adding a custom chart, the administrator must add the domains where the chart and chart icon are hosted to the permitted iFrame and CSP img-src domains list in ThoughtSpot. Without this step, the custom chart cannot load.
 
 === Adding domains to the permitted iFrame and CSP img-src domains
-
-The ThoughtSpot administrator must enter the domain for both the chart and the chart icon.
-
-To add the domain for a custom chart and chart icon, do the following:
 
 . Navigate to *Develop*.
 . Navigate to *All Orgs* > *Security settings*.
 . Click *Edit*.
-. In the *Permitted iFrame domains* field enter the domain where the custom chart is hosted.
-. In the *CSP img-src domains* field enter the domain where the custom chart icon is hosted.
+. In the *Permitted iFrame domains* field, enter the domain where the custom chart is hosted.
+. In the *CSP img-src domains* field, enter the domain where the chart icon is hosted.
 . Click *Save Changes*.
 
+=== Adding a custom chart
 
-=== Adding a custom chart to a ThoughtSpot cluster
-
-To add a custom chart, the ThoughtSpot administrator does the following:
-
-. Navigate to *Admin settings* > *Chart customisation* under *Application settings*.
+. Navigate to *Admin settings* > *Chart customization* under *Application settings*.
 . Select the *Custom charts* tab.
-. Click *Add chart*
-+
-The Add custom chart window appears.
-+
-image::chart-custom.png[Add custom chart]
-
-. Enter the following fields:
-- Name
-- Description (optional)
-- Application URL
-- Icon URL (optional)
-- Author name (optional)
-- Author email (optional)
-- Author organization (optional)
 . Click *Add chart*.
 +
-Your new chart appears on the _Custom charts_ page, and is now available for use when creating a chart in ThoughtSpot.
+The *Add custom chart* window appears.
++
+image::chart-custom.png[Add custom chart]
+. Enter the following details:
++
+[cols="1,1,2", options="header"]
+|===
+| Field | Required | Description
+
+| Name | Yes | Display name for the chart in the chart selector
+| Description | No | Short description visible to users
+| Application URL | Yes | URL where the chart application is hosted
+| Icon URL | No | URL for the chart icon displayed in the selector
+| Author name | No | Name of the chart creator
+| Author email | No | Contact email for the chart creator
+| Author organization | No | Organization that created the chart
+|===
+. Click *Add chart*.
++
+The chart appears on the *Custom charts* page and is available in the chart type selector.
 
 === Editing a custom chart
 
-To edit a custom chart, the ThoughtSpot administrator does the following:
-
-. Navigate to *Admin settings* > *Chart customisation* under *Application settings*.
+. Navigate to *Admin settings* > *Chart customization* under *Application settings*.
 . Select the *Custom charts* tab.
-. Find the name of the chart you want to change, and click *Edit*.
-. In the *Update custom chart* window, make any changes necessary, then click *Update chart*.
+. Find the chart you want to update and click *Edit*.
+. In the *Update custom chart* window, make your changes and click *Update chart*.
 
 === Deleting a custom chart
 
-To delete a custom chart, the ThoughtSpot administrator does the following:
-
-. Navigate to *Admin settings* > *Chart customisation* under *Application settings*.
+. Navigate to *Admin settings* > *Chart customization* under *Application settings*.
 . Select the *Custom charts* tab.
-. Find the name of the chart you want to delete, and click *Delete*.
-+
-. In the *Delete custom chart* warning message which appears, click *Delete*.
+. Find the chart you want to delete and click *Delete*.
+. In the confirmation dialog, click *Delete*.
+
+
