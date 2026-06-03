@@ -1,0 +1,136 @@
+= Why questions in Spotter
+:page-last_updated: Jul 9, 2025
+:author: Naomi
+:linkattrs:
+:experimental:
+:page-layout: default-cloud-spotter-3
+:description:
+:jira: SCAL-259931, SCAL-279825, SCAL-275913, SCAL-280195
+
+
+
+
+
+
+
+
+When you want to investigate further on a chart in Spotter, you can now ask direct questions like, "Why did my sales drop last month?" or "Why did sales drop in Q2?" Spotter identifies the key attributes and leverages the change analysis engine to provide a clear, natural language summary identifying the key drivers, supported by detailed visualizations. You can easily investigate changes in your data, moving from surface-level observations to insights in the same conversation.
+
+
+
+
+IMPORTANT: Enabling this feature allows Spotter to send query-related data, such as the involved metrics and dimension values (like "sales" or "region = West"), to an LLM to identify the data points and generate explanations. Please ensure this complies with your organization’s policies. The data is not utilized for model training, and we maintain a zero-data retention policy with all our LLM providers.
+
+
+
+
+NOTE: Why questions are enabled by default for instances using Spotter 3.
+
+
+
+
+== Ask a why question
+
+
+
+
+You can build upon an existing surface-level query or existing visualization by choosing a data point of interest and asking a natural question starting with “Why”. Spotter uses change analysis to answer why questions about a single metric on simple, non-sliced charts. Below are a few examples:
+
+
+
+
+Why has the revenue dropped?:: Identifies the revenue metric, picks up the last two date points to identify the key change drivers.
+
+
+
+
+Explain the change in website traffic last week compared to the week before.:: Compares the website traffic metric for this week versus the previous week.
+
+
+
+
+Why are churn rates higher in East than West?:: Compares the churn metric in East and West.
+
+
+
+
+== Why question process
+
+
+
+
+Here’s an example for asking why questions in Spotter:
+
+
+
+
+. *Start with a visualization*: Begin with a chart in Spotter that shows a metric you’re interested in, such as your monthly sales. Or launch Spotter from a visualization in a Liveboard that has a metric.
+
+
+
+
+. *Ask why*: When you notice a change, like a drop or a spike, simply ask a natural language question in the search bar. For example, after seeing a chart of monthly sales, you could ask, “Why did sales drop last month?”
+
+
+
+
+. *Review the analysis*: Spotter performs change analysis and presents the findings in a structured manner:
+
+
+
+
+* *Analysis plan*: Spotter first explains how it understands your question and which attributes it will analyze to find the answer.
++
+[.bordered]
+image::spotter-why-month.png[Ask why there was a drop in sales last month.]
+
+
+
+
+
+
+* *Detailed visualizations*: Spotter then provides detailed change analysis charts that break down the contributions from different attributes.
++
+[.bordered]
+image::spotter-answer-why.png[Spotter shows a chart breaking down sales by city.]
+
+
+* *Narrative summary*: Finally, Spotter provides a concise, natural language summary of the key drivers so you can quickly understand the main takeaways.
++
+[.bordered]
+image::spotter-narrative-summary.png[Spotter summarizes the reasons for the change.]
+
+
+
+
+
+
+
+
+
+
+== Limitations
+
+
+
+
+Why questions in Spotter have the following limitations:
+
+
+
+
+//Chart types:: This feature works best on charts with a single measure, and no slicing by color or other attributes. It may not provide an answer for multi-line or complex stacked charts.
+
+
+
+
+//Ambiguous questions:: If your question is ambiguous (for example, you ask about “March” when multiple years of March data exist), Spotter returns an error and prompts for clarification. For ambiguous timeframes like “Why did sales drop?”, Spotter will default to comparing the last two data points and state this in its analysis.
+
+
+
+
+Data granularity:: This feature may not work as expected if the x-axis has a very high number of data points (for example, >1000).
+
+Change analysis:: Spotter does not support change analysis for queries based on the  `growth of` and `versus` (`vs`) keywords. Change analysis is not supported on certain complex formulas based upon group_* functions (such as `sum(group)` or `sum(x)/ group_*`). Simple functions that only use `group_*` are supported.
+
+Personalized columns:: If you have set up xref:spotiq-change.adoc#remember-personalized[personalized columns] in a KPI chart, then ask a why question of the chart in Spotter, Spotter chooses columns based on usage-based ranking to answer, rather than your selected columns.

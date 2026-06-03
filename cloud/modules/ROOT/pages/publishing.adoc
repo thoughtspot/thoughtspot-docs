@@ -1,0 +1,89 @@
+= Publishing objects between Orgs
+:experimental:
+:last_updated: Apr 7, 2026
+:author: Mary Scrim
+:linkattrs:
+:page-layout: default-cloud
+:description: Publish objects between Orgs.
+:jira: SCAL-276877, SCAL-276881, SCAL-281408
+
+Publishing allows administrators to efficiently manage and distribute ThoughtSpot objects across multiple Orgs.
+
+Unlike the deployment method that relies on TML import and Git integration, publishing allows administrators to create an object in the Primary Org and publish it directly to target Orgs without generating duplicate copies. It also allows dynamic customization of the underlying Table or Connection properties using variables.
+
+ThoughtSpot allows administrators to create and assign variables, parameterize object properties, and publish objects from the Primary Org to other Orgs.
+
+== When to use publishing
+ThoughtSpot recommends using the publishing feature if you have a multi-tenant ThoughtSpot instance with Orgs where your deployment requires the same metadata objects across different Orgs.
+
+ThoughtSpot also allows publishing content to different instances or Orgs via TML import and Git integration. The Publishing feature automates some of these procedures and simplifies content propagation for large-scale deployments.
+
+The following table lists the key differences and use cases for both these methods.
+|===
+|Publishing	|TML Import/Git-based Deployment and publishing
+|Recommended for multi-tenant instances requiring standardized and re-usable content
+
+|If a tenant Org requires unique customizations that cannot be handled by variables, use TML-based deployment to create and maintain a separate object for that Org.
+
+|Allows publishing content from the Primary Org to different Orgs within an instance
+
+|Allows publishing content to Orgs within a ThoughtSpot instance, or from one ThoughtSpot instance to another
+
+|Maintains a single source of the object and publishes content to Orgs without creating a duplicate object
+
+|Creates a separate copy per Org / per instance and can result in a higher memory usage.
+
+|Allows customizing data properties with variables
+
+|Creates new copies per Org or instance and thus allows full customization of objects.
+
+|No change to metadata object IDs and references. Hence, GUID mapping is not required.
+
+|Requires GUID mapping.
+|===
+
+== Parameters and variables
+ThoughtSpot provides predefined system variables such as 'ts_username' and 'ts_groups', which can be used for data security. Additionally, you can configure the following types of variables:
+
+* *Table variables*: can be used for table mapping properties such as schema name, database name, table name.
+
+* *Connection property variables* can be used for data connection properties such as accountName, warehouse, user, password, role and so on.
+
+* *Connection and principal mapping variables*: can be used for modifying connection properties for a specific principal object such as a user or user group. This means you can set different values for connection properties, such as warehouse, role, user, and password,depending on the user or group accessing the connection.
+
+* *Formula variables*: can be used in formulas when implementing Row Level Security (RLS) rules. Formula variables enable dynamic, context-aware security and personalization in data access.
+
+== User access to objects
+ThoughtSpot administrators with access to all Orgs can publish content from the Primary Org to other Orgs on a ThoughtSpot instance. The administrators will also require edit access to the object and the underlying data source in the Primary Org.
+
+The visibility of a published object in an Org depends on its sharing settings. Org administrators can view the objects published in their Org and grant view access to other users in their Org by sharing the object.
+
+== Publishing workflow
+To publish an object from the Primary Org to another Org, complete the following steps.
+
+. Navigate to the *Data workspace* tab.
+. Select *Data objects* in the left panel.
+. Choose the object that you want to publish in the right panel.
+. Click the *More* menu and select *Publish*.
+. On the *Publish Model* page, select the Orgs that you want to publish the object to.
++
+NOTE: If you select an object that contains sources that are not parameterized, you will see a warning that all users across Orgs will see the same data.
++
+. Optionally, you can choose to parameterize any unparameterized sources by selecting *Paramterize* next to the associated source.
+.. Select a *Field* and *Variable* to map a variable to field names to parameterise the table with dynamic values.
+.. Click *Parameterize*.
+. Click *Publish*.
+
+== Publishing coaching to Orgs
+ThoughtSpot now supports publishing Spotter coaching to Orgs. In addition to Org admins, now non-admin users with Spotter coaching management access on published data models in secondary Orgs can provide coaching access permissions to other users. They can also export/import coaching TML and share the data model with other users. Previously, coaching was Org-specific. Coaching changes made in the primary Org are synced with the secondary Orgs where the Model is published.
+
+== Limitations
+* Only ThoughtSpot administrators with access to all Orgs can publish objects.
+* Objects can only be published from the Primary Org to other Orgs.
+* In the target Orgs, published objects are available in read-only mode. The original object in the Primary Org remains editable only by the cluster administrator.
+//* Spotter functionality is not supported for published objects.
+//* Search data indexing is disabled for published tables.
+//* Git integration is not supported for published objects.
+
+
+

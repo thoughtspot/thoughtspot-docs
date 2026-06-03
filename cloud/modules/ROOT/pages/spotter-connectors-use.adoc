@@ -1,0 +1,60 @@
+= Using connectors within Spotter
+:author: Naomi
+:page-last_updated: Jan 8, 2026
+:linkattrs:
+:experimental:
+:page-layout: default-cloud-spotter-3
+:description: Once your administrator enables connectors to Spotter, you can access them within conversations.
+:jira: SCAL-287506, SCAL-282610, SCAL-313211
+
+
+You can now connect tools like Slack, Confluence, Asana, and Snowflake and use them directly within Spotter. This allows you to bring in unstructured data and search it as easily as you would data within ThoughtSpot. You can also direct Spotter to send its analysis to the connected tool so you can access it anywhere.
+
+Once your administrator enables connectors to Spotter, you can access them within conversations. Every user must authorize their own account to maintain security permissions. Note that the list of available connectors you see is controlled by the connectors your admin enabled for the instance.
+
+== Connecting your account
+
+. In the Spotter prompt bar, click the Tools icon image:filter-icon-spotter.png[Tools icon].
++
+[.bordered]
+image::all-tools.png[Show all tools.]
+. Select *All tools*.
+. Click *Connect* next to the desired application.
++
+[.bordered]
+image:all-tools-connect.png[Connect.]
+. Follow the third-party login prompt to grant Spotter permission to read and write on your behalf.
+
+NOTE: If the Connectors are authenticated using OAuth, you need to sign in to use them. If the authentication is token-based, you can connect immediately.
+
+== Interacting with connectors
+
+Spotter can now intelligently decide which tool to use based on your natural language. Note that it's best practice to mention the name of the desired tool within your prompt.
+
+Cross-platform knowledge:: “What are the project requirements for the Airbnb-Ops project in Confluence?”
+Spotter action;; Identifies the “Confluence” tool, searches pages, and summarizes the text.
+
+Data validation:: “Tell me the top 5 selling laptops from Snowflake.”
+Spotter action;; Connects to the *Snowflake Intelligence Agent* tool, writes the query, iterates if it encounters a SQL error, and returns a formatted table.
+
+Pushing actions:: “The laptop sales look low. Send a DM to @SalesManager on Slack with a summary of these insights.”
+Spotter action;; Uses the *Slack: Send Message* tool to format and deliver the data.
+
+Note that within Spotter, you can select a connector and click *View tools* to view a list of each potential action you can take with the connector.
+
+[.bordered]
+image::spotter-view-tools.png[Select the more options icon and click *View tools*.]
+
+[#permissions]
+== Connector permissions
+
+Spotter asks for permission before using integrated tools like Slack or Confluence in a conversation, specifying exactly which action it will take and the tool it will use. Spotter requests permission even after tools have been added to Spotter by your administrators, and connected to your conversation from the tools icon in the Spotter search bar. You can choose to allow once, allow for a limited time, or deny. This allows you full control of Spotter's actions. When you select "allow for a limited time", your permission lasts one week.
+
+Answering a question is relatively low-stakes and reversible — if Spotter returns a bad answer, you can ignore it and ask again. Executing a tool call is not. A tool call can write a Jira comment, trigger a workflow, post to Slack, or mutate cluster state.
+
+That's why we added an explicit permission layer to the MCP flow. Before Spotter can invoke any tool, you must approve it — Spotter proposes the action, the permission model gates the execution. This is how Spotter stays genuinely helpful without becoming something that acts unilaterally on your behalf.
+
+
+[.bordered]
+image::connector-permissions.png[Connector permissions modal.]
+

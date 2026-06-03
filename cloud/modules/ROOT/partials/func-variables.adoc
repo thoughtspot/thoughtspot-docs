@@ -1,0 +1,50 @@
+[options="header",cols="20%,50%,30%"]
+|===
+| Function | Description | Examples
+| `ts_groups` | Returns a list of all the groups the current logged-in user belongs to. For any row, if the expression evaluates to true for any of the groups, the user can see that row. `ts_groups` is available in RLS formulas and model or answer formulas.| `ts_groups = 'east'`
+
+| `ts_username` | Returns the user with the matching name. | `ts_username != 'mark'`
+| `ts_groups_int` | Returns a list of all groups (with integer IDs) that the current logged-in user belongs to. This variable can be used in row-level formulas to control data access. For any row, if the condition evaluates to `true` for any of the user's integer-ID groups, the user can see that row.| `ts_groups_int = 134`
+|===
+
+NOTE: You cannot use these variables (`ts_groups` and `ts_username`) within an expression.
+For example, `ts_groups = substr(rls_group_name, 0, 3)` is valid, but `substr(ts_groups,0,3) = rls_group_name` is NOT valid. +
+Search suggestions currently do not support `ts_groups_int`. This limitation will be addressed in a feature release. As an interim measure, it is recommended to off indexing for columns that pose a security risk.
+
+[#ts-groups-list]
+== Examples of ts_groups as a list type
+
+Legacy syntax assumes `ts_groups` is a string and can still be used. For example, `ts_groups ='administration'` is a valid formula definition. The new syntax is recommended in RLS formulas.
+
+In Model or Answer formulas only the new syntax where ts_groups is a list is supported.
+
+Example 1: determine if a hardcoded string value is present in the ts_groups list
+
+`fx := 'single_group_name' in ts_groups`
+
+Example 2: determine if a multiple hardcoded string value is present in the ts_groups list. Note that AND is not available in RLS formulas.
+
+`fx := 'group1' in ts_groups and|or 'group2' in ts_groups`
+
+Example 3: determine if a column value is present in ts_groups
+
+`fx := column in ts_groups`
+
+Example 4: determine if all the ts_groups values are defined in the column
+
+`min( if(column in ts_groups) then 'true' else 'false') → this would evaluate to false if NOT all of ts_groups is contained in column and true otherwise.`
+
+Example 5: determine if at least one of the ts_groups values is defined in the column
+
+`max( if(column in ts_groups) then 'true' else 'false') → would evaluate to true if at least ONE of ts_groups values is contained in column, and false otherwise.`
+
+[#ts-groups-int]
+== Examples of ts_groups_int
+
+Suppose you have a table called project_access with a column group_id (integer) that represents which group can access each project. To restrict access so users only see projects for groups they belong to, set the RLS rule as:
+
+`group_id = ts_groups_int`
+
+This will generate SQL like: `WHERE group_id IN (101, 102)`
+
+Only users in groups 101 or 102 will see those rows. This approach is efficient and avoids string comparisons, leveraging the integer nature of both the group_id column and ts_groups_int values.

@@ -1,0 +1,199 @@
+= Excel workbook integration
+:categories: ["Integrations"]
+:categories_weight: 3
+:date: 2024-12-15
+:description: Link your Microsoft Excel to import data directly into Analyst Studio's Datasets for analysis and visualization.
+:page-layout: default-cloud
+:experimental:
+:ogdescription: Link your Microsoft Excel to import data directly into Analyst Studio's Datasets for analysis and visualization.
+:page-layout: default-cloud
+:page-aliases:
+:path:
+:product: Analyst Studio
+:jira: SCAL-278074
+
+== Overview
+
+Analyst Studio's Microsoft Excel integration allows you to connect to your Microsoft 365 accounts (via Azure AD) to import Excel data directly from OneDrive and SharePoint Online into Analyst Studio Datasets.
+
+This enables analysts and business users to quickly onboard ad hoc or external data, supporting data transformation and mashups within Analyst Studio before publishing.
+
+Data flow: The integration is read-only. Data is fetched securely via the Microsoft Graph API, and editing the dataset in Analyst Studio does not modify the original Excel file.
+
+== Requirements
+
+Before you get started, you'll need to make sure the Microsoft Excel Integration is enabled for your Workspace.
+
+* Admin setup: Analyst Studio admins must configure the feature and grant necessary consent, typically involving registering the application in Azure AD. You must also enable the integration with Microsoft before any user will be able to connect to Microsoft.
++
+[.bordered]
+image::excel-workbook-learn-more.png[Allow Excel Workbook]
+
+
+
+* User connection: Workspace Members must connect Analyst Studio to their individual Microsoft 365 Account from the Workspace Settings.
+* File format: Only Microsoft Excel files in the .xlsx format are supported for import.
+* Access: Your Microsoft 365 account must have read access to the Excel file you wish to import.
++
+[.bordered]
+image::excel-workbook-svc.png[Show connected Microsoft accounts]
+
+== Conceptual guide: OneDrive vs. SharePoint
+
+Understanding the difference between OneDrive and SharePoint is crucial for data governance and ensuring the dataset remains accessible to your team.
+
+[options="header"]
+|===
+| Feature | OneDrive for business | SharePoint online
+
+| Primary purpose
+| Individual file storage and personal work.
+| Team collaboration and organizational document management.
+
+| File ownership
+| Tied to your individual Microsoft account.
+| Tied to the team or organization/site.
+
+| Default access
+| Private by default; collaboration requires intentional sharing.
+| Accessible by default to everyone who has site or folder access.
+
+| Recommendation
+| Use for ad-hoc or draft analysis.
+| Use for shared, production, or team reports.
+
+|===
+
+== Tips when preparing your Excel Workbook data for use in Analyst Studio
+
+Following these tips ensures a clean, successful import and accurate schema mapping.
+
+
+* Avoid using merged cells, and ensure each cell contains only data (graphs, images, and macros will be discarded).
+* Add headers to the first row, as column names will be auto-generated from the first row.
+* Ensure all non-data elements (for example, footers, totals) are removed from the selected worksheet.
+* Formula handling: The system imports the final calculated value of a cell, not the formula itself.
+
+== Creating an Excel Workbook Dataset
+
+To create a new Dataset from an Excel file:
+
+. Select the *Create* button in the top right corner of your Analyst Studio home screen.
++
+[.bordered]
+image::upload-external-data.png[Select *Upload external data*.]
+
+. Choose the *Upload external data* option in the Datasets section.
+. In the upload modal, select the Excel Workbook option. If you haven't connected before, you'll be prompted to set up an account to access your Microsoft 365 data via OAuth.
++
+[.bordered]
+image::microsoft-excel-connect.png[Connect to Excel.]
+
+
+. Once connected, you can browse for your file using the Search in OneDrive or Search in SharePoint tabs.
+
+* Alternatively, paste the direct URL of the Excel file into the *By URL* tab.
+
+. Select the Worksheet. Analyst Studio currently supports importing only one Worksheet per Excel file for each Dataset. You can import more Worksheets by creating additional Datasets.
+
+* If you used the browser, select the desired Worksheet tab from the list below the file name.
+* If you pasted a URL, the URL of whatever specific sheet is added will be considered. If the URL points to the entire file, the system will prompt you to select the Worksheet.
++
+[.bordered]
+image::excel-create-dataset.png[Create a Dataset.]
+
+. Give your Dataset a name and description.
+. Click *Create Dataset*.
+
+
+== Editing your Excel Workbook Dataset
+
+
+[.bordered]
+image::dataset-ready.png[Dataset is ready.]
+
+Once your Excel workbook data has been successfully imported and your Dataset created, you can accomplish the following tasks:
+
+* View and edit the generated columns in the Data, Fields, and Source tabs.
++
+[.bordered]
+image:excel-sample-dataset.png[View generated columns.]
++
+[.bordered]
+image::excel-full-fields.png[See fields in Excel Dataset.]
++
+[.bordered]
+image::excel-banking.png[See Excel Dataset Source.]
+
+* Sync New Data: To pull new data from the underlying Excel file (if the source has changed), navigate to the Data View and click the Sync button. The system will use the saved connection to fetch the latest version of the file and update the Dataset.
++
+[.bordered]
+image::excel-sync.png[Sync to Excel.]
+
+== Describing the fields in your Dataset
+
+We highly recommend adding field descriptions to codify business definitions and logic, especially for imported ad-hoc data where context is easily lost.
+
+. Edit any Dataset and navigate to its Fields tab.
+. Double-click on the row (field) you'd like to edit and add the description.
++
+[.bordered]
+image::excel-fields.png[Add descriptions.]
+
+[options="header"]
+|===
+| Use case | Sample field | Sample description
+
+| Shared understanding
+| Engagement rate
+| Calculates the % of users who are engaged, where 'engaged' is defined as any user who has logged in and taken >1 action in the past 14 days.
+
+| Expectation setting
+| Order status
+| Segments ordered by Canceled (Final), Completed (Credit Issued), or Returned (Removed from Funnel).
+
+|===
+
+== Adding calculated fields to your Microsoft Excel Dataset
+
+You can add new columns and fields to your Dataset using the Analyst Studio transformation tools after the Excel data is successfully imported.
+
+== Updating your Dataset's name and description
+
+You can update the name, description, and tags associated with the Dataset from the Dataset properties view.
+
+== Scheduling a Microsoft Excel Dataset
+
+You can configure the Dataset to automatically refresh data from the source Excel file at scheduled intervals (for example, daily or weekly). These schedules can be controlled at the xref:analyst-studio-report-scheduling-and-sharing.adoc[Report level].
+
+* The platform handles token refresh (using OAuth refresh tokens) to keep the connection alive for the future.
+
+== Moving a Microsoft Excel Dataset to a Collection
+
+Datasets you create can be moved into Collections for shared access, governance, and organization. The Dataset permissions will be determined by the Collection it lives in.
+
+== Viewing a Microsoft Excel Dataset
+
+You can view the Dataset from the Data View.
+
+== Using your Microsoft Excel Dataset in a Report
+Once created, the Dataset can be selected as a source for creating Answers and Liveboards, just like any other connection.
+
+== Refreshing data in a Dataset-based Report
+Reports and Liveboards based on the Excel Dataset will automatically use the data from the last successful sync.
+
+== Microsoft Excel Dataset permissions
+Access to the Dataset is determined by the Collection it resides in. However, the ability to sync or refresh the data depends on the original creator's Microsoft 365 connection remaining active and their continued read access to the source file.
+
+== Troubleshooting and FAQs
+
+Why did my scheduled sync fail?::
+If a sync fails and you see the message "Sync failed due to an error," the problem is usually related to permissions or connection status.
+Re-authenticate your account::: Check *Workspace Settings > Microsoft Excel*. If prompted to re-authenticate, your OAuth token has likely expired. Click the prompt and re-enter your Microsoft credentials to re-establish the connection.
+Verify file location and access::: Ensure the original Excel file was not moved, deleted, or renamed in OneDrive or SharePoint. Also, confirm that you still have read permission to the file.
+
+What Excel formats are supported?:: Only files using the Office Open XML standard (.xlsx) are supported for import. Other older formats (.xls) are not supported in this version.
+
+What happens if the Excel file size is too large?:: The file picker is subject to external limitations (for example, Microsoft's limits) and internal performance limits. While the Microsoft Drive may limit the upload size, files above a certain size (maximum 250 MB) may result in poor or failed processing. We recommend keeping ad-hoc files under this limit for a fast user experience.
+
+Can I push my changes back to the Excel file?:: No. The integration is strictly read-only. Any transformations or data edits performed in Analyst Studio are applied only to the Dataset within the platform and do not modify the original Excel file.

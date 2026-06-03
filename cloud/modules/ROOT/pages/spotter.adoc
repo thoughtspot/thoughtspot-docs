@@ -1,0 +1,536 @@
+= Spotter
+:page-last_updated: Jan 28, 2026
+:author: Naomi
+:linkattrs:
+:experimental:
+:page-layout: default-cloud
+:description:
+:jira: SCAL-228500, SCAL-264258, SCAL-287506
+
+++++
+<style>
+.btn-primary {
+color: #fff !important;
+background-color: #0d6efd !important;
+border-color: #0d6efd !important;
+}
+
+.btn-primary:hover {
+    color: #fff !important;
+    background-color: #0b5ed7 !important;
+    border-color: #0a58ca !important;
+}
+
+.btn {
+    display: inline-block;
+    /* margin-top: 15px !important; */
+    font-weight: 400;
+    line-height: 1.5;
+    color: #212529;
+    text-align: center;
+    text-decoration: none !important;
+    vertical-align: middle;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+    background-color: transparent;
+    border: 1px solid transparent;
+    padding: .3rem .6rem;
+    font-size: .8rem;
+    border-radius: .25rem;
+    transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+}
+
+.card {
+    position: relative !important;
+    display: flex !important;
+    flex-direction: column !important;
+    min-width: 0 !important;
+    text-align: left !important;
+    word-wrap: break-word !important;
+    background-color: #fff !important;
+    background-clip: border-box !important;
+    border: 1px solid rgba(0, 0, 0, .125) !important;
+    border-radius: .5rem !important;
+}
+
+.bd-example>:last-child {
+    margin-bottom: 0 !important;
+}
+
+.card-body {
+    flex: 1 1 auto !important;
+    padding: 1rem 1rem !important;
+}
+
+.card-title {
+  font-size: 18px !important;
+  color: #333 !important;
+  font-weight: 500 !important;
+  text-align: left !important;
+  margin-top: 3px;
+  margin-bottom: 4px;
+}
+
+.card-text {
+  color: #333 !important;
+  font-size: 15px !important;
+  font-weight: 400 !important;
+  margin-top: 0px !important;
+  margin-bottom: .75rem !important;
+}
+
+img.card-img-top {
+border-top-left-radius: .5rem;
+border-top-right-radius: .5rem;
+}
+
+bd-placeholder-img {
+font-size: 1.125rem !important;
+text-anchor: middle !important;
+-webkit-user-select: none !important;
+-moz-user-select: none !important;
+user-select: none !important;
+}
+
+.three_columns {
+  /* background-color: #123456; */
+  width: 100%;
+  margin-top: 0px;
+  /* padding-top: 20px; */
+  /* padding-bottom: 20px; */
+  /* margin-bottom: 20px; */
+  text-align: center;
+}
+
+.mod_column {
+  text-align: center;
+  border-radius: 22px;
+  padding-bottom: 10px;
+  height: auto;
+}
+
+.mod_column img {
+  width: 100%;
+  height: auto;
+  padding-bottom: 2px;
+  border-radius: 5px;
+}
+
+.mod_column h3 {
+  font-weight: bold;
+  text-align: left;
+  font-size: 1.2rem;
+  margin: 10px 0;
+  /* color: #000; */
+  padding-left: 20px;
+  padding-right: 10px;
+}
+
+.mod_column p {
+  text-align: left;
+  margin-top: 10px;
+  text-decoration: none;
+  color: #333;
+  /* font-size: 1rem; */
+  padding-left: 20px;
+  padding-right: 10px;
+  font-weight: 300;
+}
+
+.mod_column h3, .mod_column p {
+  color: rgb(184 184 184 / var(--tw-text-opacity, 1)) !important;
+  text-decoration: none !important;
+}
+
+.mod-column-outer {
+  background: linear-gradient(#0F0E41, #0F0E41) padding-box, linear-gradient(to right, #1B1B61, #58D7DB) border-box;
+  border-radius: 6px;
+  backdrop-filter: blur(5.199999809265137px);
+  border: 1px solid transparent;
+  max-width: 325px !important;
+  width: 100%;
+}
+
+.mod-column-inner {
+  background-color: #1E417850;
+  width: 100%;
+  border-radius: 20px;
+}
+
+.modalities {
+  width: 100%;
+  margin: auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: left;
+  color: #FFFFFF !important;
+}
+
+.modalities a {
+  text-decoration: none !important;
+  max-width: 340px !important;
+  padding-top: 0px;
+  padding-left: 0px;
+}
+
+@media (min-width: 568px) {
+.modalities > * {
+width: calc(100% / 3);
+}
+}
+
+.modalities > * {
+  width: 100%;
+  padding: 1rem;
+}
+</style>
+++++
+++++
+<style>
+.border {
+  border: 1px solid #c1c3c7;
+  box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+h2#_new_navigation_and_homepage_coming_soon {
+    margin-left: -1rem !important;
+    margin-right: -1rem !important;
+    margin-top: -.6rem !important;
+    font-size: 18px !important;
+    padding: .4rem 1rem .1rem !important;
+    border-bottom: 0px solid #e1e1e1;
+}
+
+h2#_new_navigation_and_homepage_coming_soon::after {
+    content: " " !important;
+    display: block !important;
+    background: -webkit-gradient(linear, right top, left top, color-stop(0, #fba76f), color-stop(29%, #d89af0), color-stop(67%, #99d8da), color-stop(96%, #0a6cf9)) !important;
+    background: linear-gradient(270deg, #fba76f 0, #d89af0 29%, #99d8da 67%, #0a6cf9 96%) !important;
+    height: 1px !important;
+    margin-top: 0px !important;
+}
+
+h4#_highlights_of_the_new_navigation_and_homepage.discrete {
+    color: #444 !important;
+    font-weight: 500 !important;
+    font-family: Optimo-Plain, sans-serif !important;
+    -ms-hyphens: none !important;
+    hyphens: none !important;
+    font-size: 16px !important;
+    line-height: 1.3 !important;
+    margin: 1rem 0 0 !important;
+}
+
+.doc-snippet h3 {
+    color: #444;
+    font-weight: 500;
+    font-family: Optimo-Plain, sans-serif;
+    -ms-hyphens: none;
+    hyphens: none;
+    line-height: 1.3;
+    margin: 1rem 0 0;
+}
+
+.doc-snippet .sidebarblock {
+    position: relative !important;
+    /* background-color: #e1e1e1 !important; */
+    background-color: #fef19f !important;
+    border-radius: 0.75rem !important;
+    padding: 0.75rem 1.5rem !important;
+    padding-top: 0.75rem !important;
+    padding-right: 2rem !important;
+    padding-bottom: 0.75rem !important;
+    padding-left: 0.7rem !important;
+}
+
+.doc-snippet .sidebarblock::before {
+    content: '' !important;
+    position: absolute !important;
+    top: -2px !important;
+    right: -2px !important;
+    bottom: -2px !important;
+    left: -2px !important;
+    background: -webkit-gradient(linear, right top, left top, color-stop(0, #fba76f), color-stop(29%, #d89af0), color-stop(67%, #99d8da), color-stop(96%, #0a6cf9)) !important;
+    background: linear-gradient(270deg, #fba76f 0, #d89af0 29%, #99d8da 67%, #0a6cf9 96%) !important;
+    z-index: -1 !important;
+    border-radius: inherit !important;
+}
+
+.doc-snippet .sidebarblock>.content>.title {
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.3;
+    margin-bottom: -.3em;
+    text-align: left;
+}
+
+.doc-snippet .sidebarblock>.content>.title:not(.discrete)::after {
+    content: " ";
+    display: block;
+    background: -webkit-gradient(linear, right top, left top, color-stop(0, #fba76f), color-stop(29%, #d89af0), color-stop(67%, #99d8da), color-stop(96%, #0a6cf9));
+    background: linear-gradient(270deg, #fba76f 0, #d89af0 29%, #99d8da 67%, #0a6cf9 96%);
+    height: 1px;
+    margin-top: 0px;
+}
+
+.doc-snippet .admonitionblock td.icon {
+    padding-left: .1rem;
+    padding-top: 3px;
+}
+
+.doc .admonitionblock {
+    margin-top: 1rem;
+}
+
+.doc .admonitionblock > table {
+    background-color: #fff3e2 !important;
+    border: 0 !important;
+    border-radius: 8px !important;
+    border-left: 0 !important;
+    height: 52px !important;
+    width: 90% !important;
+    display: table !important;
+}
+
+.doc .admonitionblock > table > tbody,
+.doc .admonitionblock > table > tbody > tr > td {
+    padding-left: 2px !important;
+    /* display: block !important; */
+}
+
+.doc .admonitionblock>table>tbody>tr {
+    display: -webkit-box !important;
+    display: -ms-flexbox !important;
+    display: flex !important;
+}
+
+.doc-snippet .admonitionblock td.icon {
+    padding-left: .1rem;
+    padding-top: 3px;
+}
+
+.doc-snippet i.fac {
+    -ms-hyphens: none;
+    hyphens: none;
+    font-style: normal;
+    padding-left: 5px;
+}
+
+i.fa.icon-announce {
+    -ms-hyphens: none;
+    hyphens: none;
+    font-style: normal;
+    padding-left: 48px;
+}
+
+.doc-snippet .admonitionblock td.icon-announce i::before {
+    background: no-repeat;
+    content: "";
+    margin-top: -10px;
+    margin-left: 10px;
+    margin-right: -3px;
+    display: block;
+    height: 18px;
+    width: 18px;
+}
+
+.doc-snippet .admonitionblock td.content {
+    -webkit-box-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+    font-size: 14px;
+    -ms-hyphens: auto;
+    hyphens: auto;
+    line-height: 1.6;
+    min-width: 0;
+    padding: .9rem .75rem .75rem .2rem;
+    border-radius: 5px;
+}
+
+.doc-home .admonitionblock.announce td.content::before, .doc-snippet .admonitionblock.announce td.content::before, .doc .admonitionblock.announce td.content::before {
+    color: #00aeef;
+}
+
+.doc-snippet .admonitionblock td.content::before {
+    font-weight: 500;
+    content: "" !important;
+}
+
+.doc-snippet .admonitionblock td.content>:first-child {
+    margin-top: 1px;
+}
+
+.doc-snippet .admonitionblock td.icon i::before {
+    background-image: url(https://docs.thoughtspot.com/cloud/10.13.0.cl/_images/megaphone_ts.png) !important;
+    vertical-align: middle !important;
+    padding-left: 25px !important;
+}
+
+i.fa.icon-announce::before {
+    background-image: url(https://docs.thoughtspot.com/cloud/latest/_images/Spotter.svg) !important;
+    /* background: no-repeat; */
+    content: "";
+    /* margin-top: 5px !important; */
+    margin-left: 10px !important;
+    margin-right: 5px !important;
+    display: block;
+    height: 30px !important;
+    width: 30px !important;
+}
+
+.doc .admonitionblock>announce-table>tbody>tr>td {
+    padding-left: 2px;
+}
+
+.doc-snippet table.wide_table, td, th {
+    border: none !important;
+}
+
+.doc-snippet .admonitionblock td.content {
+    -webkit-box-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+    font-size: 14px;
+    -ms-hyphens: auto;
+    hyphens: auto;
+    line-height: 1.6;
+    min-width: 0;
+    padding: .9rem .75rem .75rem .2rem;
+    border-radius: 5px;
+}
+
+.border-wistia {
+    border: 1px solid #c1c3c7;
+    box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.2);
+    max-width: 95%; /* Example: Video will not exceed 800px in width */
+    /* margin: 0 auto; /* Centers the video if it's smaller than
+    max-width */
+
+.badge-spotter3 {
+  display: inline-block;
+  background-color: #f5f5f5;
+  color: #8c62f5;
+  border: 1px solid #8c62f5;
+  font-size: 9px;
+  margin-left: 1px;
+  position: relative;
+  top: -2.4px;
+  border-radius: 5px;
+  font-weight: 800;
+  vertical-align: top;
+  padding-top: 4.5px;
+  /*   display: inline-block;
+  min-width: 10px;
+  padding: 3px 7px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  color: #ebebeb;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  background-color: #373BB1;
+  border-radius: 5px;
+  position: relative;
+  top: -1px; */
+}
+}
+
+</style>
+++++
+
+Spotter is your personal AI analyst, delivering business-ready insights with enterprise-grade trust. Spotter combines the most simple-to-use interface with the industry’s most rigorous approach to governance and security to AI, incorporating human intelligence at every turn.
+
+Spotter is built on top of the BI industry’s leading relational search model, which adds business context from your underlying data model to deliver highly interpretable results with unmatched accuracy.
+
+== Where to begin
+++++
+<br>
+<div class="three_columns">
+<div class="modalities"><a href="spotter-using">
+<div class="mod-column-outer">
+<div class="mod-column-inner">
+<div class="mod_column"><img src="https://docs.thoughtspot.com/cloud/latest/_images/tile-image.use-spotter.png" alt="Using Spotter" class="initial loading" data-was-processed="true">
+<h3>Using Spotter</h3>
+<p>Learn how to use Spotter to ask questions in natural language to gain valuable insights about your data.</p>
+<p>Learn how to use Spotter →</p>
+</div>
+</div>
+</div>
+</a> <a href="spotter-deploying">
+<div class="mod-column-outer">
+<div class="mod-column-inner">
+<div class="mod_column"><img src="https://docs.thoughtspot.com/cloud/latest/_images/tile-image.deploy-spotter.png" alt="Deploying" class="initial loading" data-was-processed="true">
+<h3>Deploying Spotter</h3>
+<p>Learn the essential steps for deploying Spotter in your company, including data model readiness and more.</p>
+<p>Learn how to deploy Spotter →</p>
+</div>
+</div>
+</div>
+</a></div>
+</div>
+<div class="three_columns">
+<div class="modalities"><a href="spotter-coaching-options">
+<div class="mod-column-outer">
+<div class="mod-column-inner">
+<div class="mod_column"><img src="https://docs.thoughtspot.com/cloud/latest/_images/tile-image.maintain-spotter.png" alt="Deploying" class="initial loading" data-was-processed="true">
+<h3>Coaching Spotter</h3>
+<p>Learn how to coach Spotter after you've deployed it, so that it understands the unique terms and rules of your business.</p>
+<p>Learn how to coach Spotter →</p>
+</div>
+</div>
+</div>
+</a><a href="spotter-faq">
+<div class="mod-column-outer">
+<div class="mod-column-inner">
+<div class="mod_column"><img src="https://docs.thoughtspot.com/cloud/latest/_images/tile-image.faq-spotter.png" alt="Frequently asked questions about Spotter" class="initial loading" data-was-processed="true">
+<h3>Questions about Spotter?</h3>
+<p>Get answers to frequently asked questions about how to use, deploy and maintain Spotter.</p>
+<p>Get answers to questions about Spotter →</p>
+</div>
+</div>
+</div>
+</a></div>
+</div>
+++++
+
+== Spotter experiences
+
+There are three Spotter experiences available:
+[#spotter3]
+Spotter 3:: Spotter 3 adds the capability to query structured and unstructured data together, gaining a better understanding of your data. Spotter 3 can plan, reason, iterate, and execute complex analysis like a human analyst. You can use Auto mode to automatically select the appropriate data source for your queries, and switch between sources within the same conversation. Spotter 3 also introduces the capability to integrate your own tools into the conversation, such as Slack, Confluence, or Jira, allowing you to pull data from external sources and push actions to the selected tool. If you don't find a particular feature on your ThoughtSpot instance, contact your ThoughtSpot administrator.
++
+Specific Spotter 3 capabilities are identified with a [.badge.badge-spotter3]#Spotter 3# badge. For more information, see xref:spotter-getting-started.adoc[]. To see Spotter 3 in action, watch the xref:spotter3-in-action[Spotter 3 introduction].
+
+Spotter Agent (Spotter 2)::
+Spotter Agent is an AI analyst that delivers agentic data experiences with enterprise-grade trust and scale. Spotter Agent can suggest questions you can ask to improve your understanding of the data analysis, and you can ask Spotter to answer multiple questions at once. You can also ask questions about how calculated fields such as formulas are generated. Spotter Agent has also improved its responses for questions not related to the data model you selected.
+
+
+Spotter Classic (Spotter 1)::
+Our classic conversational analytics experience, which allows you to ask questions and get answers from your data in natural language. It understands your data questions, and shows answers with state of the art visualizations. Spotter is designed to empower non-technical teams to self-serve actionable insights from data and scale reliable, data-driven decision-making across the organization.
+
+[#spotter3-in-action]
+== Spotter 3 introduction
+To see Spotter 3 in action, watch the following video (5 min 17 sec):
+
++++
+<div class="border">
+<script src="https://fast.wistia.com/player.js" async></script><script src="https://fast.wistia.com/embed/n2bv9qi89f.js" async type="module"></script><style>wistia-player[media-id='n2bv9qi89f']:not(:defined) { background: center / contain no-repeat url('https://fast.wistia.com/embed/medias/n2bv9qi89f/swatch'); display: block; filter: blur(5px); padding-top:56.25%; }</style> <wistia-player media-id="n2bv9qi89f" aspect="1.7777777777777777"></wistia-player></div>
++++
+
+[#spotter3-resource]
+== Additional Spotter resource
+
+++++
+<br>
+<div class="card" style="width: 18rem;">
+  <img class="card-img-top" src="https://docs.thoughtspot.com/cloud/latest/_images/comp_guide.png" height="180px" width="100%" align="left" alt="Spotter comprehensive guide">
+  <div class="card-body">
+    <h5 class="card-title">Spotter Comprehensive Guide</h5>
+    <p class="card-text">Everything from fundamental data <br>retrieval to deep analysis and <br>strategic reporting.</p>
+    <a href="https://drive.google.com/file/d/15Y84VBtimcjG-OPL8DcUSpvlv9Dvzjxd/view" target="_blank" class="btn btn-primary">View guide</a>
+  </div>
+</div>
+++++
