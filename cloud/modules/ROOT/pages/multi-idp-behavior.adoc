@@ -69,6 +69,26 @@ Whether they have membership to multiple Orgs is determined by the addition of a
 * If the two users with the same username are added via two different  IdPs, ThoughtSpot considers it as the same user - uniqueness is in the username, and the user gets access to multiple Orgs.
 ====
 
+[#configure-per-org-url-primary]
+==== #Configure a direct login URL for the Primary org#
+
+To enable a direct login URL for the Primary org, follow these steps:
+
+. Rename the *Primary* org to use all lowercase: `primary`.
++
+NOTE: The org name is case-sensitive. The per-org subdomain URL is derived from the org name exactly as it is stored. The org must be named `primary` (all lowercase) for the subdomain `primary.<cluster-name>.thoughtspot.cloud` to resolve correctly.
++
+. Contact ThoughtSpot Support to add `primary.<cluster-name>.thoughtspot.cloud` as a redirect domain for your cluster.
+. Once the redirect domain is registered, users can log in directly at:
++
+----
+https://primary.<cluster-name>.thoughtspot.cloud
+----
++
+ThoughtSpot routes them to the Primary org IdP without prompting for a username.
+
+
+
 == IdP initiated login
 When the user attempts to login from IdP tile instead of coming to ThoughtSpot URL.
 
@@ -81,3 +101,28 @@ When the user attempts to login from IdP tile instead of coming to ThoughtSpot U
 Whether they have membership to multiple Orgs is determined by the addition of a user to multiple Orgs either from ThoughtSpot or if group / Org claims contain multiple Orgs.
 * Once the user logs in via a particular IdP by clicking on the tile, for all succeeding logins, it is the same IdP that ThoughtSpot chooses to login the user. If the user is part of multiple IdPs and wants to login via another IdP, the user can use IdP initiated logins for the other IdPs.
 * While using IdP initiated flow, ensure the relay state is set correctly in the customer’s IdP.
+
+[#troubleshoot-per-org-redirect]
+== #Troubleshoot per-org redirect issues#
+
+If the per-org subdomain URL does not redirect users to the correct IdP, verify the following:
+
+[cols="1a,2a", options="header"]
+|===
+| Check | Action
+
+| Org name is lowercase
+| Confirm the org is named `primary` (all lowercase `p`) in *Admin* > *Orgs*. A capital `P` in `Primary` causes the subdomain lookup to fail.
+
+| Redirect domain is registered
+| Confirm with ThoughtSpot Support that `primary.<cluster-name>.thoughtspot.cloud` has been added as a valid redirect domain for your cluster.
+
+| SAML auto-redirect is enabled
+| Confirm that SAML auto-redirect is enabled for the org. When enabled, users navigating to the org subdomain URL are sent directly to the IdP without seeing the ThoughtSpot login page.
+
+| Group claim format is correct
+| Confirm that the IdP is sending the group claim in the `groupname@orgname` format, or that a custom claim mapping is configured. Without the org name in the group claim, ThoughtSpot cannot determine org membership and the login fails.
+
+| Multiple IdPs are configured
+| If users still see the username discovery prompt after following the above steps, confirm that the SAML configuration for the Primary org is active and that the org subdomain is correctly mapped to the Primary org IdP.
+|===
