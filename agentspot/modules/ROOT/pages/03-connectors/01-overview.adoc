@@ -1,0 +1,124 @@
+= Connectors Overview
+:doctype: book
+:toc: left
+:toclevels: 2
+:icons: font
+
+[.lead]
+Connectors are the integration layer between AgentSpot and the external systems your agents and workflows act on — Google Workspace, GitHub, Slack, Salesforce, ThoughtSpot, and custom systems you connect via MCP.
+
+[NOTE]
+====
+⚠️ Confirm the skill / tool / connector framing with [feature owner]. The placeholder framing used here: connectors handle authentication and integration; the *tools* an agent invokes are surfaced *through* connectors, often grouped into *skills*. See xref:../06-skills/01-overview.adoc[Skills overview].
+====
+
+== What a connector does
+
+A connector handles four things:
+
+* *Authentication* — how AgentSpot signs in to the external system (OAuth, service account, API key).
+* *Tool surface* — the actions the connector exposes (post a message, read a file, create an issue, run a query).
+* *Data access* — read paths into the connected system (read a Drive folder, query a Salesforce object).
+* *Governance hooks* — scope, audit, rate limits, per-group access.
+
+Once an admin connects a system once, every agent builder in the allowed groups can use it.
+
+== Connectors and MCP
+
+Most AgentSpot connectors are built on top of MCP (the Model Context Protocol). MCP is the open standard AgentSpot uses to talk to external tool servers.
+
+⚠️ Confirm exact MCP integration model with [feature owner]. In practice this means:
+
+* *Built-in connectors* (Google, GitHub, Slack, Salesforce, ThoughtSpot) are MCP servers your tenant connects to without you needing to host them.
+* *Custom MCP* lets you connect your own MCP server — your code, your hosting, your tools. See xref:07-custom-mcp.adoc[Custom MCP].
+
+If you've used MCP elsewhere (Claude Desktop, IDE tooling), the conceptual model is the same. AgentSpot adds the multi-tenant governance, audit, and per-group sharing on top.
+
+== Connector catalog at a glance
+
+[cols="1,2,1",options="header"]
+|===
+|Connector |Common use |Article
+
+|*Google Workspace*
+|Drive files, Docs, Sheets, Gmail, Calendar.
+|xref:02-google-workspace.adoc[Google Workspace]
+
+|*GitHub*
+|Code search, PR review, issue management, repo metadata.
+|xref:03-github.adoc[GitHub]
+
+|*Slack*
+|Read channels, post messages, react, search.
+|xref:04-slack.adoc[Slack]
+
+|*Salesforce*
+|Read/write Leads, Opportunities, Accounts; SOQL queries.
+|xref:05-salesforce.adoc[Salesforce]
+
+|*ThoughtSpot*
+|Worksheets, Models, Liveboards, Spotter handoff.
+|xref:06-thoughtspot.adoc[ThoughtSpot]
+
+|*Custom MCP*
+|Your own MCP server exposing your internal tools.
+|xref:07-custom-mcp.adoc[Custom MCP]
+|===
+
+== How a connector is added (admin)
+
+. Open *Admin* > *Connectors*. ⚠️ Confirm navigation.
+. Select *Add connector* and pick the type.
+. Authenticate to the external system (OAuth flow, paste a token, or upload a service-account JSON, depending on the connector).
+. Review the *Scopes* the connector is requesting. Approve only the scopes your security team has signed off on.
+. Choose which groups can use this connector.
+. (Optional) Set per-connector quotas and per-group restrictions.
+. Test the connection.
+
+*Expected result:* The connector appears in the admin list with status *Connected* and the allowed groups can use it from the agent and workflow builders.
+
+== Authentication patterns
+
+⚠️ Confirm supported patterns per connector. Typical:
+
+[cols="1,2",options="header"]
+|===
+|Pattern |Use when
+
+|*OAuth (admin consent)*
+|One admin grants tenant-wide consent; all agents act as the admin's principal.
+
+|*OAuth (user pass-through)*
+|Each user grants their own consent; agents act as the user. Best for systems that care which person took the action.
+
+|*Service account*
+|A dedicated, named identity in the external system; predictable, auditable, no human dependency.
+
+|*API key*
+|Simplest. Use only when no OAuth path exists.
+|===
+
+== Governance
+
+Connectors are the surface most likely to take an action with real-world consequences (sending messages, creating tickets, writing records). Treat them carefully.
+
+* *Scope minimisation* — every connector should request only the scopes it needs. Don't grant `repo` if `repo:read` is enough.
+* *Read-first, write-later* — when piloting a connector, restrict to read-only scopes. Add write scopes only once you trust how agents are using it.
+* *Per-group sharing* — share each connector with the smallest set of groups that actually need it.
+* *Audit* — every connector tool invocation appears in the audit log. Review weekly for the first month.
+* *Rate limits* — set per-user and per-group caps so a runaway agent doesn't exhaust your external-system rate limit.
+
+== Best practices for builders
+
+* Don't add a connector to an agent unless you've already prototyped the workflow manually.
+* Tell the agent in *Instructions* when to use each connector tool, and when not to.
+* For write actions during the first few weeks of an agent's life, put a xref:../02-workflows/03-triggers-and-step-types.adoc[Wait for approval] step in front of the connector call.
+
+== Next steps
+
+* xref:02-google-workspace.adoc[Google Workspace]
+* xref:03-github.adoc[GitHub]
+* xref:04-slack.adoc[Slack]
+* xref:05-salesforce.adoc[Salesforce]
+* xref:06-thoughtspot.adoc[ThoughtSpot]
+* xref:07-custom-mcp.adoc[Custom MCP]

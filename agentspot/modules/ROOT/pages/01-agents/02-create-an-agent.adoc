@@ -1,0 +1,141 @@
+= Create an Agent
+:doctype: book
+:toc: left
+:toclevels: 3
+:sectnums:
+:icons: font
+:experimental:
+
+[.lead]
+Build, test, and publish your first AgentSpot agent end-to-end.
+
+== Overview
+
+This guide is the full builder walkthrough. Deeper topics — writing instructions, managing sessions, file uploads, sharing and versioning — have their own articles linked at each step.
+
+By the end you'll have a published, tested agent your team can use.
+
+== Prerequisites
+
+* You hold the *Agent Builder* role. If the *Agents* page is read-only, ask your admin.
+* Your admin has shared at least one data source and one model provider with your group.
+* You can answer in one sentence: "What job will this agent do, for whom?"
+* (Recommended) You have 3–5 example questions a real user would ask.
+
+== Step 1: Plan the agent
+
+Write these down before opening the builder. Vague agents do not get used.
+
+* *Name* — short and recognizable (e.g. `EMEA Pipeline Assistant`).
+* *Audience* — which team or group.
+* *Job* — one sentence.
+* *Out of scope* — what it explicitly will not do.
+* *Data it needs* — specific sources, tables, or worksheets.
+* *Skills it needs* — usually none for a first agent.
+
+== Step 2: Create a new agent
+
+. Open *Agents* > *Create agent*. ⚠️ Confirm label with [feature owner].
+. Enter *Name* and a one-sentence *Short description*.
+. Choose *Start from scratch* or pick a template. ⚠️ Confirm template availability.
+. Select *Create*.
+
+*Expected result:* The agent editor opens with empty *Instructions*, *Data*, *Skills*, and *Settings* tabs. ⚠️ Confirm tab names.
+
+== Step 3: Write the instructions
+
+This is the single most important step. Aim for under 300 words.
+
+. Open the *Instructions* tab.
+. Use the structure in xref:03-instruction-framework.adoc[Instruction framework]: *Role*, *What to do*, *What not to do*, *Tone and format*, *When unsure*.
+. Save.
+
+A worked example is in xref:03-instruction-framework.adoc#example[Instruction framework — Example].
+
+== Step 4: Connect data
+
+The agent can only reason over data you explicitly attach.
+
+. Open the *Data* tab > *Add data source*.
+. Pick a source your admin has shared with your group.
+. Scope to specific tables, views, worksheets, or files. Attach the smallest amount of data that lets the agent do its job.
+. (Strongly recommended) Add a one-line *Data description* per table — what it contains and what its key columns mean. This dramatically improves answer quality.
+. Save.
+
+For file-based agents, see xref:05-uploads-and-attachments.adoc[Uploads and attachments].
+
+*Expected result:* Each attached source shows status *Ready*.
+
+== Step 5: (Optional) Add skills
+
+Skills let the agent act, not just answer.
+
+. Open the *Skills* tab > *Add skill*. ⚠️ Confirm tab and label.
+. Pick from the skill catalog your admin has enabled for your group.
+. Configure the skill (e.g. default Slack channel, default Jira project).
+. In *Instructions*, add a sentence telling the agent when to use each skill.
+
+See xref:../06-skills/01-overview.adoc[Skills overview].
+
+Skip this for your first agent unless a skill is essential.
+
+== Step 6: Choose model and settings
+
+. Open the *Settings* tab.
+. *Model* — keep the default unless you have a reason to change it.
+. *Temperature* — keep the default (low) for factual agents. ⚠️ Confirm default.
+. *Response length* — set a sensible max so answers stay short.
+. *Citations* — turn on. Strongly recommended.
+. Save.
+
+== Step 7: Test in the preview panel
+
+Test before anyone else touches it.
+
+. Open the preview panel.
+. Run each of your 3–5 example questions.
+. For each answer, check it's correct, cited, in scope, and matches your tone instructions.
+. Run at least one adversarial question (out-of-scope or ambiguous). Confirm the agent refuses or asks for clarification rather than guessing.
+. Iterate on instructions and data until reliable.
+
+For multi-turn behavior, see xref:04-sessions-and-conversations.adoc[Sessions and conversations].
+
+== Step 8: Publish
+
+See xref:06-sharing-and-publishing.adoc[Sharing and publishing] for the full details. The short version:
+
+. Select *Publish*.
+. Choose audience: *Private*, *Group*, or *Organization*.
+. Add release notes.
+. Publish.
+
+*Expected result:* The agent appears in the consumer agent list for the chosen audience, and a new version is recorded.
+
+== Troubleshooting
+
+[cols="1,2",options="header"]
+|===
+|Symptom |What to try
+
+|"I don't have access to that data."
+|Confirm the data source is attached and that your admin shared it with your group.
+
+|Confident but wrong answers.
+|Tighten instructions ("only answer from attached data"), lower temperature, add per-table data descriptions.
+
+|Formatting instructions are ignored.
+|Move formatting to the top of the prompt; shorten the overall instructions.
+
+|Agent answers out-of-scope questions.
+|Add an explicit *What not to do* section naming the topics and re-test.
+
+|Citations missing.
+|Confirm *Citations* is on in *Settings* and that the source supports citations. ⚠️ Confirm per-source citation support.
+|===
+
+== Next steps
+
+* xref:03-instruction-framework.adoc[Instruction framework] — write better prompts.
+* xref:04-sessions-and-conversations.adoc[Sessions and conversations] — manage multi-turn context.
+* xref:06-sharing-and-publishing.adoc[Sharing and publishing] — versioning and audiences.
+* xref:../02-workflows/01-overview.adoc[Workflows] — chain this agent into an automated process.

@@ -1,0 +1,130 @@
+= Example Workflow Patterns
+:doctype: book
+:toc: left
+:toclevels: 2
+:icons: font
+
+[.lead]
+Four common workflow shapes you can adapt. Each pattern shows the trigger, the steps in order, and the variations worth knowing.
+
+These examples assume the agents, data sources, and tools referenced have already been built and connected. See xref:02-create-a-workflow.adoc[Create a workflow] for the mechanics.
+
+== Pattern 1: Scheduled digest
+
+*Goal:* Every morning, summarize yesterday's activity and post it to a Slack channel.
+
+*Trigger:* Schedule — daily at 08:00 in your business timezone.
+
+*Steps:*
+
+. *Fetch data* — pull yesterday's records from your data warehouse (e.g. closed-won deals, new tickets, deployments).
+. *Transform* — keep only the columns the agent will need (date, account, amount, owner).
+. *Run agent* — the *Daily Digest Agent* receives the rows and produces a short narrative summary with bullets and a headline number.
+. *Call tool* — post the summary to a Slack channel using the Slack connector.
+
+*Variations:*
+
+* Add a *Branch* step that posts to different channels based on region or product line.
+* Add a *Transform* between *Run agent* and *Call tool* to attach a chart link or dashboard URL.
+* Add a *Wait for approval* before the Slack post for the first two weeks of operation; remove once you trust the output.
+
+*Failure handling:* set *Alert and stop* on the *Fetch data* and *Call tool* steps. Set *Retry* on transient network failures.
+
+== Pattern 2: Inbound triage
+
+*Goal:* When a new lead lands in the CRM, score it and assign an owner within minutes.
+
+*Trigger:* Event — `lead.created` event from the CRM connector.
+
+*Steps:*
+
+. *Fetch data* — pull the full lead record plus the account history from the CRM.
+. *Run agent* — the *Lead Scoring Agent* returns a structured object: `{ score: 0–100, segment: enterprise|mid|smb, suggested_owner: <email>, rationale: <text> }`.
+. *Branch* — on score and segment:
++
+* High score, enterprise → assign to AE round-robin.
+* Mid score → add to nurture campaign.
+* Low score → close as unqualified with a templated note.
+. *Call tool* — update the CRM record (owner, stage, internal note with the rationale).
+
+*Variations:*
+
+* Add a *Call tool* step that posts to a Slack channel for high-score enterprise leads so the AE sees it instantly.
+* For the close-as-unqualified branch, send the lead a templated nurture email instead of dropping them entirely.
+
+*Failure handling:* if the *Run agent* step fails or returns malformed output, *Branch to fallback* — keep the lead in a "needs human triage" queue rather than guessing.
+
+== Pattern 3: Multi-step research and draft
+
+*Goal:* Every Monday, gather KPIs for the exec team and draft a board-style narrative in a Google Doc for human review.
+
+*Trigger:* Schedule — weekly, Monday at 06:00.
+
+*Steps:*
+
+. *Fetch data* (×N) — one *Fetch data* step per data source (revenue, pipeline, retention, support load, hiring). Use parallel branches where possible.
+. *Transform* — combine the result sets into one summary table.
+. *Run agent* — the *Exec Narrative Agent* receives the summary table and drafts a narrative in the org's preferred voice. Output includes the prose, plus 3–5 chart suggestions.
+. *Call tool* — create a new Google Doc from a template, paste the narrative into it, add the chart suggestions as comments.
+. *Call tool* — post the doc link to the exec Slack channel with "@channel: draft ready for review."
+
+*Variations:*
+
+* Add a *Wait for approval* from the Chief of Staff before the final Slack post.
+* For repeat runs, use the same Google Doc and add a new section per week instead of creating a new doc.
+
+*Failure handling:* if any *Fetch data* step fails, *Skip* and have the agent note the missing section in the draft rather than aborting the whole workflow.
+
+== Pattern 4: Human-in-the-loop approval
+
+*Goal:* When the finance team requests a vendor payment over a threshold, route for approval before processing.
+
+*Trigger:* Webhook — finance system POSTs the payment request to the workflow.
+
+*Steps:*
+
+. *Fetch data* — pull the vendor record, recent payment history, and any open compliance flags.
+. *Run agent* — the *Payment Risk Agent* returns a risk assessment: `{ risk: low|medium|high, rationale: <text>, citations: [...] }`.
+. *Branch* — on risk and amount:
++
+* Low risk and below threshold → auto-approve.
+* Medium risk or above threshold → require one approver.
+* High risk or above a higher threshold → require two approvers.
+. *Wait for approval* (×1 or ×2 based on branch) — notify approvers via email and Slack.
+. *Call tool* — on approval, instruct the finance system to release the payment; on rejection, send the requester the rejection reason.
+
+*Variations:*
+
+* Add a *Delay* before the *Wait for approval* so approvers see a single batched request instead of one notification per minute.
+* For repeat vendors with a clean history, lower the threshold automatically.
+
+*Failure handling:* set a generous *Wait for approval* timeout (e.g. 48 hours business time) with escalation. Never auto-approve on timeout for financial flows.
+
+== Patterns in summary
+
+[cols="1,1,2",options="header"]
+|===
+|Pattern |Trigger |Key steps
+
+|Scheduled digest
+|Schedule
+|Fetch → Transform → Agent → Call tool (Slack)
+
+|Inbound triage
+|Event
+|Fetch → Agent → Branch → Call tool (CRM)
+
+|Multi-step research
+|Schedule
+|Fetch (×N) → Transform → Agent → Call tool (Doc) → Call tool (Slack)
+
+|Human-in-the-loop approval
+|Webhook
+|Fetch → Agent → Branch → Wait for approval → Call tool
+|===
+
+== Next steps
+
+* xref:02-create-a-workflow.adoc[Create a workflow] — build your first one from scratch.
+* xref:03-triggers-and-step-types.adoc[Triggers and step types] — full reference for each component used above.
+* xref:../06-skills/01-overview.adoc[Skills] — extend what *Call tool* steps can do.

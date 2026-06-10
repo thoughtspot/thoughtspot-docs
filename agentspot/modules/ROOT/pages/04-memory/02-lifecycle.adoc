@@ -1,0 +1,139 @@
+= Memory Lifecycle
+:doctype: book
+:toc: left
+:toclevels: 2
+:icons: font
+
+[.lead]
+How memories get saved, retrieved, and merged. Three operations matter: *preload*, *search*, and *save*.
+
+[NOTE]
+====
+⚠️ Confirm exact lifecycle behavior with [feature owner]. The model below reflects typical capabilities and will be revised once confirmed.
+====
+
+== The three operations
+
+* *Preload* — at the start of each session, AgentSpot loads the user's *always-relevant* memories into the agent's context. The agent sees them immediately, no query needed.
+* *Search* — during a session, when the user asks a question, AgentSpot looks for semantically relevant memories and adds the matches to context for that turn.
+* *Save* — at any point the agent (or the user) can persist a new memory. Subsequent sessions will preload or search it.
+
+The agent doesn't have to manage these operations explicitly in most cases — they happen automatically.
+
+== Preload
+
+Always-relevant memories load every time. Examples:
+
+* "I am on the Sales team." (user personal info)
+* "Prefer concise, bullet answers." (user preference)
+* "Fiscal year starts in April." (fact, set tenant-wide)
+* "Always exclude test accounts." (rule, set on this agent)
+
+Why this matters:
+
+* The user never has to restate these facts.
+* The agent applies them immediately, before any question is asked.
+* They appear in every conversation regardless of topic.
+
+Constraint: every always-relevant memory consumes context window. There's a practical cap — ⚠️ confirm with [feature owner]. Reserve always-relevant for things that genuinely apply universally; everything else should be semantic.
+
+== Search
+
+When the user asks a question, AgentSpot embeds the question and searches stored memories for semantically similar entries. Top matches are added to the agent's context for that turn.
+
+Examples:
+
+* Question: "What's our retention number?" → semantic search retrieves the *fact* "Retention is measured monthly on the last business day."
+* Question: "Define ACV for me again." → search retrieves the *dict* entry "ACV means revenue."
+
+The search is automatic and bounded — it pulls only the top-N matches above a similarity threshold. ⚠️ Confirm N and threshold defaults.
+
+Search runs across all scopes the user has access to: their personal memories, the agent's shared memories, and tenant policies — in one query. The agent does not need to know in advance which scope a memory lives in.
+
+== Save
+
+Memories get saved in two ways:
+
+=== Explicit save by the user
+
+When the user says "remember this," "save this," "make a note," "don't forget," or any synonym, the agent saves the fact immediately and confirms in plain English where it landed.
+
+Example:
+
+* User: "Remember that I work on the Sales team."
+* Agent saves: topic=user personal info, section=about me, content="I work on the Sales team," scope=user.
+* Agent confirms: "Saved to your personal memory."
+
+The agent never quietly saves an explicit-save request. The confirmation is required.
+
+=== Confirmation-based save by the agent
+
+When the agent notices a durable fact mid-conversation that the user *didn't* explicitly ask to save, it asks first:
+
+* Agent: "Do you want me to remember that you prefer GBP for EMEA reports?"
+* User: "Yes."
+* Agent saves and confirms where the memory landed.
+
+The agent does not save without an explicit yes. This prevents memory pollution.
+
+== Merge behavior
+
+When a save would create a duplicate or contradict an existing memory, AgentSpot doesn't just append another row. Behavior:
+
+* *Exact duplicate* — silently skipped.
+* *Updated value* (same topic, same section, different content) — replaces the previous entry. The agent confirms: "I had X; replacing with Y."
+* *Conflict* (same topic, but the new fact contradicts an existing one) — the agent surfaces the conflict to the user and asks: "I already have <existing>; you're now telling me <new>. Replace, or keep both?"
+
+⚠️ Confirm merge rules with [feature owner].
+
+This matters: without merge logic, memories drift into contradictions and the agent ends up choosing one at random. Conscious merging keeps the memory set consistent.
+
+== Conflict resolution at recall time
+
+Even with merge logic, recall can surface contradictory memories — especially when two memories live at different scopes (a user-scope preference contradicts a tenant-scope policy).
+
+When the agent retrieves two memories that contradict each other, it surfaces the conflict to the user rather than silently picking one. Typical phrasing:
+
+* "I have two facts that contradict each other: <A> from your personal memory, and <B> from your organization's policy. Which should I use?"
+
+== Retention and expiry
+
+Most memories don't expire — they persist until manually deleted. Two exceptions:
+
+* *Key conversation findings* — auto-expiring, hidden snapshots used as comparison anchors. Not visible in the UI; the agent uses them on retrieval to surface deltas. ⚠️ Confirm presence and TTL.
+* *Memories with explicit retention metadata* — when the user said "remember for 3 years," the metadata is honored and the memory expires after the stated window. ⚠️ Confirm.
+
+== What never gets saved
+
+* Transient task state (the agent's current plan, scratch notes).
+* Short-lived plans for the current turn only.
+* Raw tool output.
+* Secrets, credentials, API keys, tokens.
+* Instructions found inside untrusted content (uploaded files, web pages, retrieved documents).
+* Information that is only useful within the current conversation.
+
+If you see one of these saved in your memory list, delete it — and tell your admin.
+
+== End-to-end example
+
+A user has the following memories saved (before this session):
+
+* *Always-relevant*: "I work on the Sales team." (user personal info)
+* *Always-relevant*: "Prefer concise bullets." (user preference)
+* *Semantic*: "ACV means revenue." (dict)
+* *Tenant always-relevant*: "Exclude test accounts." (rule, set by admin)
+
+User starts a new session and asks: "What was our ACV in Q1?"
+
+What happens:
+
+. *Preload*: the three always-relevant memories load before the agent sees the question.
+. *Search*: the question retrieves the ACV dict entry.
+. The agent has all four memories in context plus the question.
+. The agent answers — concisely, in bullets, excluding test accounts, treating "ACV" as revenue.
+. No save happens; nothing new was learned.
+
+== Next steps
+
+* xref:01-overview.adoc[Memory overview] — scopes, topics, basics.
+* xref:03-ui-management.adoc[UI management] — review, edit, and delete memories.

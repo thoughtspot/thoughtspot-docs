@@ -1,0 +1,104 @@
+= Core Concepts
+:doctype: book
+:toc: left
+:toclevels: 2
+:icons: font
+
+[.lead]
+The vocabulary used throughout the AgentSpot documentation. Skim it once now; come back when a term feels fuzzy.
+
+[NOTE]
+====
+The skill / tool / connector terminology below uses generic placeholder framing. ⚠️ Confirm your organization's exact definitions and replace before publishing.
+====
+
+== Agent
+
+A focused assistant that does one thing well for a defined audience. An agent has:
+
+* *Instructions* — the system prompt that tells it how to behave.
+* *Data* — the data sources it can read.
+* *Skills* (and the tools they expose) — the actions it can take beyond answering.
+* *Settings* — model, response controls, citations.
+
+Agents are conversational: users ask questions, the agent responds, and follow-up questions stay in context within the same session.
+
+See: xref:../01-agents/01-overview.adoc[Agents overview].
+
+== Workflow
+
+A repeatable, multi-step process that runs end-to-end without a human in every step. Workflows are triggered by a schedule, an external event, a manual run, or an API call. Each step does one thing (fetch data, run an agent, transform, call a tool, wait for approval, branch).
+
+Use an agent when a person is in the loop asking questions. Use a workflow when the same series of steps needs to happen on a schedule or in response to an event.
+
+See: xref:../02-workflows/01-overview.adoc[Workflows overview].
+
+== Skill
+
+A *skill* is a capability you can attach to an agent so it can do more than answer questions. A skill is the highest-level unit you compose into an agent.
+
+⚠️ Confirm your skill definition with [feature owner]. The placeholder framing used here:
+
+* A skill bundles one or more *tools* and the instructions for when to use them.
+* Some skills are built-in (search the web, generate an image, render a chart). Others are custom skills your organization uploads.
+
+See: xref:../06-skills/01-overview.adoc[Skills overview].
+
+== Tool
+
+A *tool* is a single concrete action — for example, "send a Slack message," "create a Jira issue," "run a SQL query." A tool is what actually executes when an agent decides to act.
+
+⚠️ Confirm your tool definition with [feature owner]. The placeholder framing used here: tools are the executable units inside skills.
+
+== Connector
+
+A *connector* is the integration to an external system (Google Workspace, GitHub, Slack, Salesforce, ThoughtSpot, a custom MCP server). The connector handles authentication, data access, and which tools that system exposes.
+
+⚠️ Confirm your connector definition with [feature owner]. The placeholder framing used here: connectors are the integration layer; the tools an agent uses are surfaced through connectors.
+
+See: xref:../03-connectors/01-overview.adoc[Connectors overview].
+
+== Data source
+
+A specific data location an agent can read — a Snowflake schema, a ThoughtSpot Worksheet, a Google Drive folder, a set of uploaded files. Connectors enable data sources; an admin connects them once at the tenant level and shares them with the right groups.
+
+== Memory
+
+Memory lets agents and workflows remember information across sessions — user preferences, organizational facts, recurring rules. Without memory, every conversation starts from scratch. Memory is scoped (per user, per agent, per organization) so a personal note doesn't leak into a colleague's context.
+
+See: xref:../04-memory/01-overview.adoc[Memory overview].
+
+== Session
+
+A *session* is a single conversation with an agent. Within a session, the agent remembers earlier messages. Starting a new session resets the conversational context (but not long-term memory).
+
+== Model
+
+The large language model that powers an agent's reasoning. Your admin connects model providers; agent builders pick which model an agent uses. Defaults are set per tenant.
+
+== Role
+
+The permission level a user holds in AgentSpot. Typical roles:
+
+* *AgentSpot Admin* — tenant configuration.
+* *Agent Builder* — create, edit, publish agents and workflows.
+* *Agent Consumer* — use published agents.
+
+⚠️ Confirm the exact role names with [feature owner].
+
+== Group
+
+A named set of users — usually mapped from your identity provider. Groups control who can use a specific agent, workflow, or data source.
+
+== Publish / version
+
+When a builder publishes an agent or workflow, AgentSpot creates a new *version* and makes that version visible to the chosen audience. Earlier versions are kept so changes can be reviewed or rolled back.
+
+== Audit log
+
+A tenant-wide record of who did what and when — sign-ins, agent runs, data-source reads, configuration changes. Used for security review and troubleshooting.
+
+== Next steps
+
+* xref:00-introduction/03-quick-start.adoc[Quick start] — put these concepts to work.
+* xref:../get-started.adoc[Get started by role] — pick a path.

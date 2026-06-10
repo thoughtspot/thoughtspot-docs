@@ -1,0 +1,125 @@
+= Slack Connector
+:doctype: book
+:toc: left
+:toclevels: 2
+:icons: font
+:experimental:
+
+[.lead]
+Connect AgentSpot to Slack so agents and workflows can read channels, post messages, react, search history, and respond inside Slack threads.
+
+[NOTE]
+====
+⚠️ Confirm exact tool surface, scopes, and Slack-app install model for your tenant with [feature owner].
+====
+
+== What this connector surfaces
+
+⚠️ Confirm the full tool list. Typical tools:
+
+* *Channels* — list public/private channels the app has been added to; get channel info.
+* *Messages* — post message, post threaded reply, update, delete, schedule, react.
+* *Conversations* — get message history, get a single message, get a thread.
+* *Search* — search messages and files (workspace search permission).
+* *Users* — get user profile, look up by email.
+* *Files* — upload, get, list, delete.
+* *DMs* — send a direct message (use sparingly — high-noise).
+
+== Authentication
+
+Slack connectors are authenticated as a *Slack app* installed into your workspace.
+
+[cols="1,2",options="header"]
+|===
+|Install mode |When to use
+
+|*Workspace-wide install*
+|App installed once; visible across the whole workspace. Channels must add the bot to be readable.
+
+|*Org-wide install (Enterprise Grid)*
+|App installed at the org level; available to selected workspaces inside the grid.
+
+|*Per-channel grants*
+|App is installed but each channel must explicitly invite the bot before it can read or post.
+|===
+
+⚠️ Confirm which mode your tenant uses.
+
+== Setup (admin)
+
+. Open *Admin* > *Connectors* > *Add connector* > *Slack*. ⚠️ Confirm path.
+. Choose install mode and click through Slack's OAuth flow as a workspace admin.
+. Review and approve the bot and user scopes.
+. Choose which groups can use the connector.
+. (Optional) Restrict to specific channels — agents can only read/post in channels in the allow-list.
+. Test by posting a message to a test channel.
+
+*Expected result:* Status *Connected*; the bot is present in the workspace; allowed groups see Slack tools in builders.
+
+== Scopes
+
+⚠️ Confirm exact scopes. Typical bot scopes:
+
+* `channels:read`, `groups:read` — list channels.
+* `channels:history`, `groups:history` — read message history.
+* `chat:write` — post messages.
+* `chat:write.public` — post in channels the bot isn't in (use with care).
+* `reactions:write` — add reactions.
+* `users:read`, `users:read.email` — look up users.
+* `files:write`, `files:read` — upload and read files.
+* `search:read` — workspace-wide search (Enterprise Grid only).
+
+Best practice:
+
+* Don't grant `search:read` unless a use case justifies it — it gives the agent visibility into the entire workspace's history.
+* Don't grant `chat:write.public` if you can rely on adding the bot to specific channels.
+
+== Common patterns
+
+* *Channel digest* — workflow runs every morning, summarises the last 24 hours of a specific channel, posts the summary to a different (smaller) channel.
+* *On-demand answers in-channel* — agent is mentioned (`@your-bot what's our pipeline coverage?`), reads the question, runs a query, posts the answer threaded under the mention.
+* *Cross-channel triage* — workflow watches a `#help` channel; an agent classifies each new question and routes it to the right team channel with a contextual handoff message.
+* *Approval flows* — workflow asks a Slack approver via DM or channel post; the user clicks an action button; the workflow resumes on the response.
+
+== Limits
+
+⚠️ Confirm specific quotas with [feature owner] and Slack's rate-limit documentation. Watch for:
+
+* Per-method rate limits (tiered Tier 1–4) — `chat.postMessage` is generous; `search.messages` is strict.
+* Message-character limits (~40,000 characters; ~3,000 for blocks JSON practically).
+* File upload size limits.
+* The bot must be in a channel to read its history (unless `*.history` is broadly scoped).
+
+== Privacy
+
+* Slack messages sent to the underlying model are governed by your model provider's data-handling terms.
+* Treat any channel the bot can read as visible to your model provider. Don't add the bot to private exec channels unless that exposure is approved.
+* DM-style agent interactions can feel personal — make sure users know an AI bot is on the other side.
+
+== Troubleshooting
+
+[cols="1,2",options="header"]
+|===
+|Symptom |What to try
+
+|"not_in_channel" error when posting.
+|Invite the bot to the channel (`/invite @your-bot`) or enable `chat:write.public`.
+
+|Agent can post but can't read history.
+|Add `channels:history` (or `groups:history` for private) and reinstall the app.
+
+|Search returns nothing on Enterprise Grid.
+|Confirm the app is installed at the org level and has `search:read`.
+
+|Threaded replies appear as new top-level messages.
+|The agent's tool call is missing `thread_ts`. Configure the workflow step to capture and pass through the parent thread's timestamp.
+
+|Action button on an approval message doesn't trigger the workflow.
+|Confirm the Slack app's interactivity URL is pointing at the AgentSpot Slack inbound endpoint. ⚠️ Confirm exact URL.
+|===
+
+== Next steps
+
+* xref:01-overview.adoc[Connectors overview]
+* xref:../02-workflows/04-example-patterns.adoc[Example patterns] — scheduled digest and approval patterns use Slack.
+* xref:../05-admin-center/03-connector-admin.adoc[Connector administration]

@@ -1,0 +1,119 @@
+= Google Workspace Connector
+:doctype: book
+:toc: left
+:toclevels: 2
+:icons: font
+:experimental:
+
+[.lead]
+Connect AgentSpot to Google Workspace so agents and workflows can read Drive files, create and update Docs and Sheets, send email, and manage Calendar events.
+
+[NOTE]
+====
+⚠️ Confirm exact tool surface, scopes, and admin consent flow for your tenant with [feature owner]. The details below reflect typical capabilities and will be revised once confirmed.
+====
+
+== What this connector surfaces
+
+⚠️ Confirm the full tool list. Typical tools, grouped by Google service:
+
+* *Gmail* — list messages, get message, send, create draft, reply, forward, modify labels, list/download attachments, trash.
+* *Calendar* — list events, get event, create event, update, delete, quick-add, search, freebusy query.
+* *Drive* — list files, get file, search, export, list permissions, download, create folder, copy, rename.
+* *Docs* — get document, list tabs, get tab, create, append/insert text, find and replace.
+* *Sheets* — get values, append, update, batch get, batch update, clear, create spreadsheet, get metadata.
+
+== Authentication
+
+Two common patterns; pick the one your security team approves.
+
+[cols="1,2",options="header"]
+|===
+|Pattern |When to use
+
+|*OAuth — admin consent (domain-wide delegation)*
+|Tenant admin grants AgentSpot delegated access on behalf of users in the domain. Agents act *as* the user without each user re-consenting.
+
+|*OAuth — user pass-through*
+|Each user grants consent the first time they use the connector. Better for systems where personal accountability matters.
+|===
+
+⚠️ Confirm which pattern your tenant uses with [feature owner].
+
+== Setup (admin)
+
+. Open *Admin* > *Connectors* > *Add connector* > *Google Workspace*. ⚠️ Confirm path.
+. Choose the auth pattern.
+. Complete the Google OAuth flow with an admin account.
+. Review the scopes the connector requests (see below).
+. Approve and save.
+. Choose which groups can use the connector.
+. (Optional) Restrict the tool surface — e.g. enable Drive and Calendar but not Gmail.
+. Test the connection.
+
+*Expected result:* Connector status *Connected*; allowed groups see Google Workspace tools in the agent and workflow builders.
+
+== Scopes
+
+⚠️ Confirm exact scopes with [feature owner]. Typical scopes requested:
+
+* `https://www.googleapis.com/auth/gmail.modify` — Gmail read/write (no send).
+* `https://www.googleapis.com/auth/gmail.send` — send mail.
+* `https://www.googleapis.com/auth/calendar` — Calendar read/write.
+* `https://www.googleapis.com/auth/drive` — Drive full access (consider narrower `drive.file` or `drive.readonly`).
+* `https://www.googleapis.com/auth/documents` — Docs read/write.
+* `https://www.googleapis.com/auth/spreadsheets` — Sheets read/write.
+
+Best practice: enable only the scopes the agents in your tenant will actually use. You can come back and add more later.
+
+== Common patterns
+
+* *Calendar assistant* — agent reads the user's Calendar, drafts a daily schedule summary, and quick-adds new events from natural language.
+* *Drive search and Q&A* — agent searches Drive for a topic, downloads relevant docs into the session, and answers grounded in those docs.
+* *Inbox triage* — workflow runs every morning, summarises unread Gmail, files reportable items into labels, drafts replies for high-priority threads.
+* *Doc generation* — workflow gathers KPIs, an agent drafts a narrative, the workflow creates a Google Doc from the narrative and shares the link in Slack.
+
+== Limits
+
+⚠️ Confirm specific quotas with [feature owner] and Google's API documentation. Typical limits to watch:
+
+* Gmail send quotas (per user, per day).
+* Drive request rate limits (queries per 100 seconds per user).
+* Sheets cells-per-request limits on large batch updates.
+* Per-tenant total request budget if your admin has set one.
+
+When an agent hits a limit, the connector tool call fails with a quota error. The agent (or workflow step) should fail or retry with backoff according to its error-handling configuration.
+
+== Privacy
+
+* OAuth tokens are stored encrypted at rest. ⚠️ Confirm encryption details.
+* Per-user pass-through means user A's session cannot read user B's mail or Drive — Google enforces this; AgentSpot does not bypass it.
+* Domain-wide delegation gives the connector broad reach. Use the smallest set of allowed groups, and audit usage weekly.
+
+== Troubleshooting
+
+[cols="1,2",options="header"]
+|===
+|Symptom |What to try
+
+|OAuth flow fails with "admin policy blocks app".
+|Your Google admin has not whitelisted the AgentSpot OAuth client. Add it in the Google Admin Console under *Security* > *API controls*.
+
+|Agent says "I can't access that file."
+|Confirm the user (or service account) has access to the file in Google. AgentSpot does not bypass Google's permissions.
+
+|Calendar event creation succeeds but invitees don't get email.
+|`send_notifications` may be disabled on the call. Toggle it in the agent's instructions or the workflow step config.
+
+|Sheets read returns empty.
+|Confirm the A1 range and sheet name (single-quoted if it contains spaces). Use *Get metadata* first to discover tab names.
+
+|Token expired error after weeks of working.
+|Token refresh failed. Reconnect via *Admin* > *Connectors* > Google Workspace > *Reauthorize*.
+|===
+
+== Next steps
+
+* xref:01-overview.adoc[Connectors overview]
+* xref:../06-skills/01-overview.adoc[Skills overview] — how connector tools are surfaced via skills.
+* xref:../05-admin-center/03-connector-admin.adoc[Connector administration] — managing connectors at tenant level.

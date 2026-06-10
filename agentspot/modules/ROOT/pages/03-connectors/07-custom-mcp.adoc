@@ -1,0 +1,145 @@
+= Custom MCP Connector
+:doctype: book
+:toc: left
+:toclevels: 2
+:icons: font
+:experimental:
+
+[.lead]
+Connect your own MCP (Model Context Protocol) server to AgentSpot so agents and workflows can use tools you build and host yourself.
+
+[NOTE]
+====
+⚠️ Confirm exact MCP transport, packaging, auth, and admin-approval flow for your tenant with [feature owner]. The structure below reflects typical capabilities and will be revised once confirmed.
+====
+
+== When to build a custom MCP connector
+
+Build one when:
+
+* You need agents to call an internal system that no built-in connector covers.
+* You want to wrap a public API behind your own business logic (validation, rate limits, audit, compliance).
+* You want to expose a domain-specific tool surface that's purpose-built for your agents (not the entire underlying API).
+
+Don't build one when:
+
+* A built-in connector already covers the system. Customising adds maintenance burden.
+* The action is one-off. Have someone perform it manually.
+* You haven't validated the underlying tool calls with a prototype first.
+
+== What a custom MCP server provides
+
+An MCP server exposes:
+
+* *Tools* — discrete actions an agent can call (name, description, input schema, output schema).
+* *Resources* (optional) — readable artifacts the agent can pull in (files, snippets, records).
+* *Prompts* (optional) — pre-baked prompt fragments your tools want injected into the agent's context.
+
+AgentSpot connects to your MCP server, discovers what it exposes, and surfaces the tools in the agent and workflow builders.
+
+== Architecture
+
+[source,text]
+----
++----------------+        MCP        +------------------+
+|   AgentSpot    | <===============> | Your MCP server  |
+| (agent runtime)|   (transport)     | (your code)      |
++----------------+                   +------------------+
+                                              |
+                                              v
+                                     +------------------+
+                                     | Your downstream  |
+                                     | system / API     |
+                                     +------------------+
+----
+
+* AgentSpot sits on one side; your MCP server sits on the other.
+* Transport is typically HTTP(S) with JSON-RPC, or stdio for local dev. ⚠️ Confirm supported transports.
+* Auth between AgentSpot and your server is configured per connection (bearer token, mTLS, signed request).
+* Your server is responsible for authenticating *to its downstream system* — AgentSpot doesn't touch those credentials.
+
+== Build a custom MCP server (developer)
+
+The developer building the server is usually not the AgentSpot admin. High-level steps:
+
+. *Define the tools* — for each action: name, description, input/output schemas in JSON Schema, when-to-use guidance.
+. *Implement the server* using an MCP SDK in your language of choice. ⚠️ Confirm supported SDKs.
+. *Add downstream auth* — your server holds the credentials to the downstream system; rotate them per your security policy.
+. *Add observability* — log every tool call (caller, inputs, output, duration). Custom audit beyond AgentSpot's own logs.
+. *Add rate limits* — protect your downstream API from runaway agent behaviour.
+. *Package and host* — typically a container in your infra; expose an HTTPS endpoint AgentSpot can reach.
+. *Document the tool surface* — internal docs for AgentSpot builders explaining which tool does what and when to use each.
+
+== Register the server (admin)
+
+. Open *Admin* > *Connectors* > *Add connector* > *Custom MCP*. ⚠️ Confirm path.
+. Enter the server URL and authentication (bearer token, mTLS cert, etc.).
+. AgentSpot connects and reads the tool manifest. Review the declared tools, scopes, and metadata.
+. Approve the manifest. (Any future server-side change to tools, scopes, or auth requires re-approval. ⚠️ Confirm.)
+. Choose allowed groups.
+. (Optional) Set per-tool quotas.
+. Test by listing tools and running one through the admin console. ⚠️ Confirm test surface.
+
+*Expected result:* Custom MCP server appears in the connector list with status *Connected*; allowed groups see its tools in builders.
+
+== Tool definition best practices
+
+Tool definitions are prompts. The agent decides which tool to call based on the tool's name and description.
+
+* *Name precisely.* `create_jira_issue_in_support_project` beats `create_issue`.
+* *Describe specifically.* "Creates a Jira issue in the SUPPORT project. Use when the user reports a customer-facing bug." Beats "Creates an issue."
+* *Constrain input schemas.* Required fields should be required; optional fields should have sensible defaults; enums should be enums, not free-text.
+* *Return structured output.* JSON with named fields outperforms a free-text blob — downstream steps can reference them.
+* *Fail loudly.* Return clear, actionable error messages. `"validation_error: project key must be one of SUPPORT, BUG, FEAT"` beats `"400 Bad Request"`.
+
+See xref:../06-skills/02-custom-skills.adoc[Custom skills] for additional guidance.
+
+== Versioning
+
+Treat your MCP server like any other API: semver, changelog, deprecation policy.
+
+* *Breaking changes* (renamed tool, removed tool, changed required input) — bump major version. AgentSpot admins must re-approve.
+* *Backwards-compatible additions* (new tool, new optional input, new output field) — bump minor.
+* *Internal changes* (perf, internal refactors, no tool-surface change) — bump patch; no admin re-approval needed. ⚠️ Confirm re-approval policy.
+
+Keep older versions running in parallel during transitions so agents have time to migrate.
+
+== Security checklist
+
+Before exposing a custom MCP server to AgentSpot:
+
+* [ ] Server is HTTPS only; no plaintext transport.
+* [ ] AgentSpot authenticates with a credential scoped to AgentSpot (not a shared org credential).
+* [ ] Server authenticates to downstream systems with least-privilege credentials.
+* [ ] Every tool call is logged on the server with caller identity, inputs, and output.
+* [ ] Per-tool rate limits are in place.
+* [ ] Server is in a network position that can be revoked quickly (DNS, ingress, IAM).
+* [ ] A runbook exists for rotating the AgentSpot ↔ server credential.
+
+== Troubleshooting
+
+[cols="1,2",options="header"]
+|===
+|Symptom |What to try
+
+|AgentSpot fails to connect.
+|Confirm the URL is reachable from AgentSpot's IP range; confirm TLS cert is valid; check server logs for the inbound request.
+
+|Tools appear in the manifest but don't show in the builder.
+|Confirm the connector is shared with the builder's group; the manifest may be cached — refresh.
+
+|Tool call fails with a schema error.
+|Inputs don't match the tool's declared schema. Either tighten the agent's instructions or relax the schema (don't do the latter without thought).
+
+|Tool call works in dev but not in prod.
+|Different downstream credentials, different network path, or different rate limits. Diff configs and check server-side logs.
+
+|Manifest changed and tools disappeared from the builder.
+|Server change requires admin re-approval before the new manifest is exposed. Approve in *Admin* > *Connectors*.
+|===
+
+== Next steps
+
+* xref:01-overview.adoc[Connectors overview]
+* xref:../06-skills/02-custom-skills.adoc[Custom skills] — related path for code-level extensions.
+* xref:../05-admin-center/05-security-architecture.adoc[Security architecture] — how custom MCP fits the tenant's overall security posture.

@@ -1,0 +1,135 @@
+= Custom Skills
+:doctype: book
+:toc: left
+:toclevels: 2
+:icons: font
+:experimental:
+
+[.lead]
+Upload your organization's own skills so agents can use internal tools and APIs alongside the built-in catalog.
+
+[NOTE]
+====
+⚠️ Confirm the full custom-skills capability, file format, and packaging requirements with [feature owner]. The structure below reflects typical capabilities and will be revised once confirmed.
+====
+
+== When to build a custom skill
+
+Build one when:
+
+* The action lives in an internal system your connectors don't already cover.
+* You want agents to invoke a specific API with consistent parameters.
+* The action needs to enforce organization-specific business logic (validation, rate limits, audit logging) that you don't want every agent builder to reimplement.
+
+Don't build one when:
+
+* A built-in skill or existing connector does the job. Customising adds maintenance burden.
+* The action is one-off. Just have someone perform it manually.
+* You haven't first validated the action with a prototype workflow using existing tools.
+
+== Roles
+
+* *AgentSpot Admin* — uploads, enables, and governs custom skills.
+* *Custom skill author* (typically a developer in your org) — packages the skill per the AgentSpot spec.
+* *Agent Builder* — attaches enabled custom skills to agents, same as built-in ones.
+
+== Skill package contents
+
+A custom skill is packaged as a manifest plus its implementation. ⚠️ Confirm exact format with [feature owner]. Typical contents:
+
+* *Manifest* — name, description, version, required scopes, tool definitions.
+* *Tool definitions* — for each action: name, description, input schema, output schema, when-to-use guidance.
+* *Implementation* — code that executes when the agent calls a tool. Typically packaged as a container, function, or MCP server reference.
+* *Auth configuration* — how the skill authenticates to the downstream system (service account, OAuth, API key, signed request).
+* *Icon and metadata* — what shows in the skill picker.
+
+The manifest is the contract — the agent only sees what the manifest declares, not the underlying implementation.
+
+== Upload flow (admin)
+
+. Open *Admin* > *Skills* > *Custom skills*. ⚠️ Confirm navigation.
+. Select *Upload skill*.
+. Provide the skill package (file upload, repository URL, or MCP server URL — depending on supported delivery modes). ⚠️ Confirm modes.
+. Review the manifest. Confirm the declared tools, required scopes, and auth configuration match what your security team approved.
+. Provide any required credentials (API keys, OAuth client secrets, service account JSON).
+. Choose which groups can use this skill.
+. (Optional) Set per-skill quotas and audit-logging level.
+. Select *Enable*.
+
+*Expected result:* The custom skill appears in the *Skills* catalog for the selected groups, and agent builders can attach it.
+
+== Versioning a custom skill
+
+Custom skills follow the same publish-and-version model as agents:
+
+. The author publishes a new version of the skill package.
+. The admin reviews the manifest diff (especially new tools, new scopes, or changed auth).
+. The admin promotes the new version (manually or automatically per tenant policy).
+. Agents using the skill pick up the new version on their next run. ⚠️ Confirm cutover behavior.
+
+Keep older versions enabled in parallel while you verify the new one. Don't disable an old version until you've confirmed every dependent agent has migrated cleanly.
+
+== Authentication patterns
+
+⚠️ Confirm supported patterns with [feature owner]. Typical options:
+
+[cols="1,2",options="header"]
+|===
+|Pattern |Use when
+
+|*Service account*
+|One shared credential for all agents. Simpler; less granular auditing.
+
+|*User pass-through (OAuth)*
+|Each user authenticates with their own credential to the downstream system. Better for systems that care which person took the action.
+
+|*Per-tool credentials*
+|Different tools in the same skill use different credentials (e.g. read uses a read-only token; write uses a service account).
+|===
+
+== Governance
+
+* *Scopes* — every custom skill declares the scopes it requires. The admin must approve each scope before the skill can be enabled. Treat scope expansion in a new version as a security review event.
+* *Audit* — every custom-skill tool invocation is logged: who, when, agent, inputs, outputs. ⚠️ Confirm audit fields.
+* *Quotas* — set per-tool quotas to prevent runaway costs (especially for tools that hit paid third-party APIs).
+* *Sandboxing* — code-based skills run in an isolated sandbox. ⚠️ Confirm sandbox model.
+
+== Best practices
+
+For skill authors:
+
+* *Tool descriptions are prompts.* The agent picks which tool to call based on the description. Be specific: "Create a Jira issue in the SUPPORT project" beats "Create an issue."
+* *Keep input schemas strict.* Required fields should be required; optional fields should have sensible defaults. Loose schemas confuse the agent.
+* *Return structured output.* JSON with named fields outperforms a free-text blob — downstream steps can reference the fields.
+* *Fail loudly.* Return clear, actionable error messages. "Invalid project key" is better than "400 Bad Request."
+
+For admins:
+
+* *Stage rollouts.* Enable a new skill (or version) for a small group first.
+* *Watch the audit log* for the first week of any new skill. Look for unexpected tool calls, malformed inputs, or unusually high call rates.
+* *Review scopes quarterly.* Custom skills accumulate scope over time. Audit and revoke what's no longer needed.
+
+== Troubleshooting
+
+[cols="1,2",options="header"]
+|===
+|Symptom |What to try
+
+|Skill upload fails validation.
+|Re-check the manifest against the spec. Common causes: missing required field, invalid scope name, malformed input schema.
+
+|Skill is enabled but doesn't appear in the agent builder.
+|Confirm the agent builder's group is in the skill's allowed-groups list.
+
+|Tool call fails with an auth error.
+|Credential may have expired or been revoked. Refresh in *Admin* > *Skills* > the skill > *Credentials*.
+
+|Tool call succeeds but the agent ignores the output.
+|The agent's *Instructions* don't tell it what to do with the output. Add a sentence in the prompt referencing the tool by name.
+|===
+
+== Next steps
+
+* xref:01-overview.adoc[Skills overview] — built-in catalog and basics.
+* xref:../03-connectors/01-overview.adoc[Connectors] — the integration layer; custom MCP servers are a related path.
+* xref:../05-admin-center/01-overview.adoc[Admin center] — where skills are governed.

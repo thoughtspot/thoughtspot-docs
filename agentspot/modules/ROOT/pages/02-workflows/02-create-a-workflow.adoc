@@ -1,0 +1,151 @@
+= Create a Workflow
+:doctype: book
+:toc: left
+:toclevels: 3
+:sectnums:
+:icons: font
+:experimental:
+
+[.lead]
+Build, test, publish, and monitor your first workflow end-to-end.
+
+== Overview
+
+This guide is the full builder walkthrough. For trigger and step-type depth, see xref:03-triggers-and-step-types.adoc[Triggers and step types]. For ready-made shapes, see xref:04-example-patterns.adoc[Example patterns].
+
+By the end you'll have a published, active workflow with a clean first run.
+
+== Prerequisites
+
+* You hold the *Agent Builder* role and have built at least one working agent.
+* The agents, data sources, and tools you plan to use are configured and shared with your group.
+* You can answer in one sentence: "What triggers this workflow, and what is the final outcome?"
+* For workflows that write to external systems (Slack, email, CRM, ticketing), the system's owner has approved automated writes.
+
+== Step 1: Plan the workflow
+
+Sketch this on paper before opening the builder.
+
+* *Trigger* — what starts it.
+* *Steps* — each step in order, one verb per step.
+* *Inputs / outputs* — what each step receives and produces.
+* *Final outcome* — the visible result (a message, a record updated, a doc created).
+* *Failure behavior* — retry, skip, alert, stop, fallback.
+* *Approval points* — any steps that need human review before continuing.
+
+If you can't describe the workflow in five bullets, split it.
+
+== Step 2: Create a new workflow
+
+. Open *Workflows* > *Create workflow*. ⚠️ Confirm label.
+. Enter *Name* and a one-sentence *Short description*.
+. Choose *Start from scratch* or pick a template. ⚠️ Confirm template availability.
+. Select *Create*.
+
+*Expected result:* The canvas opens with a single empty *Trigger* node.
+
+== Step 3: Configure the trigger
+
+Pick one — see xref:03-triggers-and-step-types.adoc#triggers[Trigger types] for the full list and when to use each.
+
+. Select the *Trigger* node.
+. Choose the trigger type and fill in its details (cron, event source, webhook auth, etc.).
+. Save.
+
+*Expected result:* The trigger node shows its type and a *Configured* badge. ⚠️ Confirm badge label.
+
+== Step 4: Add steps
+
+Add steps in order. Each step has a type, a name, and an input drawn from earlier steps.
+
+. Select the *+* button after the trigger.
+. Pick a step type — see xref:03-triggers-and-step-types.adoc#step-types[Step types] for the catalog.
+. Give it a short, descriptive name (`Summarize yesterday's deals`, not `Step 3`).
+. Map the input fields. Reference earlier steps using the step picker — e.g. `{{steps.fetch_pipeline.rows}}`. ⚠️ Confirm reference syntax.
+. Save.
+
+Repeat until the workflow is complete.
+
+=== Best practices
+
+* One verb per step. If a step does two things, split it.
+* Name steps by what they do, not by their type.
+* Put long agent reasoning behind a *Run agent* step; don't try to express logic in transforms.
+* Add a *Wait for approval* step before any irreversible external action while you build trust in the workflow.
+
+== Step 5: Configure error handling
+
+Decide per step what should happen if it fails. See xref:03-triggers-and-step-types.adoc#error-handling[Error handling].
+
+. Select a step > *Error handling*. ⚠️ Confirm section name.
+. Choose: *Retry*, *Skip*, *Alert and stop*, or *Branch to fallback*.
+. Set an *Owner* email for failure alerts.
+
+== Step 6: Test with a manual run
+
+Never schedule a workflow before you've run it manually at least once.
+
+. Select *Test run*. ⚠️ Confirm label.
+. Provide any required inputs (for event/webhook workflows, use a sample payload).
+. Watch the run on the canvas — each step turns green on success, red on failure.
+. Open the run log and verify, per step, that input, output, and duration are as expected.
+. For external writes, confirm the result in the target system (Slack message appeared, ticket created, doc updated).
+
+Iterate until the test run is clean.
+
+== Step 7: Add observability
+
+. Open *Settings* > *Notifications* on the workflow. ⚠️ Confirm navigation.
+. Configure:
++
+* *On failure* — who, how (email, Slack).
+* *On long run* — alert when a run exceeds a duration threshold.
+* *On success* — usually off. Turn on only for high-value workflows.
+. (Optional) Pipe runs to your observability stack via the admin-configured audit export. ⚠️ Confirm availability.
+
+== Step 8: Publish and activate
+
+. Select *Publish*.
+. Choose audience: *Private*, *Group*, or *Organization*.
+. Add release notes.
+. Toggle *Active* to *On*.
+. Publish.
+
+*Expected result:* Status shows *Active* and the trigger is armed. Scheduled workflows show the next run time on the detail page.
+
+== Step 9: Monitor the first week
+
+. Open *Workflows* > your workflow > *Runs*.
+. Check daily. For each run, confirm it ran on the expected trigger, completed successfully, and produced the right downstream result.
+. If failures cluster around the same step, fix that step and publish a new version.
+
+== Troubleshooting
+
+[cols="1,2",options="header"]
+|===
+|Symptom |What to try
+
+|Test run never starts.
+|Confirm the trigger is configured. For *Webhook* triggers, confirm the calling system is sending to the right URL with the right auth.
+
+|A *Run agent* step times out.
+|The agent may be doing too much. Split into smaller agents, or attach less data.
+
+|*Call tool* step fails with an auth error.
+|Connected credential may have expired. Ask your admin to refresh it.
+
+|Outputs from one step are not in the next step's input picker.
+|Save the upstream step first; downstream pickers only see saved outputs. ⚠️ Confirm.
+
+|Workflow ran but no external message appeared.
+|Confirm the *Call tool* step executed (green). If it did, check destination permissions.
+
+|Scheduled runs not firing.
+|Confirm the workflow is *Active* and the schedule's timezone is what you intended. Defaults to UTC. ⚠️ Confirm.
+|===
+
+== Next steps
+
+* xref:03-triggers-and-step-types.adoc[Triggers and step types] — full catalog and depth.
+* xref:04-example-patterns.adoc[Example patterns] — four shapes to adapt.
+* xref:../06-skills/01-overview.adoc[Skills] — extend what your workflow steps can do.

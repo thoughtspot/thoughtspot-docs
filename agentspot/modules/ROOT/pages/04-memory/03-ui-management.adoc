@@ -1,0 +1,140 @@
+= Managing Memory in the UI
+:doctype: book
+:toc: left
+:toclevels: 2
+:icons: font
+:experimental:
+
+[.lead]
+Review, edit, and delete your memories. This is where you go when an agent has remembered something wrong, when you want to audit what's been saved about you, or when you want to add a memory directly.
+
+[NOTE]
+====
+⚠️ Confirm the exact UI surface, navigation, and labels with [feature owner]. The flows below reflect typical capabilities and will be revised once confirmed.
+====
+
+== Where memory lives in the UI
+
+. From the top navigation, open your profile menu > *My memory*. ⚠️ Confirm navigation.
+. You see all memories visible to you, grouped by scope.
+
+The same view is reachable from inside any agent conversation via *More* > *Memory*. ⚠️ Confirm.
+
+== What the view shows
+
+For each memory:
+
+* *Content* — the saved text.
+* *Topic* — user personal info, preferences, rule, fact, recipe, dict, explicit instructions.
+* *Scope* — user, user + agent, agent, tenant.
+* *Always-relevant* — yes or no.
+* *Last updated* — when it was saved or last edited.
+* *Source* — saved by you, saved by the agent (with your consent), or set by an admin.
+
+Use the filters at the top to narrow by scope, topic, or text search.
+
+== Add a memory directly
+
+You don't have to go through an agent conversation.
+
+. Select *Add memory*.
+. Enter the content (the body — no headings).
+. Pick the *Topic*.
+* For user personal info or preferences, also pick the *Section* (about me, brief history, my data, preferences, top of mind, working style).
+. Pick the *Scope* — usually defaults to user.
+. Choose *Always relevant* if the memory should load every session, or leave it for semantic recall.
+. (Optional) Add metadata (e.g. retention period, tag).
+. Save.
+
+*Expected result:* The memory appears in your list immediately, and any agent you talk to from that point on can use it.
+
+== Edit a memory
+
+. Open the memory.
+. Edit the content, topic, section, scope, or always-relevant flag.
+. Save.
+
+Edits replace the previous entry — there is no append. The original is not kept (other than in your audit log). ⚠️ Confirm.
+
+== Delete a memory
+
+. Open the memory.
+. Select *Delete*.
+. Confirm.
+
+*Expected result:* The memory is removed and will no longer be preloaded or searched. Conversations that used it before the delete are unchanged.
+
+== Review what an agent can see about you
+
+. Open the agent's detail page > *Memory access*. ⚠️ Confirm tab name.
+. You see the subset of your memories this agent can read — based on scope filtering.
+
+If the agent is reading more than you'd like, narrow the scope on the offending memories (e.g. move from "user" to "user + a specific agent").
+
+== Bulk operations
+
+⚠️ Confirm available bulk operations with [feature owner]. Typical:
+
+* *Export* — download your memories as JSON for backup or review.
+* *Bulk delete* — remove all memories matching a filter.
+* *Re-classify* — change scope or always-relevant on multiple memories at once.
+
+== Tenant-scoped memory (admin)
+
+Tenant memories (org-wide policies, glossary entries, rules) are managed by your admin in the admin center.
+
+. Admin > *Memory* > *Tenant*. ⚠️ Confirm path.
+. Add, edit, or delete tenant memories.
+. Tenant memories are visible to every user but cannot be edited by them.
+
+⚠️ Confirm admin governance controls (approvals, audit, change history).
+
+== Resolving conflicts
+
+If you have two memories that contradict each other (e.g. two values for the same fact), agents may surface the conflict mid-conversation or pick at random.
+
+. Filter your memory list by topic.
+. Look for two or more entries that say different things about the same subject.
+. Pick the right one. Edit it to make it authoritative. Delete the others.
+
+For tenant-vs-personal conflicts, talk to the memory owner before deleting either side — the tenant memory may exist for a policy reason your personal memory shouldn't override.
+
+== Auditing what's been saved
+
+If you want to know *when* and *how* a memory was saved:
+
+. Open the memory > *History*. ⚠️ Confirm.
+. You see the timeline: created, edited, used in conversations.
+
+Agents are required to confirm with you before saving non-explicit memories. If you see a memory you didn't approve, delete it and let the agent's owner (or your admin) know.
+
+== Best practices
+
+* *Audit monthly.* Open your memory list once a month and skim. Delete what's stale.
+* *Keep always-relevant lean.* Every always-relevant memory eats context. If a fact is only sometimes relevant, leave it as semantic.
+* *Use sections deliberately.* For user personal info and preferences, picking the right section helps the agent organise context. "I'm on Sales" → about me. "Concise bullets" → preferences. Don't lump them.
+* *Don't save secrets.* If you find a credential in your memory list, delete it and report to your admin.
+
+== Troubleshooting
+
+[cols="1,2",options="header"]
+|===
+|Symptom |What to try
+
+|Agent isn't using a memory you saved.
+|Confirm it's marked *Always relevant* if you expected it everywhere, and that the scope includes the current agent.
+
+|Memory list is empty.
+|You may not have saved any memories yet, or your tenant has memory disabled. ⚠️ Confirm tenant enablement.
+
+|Memory appears in your list that you didn't save.
+|It may be a tenant-scoped policy (visible but not owned by you), or saved by an agent with your consent. Open *History* to see how it got there.
+
+|Agent saves something without asking.
+|This is a bug. Delete the memory and report to the agent's owner.
+|===
+
+== Next steps
+
+* xref:01-overview.adoc[Memory overview] — scopes, topics, basics.
+* xref:02-lifecycle.adoc[Memory lifecycle] — save, search, preload, merge in detail.

@@ -1,0 +1,166 @@
+= Triggers and Step Types
+:doctype: book
+:toc: left
+:toclevels: 2
+:icons: font
+:experimental:
+
+[.lead]
+Reference for every trigger and step type available in the workflow builder, with guidance on when to use each.
+
+⚠️ Confirm the complete trigger and step-type catalog with [feature owner]. The list below reflects typical capabilities and will be revised once confirmed.
+
+[[triggers]]
+== Triggers
+
+A workflow has exactly one trigger. Pick the one that matches *what starts the work*.
+
+=== Schedule
+
+Use when the workflow should run on a regular cadence.
+
+* *Configuration:* cron expression or simple cadence picker (daily, weekly, monthly).
+* *Timezone:* explicitly set per workflow. Defaults to UTC. ⚠️ Confirm default.
+* *Good for:* daily digests, weekly reports, end-of-month reconciliations.
+* *Watch out for:* daylight-saving shifts if the timezone is set to a region that observes DST.
+
+=== Event
+
+Use when an external system should start the workflow.
+
+* *Configuration:* event source (data warehouse change, CRM update, ticketing event, file dropped in storage). ⚠️ Confirm supported sources.
+* *Good for:* real-time triage (new lead, new ticket, new file arrived).
+* *Watch out for:* bursty event sources can spawn many concurrent runs. Set a concurrency limit on the trigger.
+
+=== Manual
+
+Use when a user starts the workflow from the AgentSpot UI on demand.
+
+* *Configuration:* optional input form (the user fills in fields before running).
+* *Good for:* ad-hoc reports, one-off enrichments, on-demand approval flows.
+* *Watch out for:* manual workflows still need observability — they don't fail silently just because someone clicked the button.
+
+=== Webhook / API
+
+Use when another system should call AgentSpot to start the workflow.
+
+* *Configuration:* signed webhook URL with a per-workflow secret. ⚠️ Confirm auth model.
+* *Good for:* deep integrations with systems that don't have a built-in event source.
+* *Watch out for:* webhook URLs are credentials. Rotate the secret if it leaks. Lock the source IPs if your network can.
+
+[[step-types]]
+== Step types
+
+Add as many steps as needed. Each step has a *type*, a *name*, an *input*, and per-step error handling.
+
+=== Fetch data
+
+Query a connected data source.
+
+* *Inputs:* the data source, a query or worksheet/table selection.
+* *Outputs:* a result set the next step can consume.
+* *Good for:* the first step in most workflows (load yesterday's deals, this week's tickets, last hour's events).
+* *Tips:* limit the query to what later steps actually need. Pulling 100,000 rows when you need 100 will slow every downstream step.
+
+=== Run agent
+
+Call an existing AgentSpot agent with an input.
+
+* *Inputs:* the agent, the prompt or structured input.
+* *Outputs:* the agent's response, plus any structured fields the agent returned.
+* *Good for:* anything that needs reasoning over data (summarize, classify, draft, decide).
+* *Tips:* build the agent first and test it standalone before wiring it into a workflow. Don't debug an agent through workflow logs.
+
+=== Transform
+
+Reshape data without calling a model.
+
+* *Inputs:* a result set from an earlier step.
+* *Outputs:* a filtered, mapped, or aggregated result set.
+* *Operations:* filter rows, select columns, rename, aggregate (sum, count, avg), join two result sets. ⚠️ Confirm the transform catalog.
+* *Good for:* keeping logic deterministic and cheap. Use a transform instead of an LLM whenever the operation is rule-based.
+
+=== Call tool
+
+Invoke a connected tool — Slack, email, Jira, GitHub, Salesforce, a custom tool.
+
+* *Inputs:* the tool, the action, the action's parameters (channel, recipient, project, fields).
+* *Outputs:* the tool's response (e.g. message id, ticket id, row id).
+* *Good for:* the *write* side of a workflow — sending, creating, updating.
+* *Tips:* always capture the returned id in the output, so later runs (or audits) can trace what was written.
+
+=== Wait for approval
+
+Pause the workflow until a named approver clicks approve or reject.
+
+* *Inputs:* approver(s), notification channel, message body, timeout.
+* *Outputs:* `approved` (true/false), approver identity, decision time.
+* *Branches:* the *approved* and *rejected* paths can go to different downstream steps.
+* *Good for:* irreversible external actions during the early life of a workflow. Remove once you trust the workflow.
+* *Tips:* set a timeout so the workflow doesn't stall forever waiting on a vacationing approver.
+
+=== Branch
+
+Run different downstream steps based on a condition.
+
+* *Inputs:* a condition expression over earlier-step outputs.
+* *Outputs:* picks one of N downstream paths.
+* *Good for:* routing (high-value lead → AE; low-value lead → SDR queue), error handling fallbacks.
+* *Tips:* keep branches shallow (≤3 outgoing paths per branch). Workflows that branch like a flowchart become unreadable.
+
+=== Other step types
+
+⚠️ Confirm with [feature owner] whether your tenant also supports:
+
+* *Loop* — iterate over a list (e.g. for each ticket, do X).
+* *Sub-workflow* — call another workflow as a step.
+* *Webhook out* — POST to an arbitrary URL outside the connector framework.
+* *Delay* — wait N minutes/hours before continuing.
+
+[[error-handling]]
+== Error handling
+
+Configure per step. Default for critical steps should be *Alert and stop*.
+
+[cols="1,2",options="header"]
+|===
+|Mode |Use when
+
+|*Retry*
+|Transient errors (network blip, 429 rate limit). Set retry count and backoff.
+
+|*Skip*
+|Optional enrichment. The workflow can complete usefully without this step's output.
+
+|*Alert and stop*
+|Critical step. Better to halt and notify than to continue with a wrong result.
+
+|*Branch to fallback*
+|There's a sensible plan B (e.g. if the AI step fails, send a templated fallback message).
+|===
+
+Always set an *Owner* email per workflow so failure alerts go somewhere they'll be read.
+
+== Step references
+
+Inside a step's input fields you can reference outputs of earlier steps. The default syntax is template-style:
+
+[source,text]
+----
+{{steps.fetch_pipeline.rows}}
+{{steps.summarize.response}}
+{{trigger.payload.lead_id}}
+----
+
+⚠️ Confirm exact reference syntax with [feature owner].
+
+Best practices:
+
+* Reference by step name, not position — renaming a step shouldn't break downstream references. ⚠️ Confirm.
+* Avoid deep paths (`steps.x.y.z.a`). If you need them, transform the data into a flatter shape first.
+* When a reference is missing or null, the workflow fails at the consuming step. Use the *Transform* step to provide defaults if a field is optional.
+
+== Next steps
+
+* xref:02-create-a-workflow.adoc[Create a workflow] — the builder walkthrough.
+* xref:04-example-patterns.adoc[Example patterns] — see triggers and steps composed into real shapes.

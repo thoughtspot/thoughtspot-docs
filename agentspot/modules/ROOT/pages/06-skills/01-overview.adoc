@@ -1,0 +1,118 @@
+= Skills Overview
+:doctype: book
+:toc: left
+:toclevels: 2
+:icons: font
+
+[.lead]
+Skills give agents and workflows the ability to do things — not just answer. A skill bundles one or more tools and the instructions for when to use them.
+
+[NOTE]
+====
+⚠️ Confirm the skill / tool / connector framing with [feature owner]. The placeholder framing used here:
+
+* *Skill* — the highest-level unit a builder attaches to an agent. Bundles tools and usage guidance.
+* *Tool* — a single concrete action (send a message, create a ticket, run a query). Tools live inside skills.
+* *Connector* — the integration to an external system. Connectors surface tools.
+
+This document will be revised end-to-end once the official definitions are provided.
+====
+
+== Why skills exist
+
+An agent without skills can only answer from its data. An agent with skills can also act:
+
+* Post a Slack message.
+* Create a Jira issue.
+* Send an email.
+* Update a CRM record.
+* Generate a chart.
+* Run a SQL query.
+
+Each of those is a *tool*. A *skill* groups related tools together with the instructions the agent needs to pick the right one.
+
+== Built-in skill catalog
+
+⚠️ Confirm the complete built-in catalog with [feature owner]. Typical categories:
+
+[cols="1,2",options="header"]
+|===
+|Skill |What it does
+
+|*Web search*
+|Search the public web and return ranked results. Use for facts not in your private data.
+
+|*Chart rendering*
+|Turn a result set into a chart the user can view inline.
+
+|*Image generation*
+|Create an image from a text prompt. Use sparingly — costs more than text.
+
+|*Code execution*
+|Run analysis code in a sandbox. Use for ad-hoc calculations, file parsing, and data transforms.
+
+|*File reading*
+|Read uploaded files (PDF, DOCX, CSV, etc.) with bounded windows or semantic search.
+
+|*Memory*
+|Save, search, and preload long-term memories. See xref:../04-memory/01-overview.adoc[Memory].
+
+|*Connector skills*
+|Skills exposed by each connected system — Google Workspace, GitHub, Slack, Salesforce, ThoughtSpot, custom MCP. See xref:../03-connectors/01-overview.adoc[Connectors].
+|===
+
+Your admin controls which skills are enabled and which groups can use each. If a skill you expect isn't visible in the builder, ask your admin.
+
+== Adding a skill to an agent
+
+. Open the agent editor > *Skills* tab. ⚠️ Confirm tab name.
+. Select *Add skill*.
+. Pick from the catalog your admin has enabled for your group.
+. Configure the skill (defaults like Slack channel, Jira project, max search results).
+. In *Instructions*, tell the agent *when* to use each skill. A skill without instructions on when to use it gets used at the wrong time, or not at all.
+
+=== Example instruction snippet
+
+[source,text]
+----
+When the user asks about something you cannot answer from the
+connected data, use the Web Search skill. Always cite the URL
+of the source you used. Do not use Web Search for internal
+company information.
+
+When the user asks for a chart or "show me a visual," use the
+Chart Rendering skill on the result set you just fetched. Do
+not chart when fewer than 3 data points are involved.
+----
+
+== Adding a skill to a workflow
+
+In a workflow, skills are invoked via *Call tool* steps. See xref:../02-workflows/03-triggers-and-step-types.adoc[Triggers and step types].
+
+You don't "add a skill to a workflow" the same way you add one to an agent. Instead, each *Call tool* step picks one tool from one connected skill.
+
+== Best practices
+
+* *Less is more.* An agent with 10 skills picks the wrong one more often than an agent with 3 skills.
+* *Pair every skill with an instruction.* Add a sentence in the agent's *Instructions* saying when to use it (and when not to).
+* *Match skill scope to agent scope.* A finance Q&A agent doesn't need image generation. Removing it improves both speed and accuracy.
+* *Test skills in the preview panel.* Trigger each skill at least once before publishing, and confirm the result looks right in the destination system.
+
+== Governance
+
+Skills are governed at the tenant level by your admin:
+
+* Which skills are available.
+* Which groups can use each skill.
+* Per-skill quotas (e.g. max web searches per user per day).
+* Per-skill audit logging.
+
+If a skill is missing or behaving differently than the docs describe, the most common cause is a tenant-level restriction. Check with your admin before assuming a bug.
+
+⚠️ Confirm governance controls with [feature owner].
+
+== Next steps
+
+* xref:02-custom-skills.adoc[Custom skills] — upload your organization's own skills.
+* xref:../03-connectors/01-overview.adoc[Connectors] — the integration layer that surfaces many of the skills above.
+* xref:../01-agents/02-create-an-agent.adoc[Create an agent] — attach skills to a working agent.

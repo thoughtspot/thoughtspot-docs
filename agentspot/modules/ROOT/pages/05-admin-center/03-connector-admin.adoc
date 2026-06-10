@@ -1,0 +1,132 @@
+= Connector Administration
+:doctype: book
+:toc: left
+:toclevels: 2
+:icons: font
+:experimental:
+
+[.lead]
+Connect external systems and model providers at the tenant level, restrict the tool surface, and share with the right groups. This article is the admin counterpart to the per-connector usage pages in xref:../03-connectors/01-overview.adoc[Connectors].
+
+== What you administer here
+
+Three categories of integration:
+
+. *Data and tool connectors* — Google Workspace, GitHub, Slack, Salesforce, ThoughtSpot, custom MCP. See per-connector pages in the connectors section.
+. *Model providers* — OpenAI, Anthropic, Google (Vertex AI / Gemini), Azure OpenAI, AWS Bedrock, ThoughtSpot-managed models. ⚠️ Confirm the supported provider list with [feature owner].
+. *Tenant-level integrations* — observability exports (SIEM, audit shipping), notification destinations (Slack workspace for failure alerts).
+
+== Add a connector
+
+The high-level shape is the same per connector. For specifics, follow the per-connector article.
+
+. Open *Admin* > *Connectors* > *Add connector*. ⚠️ Confirm path.
+. Pick the connector type.
+. Choose the authentication pattern (OAuth, service account, API key — varies by connector).
+. Complete the auth flow with an account that has the rights you want the connector to inherit.
+. Review the requested scopes. Approve only those your security team signed off on.
+. Choose which groups can use the connector.
+. (Optional) Restrict the tool surface per connector — e.g. enable Drive and Calendar but not Gmail; enable Salesforce reads but not writes.
+. (Optional) Set per-connector quotas (see xref:04-usage-and-limits.adoc[Usage and limits]).
+. Test the connection.
+
+*Expected result:* Status *Connected*; allowed groups see the connector's tools in builders.
+
+== Add a model provider
+
+. Open *Admin* > *Model providers* > *Add provider*. ⚠️ Confirm path.
+. Pick the provider.
+. Enter the credential (API key, service-account JSON, or equivalent). Credentials are stored encrypted at rest. ⚠️ Confirm encryption and key-rotation behaviour.
+. (Optional) Restrict which models from this provider are available. For example: allow GPT-4-class models; block experimental preview models; block image-generation models for tenants that don't use them.
+. Set a *Default model* for new agents.
+. Select *Test* to send a sample completion. Save.
+
+*Expected result:* The provider appears with status *Connected*; selected models appear in the agent builder's model picker.
+
+=== Best practices for model providers
+
+* Use separate API keys per environment if your provider supports it. Rotate on the schedule your security team requires.
+* Set a sensible default model so most builders never have to choose.
+* If cost is a concern, restrict expensive models to a small *Premium Builders* group.
+* Confirm with your provider's data-handling terms what the provider does (or doesn't) do with your data. Document the answer for your security review.
+
+== Per-group sharing
+
+Every connector and model provider has an allow-list of groups.
+
+* No one outside the allow-list can see the connector in the builder.
+* A user who loses group membership loses access at their next sign-in.
+* You can scope different groups to different subsets of the same connector's tools — e.g. Sales gets Salesforce reads only; RevOps gets reads and writes.
+
+⚠️ Confirm per-group tool-surface restriction with [feature owner].
+
+== Auth modes summary
+
+[cols="1,2",options="header"]
+|===
+|Mode |When to use
+
+|*Service account / app credential*
+|One shared identity for all agents. Simpler; less granular auditing.
+
+|*User pass-through*
+|Each user authenticates with their own credential. Better when audit needs personal attribution. Required for systems where row-level security depends on user identity.
+
+|*Mixed*
+|Read-only access via service account; writes require user pass-through. Common when reads should always work but writes need named attribution.
+|===
+
+⚠️ Confirm supported modes per connector — they vary.
+
+== Lifecycle
+
+* *Adding* — covered above.
+* *Reconnecting* — credentials expire or get rotated. *Admin* > *Connectors* > the connector > *Reauthorize*.
+* *Versioning* — for connectors backed by external apps (GitHub App, Slack app), the upstream version is yours to manage. AgentSpot just consumes it.
+* *Disabling* — disable a connector without deleting it; agents that used it see "tool unavailable" errors.
+* *Deleting* — removes the connector entirely. Agents that referenced it must be edited to remove the references.
+
+== Observability integrations
+
+⚠️ Confirm available export destinations with [feature owner]. Typical:
+
+* *Audit log export* — push audit events to Splunk, Datadog, S3, or your SIEM.
+* *Notification webhooks* — push connector failures, quota exhaustion, and other admin-level events to your incident tooling.
+
+Set these up before your wider rollout so you're not reacting to issues based only on user reports.
+
+== Best practices
+
+* *Start with read-only.* For every new connector, restrict to read scopes for the first two weeks. Add writes only when a use case justifies it.
+* *Share small.* Allow-list the smallest set of groups that actually needs the connector. Expand later.
+* *Name consistently.* `salesforce-prod`, `slack-ops`, `github-internal-tools` beats `connector-1`, `slack-x`, etc.
+* *Audit weekly* during the first month after adding any connector. Look for unexpected callers, unusual tool calls, or volume spikes.
+* *Document why each connector exists.* A short Confluence page per connector saves your successor (and future-you) hours of guessing.
+
+== Troubleshooting
+
+[cols="1,2",options="header"]
+|===
+|Symptom |What to try
+
+|Connector test succeeds but agents can't use it.
+|Connector isn't shared with the builder's group. Update the allow-list on the connector's detail page.
+
+|Connector test fails with an auth error.
+|Credential expired or rotated upstream. Reauthorize.
+
+|Builder sees the connector but specific tools are missing.
+|Tool surface has been restricted in the connector's settings. Check the *Tools* tab on the connector's detail page.
+
+|Model provider test fails after working.
+|API key revoked at the provider. Generate a new key and update in *Model providers*.
+
+|Audit events not appearing in your SIEM.
+|Export endpoint or credential expired. Re-run the test button on the export configuration.
+|===
+
+== Next steps
+
+* xref:../03-connectors/01-overview.adoc[Connectors overview] — per-connector usage pages.
+* xref:04-usage-and-limits.adoc[Usage and limits] — per-connector and per-group quotas.
+* xref:05-security-architecture.adoc[Security architecture]

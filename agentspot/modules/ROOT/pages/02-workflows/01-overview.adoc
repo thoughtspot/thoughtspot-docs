@@ -1,0 +1,87 @@
+= Workflows Overview
+:doctype: book
+:toc: left
+:toclevels: 2
+:icons: font
+
+[.lead]
+A workflow is a repeatable, multi-step process that runs end-to-end without a human in every step. Use a workflow when the same series of actions needs to happen on a schedule or in response to an event.
+
+== Agent vs workflow
+
+The two are complementary, not interchangeable.
+
+[cols="1,1,1",options="header"]
+|===
+|Dimension |Agent |Workflow
+
+|Trigger
+|A user asks a question.
+|Schedule, event, manual run, or API call.
+
+|Shape
+|Conversational and open-ended.
+|Linear or branching; repeatable.
+
+|Human in the loop
+|Always — the user is in the conversation.
+|Optional — only at explicit approval steps.
+
+|Best for
+|Q&A, drafting, lookups, exploration.
+|Digests, triage, scheduled reports, multi-step automation.
+
+|Cost shape
+|One model call per turn the user takes.
+|Predictable per run; many calls bundled into one execution.
+|===
+
+You can — and often should — call agents *from inside* workflows. A workflow handles the orchestration; an agent handles a step that needs reasoning.
+
+== Anatomy of a workflow
+
+* *Trigger* — what starts the workflow. Exactly one.
+* *Steps* — ordered operations. Each step does one thing.
+* *Inputs / outputs* — each step receives input from earlier steps and produces output for later ones.
+* *Error handling* — per step: retry, skip, alert, branch.
+* *Approvals* — optional pauses for human review before continuing.
+* *Notifications* — who gets told on failure, success, or long runs.
+
+See xref:03-triggers-and-step-types.adoc[Triggers and step types] for the full catalog.
+
+== When to build a workflow
+
+Build a workflow when:
+
+* The same series of steps happens regularly (weekly digest, end-of-month report).
+* An external event should reliably trigger an internal action (new lead → triage; new ticket → enrichment).
+* You want to automate a process that currently lives in someone's calendar reminders.
+* The output is consistent enough that occasional human review is fine, but full attention every time is wasteful.
+
+Don't build a workflow when:
+
+* The task only happens once. Just do it once.
+* Every run needs custom judgment from a human. Use an agent instead.
+* The downstream system can't tolerate occasional failures or wrong outputs. Build a human-in-the-loop process first; promote to a workflow once you trust it.
+
+== Lifecycle
+
+. *Plan* — trigger, steps, inputs/outputs, final outcome, failure behavior, approval points.
+. *Build* — drop the trigger, add steps in order, configure each one.
+. *Test* — manual run with sample inputs; verify each step's output and any external writes.
+. *Add observability* — failure alerts, long-run alerts.
+. *Publish and activate* — pick the audience, set status to *Active*.
+. *Monitor* — watch the first week; fix and republish where needed.
+. *Iterate* — review monthly; archive when no longer useful.
+
+== Roles
+
+* *Agent Builder* — typically the workflow builder too. Same role; ⚠️ confirm with [feature owner].
+* *AgentSpot Admin* — controls which triggers, data sources, and tools workflows can use.
+* End users typically don't interact with workflows directly; they receive the output (Slack messages, emails, tickets, doc updates) the workflow produces.
+
+== Where to go next
+
+. xref:02-create-a-workflow.adoc[Create a workflow] — the full builder walkthrough.
+. xref:03-triggers-and-step-types.adoc[Triggers and step types] — every trigger and step type, in depth.
+. xref:04-example-patterns.adoc[Example patterns] — four common workflow shapes you can adapt.

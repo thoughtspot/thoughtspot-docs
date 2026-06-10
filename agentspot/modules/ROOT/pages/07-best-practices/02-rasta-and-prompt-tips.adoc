@@ -1,0 +1,202 @@
+= RASTA Framework and Prompt Tips
+:doctype: book
+:toc: left
+:toclevels: 2
+:icons: font
+
+[.lead]
+Two things in one article: the *RASTA* structured pattern for writing agent instructions, and tactical prompt tips that apply regardless of which pattern you use.
+
+[NOTE]
+====
+⚠️ Confirm the RASTA framework definition with [feature owner]. The mapping below treats RASTA as an evolution of the five-section structure in xref:../01-agents/03-instruction-framework.adoc[Instruction framework]; rename and revise once the official definition is provided.
+====
+
+== RASTA
+
+RASTA is a five-section template for the agent's *Instructions* field. Each letter is a section that appears in the prompt, in order.
+
+[cols="1,1,2",options="header"]
+|===
+|Letter |Section |What goes there
+
+|*R*
+|*Role*
+|Who the agent is and who it serves. One sentence.
+
+|*A*
+|*Authority*
+|The data, tools, and decision-making power the agent has. What it can and can't do.
+
+|*S*
+|*Style*
+|Tone, format, length, citation requirements. Concrete rules, not adjectives.
+
+|*T*
+|*Tactics*
+|How the agent approaches problems — clarify, search, cite, refuse.
+
+|*A*
+|*Anchors*
+|Fallbacks and escalation: what to do when uncertain, when out-of-scope, when blocked.
+|===
+
+⚠️ Confirm letter expansions and ordering with [feature owner].
+
+=== Worked example
+
+[source,text]
+----
+ROLE
+You are the EMEA Pipeline Assistant. You help EMEA sales managers
+and RevOps understand the state of the EMEA pipeline.
+
+AUTHORITY
+You can:
+- Answer questions about open opportunities, stages, forecasts,
+  and historical close rates for EMEA accounts only.
+- Compare regions, segments, and time periods within EMEA.
+
+You cannot:
+- Discuss compensation, individual rep performance reviews, or any
+  non-EMEA region.
+- Take action on records (read-only).
+
+STYLE
+- Concise. Lead with the number.
+- Bullets for lists of accounts or stages.
+- Always name the data source you used.
+
+TACTICS
+- Always answer from the attached EMEA pipeline worksheet first.
+- If the question requires data not in the worksheet, say so and
+  suggest where to find it.
+- Cite the worksheet name in every factual answer.
+
+ANCHORS
+- If you don't have enough data to answer confidently, say
+  "I don't have enough data to answer that confidently" and stop.
+  Do not guess.
+- If asked about compensation or non-EMEA regions, say so and
+  suggest contacting RevOps.
+----
+
+Word count: ~180. Under the 300-word cap, fully structured, fallback explicit.
+
+=== RASTA vs the five-section structure
+
+If you've used the simpler structure in xref:../01-agents/03-instruction-framework.adoc[Instruction framework], the mapping is:
+
+* *Role* → R
+* *What to do* → A (Authority, do-side)
+* *What not to do* → A (Authority, do-not side)
+* *Tone and format* → S (Style)
+* *When unsure* → Anchors
+
+RASTA adds the *Tactics* section, which is where you tell the agent *how* to approach problems, not just *what* to do. Use it when an agent needs procedural guidance ("always check the worksheet first; then check memory; then escalate"), not just scope.
+
+== Prompt tips that apply to every framework
+
+These work regardless of whether you use RASTA, the five-section structure, or your own pattern.
+
+=== Put the most important rules first
+
+The first 50 words of an instruction carry the most weight. If the agent keeps ignoring a rule, the fix is almost always "move it up."
+
+=== Use lists, not paragraphs
+
+Models follow bulleted rules more reliably than prose. Convert "you should be concise and use bullets and cite sources" into:
+
+[source,text]
+----
+- Be concise.
+- Use bullets.
+- Cite sources.
+----
+
+=== Refer to data by name
+
+If you've attached a worksheet called `emea_pipeline_open`, mention it by name in the instructions:
+
+[source,text]
+----
+Answer pipeline questions using emea_pipeline_open.
+Answer historical close rates using emea_closed_history.
+----
+
+This dramatically reduces "I don't have access to that data" errors when the data is in fact attached.
+
+=== Pair every "don't" with a "do"
+
+Negative-only prompts ("don't discuss X, don't do Y") leave the agent without a path forward. Always pair:
+
+[source,text]
+----
+If asked about compensation, say "compensation questions go to
+HR" and stop. Do not discuss specific compensation amounts.
+----
+
+=== Tell the agent how to refuse
+
+Refusals delivered in a vacuum sound rude. Give the agent a script:
+
+[source,text]
+----
+If a question is outside your scope, respond with:
+"That's outside what I'm built to help with. Try [X] instead."
+----
+
+=== Don't restate what the model already knows
+
+The model knows it's a helpful assistant. Don't waste the first 30 words on it. Don't tell it which underlying model it is. Don't explain what an LLM is.
+
+=== Reference earlier turns explicitly
+
+For multi-turn flows, give the agent a rule for using prior turn context:
+
+[source,text]
+----
+If the user has mentioned a region earlier in the conversation,
+default to that region for follow-ups unless they say otherwise.
+----
+
+=== Test with adversarial questions
+
+Every iteration should include at least one out-of-scope question and one ambiguous question. An agent that handles your easy questions well is not yet tested — test the edges.
+
+== Common anti-patterns
+
+[cols="1,2",options="header"]
+|===
+|Anti-pattern |Why it backfires
+
+|"Always be accurate."
+|Vacuous. Tell it how — e.g. "only answer from attached data; if not present, say you don't know."
+
+|Long preamble before the first instruction.
+|Wastes the first-50-words weight.
+
+|Mixing instructions with data.
+|Data belongs in the *Data* tab. The prompt references data, doesn't contain it.
+
+|Telling the agent its temperature or model name.
+|Irrelevant to behavior. Removes attention from rules that matter.
+
+|Adding every rule that occurred to you.
+|Prompts that grow without pruning lose effectiveness. Add one rule, test, prune the redundant one.
+|===
+
+== Iterating on prompts
+
+. Test with 3–5 real questions plus one adversarial question.
+. When the agent fails, ask why — wrong scope? wrong tone? guessed?
+. Add or sharpen *one* instruction that addresses that failure.
+. Re-test. Don't accumulate rules; the prompt should stay short.
+
+A useful test: every time you publish a new version, count the words. If the count went up by more than 10%, you're probably accreting cruft. Prune.
+
+== Next steps
+
+* xref:../01-agents/03-instruction-framework.adoc[Instruction framework] — the simpler five-section version, with another worked example.
+* xref:03-design-patterns.adoc[Design patterns]
+* xref:04-security.adoc[Security best practices]

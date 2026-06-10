@@ -1,0 +1,193 @@
+= Common Issues — FAQ
+:doctype: book
+:toc: left
+:toclevels: 2
+:icons: font
+
+[.lead]
+The issues users and admins hit most often, with what to try first. Organised by symptom. If your issue isn't here, see xref:02-getting-help.adoc[Getting help].
+
+== Sign-in and access
+
+=== I can't sign in to AgentSpot at all
+
+. Confirm you can sign in to your ThoughtSpot tenant. AgentSpot sign-in is via the same SSO; if ThoughtSpot is broken, AgentSpot is too.
+. Try an incognito window — stale browser cookies are a common cause.
+. If your IdP requires MFA, complete the prompt fully before re-trying.
+. Still stuck: contact your AgentSpot admin.
+
+=== I signed in but I don't see *Agents* in the left navigation
+
+You're signed in but you don't hold any AgentSpot role. Your admin needs to:
+
+* Add you to an IdP group that's mapped to an AgentSpot role.
+* Or map an existing group of yours to one.
+
+After they fix it, sign out and back in — roles are evaluated at sign-in.
+
+=== I see *Agents* but the list is empty
+
+You hold a role but no agent has been shared with your group. Either no one has built any yet, or none have been published to a group you're in. Ask your team lead.
+
+== Using an agent
+
+=== "I don't have access to that data"
+
+* Confirm the data source is attached to the agent (visible on the agent's detail page).
+* Confirm your admin has shared the data source with your group.
+* For ThoughtSpot Worksheets: row-level security applies — the agent only sees what your ThoughtSpot identity can see.
+
+=== The agent gives confident but wrong answers
+
+* Re-read your question. Is it specific? Does it name a timeframe and slice?
+* Ask the agent: "What source did you use?" If the citation looks off, the agent guessed.
+* Check the agent's *What it can do* on the detail page. If your question is out of scope, the agent's answer is unreliable.
+* Send a thumbs-down with a one-line note so the owner can tighten the prompt.
+
+=== The agent answers out-of-scope questions
+
+This is a prompt issue, not a user issue. Report it to the agent's owner with the exact question and the unwanted answer.
+
+=== Different answers to the same question on different days
+
+Underlying data has changed. Ask the agent: "What's the as-of date of this answer?" If the date is recent, the answer reflects current data. If you need a stable snapshot, ask the owner to attach a frozen snapshot data source.
+
+=== Citations are missing
+
+* Confirm the agent has citations enabled (the owner controls this).
+* Some data sources don't support inline citations — for those, the agent should mention the source by name in prose.
+
+=== The agent is slow
+
+* Long, complex questions take longer than short, specific ones.
+* The first call in a session is slower than subsequent calls (the agent is loading data).
+* Persistent slowness on simple questions is worth reporting to the owner; the agent may have too much attached data.
+
+== Building an agent
+
+=== *Create agent* is greyed out
+
+You don't hold the *Agent Builder* role. Ask your admin.
+
+=== Test preview returns "no model available"
+
+Your admin hasn't shared a model provider with your group. Ask them.
+
+=== Test preview returns "no data sources available"
+
+Same — your admin hasn't shared any data sources with your group.
+
+=== Agent ignores formatting rules
+
+Move the formatting rules to the top of the *Instructions*. The first ~50 words carry the most weight. If the rules are at the bottom of a 500-word prompt, the model misses them.
+
+=== Agent keeps using the wrong data source
+
+In *Instructions*, refer to data sources by their attached names:
+
+[source,text]
+----
+Answer pipeline questions using emea_pipeline_open.
+Answer historical close rates using emea_closed_history.
+----
+
+Naming explicitly is more reliable than "use the appropriate source."
+
+=== *Publish* button is greyed out
+
+* You may have unsaved changes — save first.
+* You may not have publish permission on this agent (if it was created by someone else).
+
+=== New version published but users still see old behavior
+
+Active conversations finish on the previous version. Ask users to start a *New conversation* to pick up the new version.
+
+== Building a workflow
+
+=== Test run never starts
+
+* For *Schedule* triggers, you can't test by waiting — use *Test run* manually with sample inputs.
+* For *Webhook* triggers, confirm the calling system is hitting the right URL with the right auth header. Check the webhook's audit on AgentSpot's side.
+* For *Event* triggers, confirm the event source is producing events (test in the source system first).
+
+=== Step turns red with an auth error
+
+The connected credential expired. Ask your admin to reauthorize the connector in *Admin* > *Connectors*.
+
+=== Step outputs aren't in the next step's input picker
+
+Save the upstream step first. Downstream pickers only see *saved* outputs.
+
+=== Scheduled runs aren't firing
+
+* Confirm the workflow is *Active* (not just *Published*).
+* Confirm the schedule's timezone is what you intended. Schedules default to UTC.
+
+=== Same workflow runs twice for one event
+
+Most event sources don't dedupe. Your workflow needs an idempotency check (e.g. record the event id in a *Memory* entry, skip if already seen) or your trigger needs a dedup window.
+
+== Connectors
+
+=== Connector test succeeds but agents can't use it
+
+Connector isn't shared with the builder's group. The admin needs to add the group on the connector's detail page.
+
+=== Connector test fails after working for weeks
+
+OAuth token expired or was revoked at the source. Reauthorize in *Admin* > *Connectors*.
+
+=== Specific tools missing from a connector that's connected
+
+The admin has restricted the tool surface. Open the connector's *Tools* tab to see which are enabled.
+
+=== Custom MCP server tools disappeared after a manifest change
+
+Server-side manifest changes require admin re-approval before agents see them. Approve in *Admin* > *Connectors*.
+
+== Memory
+
+=== Agent isn't using a memory I saved
+
+* Confirm the memory is marked *Always relevant* if you expected it everywhere.
+* Confirm the memory's scope includes the current agent (a user-only memory works for any agent; a user+agent memory only works for that one).
+
+=== Agent saved something I didn't approve
+
+Delete it in your memory list. Report it to the agent's owner — the agent should be asking before saving anything not in an explicit-save request.
+
+=== Memory list is empty
+
+You haven't saved anything yet, or memory is disabled at the tenant level. Confirm with your admin.
+
+=== Two memories contradict each other
+
+When the agent retrieves both, it surfaces the conflict and asks you to pick. Resolve it by editing one to be authoritative and deleting the other.
+
+== Quotas and limits
+
+=== "You've used 100% of your daily model token quota"
+
+You've hit the per-user daily cap. Wait until the window resets (usually midnight UTC; check your tenant) or ask your admin for a higher cap.
+
+=== Workflow blocked with "concurrent run limit"
+
+Too many runs of the same workflow are in flight. Either wait for them to finish or ask the admin to raise the workflow's concurrency cap.
+
+=== Connector tool call blocked with "rate limit"
+
+You've hit either AgentSpot's per-user quota for that connector or the downstream system's rate limit. Slow down, retry later, or ask the admin to investigate.
+
+== Audit and observability
+
+=== "I see something I shouldn't be seeing"
+
+Stop using the agent. Report immediately to your admin with the agent name, your role, and the data you saw. Do not share the data.
+
+=== Audit events missing in our SIEM
+
+Confirm the audit export endpoint is configured and credentials haven't expired. Re-run the *Test export* button in *Admin* > *Governance* > *Audit*.
+
+== Next steps
+
+* xref:02-getting-help.adoc[Getting help] — for anything not covered above.
