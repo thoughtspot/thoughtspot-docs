@@ -43,6 +43,19 @@ ThoughtSpot ensures complete Org isolation in a multi-tenant environment. Specif
 * Search Answers content and indexing
 * Other indexing
 
+[#sso-org-isolation]
+=== #SSO claim isolation for per-org IdPs#
+
+When your cluster uses per-org IdP configuration with IAMv2, ThoughtSpot extends multi-tenant isolation to SSO authentication. Incoming SAML and OIDC group and Org claims are evaluated at login time:
+
+* Claims that reference the IdP's authorized Org are accepted.
+* Claims that reference other Orgs are dropped and recorded as security audit events.
+* Unsuffixed group claims are automatically scoped to the authorized Org.
+
+This prevents an IdP administrator in one Org from using group assertions to gain access to another Org. Existing manually-assigned Org memberships are not affected.
+
+For configuration details, see xref:saml-okta.adoc#per-org-saml-isolation[Org isolation for per-org SAML authentication] and xref:oidc-iamv2.adoc#per-org-oidc-isolation[Org isolation for per-org OIDC authentication].
+
 == User roles
 
 On a multi-tenant instance, ThoughtSpot supports the following 3 user roles: cluster administrator, Org administrator, and Org user. By default, the administrator of the Primary Org is a cluster administrator. The cluster administrator can access all Orgs and perform CRUD (Create, Read, Update, and Delete) operations on all Orgs. The cluster administrator can also switch between Orgs and also act as an Org administrator.

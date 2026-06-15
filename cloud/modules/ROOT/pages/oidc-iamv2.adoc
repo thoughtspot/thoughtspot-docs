@@ -30,6 +30,22 @@ You can configure SSO login for more than one Identity Provider.
 To configure this, contact {support-url}.
 ====
 
+[#per-org-oidc-isolation]
+=== #Org isolation for per-org OIDC authentication#
+
+If your ThoughtSpot cluster uses per-org IdP configuration — where each Org is bound to its own identity provider — ThoughtSpot enforces strict org isolation on all incoming OIDC group and Org claims.
+
+When a user authenticates through a per-org IdP, ThoughtSpot identifies the *authorized Org* for that IdP and evaluates every group and Org claim in the token:
+
+* Claims that reference the authorized Org are accepted and processed normally.
+* Claims that reference any other Org are dropped and logged as a security audit event
+// (`OIDC_CROSS_ORG_CLAIM_DROPPED`).
+* Group claims that carry no Org suffix are automatically scoped to the authorized Org.
+
+Org isolation is non-destructive. Existing manually-assigned Org memberships are preserved after a per-org OIDC login.
+
+NOTE: Org isolation applies only to per-org IdP logins. Cluster-wide (single IdP) OIDC configurations are not affected.
+
 == About OIDC authentication
 
 OIDC authentication involves several entities and components.
