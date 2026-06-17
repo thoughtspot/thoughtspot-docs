@@ -1,5 +1,5 @@
 = Core concepts
-:last_updated: June 10, 2026
+:last_updated: June 17, 2026
 :linkattrs:
 :experimental:
 :page-aliases:
@@ -16,10 +16,11 @@ The skill / tool / connector terminology below uses generic placeholder framing.
 
 A focused assistant that does one thing well for a defined audience. An agent has:
 
-* *Instructions* — the system prompt that tells it how to behave.
-* *Data* — the data sources it can read.
-* *Skills* (and the tools they expose) — the actions it can take beyond answering.
-* *Settings* — model, response controls, citations.
+* *Instructions* — How it works
+* *Tools* — Tools it can use
+* *Skills* Special knowledge on how to do very specific tasks
+* *Connectors* — Access to apps
+* *Starter prompts* — Introductory messages that trigger the conversation and guide the user on how to interact with the agent
 
 Agents are conversational: users ask questions, the agent responds, and follow-up questions stay in context within the same session.
 
@@ -27,15 +28,15 @@ See: xref:../01-agents/01-overview.adoc[Agents overview].
 
 == Workflow
 
-A repeatable, multi-step process that runs end-to-end without a human in every step. Workflows are triggered by a schedule, an external event, a manual run, or an API call. Each step does one thing (fetch data, run an agent, transform, call a tool, wait for approval, branch).
+A repeatable, multi-step process that runs end-to-end without a human in every step. Workflows are triggered by a schedule, or a manual run. Each step is a sub-agent that does one specific job (fetch data, transform data, call a tool, evaluate a condition, etc.).
 
-Use an agent when a person is in the loop asking questions. Use a workflow when the same series of steps needs to happen on a schedule or in response to an event.
+Use an agent when a person is in the loop asking questions. Use a workflow when the same series of steps needs to happen on a schedule.
 
-See: xref:../02-workflows/01-overview.adoc[Workflows overview].
+For more information, see xref:../02-workflows/01-overview.adoc[Workflows overview].
 
 == Skill
 
-A *skill* is a capability you can attach to an agent so it can do more than answer questions. A skill is the highest-level unit you compose into an agent.
+A *skill* is a capability you can attach to an agent so it can do more than answer questions. Example: the youtube-transcript skill allows an agent to interpret the transcript of a YouTube video.
 
 ⚠️ Confirm your skill definition with [feature owner]. The placeholder framing used here:
 
@@ -46,13 +47,13 @@ See: xref:../06-skills/01-overview.adoc[Skills overview].
 
 == Tool
 
-A *tool* is a single concrete action — for example, "send a Slack message," "create a Jira issue," "run a SQL query." A tool is what actually executes when an agent decides to act.
+A *tool* is a single concrete action — for example, "search the Web," "interpret files," or "generate images." A tool is what actually executes when an agent decides to act.
 
 ⚠️ Confirm your tool definition with [feature owner]. The placeholder framing used here: tools are the executable units inside skills.
 
 == Connector
 
-A *connector* is the integration to an external system (Google Workspace, GitHub, Slack, Salesforce, ThoughtSpot, a custom MCP server). The connector handles authentication, data access, and which tools that system exposes.
+A *connector* is the integration to an external system (Google Workspace, GitHub, Slack, Salesforce, or a custom MCP server). The connector handles authentication, data access, and which connector-specific tools that app exposes.
 
 ⚠️ Confirm your connector definition with [feature owner]. The placeholder framing used here: connectors are the integration layer; the tools an agent uses are surfaced through connectors.
 
@@ -60,21 +61,17 @@ See: xref:../03-connectors/01-overview.adoc[Connectors overview].
 
 == Data source
 
-A specific data location an agent can read — a Snowflake schema, a ThoughtSpot Worksheet, a Google Drive folder, a set of uploaded files. Connectors enable data sources; an admin connects them once at the tenant level and shares them with the right groups.
+A specific data location an agent can read — files, ThoughtSpot Models, a Google Drive folder, or a set of uploaded files.
 
 == Memory
 
-Memory lets agents and workflows remember information across sessions — user preferences, organizational facts, recurring rules. Without memory, every conversation starts from scratch. Memory is scoped (per user, per agent, per organization) so a personal note doesn't leak into a colleague's context.
+Memory lets agents and workflows remember information across sessions — user preferences, organizational facts, recurring rules. Without memory, every conversation starts from scratch. Memory is scoped (per user, per agent, per organization) so a personal note doesn't leak into a colleague's context, and agent and workflow runs become more accurate and valuable for each AgentSpot user over time.
 
 See: xref:../04-memory/01-overview.adoc[Memory overview].
 
 == Session
 
 A *session* is a single conversation with an agent. Within a session, the agent remembers earlier messages. Starting a new session resets the conversational context (but not long-term memory).
-
-== Model
-
-The large language model that powers an agent's reasoning. Your admin connects model providers; agent builders pick which model an agent uses. Defaults are set per tenant.
 
 == Role
 
@@ -85,14 +82,6 @@ The permission level a user holds in AgentSpot. Typical roles:
 * *Agent Consumer* — use published agents.
 
 ⚠️ Confirm the exact role names with [feature owner].
-
-== Group
-
-A named set of users — usually mapped from your identity provider. Groups control who can use a specific agent, workflow, or data source.
-
-== Publish / version
-
-When a builder publishes an agent or workflow, AgentSpot creates a new *version* and makes that version visible to the chosen audience. Earlier versions are kept so changes can be reviewed or rolled back.
 
 == Audit log
 
