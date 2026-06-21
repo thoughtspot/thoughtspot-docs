@@ -1,26 +1,56 @@
 = New charts library
-:page-last_updated: Jan 30, 2026
+:page-last_updated: Jun 18, 2026
 :linkattrs:
 :experimental:
-:page-layout: default-cloud-early-access
+:page-layout: default-cloud
 :page-aliases:
-:description: ThoughSpot's new chart library
-:jira: SCAL-285344
+:description: ThoughtSpot's new chart library
+:jira: SCAL-285344, SCAL-285348
 
 ThoughtSpot's new highly flexible charting library allows you to create and customize a wide range of visualizations directly within ThoughtSpot.
-The library enables pixel-perfect and highly customizable visualizations, and supporting advanced use cases like trellis charts. The library currently supports the following new charts:
+The library enables pixel-perfect and highly customizable visualizations, and supports advanced use cases like trellis charts. Starting in 26.7, the new charts library is generally available and supports the following 12 chart types:
 
-* xref:chart-column-new.adoc[New column charts]
-* xref:chart-column-stacked-new.adoc[New stacked column charts]
-* xref:chart-line-new.adoc[New line charts]
-* xref:chart-bar-new.adoc[New bar charts]
-* xref:chart-bar-stacked-new.adoc[New stacked bar charts]
-* xref:chart-line-column-new.adoc[New line column charts]
-* xref:chart-area-new.adoc[New area charts]
-* xref:chart-area-stacked-new.adoc[New stacked area charts]
-* xref:chart-line-column-stacked-new.adoc[New line stacked column charts]
+// SOURCE: Google Doc — "In 26.2, we introduced 9 charts in EA...Additionally in 26.7 we will also be introducing 3 new charts"
+* xref:chart-column-new.adoc[Column charts]
+* xref:chart-column-stacked-new.adoc[Stacked column charts]
+* xref:chart-line-new.adoc[Line charts]
+* xref:chart-bar-new.adoc[Bar charts]
+* xref:chart-bar-stacked-new.adoc[Stacked bar charts]
+* xref:chart-line-column-new.adoc[Line column charts]
+* xref:chart-area-new.adoc[Area charts]
+* xref:chart-area-stacked-new.adoc[Stacked area charts]
+* xref:chart-line-column-stacked-new.adoc[Line stacked column charts]
+* xref:chart-pie-new.adoc[Pie and donut charts]
+* xref:chart-scatter-new.adoc[Scatter charts]
+* xref:chart-bubble-new.adoc[Bubble charts]
++
+[NOTE]
+====
+These 12 chart types replace their classic (Highcharts) equivalents. Other chart types such as geo, Sankey, and similar visualizations are not affected by this change and continue to use the existing library.
+====
+// SOURCE: Google Doc — "13 other chart types like geo, sankey etc. which will continue to exist today and are not being replaced by Muze in 26.7"
+// TODO: verify with engineering — confirm xref filenames for pie, scatter, and bubble chart pages
 
-To enable this feature, contact your ThoughtSpot administrator.
+== Enabling new charts
+
+// SOURCE: Google Doc — "Admin page settings" and "TSCLI flags for Muze charts"
+Starting in 26.7, new charts are enabled by default on all new ThoughtSpot clusters. On existing clusters, a ThoughtSpot administrator can enable or disable new charts using the *Set new charts as default* toggle in the Admin portal.
+
+To enable new charts:
+
+. Sign in to ThoughtSpot.
+. Go to *Admin* > *Chart customization* > *Settings*.
+. Toggle *Set new charts as default* to on.
+
+When enabled, new charts replace their classic equivalents in the chart selector panel. All new answers in Search Data, Spotter, and SpotterViz will use new charts by default.
+
+// TODO: verify with engineering — confirm exact Admin portal navigation path: "Chart customization > Settings"
+// TODO: verify with engineering — confirm whether embedded (TSE) users see the same toggle or a different enablement path
+
+[NOTE]
+====
+The *Set new charts as default* toggle applies at the cluster level and affects all organizations on that cluster. Individual organizations cannot enable or disable new charts independently.
+====
 
 == Why move to the new charts library?
 With the new charts, ThoughtSpot offers the following key features:
@@ -72,18 +102,61 @@ Dragging an attribute in the trellis section, will create these small multiples 
 [.bordered]
 image::trellis.png[Trellis]
 
+== Switching between new and classic charts
+
+// SOURCE: Google Doc — "UX for switching from new to classic chart" and "UX for switching from classic to new chart"
+After new charts are enabled, you can switch individual charts between the new and classic library using the chart's three-dot menu on the Answer page.
+
+* To switch from a new chart to a classic chart, select *Switch to classic chart* from the three-dot menu.
+* To switch from a classic chart to a new chart, select *Switch to new chart* from the three-dot menu.
+
+[IMPORTANT]
+====
+When you switch chart types, a warning dialog confirms that your existing chart configuration settings will not carry over. Review this warning before confirming the switch.
+====
+
+=== Editing and copying classic charts
+
+// SOURCE: Google Doc — "Editing an existing classic chart" and "When user makes a copy"
+If you open and edit an existing classic chart after new charts are enabled, the chart continues to render as a classic chart and all editing actions remain available. The chart type label in the chart selector panel reflects the type you selected (for example, column or line), regardless of whether the chart uses the new or classic library.
+
+[IMPORTANT]
+====
+If you edit a saved classic chart and then change its chart type using the chart selector panel, the chart switches to the new chart of that type — not the classic version. For example, if you open a classic column chart and select *Line* in the chart selector, the result is a new line chart, not a classic line chart.
+====
+
+When you copy a classic chart, the copy is also a classic chart. You can perform all editing and configuration actions on the copied chart.
+
+== Reverting to classic charts
+
+// SOURCE: Google Doc — "Rollback / Revert to Highcharts"
+If you need to revert to classic charts, your ThoughtSpot administrator can turn off the *Set new charts as default* toggle in the Admin portal. This sets all organizations on your ThoughtSpot instance back to the classic chart library.
+
+When reverted:
+
+* New charts are still accessible in a collapsed *New charts* accordion in the chart selector panel.
+* Classic charts are recommended for all new answers.
+* Charts that were already created using new charts remain fully functional and accessible.
+* New charts cannot be set as default while the toggle is off.
+
+[NOTE]
+====
+Reverting affects the entire cluster and is not configurable per organization. To fully disable the *New charts* accordion, contact ThoughtSpot Support.
+====
+// TODO: verify with engineering — confirm Support contact path for disabling the New charts accordion entirely
 
 == Current limitations
+// SOURCE: Google Doc — GA plan; Spotter limitation removed as doc states "For all new answers: New Muze charts will be recommended across Search Data, Spotter, SpotterViz"
 * Natural language chart recommendations, such as `Top` and `Growth`, will not trigger the specialized visualizations.
 * SpotIQ analysis is not available for new charts.
-* Spotter does not support the new charts yet.
-* Any exploration of data within a Liveboard is not yet supported for the new charts.
-* Limited style customization options for the ThoughtSpot embedded users.
-* Handling nulls and 0s differently is not supported.
+* Limited style customization options for embedded users.
+* Handling nulls and zeros differently is not supported.
 * Non-visualized fields cannot be added to tooltips.
-* This chart library is currently not supported in the ThoughtSpot mobile application.
-* Any custom font setting will not be reflected in these new charts.
-* Localization is currently not supported.
+* The new charts library is not supported in the ThoughtSpot mobile application.
+* Custom font settings are not reflected in new charts.
+* Localization is not supported.
+// TODO: verify with engineering — confirm whether "Any exploration of data within a Liveboard" remains a limitation at GA
+// TODO: verify with engineering — confirm whether all remaining limitations above still apply at 26.7 GA
 
 == FAQs
 
@@ -96,15 +169,22 @@ No, they will not be auto migrated.
 * You can choose when to adopt the new charts.
 
 
-*Can I switch from these new charts back to old charts?*
+*Can I switch from new charts back to classic charts?*
 
-Yes. Until the charts become generally available, you can switch individual charts back to classic charts. Some configurations may be lost during the switch. You will see a set of generic warnings during the switch.
+// SOURCE: Google Doc — "UX for switching from new to classic chart"
+Yes. You can switch any individual chart back to the classic library by selecting *Switch to classic chart* from the chart's three-dot menu on the Answer page. Some configuration settings may not carry over when switching. A warning dialog appears before the switch is confirmed.
 
-*What happens if admins disable these new charts and go back to old charts?*
+*What happens if an administrator disables new charts?*
 
-* Charts created using the new charts library continue to render in a read-only state.
-* You retain access to insights.
-* New charts cannot be created from the new charts library while disabled.
+// SOURCE: Google Doc — "Rollback / Revert to Highcharts"
+When an administrator turns off *Set new charts as default* in the Admin portal:
+
+* New charts are still accessible in a collapsed *New charts* accordion in the chart selector panel.
+* Classic charts are recommended for all new answers in Search Data, Spotter, and Spotter Viz.
+* Charts already created using new charts remain fully functional without restrictions.
+* New charts cannot be set as default while the toggle is off.
+
+To fully remove the *New charts* accordion, contact ThoughtSpot Support.
 
 *Why are multiple attributes no longer combined into a single axis?*
 
