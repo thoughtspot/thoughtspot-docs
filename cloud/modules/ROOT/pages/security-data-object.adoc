@@ -1,28 +1,19 @@
 = Data and object security
-:last_updated: 11/26/24
+:page-last_updated: 5/1/26
 :author: Teresa Killmond, Naomi
 :experimental:
 :linkattrs:
 :page-layout: default-cloud
 :description: Learn about data and object security in ThoughtSpot.
-:jira: SCAL-230550, SCAL-264258, SCAL-270725
-
-
-
+:jira: SCAL-230550, SCAL-264258, SCAL-270725, SCAL-235787
 
 ThoughtSpot provides many features for protecting data.
-
-
-video::exNqEoKsQ6A[youtube,title="ThoughtSpot Success Series: Group Design, Privileges & Sharing",width="375",height="210",frameborder="0",allow="accelerometer"]
-
 
 [#object_security]
 == Object security
 
-
 Object security controls what content users see within ThoughtSpot.
 Objects are tables, columns in tables, Models, Liveboards, and saved Answers.
-
 
 Users gain access to objects when an object owner shares access with them.
 Owners can share with individual users or with entire groups, giving access to everyone within that group.
@@ -47,11 +38,18 @@ Unless the user has explicit permissions to the entire stack of parent objects, 
 For example, in a shared Liveboard, you can see data only if you have explicit permissions to the relevant columns of the parent Model.
 Similarly, you can only see the data in a Model to which you have access if you have explicit permissions to its parent table object.
 
-
 NOTE: We recommend using <<csr,column security rules>> rather than Advanced Security or Strict CLS.
 
 
 Work with your {support-url} team to enable the Advanced Security Mode on the relevant clusters.
+
+==== Limitations of users who can see a Liveboard when Strict CLS/Advanced Security Mode is set
+
+In the following situations, a Liveboard will NOT be visible in the Liveboards page and users will not be able to access the Liveboard using a link:
+
+* If the Liveboard has a hidden column as a filter and the users who have access to the Liveboard are NOT the Model and table editors.
+* If the Liveboard has a column which a user doesn’t have access to as a filter.
+* If the Liveboard uses a Model which a user doesn’t have access to and there are filters in the Liveboard.
 
 [NOTE]
 ====
@@ -97,8 +95,7 @@ If you put everyone in your organization into the same group for RLS, they can s
 
 
 [#csr]
-=== Column security rules [.badge.badge-early-access]#Early Access#
-
+=== Column security rules
 
 You can now set column security rules at the table level, and they will automatically be inherited to associated Models. These rules do not require you to use the Strict CLS setting. We recommend this approach to column-level security over Strict CLS.
 
@@ -145,6 +142,19 @@ image::csr-toggle.png[A table showing the Price column is accessible to the admi
 [.bordered]
 image::csr-checkbox.png[Options appear when you select the checkbox.]
 
+[#csr-tml]
+==== Column security rules in TML
+
+You can export and import column security rules using ThoughtSpot Markup Language (TML). Column security rules are exported as a separate TML file when you export a table.
+
+For more information, see xref:tml-tables.adoc#csr-tml[Column security rules TML].
+
+[#csr-liveboard]
+=== Column security rules on Liveboards
+
+If column security rules apply to a Liveboard and you have partial access to columns on the underlying data sources, you will still be able to access the Liveboard and interact with accessible filters and visualizations. Any inaccessible filters will not be visible to you. Users without full access to the underlying data cannot edit the Liveboard, even if you have edit access.
+
+Liveboard schedules and version history respect column security rules, ensuring that data is not leaked. Similar to scheduling with row-level security, if multiple users with different levels of access schedule a Liveboard, they each receive individual reports based on their column security rule assignment.
 
 
 [#cls]
