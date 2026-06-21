@@ -1,5 +1,5 @@
 = TML for tables
-:page-last_updated: 4/26/2023
+:page-last_updated: Jun 21, 2026
 :author: Teresa Killmond
 :linkattrs:
 :experimental:
@@ -7,7 +7,7 @@
 :page-aliases: /admin/scriptability/tsl-table.adoc, /admin/scriptability/tml-table.adoc, /admin/ts-cloud/tsl-table.adoc
 :description: Use TML to modify tables in a flat-file format. Then, migrate the table to a different cluster, or restore it to the same cluster.
 :object: tables
-:jira: SCAL-158490, SCAL-186188, SCAL-231618, SCAL-220584, SCAL-264358
+:jira: SCAL-158490, SCAL-186188, SCAL-231618, SCAL-220584, SCAL-264358, SCAL-276978
 
 include::partial$tml-intro.adoc[]
 
@@ -125,6 +125,10 @@ a| <<name,name>>
 
 <<type,type>>
 
+<<accessible_groups,accessible_groups>>
+
+<<column_security_rules,column_security_rules>>
+
 |===
 
 [#aggregation]
@@ -137,6 +141,14 @@ Possible values are `SUM`, `COUNT`, `AVERAGE`, `MAX`, `MIN`, `COUNT_DISTINCT`, `
 +
 Default: `SUM`.
 
+[#accessible_groups]
+accessible_groups::
+Specifies the user groups that have access to a restricted column.
++
+Contains a `group_name` list of one or more group names.
++
+If `accessible_groups` is omitted for a column entry, the column is inaccessible to all user groups.
+
 [#calendar]
 calendar::
 Specifies the calendar used by a date column.
@@ -148,6 +160,16 @@ See xref:connections-cust-cal.adoc[Set up a custom calendar].
 [#column]
 column::
 The id of the column(s) being filtered on.
+
+[#column_security_rules]
+column_security_rules::
+Top-level container for the column security rules defined on a table.
++
+Exported as a separate TML file when you export a table.
++
+Contains a `table` reference and a `rules` list. Only columns that have security rules defined, or that are marked as protected, appear in the file.
++
+See <<csr-tml,Column security rules TML>>.
 
 [#column_type]
 column_type::
@@ -459,3 +481,83 @@ You can only add them.
 * You can only delete table columns that have no dependents. If the table column has any dependents, ThoughtSpot returns an error when you try to import or validate the TML file. To delete a table column, you must first delete the dependents.
 * When deleting columns, you only delete ThoughtSpot's record of the column. You don't delete the column in your external database.
 * If there is an error in any row-level security (RLS) rule when importing a table, all RLS rules for the table are removed. ThoughtSpot warns you about this on import, and highlights the rule that is in an error state, so you can fix it or remove it.
+
+// SOURCE: https://docs.google.com/document/d/12pdbKWDFUVpN94uW0IDgdIMMqSv7WKVIAqwY2JYT2Fo
+[#csr-tml]
+== Column security rules TML
+
+Column security rules are exported as a separate TML file when you export a table. The file uses the `column_security_rules` key and contains only the columns that have security rules defined or that are marked as protected.
+
+For information about setting up column security rules in the ThoughtSpot UI, see xref:security-data-object.adoc#csr[Column security rules].
+
+=== TML syntax for column security rules
+
+[source,yaml]
+----
+column_security_rules:
+  table:
+    name: <table_name>
+    fqn: <table_guid>
+  rules:
+    - column_name: <column_name>                 # <1>
+    - column_name: <column_name>                 # <2>
+      accessible_groups:
+        group_name:
+          - <group_name>
+          - <group_name>
+----
+<1> A column with no `accessible_groups` entry is inaccessible to all user groups.
+<2> A column with an `accessible_groups` entry is accessible only to the listed groups.
+
+==== Example
+
+[source,yaml]
+----
+column_security_rules:
+  table:
+    name: PART
+    fqn: d8f93c7b-8a12-4d1f-bfdc-1a2e3f4b5678
+  rules:
+    - column_name: P_NAME
+    - column_name: salary
+      accessible_groups:
+        group_name:
+          - HR Team
+          - Finance
+    - column_name: SSN
+      accessible_groups:
+        group_name:
+          - HR Team
+----
+
+In this example:
+
+* `P_NAME` is inaccessible to all user groups.
+* `salary` is accessible to the *HR Team* and *Finance* groups only.
+* `SSN` is accessible to the *HR Team* group only.
+
+=== Export column security rules TML
+
+Column security rules TML is exported automatically alongside the table TML when you export a table. To export, you must have:
+
+* Modify access to the table and all its columns.
+* Access to all user groups that are linked to column security rules on the table.
+
+// TODO: verify with engineering — confirm whether CSR TML is included in the same ZIP as the table TML export, or requires a separate export action.
+
+=== Import column security rules TML
+
+To import column security rules TML, you must have:
+
+* Modify permission on the table.
+* Access to all user groups specified in the TML file.
+* Access to all user groups already associated with column security rules on the table.
+
+[NOTE]
+====
+If a user group specified in the TML file does not exist in ThoughtSpot, the import completes with a warning. The missing group is not applied.
+====
+
+=== Delete a column security rule
+
+To delete a column security rule using TML, remove the relevant column entry from the `rules` list in the CSR TML file and re-import the file. This follows the same deletion pattern as other TML-based object deletions, such as deleting a column from a table TML.
