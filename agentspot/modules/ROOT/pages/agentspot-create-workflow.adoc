@@ -1,69 +1,108 @@
 = Creating and managing a workflow in AgentSpot
-:last_updated: May 5, 2026
+:last_updated: June 18, 2026
 :linkattrs:
 :experimental:
 :page-aliases:
-:description: Learn how to create and manage a worklfow in AgentSpot
+:description: Learn how to create and manage a workflow in AgentSpot
 
 #Last updated: {last_updated}#
 
 **Workflows** are designed to automate your repeatable, time-consuming tasks.
 
-== Agents vs. Workflows: What’s the Difference?
+== Agents vs. workflows
 
-Before building, it is helpful to understand how these two features complement each other:
+Before building, it helps to understand how agents and workflows complement each other:
 
 [cols="1,2", options="header"]
 |===
 | Feature | Description
-| **Agents** | Think of these as **People**. They have personalities, specific expertise (e.g., SEO, Design, Sales Support), and you interact with them via conversation to get specialized help.
-| **Workflows** | Think of these as **Tasks**. These are automated, repeatable processes (e.g., a "Morning Briefing" or "Deal Monitor") that run in the background to handle admin work and data synthesis.
+| *Agents* | Think of these as people. They have personalities and specific expertise (for example, SEO, design, or sales support), and you interact with them through conversation to get specialized help.
+| *Workflows* | Think of these as tasks. These are automated, repeatable processes (for example, a morning briefing or deal monitor) that run in the background to handle recurring work and data synthesis.
 |===
 
-== Workflow Concepts
+== Workflow concepts
 
-Every workflow in AgentSpot is built on three core pillars:
+Every workflow in AgentSpot is built on three core concepts:
 
-1. **The Trigger:** Currently, workflows run on a **Schedule** (Cron jobs). You decide how often the task repeats (e.g., every morning at 8:00 AM). _Note: Event-based triggers, like a new ticket appearing in Service Now, are coming in future updates._
-2. **Sub-Agents:** A workflow isn't just one script; it’s a "team" of specialized sub-agents running in parallel. One might scan Salesforce while another monitors Slack.
-3. **The Output:** This is the final action, such as sending a summary message to Slack or dispatching an email.
+. *Trigger*: Workflows run on a schedule. You decide how often the workflow runs (for example, every morning at 8:00 AM).
++
+Event-based triggers (for example, a new ticket appearing in ServiceNow) are planned for a future release.
+. *Sub-agents*: A workflow is a team of specialized sub-agents, each focused on one tool or data source. Sub-agents run in parallel to process tasks as efficiently as possible.
+. *Output*: The final action the workflow takes, such as posting a summary to a Slack channel or sending an email.
 
-== Creating a New Workflow
+== Creating a new workflow
 
-=== 1. Use the AI Chat Builder
-Just like creating an Agent, we encourage you to use the **Chat Interface** to build your workflow.
-* Instead of manual configuration, type what you want to automate.
-* *Example:* "Every morning, scan my Slack channels and Salesforce deals to tell me which leads have gone cold."
-
-=== 2. Configure Your Sub-Agents
-The builder will automatically suggest a series of sub-agents.
-* **Parallel Processing:** These agents work at the same time to save time.
-* **Specialization:** Each sub-agent focuses on one tool or data source.
-* **Customization:** You can click into any sub-agent to view its specific instructions or the tools (Connectors) it is using.
-
-=== 3. Define the Synthesis and Output
-Most workflows conclude with a "Synthesis Agent." This agent takes the raw data from all sub-agents and combines it into a human-readable format.
-* **Select Output Channel:** Choose where you want the result delivered (e.g., a specific Slack channel or your Email inbox).
-
-== Testing and Activation
-
-Before taking your workflow "live," you can perform a test run:
-
-1. **Run Test:** Click the "Test" button to see a live animation of the workflow process.
-2. **Monitor Progress:** You can watch as the workflow moves from the trigger through each sub-agent.
-3. **Review Output:** Once the run is complete, AgentSpot will show you exactly what information would have been sent to your output channel.
-4. **Create:** If you are satisfied with the results, click **Create** to add it to your active workspace.
-
-== Managing Existing Workflows
-
-Once created, your workflows live in the **My Workflows** section.
-
-* **High-Level Overview:** Click on any workflow to see a visual map of the process.
-* **Run History:** View the "Last Few Runs" to verify that the automation is performing as expected.
-* **Templates:** If your admin has provided templates (like a "Daily Admin Workflow"), you can use these as a "recipe" and simply plug in your specific connectors (e.g., choosing between Gmail/Slack or Outlook/Teams).
-
-[TIP]
+. On the AgentSpot home page, scroll to the bottom and click *Create new workflow*.
++
+The workflow builder opens — it works the same way as the agent builder.
+. In the prompt field, describe the task you want to automate in plain language.
++
+.Example prompt
 ====
-Workflows are perfect for "painful" repeatable processes. If you find yourself manually checking the same three apps every morning, that is a prime candidate for an AgentSpot Workflow.
+Every morning, look at my meetings from yesterday, find the transcripts, check my emails, Slack, and Jira, and help me prioritize what to work on. Suggest draft responses for common questions. Then look at today's meetings — for customer-facing meetings, get external context on the company and check relevant Slack channels. Send a short summary to my Slack channel and a detailed brief in Canvas.
 ====
+. Answer any clarifying questions the builder asks, such as which Slack channel to post to or how to identify a specific type of meeting.
++
+The builder uses your answers to configure the workflow correctly.
+AgentSpot also applies smart defaults where it can.
+. Review the sub-agents the builder creates in the canvas.
++
+The builder breaks your workflow into specialized sub-agents, each focused on one tool or data source.
+Where possible, sub-agents run in parallel to process tasks efficiently.
+The final sub-agent synthesizes all results into a human-readable output.
++
+You can click any sub-agent to review or edit its instructions and connectors.
+. Set a schedule for the workflow.
++
+Enter the time and frequency you want the workflow to run.
++
+NOTE: The scheduler currently uses UTC. You must convert your preferred local time to UTC before saving.
+// TODO: verify with engineering — confirm whether timezone support beyond UTC has shipped
+. Click *Save*.
+
+== Testing and scheduling
+
+Before activating your workflow, run a test to verify it is working as expected.
+
+. Click *Test run*.
+. Monitor progress in the canvas.
+The workflow moves through each sub-agent in sequence.
+The left panel shows run history; the center panel shows the full workflow graph; the right panel shows details for the currently selected step.
+. Review the output.
+AgentSpot shows you exactly what would have been sent to your output channel.
+. If the results look correct, the workflow is active and will run on the schedule you set.
+
+// TODO: verify with engineering — confirm whether a separate "Create" or "Activate" button exists after the test run, or whether saving is sufficient to activate the workflow
+
+== Managing existing workflows
+
+Your workflows appear in the workflows list on the AgentSpot home page.
+// TODO: verify with engineering — confirm the exact UI label for the workflows list ("My Workflows" or another label)
+
+Click any workflow to open it. The workflow view has three panels:
+
+* *Left panel*: Run history. View past runs to verify the workflow is performing as expected.
+* *Center panel*: Workflow graph. Shows the full orchestration — every sub-agent and the connections between them.
+* *Right panel*: Step details. Click any step in the graph to see its specific inputs, outputs, and status.
+
+=== Editing a workflow
+
+Workflows are designed to be iterated on. After reviewing your results, you can refine the workflow at any time.
+
+. In the workflows list, find the workflow you want to update.
+. Click *Edit*.
++
+The builder reopens with the full history of your previous conversation.
+. Continue chatting to describe the changes you want — for example, adjusting the output format or adding a new data source.
+. Click *Save* when you are satisfied with the changes.
+. Run a test to verify the updated workflow behaves as expected.
+
+TIP: Expect to iterate. It typically takes a few refinement cycles to get a workflow producing exactly the output you want.
+
+=== Workflow templates
+
+If you want inspiration for workflows to build, template examples are available on the AgentSpot website.
+// TODO: verify with engineering — confirm whether workflow templates are available in-product, on an external website, or both — and add the correct URL or navigation path
+
+TIP: If you find yourself manually checking the same applications every morning or every week, that task is a good candidate for a workflow.
 

@@ -23,7 +23,8 @@ By the end you'll have a shared, tested agent your team can use.
 
 == Step 1: Plan the agent
 
-Write these down before opening the builder. Vague agents do not get used.
+Write these down before opening the builder.
+Agents with a clear, specific purpose are more useful and more likely to be adopted by your team.
 
 * *Name* — short and recognizable (e.g. `EMEA Pipeline Assistant`).
 * *Audience* — which team or group.
@@ -32,61 +33,80 @@ Write these down before opening the builder. Vague agents do not get used.
 * *Data it needs* — specific sources, tables, or worksheets.
 * *Skills it needs* — usually none for a first agent.
 
-=== The "DNA" of an Agent
-* **Instructions:** The "brain" of the agent. Defines persona, mission, and response rules.
-* **Skills:** Reusable "how-to" knowledge (e.g., "How to format a deck using the company PowerPoint template").
-* **Tools:** Functional capabilities like web search, code interpretation, or the ability to ask clarifying questions.
-* **Knowledge (Files & Models):** Upload PDFs/FAQs or connect to ThoughtSpot structured data models.
-* **Connectors:** Enables the agent to take action. For example, a **Jira Connector** allows the agent to read tickets and write new bug reports.
-* **Starter Prompts:** The suggested questions (bubbles) shown to users at the start of a chat.
+=== Agent components
+
+When you create an agent, AgentSpot builds and populates the following components automatically based on your prompt.
+You can review and adjust each one in the side panel.
+
+* *Connectors*: The external applications your agent connects to (for example, Google Calendar or Slack).
+Added automatically based on your prompt; you can manually add or remove connectors as needed.
+* *Tools*: Functional capabilities such as web search or image generation.
+Added automatically; you can manually select or deselect tools as needed.
+* *ThoughtSpot models*: Your organization's ThoughtSpot data models.
+Adding a model allows your agent to work with large structured data sets — a key differentiator for AgentSpot.
+* *Skills*: Reusable knowledge your agent can draw on (for example, how to format a document using your company template).
+Some skills are pre-populated; you can add your own.
+// TODO: verify with engineering — confirm whether file/PDF upload is a separate component from ThoughtSpot models
+* *Conversation starters*: Suggested prompts shown to users at the start of a chat.
+Generated automatically; you can edit or add your own.
+* *Instructions*: The core behavior definition for your agent — its persona, mission, response rules, and guardrails.
+For example, instructions can prevent the agent from drafting a message or making a tool call without your confirmation.
+Generated automatically; you can edit the instructions manually at any time.
+
+[TIP]
+.Tips for writing effective prompts
+====
+AgentSpot builds your agent automatically from a single prompt.
+A clear, specific prompt produces better results.
+
+A strong prompt includes:
+
+* *An objective*: What you want the agent to do, in one sentence.
+* *Connectors*: The applications it should use (for example, "look through my Google Calendar and Slack").
+* *Expected output*: What a good response looks like.
+
+The following additions improve results further:
+
+* *Examples*: Provide examples of past work you want the agent to replicate.
+This helps the agent understand your preferred format, tone, and output more effectively than step-by-step instructions.
+* *Audience*: Describing the target audience helps the agent adjust tone, length, and complexity.
+====
 
 == Step 2: Create a new agent
 
 . On the AgentSpot home page, click *Create new agent*.
-. Start chatting with the agent builder. It is best to start with a well-formed prompt (see below) but notice that AgentSpot will ask you clarifying questions to come up with a good set of instructions for the agent.
-. Optionally, you can edit any section of the agent's definition by accessing it from the side menu.
-. Once you are satisfied with the agent, click *Save*.
+. In the prompt field, describe the agent you want to build.
++
+AgentSpot automatically builds the agent from your description, selecting the appropriate connectors, tools, skills, and generating instructions.
+The side panel opens as the agent builds, showing each component as it is configured.
+. Review the components in the side panel and adjust as needed.
+For details on each component, see <<agent-components,Agent components>>.
+. Enter a name for your agent and select an avatar.
+. Click *Save agent* in the upper-right corner.
 
-TIP: We recommend you save the agent and try a few conversations. As you see how the agent behaves through chats, you can then go back to the agent _Edit_ mode and give it feedback on how to improve, improving your agent's behavior iteratively.
+NOTE: After saving, AgentSpot exits the builder and opens your agent with a set of suggested conversation starters.
+Test a few conversations before sharing — you can return to edit mode at any time and refine the instructions based on how the agent performs.
 
-*Expected result:* The agent editor opens with empty *Instructions*, *Data*, *Skills*, and *Settings* tabs. #⚠️ Confirm tab names#.
-
-== Step 3: Share
+== Step 3: Share the agent
 
 Powerful agents should be shared! Sharing agents allows others in your organization to leverage the skillset of your agent, and prevents “AI silos”, where every contributor creates similar agents that won't all behave in the exact same way, potentially creating confusion in the organization.
 
-. Select *Share*.
-. Choose who you want to share the agent with (you can also share it with everyone in the company with access to AgentSpot).
-. Choose access for each user (edit vs use only).
-. Share.
+. In the upper-right corner, click *Share agent*.
+. In the *Add people or groups* field, find the people or groups you want to share with.
+You can share with your entire organization by selecting the organization-wide option.
+. For each person or group, select *Can use* or *Can edit*.
+. Click *Done*.
 
-*Expected result:* The agent appears in the consumer agent list for the chosen audience, and a new version is recorded.
-
-.How to write effective agent creation prompts
-[IMPORTANT]
-====
-AgentSpot does a great job at disambiguating user intent to create bounded and trustworthy agents, but providing clear prompts to the agent builder will go a long way in making that agent behave as you expected.
-
-A good prompt must contain:
-
-* An objective: Express what you want the agent to do.
-* Connectors
-* Expected output
-
-Optionally, this information will help as well:
-
-* Examples: AI Agents learn most by understanding what good looks like. Provide examples of your past work that you'd like that agent to do for you. That'll allow it to better understand format, tone, expected output in a way that may be strenuous to explain step by step.
-
-* Audience: Telling the agent who the target audience is will help it fine tune tone, length & complexity of the response, etc.
-====
+NOTE: The agent now appears in the Agents dashboard for the people and groups you shared it with.
+// TODO: verify with engineering — confirm whether a new version is recorded on share, and whether "consumer agent list" is the correct UI label
 
 == Connecting applications
 To provide value, agents require context and the ability to act. If an agent requires external data (e.g., from Notion or Salesforce), you will be prompted to connect.
 
-1. **Identify requirements:** The agent interface will flag if an app is not yet connected.
-2. **Authenticate:** Click the **Connect** button.
-3. **Authorize:** Complete the OAuth flow in the pop-up window to grant AgentSpot permission.
-4. **Active state:** Once connected, the agent can perform deep-context searches and execute tasks (like creating tickets or updating records).
+. *Identify requirements*: The agent interface indicates if an application is not yet connected.
+. *Authenticate*: Click *Connect*.
+. *Authorize*: Complete the OAuth flow in the pop-up window to grant AgentSpot access.
+. Once connected, the agent can search for context and perform tasks such as creating tickets or updating records.
 
 == Managing your agents
 When you find a useful agent in the library, you must decide how to keep it:
@@ -94,16 +114,20 @@ When you find a useful agent in the library, you must decide how to keep it:
 [cols="1,2,2", options="header"]
 |===
 | Action | Description | Best For...
-| **Save to Team** | Bookmarks the organizational agent. | Standard users who want the latest updates/improvements from admins.
-| **Make a Copy** | Creates a private "branch" of the agent. | Power users who want to modify instructions or add private connectors.
+| *Save to team* | Bookmarks the shared agent. Updates made by the owner are reflected automatically. | Users who want to use the agent as-is and receive future improvements.
+| *Make a copy* | Creates a private version of the agent. | Users who want to modify instructions or add private connectors.
+
 |===
 
-== Using Your Agents
-Once set up, your agents are available in your sidebar.
+== Using your agents
 
-* **Chat History:** Resume any previous conversation from the left-hand panel.
-* **Search & Filter:** Use the **List View** to find specific agents by category, such as "Marketing" or "HR."
-* **Contextual Actions:** Remember that agents with connectors (like Jira or Slack) can perform "last mile" tasks for you, such as drafting and sending messages or filing tickets.
+Once set up, your agents are available from the AgentSpot home page.
+
+* *Chat history*: Resume any previous conversation from the left-hand panel.
+* *New session*: To start a fresh conversation with an agent, click the new session button in the upper-left corner of the agent window.
+Start a new session when the conversation context is getting long or when you want to switch to a different topic.
+* *Search and filter*: Use the list view to find agents by category, such as "Marketing" or "HR."
+* *Contextual actions*: Agents with connectors (such as Jira or Slack) can perform actions on your behalf, such as drafting and sending messages or creating tickets.
 
 == Troubleshooting
 

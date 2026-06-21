@@ -1,5 +1,5 @@
 = AgentSpot administration
-:last_updated: May 5, 2026
+:last_updated: June 18, 2026
 :linkattrs:
 :experimental:
 :page-layout: default-agentspot-no-index
@@ -10,19 +10,27 @@ This guide provides the essential steps for an administrator to set up AgentSpot
 
 == Setting up AgentSpot
 
-To set up AgentSpot, you must:
+To set up AgentSpot, complete the following steps in order.
+Completing setup before adding end users ensures they land in a fully configured environment.
 
-* *Add users*: For details, see <<#managing-users,Managing users>>.
-
-* *Add connectors*: For details, see <<#managing-connectors,Managing connectors>>.
+. *Set up roles and groups in ThoughtSpot*: Create the roles and groups your users will need, but do not add end users to the groups yet.
+For details, see xref:agentspot-admin.adoc#managing-users[Managing users].
+. *Configure connectors in AgentSpot*: Sign in to AgentSpot and enable the connectors your organization will use.
+For details, see xref:agentspot-admin.adoc#managing-connectors[Managing connectors].
+. *Set up org memory*: Add your organization's key facts and behavioral rules so that all agents and workflows share consistent context from the start.
+For details, see xref:agentspot-admin.adoc#org-memory[Org memory].
+. *Create and share agents*: Set up agents and share them with your team so end users have a useful starting point.
+For details, see xref:agentspot-create-agent.adoc[].
+. *Add end users to their groups in ThoughtSpot*: Once setup is complete, add users to the groups you created in step 1.
+For details, see xref:agentspot-admin.adoc#managing-users[Managing users].
 
 [#managing-users]
 === Managing users
 To add users to AgentSpot, you must do the following in your ThoughtSpot instance:
 
-1. Create a role with AgentSpot privileges.
-2. Add your role to a group.
-3. Add users to your group, as needed.
+. Create a role with AgentSpot privileges.
+. Add your role to a group.
+. Add users to your group, as needed.
 
 There are two primary AgentSpot privileges you can assign to a role:
 
@@ -32,10 +40,13 @@ There are two primary AgentSpot privileges you can assign to a role:
 
 | *Can manage AgentSpot* | Full administrative access to manage connectors, agents, and organization-wide settings
 | *Can use AgentSpot* | Access to AgentSpot to use shared agents
+// TODO: verify with engineering — confirm exact privilege label in UI: "Can use AgentSpot" or "Can access AgentSpot"
 |===
 
 IMPORTANT: Users only appear in AgentSpot after they have been assigned a role containing one of these privileges.
 
+TIP: Complete the connector and agent setup before adding end users to AgentSpot groups.
+This ensures users access a fully configured environment.
 
 ==== Creating a role with AgentSpot privileges
 
@@ -73,15 +84,17 @@ To add a user to a group, do the following:
 
 After you set up your AgentSpot users, you are ready to log in to AgentSpot and add connectors. For details, see <<managing-connectors,Managing connectors>>.
 
+NOTE: After users are added to a group with an AgentSpot privilege, they must refresh their browser while on the Insights tab of their ThoughtSpot instance before the AgentSpot option appears in the navigation.
+
 == Admin Settings
 
 In the Admin Settings page you can view and manage the AgentSpot workspace. It is organized into the following sections:
 
-* *Connectors*: Manage connectors to different applications. See <<#managing-connectors,Managing connectors>>.
-* *Usage*: View the overall usage of AgentSpot. See <<#usage, Monitoring usage>>.
-* *Users*: View details about AgentSpot users. See <<#users, Monitoring users>>.
-* *Audit log*: View a chronological list of logged events. <<#audit-log, Audit log>>.
-* *Settings*: Coming soon (based on the UI). See <<#settings, Settings>>.
+* *Connectors*: Manage connectors to different applications. See xref:agentspot-admin.adoc#managing-connectors[Managing connectors].
+* *Usage*: View the overall usage of AgentSpot. See xref:agentspot-admin.adoc#usage[Monitoring usage].
+* *Users*: View details about AgentSpot users. See xref:agentspot-admin.adoc#users[Monitoring users].
+* *Audit log*: View a chronological list of logged events. See xref:agentspot-admin.adoc#audit-log[Audit log].
+* *Org memory*: Add and manage the shared facts and rules that ground all agents and workflows in your organization. See xref:agentspot-admin.adoc#org-memory[Org memory].
 
 [#managing-connectors]
 === Managing connectors
@@ -89,10 +102,12 @@ Connectors allow AgentSpot to interact with external applications like Jira, Sla
 
 As an administrator, you have the authority to:
 
-* **Add, delete, and remove for all users:** specific connectors for your entire organization.
-* **Test and share:** You can activate a connector for yourself to test its functionality before "publishing" or sharing it with the rest of the organization.
+* *Add or remove connectors:* for your entire organization.
+* *Test before sharing:* Activate a connector for yourself to verify it works before making it available to all users.
 
 In the *Admin Settings* > *Connectors* page, you can see the list of Available Connectors. Once you add a connector, it appears in the list of Already Added connectors near the top of the page.
+
+NOTE: New connectors are added on a regular basis. Check the *Admin Settings* > *Connectors* page for the current list.
 
 ==== Requirements for adding a connector
 
@@ -105,8 +120,8 @@ AgentSpot ships with native connectors for popular applications, listed under *A
 
 To add a connector, do the following:
 
-. Log in to AgentSpot.
-. Click the *Admin Settings* image:settings-agent-spot.svg[10,Admin Settings] icon in the upper-right corner.
+. Sign in to AgentSpot.
+. Click the *Admin Settings* image:settings-agent-spot.svg[10,Admin Settings] button in the upper-right corner.
 . Under the _Connectors_ tab, do either of the following:
 .. For an available connector: In the box for the connector, click *Add*.
 .. For a custom connector: Click *+ Custom Connector*.
@@ -125,10 +140,12 @@ To add a connector, do the following:
 .. Click *Register Connector*.
 
 ==== Custom connectors
-If an application is not in the list of available connectors, you can add it using a custom connector. Simply provide the URL for the MCP server and complete the setup to enable any compatible tool. Refer to the documentation for the product you want to connect for its MCP server URL.
+If an application is not in the list of available connectors, you can add it using a custom connector. Provide the URL for the MCP server and complete the setup to enable any compatible tool. Refer to the documentation for the product you want to connect for its MCP server URL.
 
 ==== User authentication and security
-Connectors do not require any setup for authentication because they follow the form of authentication that the user already uses to connect with the application.
+Connectors use each user's existing credentials for the target application.
+When an admin enables a connector, each user must complete a one-time OAuth sign-in to authorize AgentSpot to act on their behalf.
+AgentSpot respects all existing permissions within the target app — users can only access data and perform actions they are already authorized to access in that application.
 
 When an admin enables a connector (e.g., Jira), each user must log in with their individual credentials. AgentSpot respects all existing permissions within the target app; users will only see data and perform actions they are already authorized to access.
 
@@ -148,17 +165,19 @@ The _Users_ page allows you to view detailed information about users and groups 
 
 It provides the following information:
 
-* *Users*
+* *Users*: Number of total users
+** *Name*
+** *Email address*
 ** *Role*: Member or Admin
-** *Level*: Basic, Standard, or Power
-** *Sessions*: Number of total sessions
-** *Messages*: Total number of messages
-** *Agents*: Total number of agents
-** *Memories*: Total number of memories
-** *Last Active*: Last time user was active
-* *Groups*
+// ** *Level*: Basic, Standard, or Power
+// ** *Sessions*: Number of total sessions
+// ** *Messages*: Total number of messages
+// ** *Agents*: Total number of agents
+// ** *Memories*: Total number of memories
+// ** *Last Active*: Last time user was active
+// * *Groups*
 
-You can download a .csv file containing a complete list of AgentSpot users by clicking image:download-agent-spot.svg[10,Admin Settings] *Export*.
+You can download a .csv file containing a complete list of AgentSpot users, including User ID, Name, Email, and Role by clicking image:download-agent-spot.svg[10,Admin Settings] *Export*.
 
 TIP: To add or remove AgentSpot users, you must go to the *Admin Settings* > *Users* tab in your ThoughtSpot instance.
 
@@ -182,24 +201,98 @@ You can filter the audit log by a specific action, actor user ID, and a date ran
 You can download a .csv file of the audit log by clicking image:download-agent-spot.svg[10,Admin Settings] *Export*.
 If you filter the audit log before downloading it, the downloaded file will only include your filtered version.
 
-[#settings]
-=== Settings
+[#org-memory]
+== Org memory
 
-UI says "Coming soon"
+Org memory is the shared set of facts and behavioral rules that AgentSpot applies across all agents and workflows in your organization.
+Setting up org memory early in the setup process ensures that every agent your team builds or uses starts with accurate, consistent organizational context — without each agent needing to be individually configured with the same information.
 
+TIP: Seed org memory before creating agents or adding end users.
+Agents built on top of a well-configured org memory require less individual instruction and behave more consistently across your organization.
 
-== Agent and workflow governance
-Administrators have visibility over all agents and workflows created within the organization.
+=== Facts vs. rules
 
-* **Visibility:** Admins can see every agent created, regardless of who the owner is.
-* **Business continuity:** If a user leaves the company, an administrator can step in to manage, edit, or reassign the agents and workflows they created.
+Org memory is organized into two types of entries:
 
-== Managing agents
+[cols="1,1,3", options="header"]
+|===
+| Type | Think of it as... | Description
 
-As an administrator, you have access to all agents and workflows created within your organization:
+| *Facts*
+| Grounding truths
+| Static information about your organization that agents use as reliable context.
+Facts help agents reason correctly when they encounter numbers, names, or terms that should match known values.
+For example, if an agent retrieves a revenue figure that does not match the fact you provided, it will flag the discrepancy and ask for clarification.
 
-* Once agents are created, you can share them with the appropriate teams so they are visible in their dashboard.
-* If a user leaves the company, an administrator can step in to manage, edit, or reassign the agents and workflows they created.
+| *Rules*
+| Behavioral recipes
+| Instructions that agents follow when generating responses.
+Rules define how agents should behave in specific situations — including boundaries, approval steps, and standard operating procedures.
+For example, a rule might specify that outbound customer emails require human approval before being sent, or define the steps your organization follows for competitive intelligence research.
+|===
+
+=== What to include in org memory
+
+The following table lists the categories of information that are most valuable to include.
+
+// TODO: verify with engineering — confirm whether these categories are prompted in the UI or free-form; confirm the exact section labels shown in the org memory interface
+
+[cols="1,3", options="header"]
+|===
+| Category | Examples
+
+| *Company basics*
+| Company name, legal name, industry, headquarters locations
+
+| *Financial context*
+| Annual revenue, fiscal year start date, quarter definitions
+
+| *Products and services*
+| Product names, descriptions, and which ThoughtSpot data models are associated with each
+
+| *Key metrics and acronyms*
+| Definitions for internal metrics, abbreviations, and terminology used across teams
+
+| *Technology stack*
+| Names of key tools, platforms, and systems in use
+
+| *Rules and procedures*
+| Standard operating procedures, approval requirements, and behavioral boundaries for agents
+(for example, "Exclude test accounts from all reports" or "Outbound customer emails require human approval before sending")
+|===
+
+=== Adding org memory
+
+To add facts and rules to org memory, do the following:
+
+. Sign in to AgentSpot.
+. Click the *Admin Settings* image:settings-agent-spot.svg[10,Admin Settings] icon in the upper-right corner.
+. Select the *Org memory* tab.
+. Click *Add fact* or *Add rule*, depending on the type of entry you are adding.
+. Enter your content.
++
+NOTE: Org memory entries support markdown formatting.
+You can use tables, lists, and headings to organize content within a single entry.
+. Click *Save*.
+. Repeat for each fact or rule you want to add.
+
+After saving, org memory is broken down into sections in the UI.
+You can review, edit, and correct individual entries at any time by clicking directly into them.
+
+=== Updating org memory over time
+
+Org memory is not a one-time configuration.
+As your organization evolves, you can update facts and rules directly in the UI.
+
+In addition, as administrators use AgentSpot, memories can be extracted from agent conversations and added to org memory.
+// TODO: link to memory article when available — see [memory video reference at transcript 02:59]
+
+NOTE: For a full overview of how memory works across agents, conversations, and the organization, see [memory article link].
+// TODO: replace with xref when the memory article is published
+
+=== Managing agents
+
+As an administrator, you have full visibility over all agents and workflows created within your organization, regardless of who owns them. You can share agents with teams, and if a user leaves the company, you can manage, edit, or reassign their agents and workflows.
 
 === View agents in your organization
 
@@ -221,4 +314,4 @@ To share an agent in your organization, do the following:
 .. In the *People and groups with access* field, confirm the people and groups who already access and make changes, if needed.
 .. Click *Done*.
 +
-The agent you shared will now appear the Agents dashboard for the people and groups you shared it with.
+The agent you shared will now appear in the Agents dashboard for the people and groups you shared it with.
