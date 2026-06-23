@@ -10,7 +10,8 @@
 ThoughtSpot's new highly flexible charting library allows you to create and customize a wide range of visualizations directly within ThoughtSpot.
 The library enables pixel-perfect and highly customizable visualizations, and supports advanced use cases like trellis charts. Starting in the 26.7.0.cl release, the new charts library is generally available and supports the following 12 chart types:
 
-// SOURCE: Google Doc — "In 26.2, we introduced 9 charts in EA...Additionally in 26.7 we will also be introducing 3 new charts"IMPORTANT: The new charts will be enabled gradually across all customer instances over a period of several weeks following the release. After your instance is upgraded to 26.7.0.cl, the new charts may not be available immediately. In that case, your instance will receive the update automatically as the rollout progresses.
+// SOURCE: Google Doc — "In 26.2, we introduced 9 charts in EA...Additionally in 26.7 we will also be introducing 3 new charts"
+
 * xref:chart-column-new.adoc[Column charts]
 * xref:chart-column-stacked-new.adoc[Stacked column charts]
 * xref:chart-line-new.adoc[Line charts]
@@ -27,6 +28,8 @@ The library enables pixel-perfect and highly customizable visualizations, and su
 These 12 chart types replace their classic equivalents, though you can switch any new chart back to its classic equivalent. Other chart types are not affected by this change and continue to use the existing classic library.
 
 Starting in 26.7.0.cl, new charts replace the classic versions by default in the chart selector panel on all new ThoughtSpot instances. For existing instances, a ThoughtSpot administrator must set the default availability of new charts. For details, see <<#charts-default, Enabling new charts as default>>.
+
+IMPORTANT: The new charts will be enabled gradually across all customer instances over a period of several weeks following the release. After your instance is upgraded to 26.7.0.cl, the new charts may not be available immediately. In that case, your instance will receive the update automatically as the rollout progresses.
 
 All Answers created in Search Data, Spotter, and SpotterViz *after* upgrade to 26.7.0.cl will use new charts by default. Existing Answers that use a classic chart will continue to use the classic chart, but can be converted to a new chart. For details, see <<#switch-charts, Switching between new and classic charts>>.
 
@@ -88,6 +91,12 @@ In the new charts, ThoughtSpot supports several axis types and configurations:
 Use an individual axis when a single measure represents information on its own measuring line.
 These individual axes can be used to build multivariate charts which are perfect for visualizing multiple measures that have vastly different ranges or distinct business contexts without visual clutter. When multiple measures are added into the measure axis (Y-axis), the system detects ungrouped chips and automatically generates a dedicated chart section.
 
+++++
+<div class="border">
+<script src="https://fast.wistia.com/player.js" async></script><script src="https://fast.wistia.com/embed/ax6gkxcjan.js" async type="module"></script><style>wistia-player[media-id='ax6gkxcjan']:not(:defined) { background: center / contain no-repeat url('https://fast.wistia.com/embed/medias/ax6gkxcjan/swatch'); display: block; filter: blur(5px); padding-top:55.94%; }</style> <wistia-player media-id="ax6gkxcjan" aspect="1.7877094972067038"></wistia-player>
+</div>
+++++
+
 === Grouped axis
 Use a grouped axis when you need to add a second layer of dimension to your visualization. It allows you to compare sub-categories within a primary category side-by-side. For instance, when you want to see how different segments sold within a larger group.
 You are looking at sales by region, but you want to see which Product Category is driving the numbers in each specific region.
@@ -98,9 +107,21 @@ A grouped axis is considered as a single entity.
 To create a grouped drag a measure chip onto another measure or drop it into an existing group to merge them.
 An encompassing container immediately wraps the measures, signaling that they are grouped and will share a unified axis scale.
 
+++++
+<div class="border">
+<script src="https://fast.wistia.com/player.js" async></script><script src="https://fast.wistia.com/embed/y4x1loly59.js" async type="module"></script><style>wistia-player[media-id='y4x1loly59']:not(:defined) { background: center / contain no-repeat url('https://fast.wistia.com/embed/medias/y4x1loly59/swatch'); display: block; filter: blur(5px); padding-top:56.25%; }</style> <wistia-player media-id="y4x1loly59" aspect="1.7777777777777777"></wistia-player>
+</div>
+++++
+
 === Dual axis
 Use a dual axis chart to plot two different measures on the same chart using two separate Y-axes—one on the left and one on the right. These entities on the Y-axes can either be a group or a standalone measure.
 Dual axis is very useful when you want a performance metric, like goal versus actual.
+
+++++
+<div class="border">
+<script src="https://fast.wistia.com/player.js" async></script><script src="https://fast.wistia.com/embed/7q03gk3knl.js" async type="module"></script><style>wistia-player[media-id='7q03gk3knl']:not(:defined) { background: center / contain no-repeat url('https://fast.wistia.com/embed/medias/7q03gk3knl/swatch'); display: block; filter: blur(5px); padding-top:61.25%; }</style> <wistia-player media-id="7q03gk3knl" aspect="1.6326530612244898"></wistia-player>
+</div>
+++++
 
 == New chart modes
 ThoughtSpot currently supports these new chart modes in its enhanced charting library:
@@ -154,16 +175,10 @@ When you copy a classic chart, the copy is also a classic chart. You can perform
 
 == Current limitations
 // SOURCE: Google Doc — GA plan; Spotter limitation removed as doc states "For all new answers: New Muze charts will be recommended across Search Data, Spotter, SpotterViz"
-* Natural language chart recommendations, such as `Top` and `Growth`, will not trigger the specialized visualizations.
 * SpotIQ analysis is not available for new charts.
-* Limited style customization options for embedded users.
-* Handling nulls and zeros differently is not supported.
+* Limited style customization options for embedded users. `rules_UNSTABLE` is not supported for these charts, so users cannot directly target any element and apply styling on that class. The classic charts do support this.
 * Non-visualized fields cannot be added to tooltips.
-* The new charts library is not supported in the ThoughtSpot mobile application.
-* Custom font settings are not reflected in new charts.
-* Localization is not supported.
-// TODO: verify with engineering — confirm whether "Any exploration of data within a Liveboard" remains a limitation at GA
-// TODO: verify with engineering — confirm whether all remaining limitations above still apply at 26.7 GA
+* Custom fonts are supported in the new charts. However, unlike the classic charting library, you cannot set different fonts for individual chart elements (such as axis labels) or specific chart types. A single custom font applies to all chart elements across all chart types.
 
 == FAQs
 
@@ -171,15 +186,10 @@ When you copy a classic chart, the copy is also a classic chart. You can perform
 
 No, they will not be auto migrated.
 
-* Existing charts are not automatically migrated.
-* Admins control whether the new charts are enabled.
-* You can choose when to adopt the new charts.
-
-
 *Can I switch from new charts back to classic charts?*
 
 // SOURCE: Google Doc — "UX for switching from new to classic chart"
-Yes. You can switch any individual chart back to the classic library by selecting *Switch to classic chart* from the chart's three-dot menu on the Answer page. Some configuration settings may not carry over when switching. A warning dialog appears before the switch is confirmed.
+Yes. You can switch any individual chart back to the classic library by selecting *Switch to classic chart* from the chart's three-dot menu on the Answer page. Most configuration settings may not carry over when switching. A warning dialog appears before the switch is confirmed.
 
 *What happens if an administrator disables new charts?*
 
@@ -195,7 +205,7 @@ To fully remove the *New charts* accordion, contact ThoughtSpot Support.
 
 *Why are multiple attributes no longer combined into a single axis?*
 
-Combining multiple attributes into a single axis can hide patterns and make comparisons difficult. The new charts use faceting to present each attribute clearly, improving interpretability across dimensions.
+Combining multiple attributes into a single axis can hide patterns and make comparisons difficult. The new charts use faceting to present each attribute clearly, improving interpretability across dimensions. With the new charts, however, you can concatenate the required fields in a formula and make a single field.
 
 *Why do charts support only two axes?*
 
