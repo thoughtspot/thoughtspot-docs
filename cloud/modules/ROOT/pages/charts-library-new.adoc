@@ -8,7 +8,7 @@
 :jira: SCAL-285344, SCAL-285348
 
 ThoughtSpot's new highly flexible charting library allows you to create and customize a wide range of visualizations directly within ThoughtSpot.
-The library enables pixel-perfect and highly customizable visualizations, and supports advanced use cases like trellis charts. Starting in 26.7, the new charts library is generally available and supports the following 12 chart types:
+The library enables pixel-perfect and highly customizable visualizations, and supports advanced use cases like trellis charts. Starting in the 26.7.0.cl release, the new charts library is generally available and supports the following 12 chart types:
 
 // SOURCE: Google Doc — "In 26.2, we introduced 9 charts in EA...Additionally in 26.7 we will also be introducing 3 new charts"
 * xref:chart-column-new.adoc[Column charts]
@@ -23,34 +23,57 @@ The library enables pixel-perfect and highly customizable visualizations, and su
 * xref:chart-pie-new.adoc[Pie and donut charts]
 * xref:chart-scatter-new.adoc[Scatter charts]
 * xref:chart-bubble-new.adoc[Bubble charts]
-+
-[NOTE]
-====
-These 12 chart types replace their classic equivalents. Other chart types such as geo, Sankey, and similar visualizations are not affected by this change and continue to use the existing library.
-====
+
+These 12 chart types replace their classic equivalents, though you can switch any new chart back to its classic equivalent. Other chart types are not affected by this change and continue to use the existing classic library.
+
+Starting in 26.7.0.cl, new charts replace the classic versions by default in the chart selector panel on all new ThoughtSpot instances. For existing instances, a ThoughtSpot administrator must set the default availability of new charts. For details, see <<#charts-default, Enabling new charts as default>>.
+
+All Answers created in Search Data, Spotter, and SpotterViz *after* upgrade to 26.7.0.cl will use new charts by default. Existing Answers that use a classic chart will continue to use the classic chart, but can be converted to a new chart. For details, see <<#switch-charts, Switching between new and classic charts>>.
+
+IMPORTANT: The new charts will be enabled gradually across all customer instances over a period of several weeks following the release. After your instance is upgraded to 26.7.0.cl, the new charts may not be available immediately. In that case, your instance will receive the update automatically as the rollout progresses.
+
+If you have questions about your instance's rollout status, contact {support-url}.
+
 // SOURCE: Google Doc — "13 other chart types like geo, sankey etc. which will continue to exist today and are not being replaced by Muze in 26.7"
 // TODO: verify with engineering — confirm xref filenames for pie, scatter, and bubble chart pages
 
-== Enabling new charts
+[#charts-default]
+== Enable new charts as default
 
 // SOURCE: Google Doc — "Admin page settings" and "TSCLI flags for Muze charts"
-Starting in 26.7, new charts are enabled by default on all new ThoughtSpot clusters. On existing clusters, a ThoughtSpot administrator can enable or disable new charts using the *Set new charts as default* toggle in the Admin portal.
+A ThoughtSpot administrator can set the new charts to appear in the _Library_ section of the chart selector panel by using the *Set new charts as default* toggle in the Admin portal.
 
-To enable new charts:
+=== How it works
+
+When enabled:
+
+* Only the new versions of the charts are accessible in the _Library_ section of the chart selector panel.
+* You can switch a new chart used in an Answer to the classic version. For details, see <<#switch-charts, Switching between new and classic charts>>.
+
+When disabled:
+
+* New charts are still accessible in a collapsed _New_ section above the _Library_ section in the chart selector panel.
+* Classic charts are recommended for all new Answers.
+* Answers that were already created using new charts remain fully functional and accessible.
+* New charts cannot be set as default while this toggle is off.
++
+[CAUTION]
+====
+This setting affects your entire instance and is not configurable per organization. To fully disable the *New* charts, contact ThoughtSpot Support.
+====
+
+=== Enabling new charts as default
+
+To set new charts as default:
 
 . Sign in to ThoughtSpot.
-. Go to *Admin* > *Chart customization* > *Settings*.
-. Toggle *Set new charts as default* to on.
-
-When enabled, new charts replace their classic equivalents in the chart selector panel. All new answers in Search Data, Spotter, and SpotterViz will use new charts by default.
+. Go to *Admin* > *All Orgs* > *Chart customization* > *Settings*.
+. Click *Edit*.
+. Toggle *Set new charts as default* to _Enabled_ and click *Save*.
 
 // TODO: verify with engineering — confirm exact Admin portal navigation path: "Chart customization > Settings"
 // TODO: verify with engineering — confirm whether embedded (TSE) users see the same toggle or a different enablement path
 
-[NOTE]
-====
-The *Set new charts as default* toggle applies at the cluster level and affects all organizations on that cluster. Individual organizations cannot enable or disable new charts independently.
-====
 
 == Why move to the new charts library?
 With the new charts, ThoughtSpot offers the following key features:
@@ -85,7 +108,7 @@ ThoughtSpot currently supports these new chart modes in its enhanced charting li
 
 === Facets
 Facets partition the chart into a hierarchical grid of sub-sections. Instead of forcing multiple dimensions onto a single, crowded axis, Facets nest your data into distinct, side-by-side modules. This results in enhanced readability, and you
-can scan complex, multi-dimensional relationships instantly.
+can scan complex, multidimensional relationships instantly.
 
 Faceting will be the default behavior when there are ≥1 attributes in the X-axis. You cannot create a concatenated single axis.
 
@@ -102,13 +125,14 @@ Dragging an attribute in the trellis section, will create these small multiples 
 [.bordered]
 image::trellis.png[Trellis]
 
+[#switch-charts]
 == Switching between new and classic charts
 
 // SOURCE: Google Doc — "UX for switching from new to classic chart" and "UX for switching from classic to new chart"
-After new charts are enabled, you can switch individual charts between the new and classic library using the chart's three-dot menu on the Answer page.
+You can switch a chart in an Answer between the new and classic library by doing either of the following:
 
-* To switch from a new chart to a classic chart, select *Switch to classic chart* from the three-dot menu.
-* To switch from a classic chart to a new chart, select *Switch to new chart* from the three-dot menu.
+* To switch from a new chart to a classic chart in an Answer, select *Switch to classic chart* from the More menu image:icon-more-10px.png[more menu].
+* To switch from a classic chart to a new chart in an Answer, select *Switch to new chart* from the More menu image:icon-more-10px.png[more menu].
 
 [IMPORTANT]
 ====
@@ -127,22 +151,6 @@ If you edit a saved classic chart and then change its chart type using the chart
 
 When you copy a classic chart, the copy is also a classic chart. You can perform all editing and configuration actions on the copied chart.
 
-== Reverting to classic charts
-
-// SOURCE: Google Doc — "Rollback / Revert to Highcharts"
-If you need to revert to classic charts, your ThoughtSpot administrator can turn off the *Set new charts as default* toggle in the Admin portal. This sets all organizations on your ThoughtSpot instance back to the classic chart library.
-
-When reverted:
-
-* New charts are still accessible in a collapsed *New charts* accordion in the chart selector panel.
-* Classic charts are recommended for all new answers.
-* Charts that were already created using new charts remain fully functional and accessible.
-* New charts cannot be set as default while the toggle is off.
-
-[NOTE]
-====
-Reverting affects the entire cluster and is not configurable per organization. To fully disable the *New charts* accordion, contact ThoughtSpot Support.
-====
 // TODO: verify with engineering — confirm Support contact path for disabling the New charts accordion entirely
 
 == Current limitations
