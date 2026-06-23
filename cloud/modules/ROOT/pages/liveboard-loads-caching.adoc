@@ -9,7 +9,7 @@ Browser caching for Liveboards reduces load times on repeat visits by storing a 
 
 Users can still manually refresh a Liveboard at any time to fetch the latest data. An indicator shows users when their data was last cached, so they always have visibility into the age of the data.
 
-In the background, ThoughtSpot continues to fetch fresh data from the cloud data warehouse (CDW) on every load to update the cache for the next session. This means the cache is always one session behind. The data shown reflects what was fetched during the user's previous visit, not the current one.
+In the background, ThoughtSpot continues to fetch fresh data from the cloud data warehouse (CDW) on every load to update the cache for the next session. This means the cache is always one session behind.
 
 NOTE: Cache updates happen in the background and do not affect the current session.
 
@@ -20,13 +20,21 @@ Once caching is active for a Liveboard, users will notice the following changes:
 * A Refresh button that users can click to fetch the latest data from the data warehouse on demand.
 All existing Liveboard interactions continue to work exactly as before.
 
-NOTE: Scheduled Liveboards and downloaded Liveboards always show live data and are not affected by caching.
+NOTE: Scheduled Liveboards and downloaded Liveboards always show live data and are never cached.
+
+
+IMPORTANT: Will enabling caching change how much I'm billed? No. ThoughtSpot still queries the data warehouse in the background on every Liveboard load to refresh the cache for the next visit. Caching improves the user experience without reducing underlying query volume.
+//Cost optimization based on caching is being explored for a future release.
+
+
 
 == Enable browser caching
-Enabling browser caching for Liveboards is a two-step process. Cluster administrators must first unlock the feature for Org administrators, who can then configure which Liveboards are cached.
-
-=== Prerequisite
 Browser caching must be enabled on your cluster by {support-url} before the *Admin Settings* toggle is visible.
+
+Enabling browser caching for Liveboards is a two-step process. Cluster administrators must first enable the feature for Org administrators, who can then configure which Liveboards are cached for their respective Orgs.
+
+IMPORTANT: When caching is enabled for a Liveboard, ThoughtSpot is authorised to extract data from the CDW and store it in the user's browser cache on their machine. This is only accessible to the user opening the Liveboard in their browser.
+
 
 === Enable browser caching on your cluster
 . Sign in to ThoughtSpot as a cluster administrator.
@@ -55,7 +63,7 @@ Select individual Liveboards to cache. Other Liveboards load normally.
 [.bordered]
 image::browser-cache1.png[]
 
-Org administrators can change or disable this configuration at any time.
+NOTE: Administrators can change or disable this configuration at any time.
 
 == Important considerations
 *Data freshness*:
@@ -78,7 +86,7 @@ Org administrators can change or disable this configuration at any time.
 
 ** A chart or visualization in the Liveboard is edited.
 ** A Liveboard update is saved.
-** A filter or parameter value changes.
+//** A filter or parameter value changes.
 +
 After invalidation, the next Liveboard load fetches fresh data from the data warehouse and rebuilds the cache.
 
@@ -87,11 +95,6 @@ After invalidation, the next Liveboard load fetches fresh data from the data war
 * The cache TTL of 24 hours is not configurable in this release.
 
 == Frequently asked questions
-****
-IMPORTANT: Will enabling caching change how much I'm billed?
-
-No. ThoughtSpot still queries the data warehouse in the background on every Liveboard load to refresh the cache for the next visit. Caching improves the user experience without reducing underlying query volume. Cost optimization based on caching is being explored for a future release.
-****
 
 * What happens if a user's browser storage is full?
 +
@@ -100,6 +103,10 @@ ThoughtSpot handles this automatically. If browser storage is low, expired cache
 * Can I disable caching for a specific Liveboard?
 +
 Yes. Org administrators can exclude individual Liveboards from caching, or disable the feature entirely for their Org at any time in *Admin Settings*.
+
+* Can I disable caching for a cluster?
++
+Yes. Cluster administrators can disable caching for a cluster at any time in *Admin Setting*.
 
 * Does caching affect scheduled Liveboards or PDF downloads?
 +
