@@ -10,14 +10,10 @@
 
 **SpotQL** is ThoughtSpot's purpose-built semantic query language for interacting with your data models. It looks and reads like SQL — familiar enough for analysts and developers — but it fundamentally behaves differently from standard SQL.
 
-[NOTE]
-====
+[.lead]
 *Key principle:* SpotQL expresses _intent_. It never executes directly against your database.
-====
 
 When you or an AI agent (like Spotter) writes a SpotQL query, it is submitted to the ThoughtSpot semantic layer, which then translates it into the appropriate, governed database SQL. The result is an answer that is **accurate, consistent, and trustworthy** — every single time.
-
----
 
 == Why was SpotQL built?
 
@@ -28,9 +24,7 @@ Traditional _natural language to SQL_ (NL-to-SQL) approaches have a critical wea
 * The output varies between runs; the same question may yield a different answer tomorrow.
 * Custom business logic (e.g., semi-additive metrics, custom calendars, level-of-detail calculations) may be misunderstood or missed entirely.
 
-SpotQL was introduced to solve this problem. By inserting the ThoughtSpot semantic layer between the AI agent and the database, **the governed, deterministic SQL is always what runs** — not what an LLM guessed.
-
----
+SpotQL is introduced to solve this problem. By inserting the ThoughtSpot semantic layer between the AI agent and the database, **the governed, deterministic SQL is always what runs** — not what an LLM guessed.
 
 == How SpotQL works
 
@@ -50,8 +44,6 @@ Both APIs accept:
 * A **Model GUID** — the unique identifier of the ThoughtSpot data model you want to query
 
 Behind the scenes, ThoughtSpot handles everything else: physical column name mapping, join resolution, RLS enforcement, and complex metric calculations.
-
----
 
 == The role of the semantic layer
 
@@ -83,8 +75,6 @@ The semantic layer is what makes SpotQL safe and consistent. When your SpotQL qu
 
 This means a business analyst can write simple, readable SpotQL queries — and trust that the database query will be complex, correct, and secure.
 
----
-
 == SpotQL vs. natural language to SQL — what's the difference?
 
 This is the most important distinction to understand.
@@ -109,13 +99,17 @@ User question  →  LLM generates SpotQL  →  ThoughtSpot translates to governe
 
 The LLM only generates the _intent_ (SpotQL). ThoughtSpot's governed engine produces the actual database query. This ensures:
 
-* ✅ Joins are always correct (defined in the model)
-* ✅ Row-level security is always applied (cannot be bypassed)
-* ✅ Metrics are always calculated the right way
-* ✅ Results are deterministic and traceable
-* ✅ Hallucinated or ungoverned SQL never touches your database
+image:checkmark_black.svg[] Joins are always correct (defined in the model)
 
----
+image:checkmark_black.svg[] Row-level security is always applied (cannot be bypassed)
+
+image:checkmark_black.svg[] Metrics are always calculated the right way
+
+image:checkmark_black.svg[] Results are deterministic and traceable
+
+image:checkmark_black.svg[] Hallucinated or ungoverned SQL never touches your database
+
+
 
 == Handling complex and advanced queries
 
@@ -137,8 +131,6 @@ SpotQL supports the same advanced modelling patterns as ThoughtSpot's token-base
 
 Despite this power, the SpotQL you write remains **simple and readable** — the complexity lives in the governed translation layer, not in your query.
 
----
-
 == Who uses SpotQL and how?
 
 SpotQL is used in three primary ways.
@@ -154,8 +146,6 @@ Developers can call the SpotQL APIs directly from any application or AI tool (e.
 === 3. Administrators and analysts
 
 Administrators can inspect the SpotQL generated for any query to understand exactly what is being asked, verify that the semantic rules are working correctly, and troubleshoot data discrepancies. The ability to see both the SpotQL _and_ the resulting database SQL provides full traceability.
-
----
 
 == Getting started with SpotQL APIs
 
@@ -203,8 +193,6 @@ Response:
 
 Notice that in the SpotQL, business-friendly names are used with no joins specified. The response contains fully formed, governed database SQL with correct physical column names, join logic, and security filters applied.
 
----
-
 == Administrator notes
 
 === Row-level security (RLS)
@@ -223,51 +211,47 @@ Because every SpotQL query translates to a traceable, deterministic SQL query, a
 
 SpotQL answers and ThoughtSpot's traditional token-based search answers coexist on the same platform and use the same underlying semantic engine. Administrators do not need to choose one approach over the other — both are valid and governed.
 
----
+// == What's coming next
 
-== What's coming next
+// SpotQL is an active and rapidly evolving capability within ThoughtSpot Cloud. Planned and upcoming enhancements include:
 
-SpotQL is an active and rapidly evolving capability within ThoughtSpot Cloud. Planned and upcoming enhancements include:
+// * **Charting and visualisation** — SpotQL-powered answers will support richer chart types and visualisation options
+// * **Answer verification** — tooling to validate and confirm the correctness of SpotQL-generated answers
+// * **Tighter coexistence** with token-based answers, so users experience a seamless, unified analytics surface regardless of which engine answers the question
+//* **Deeper agentic integrations** — more AI agents and external tools will be able to leverage SpotQL as a governed query interface
 
-* **Charting and visualisation** — SpotQL-powered answers will support richer chart types and visualisation options
-* **Answer verification** — tooling to validate and confirm the correctness of SpotQL-generated answers
-* **Tighter coexistence** with token-based answers, so users experience a seamless, unified analytics surface regardless of which engine answers the question
-* **Deeper agentic integrations** — more AI agents and external tools will be able to leverage SpotQL as a governed query interface
+== Frequently asked questions
 
-ThoughtSpot is at the beginning of this journey, and new capabilities will continue to be released.
+=== What is it?
 
----
+A SQL-like semantic query language that expresses intent without executing directly
 
-== Summary
+=== What executes against the database?
 
-[cols="1,2", options="header"]
-|===
-| Topic
-| SpotQL answer
+Governed SQL produced by ThoughtSpot’s semantic engine
 
-| *What is it?*
-| A SQL-like semantic query language that expresses _intent_ without executing directly
+=== Is it the same as NL-to-SQL?
 
-| *What executes against the database?*
-| Governed SQL produced by ThoughtSpot's semantic engine
+No — the LLM never generates raw database SQL; ThoughtSpot’s engine does
 
-| *Is it the same as NL-to-SQL?*
-| No — the LLM never generates raw database SQL; ThoughtSpot's engine does
+=== Is RLS enforced?
 
-| *Is RLS enforced?*
-| Yes — always, at the semantic layer
+Yes — always, at the semantic layer
 
-| *Do I need to specify joins?*
-| No — join paths are defined in the model and applied automatically
+=== Do I need to specify joins?
 
-| *Can it handle complex metrics?*
-| Yes — semi-additive, LOD, ratios, CTEs, chasm/fan traps
+No — join paths are defined in the model and applied automatically
 
-| *Who can call the APIs?*
-| Spotter, Claude, any application with a bearer token and model GUID
+=== Can it handle complex metrics?
 
-| *Is it production-ready?*
-| Yes, and actively expanding with new features
-|===
+Yes — semi-additive, LOD, ratios, CTEs, chasm/fan traps
+
+=== Who can call the APIs?
+
+Spotter, Claude, any application with a bearer token and model GUID
+
+=== Is it production-ready?
+
+Yes, and actively expanding with new features
 
 SpotQL represents a meaningful architectural advance: it lets AI agents and applications ask data questions in a readable, SQL-like language, while guaranteeing that the answer comes from a governed, secure, and deterministic execution path.
