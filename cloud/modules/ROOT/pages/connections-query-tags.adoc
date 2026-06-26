@@ -5,7 +5,7 @@
 :experimental:
 :page-layout: default-cloud
 :description: Learn what query tags are in ThoughtSpot and how to use them.
-:jira: SCAL-301654
+:jira: SCAL-301654, SCAL-298170
 
 == What are query tags?
 
@@ -17,7 +17,7 @@ You can use query tags to categorize or group queries by subject, department, or
 
 When sending SQL queries to different databases, ThoughtSpot adds comments to the query indicating that the query originated from ThoughtSpot, and containing metadata information such as Liveboard ID, visualization ID, and user ID. ThoughtSpot query tags are not the same as link:https://docs.snowflake.com/en/user-guide/object-tagging[Snowflake query tags^], which are schema-level objects that can be assigned to another Snowflake object.
 
-== Sample query tags for different databases
+== Sample query tags
 
 The following example API is for all databases:
 
@@ -35,7 +35,9 @@ name:Untitled,
 <query text>
 ----
 
+Note that for Google BigQuery connections, rather than query comments, we use link:https://docs.cloud.google.com/bigquery/docs/labels-intro[query labels].
 
+////
 [#tag-redshift]
 === Amazon Redshift
 
@@ -90,7 +92,7 @@ WHERE app_name = 'ThoughtSpot'
 ORDER BY start_time DESC;
 ----
 
-////
+
 [#tag-gbq]
 === Google BigQuery
 
@@ -101,7 +103,7 @@ In order to help track consumption, we enable an identifier, a user agent string
 embrace/6.2 (GPN:thoughtspot; pinboard_id) viz/chart_id
 GoogleHTTPJavaClient/1.20.0
 ----
-////
+
 
 [#tag-presto]
 === Presto
@@ -122,3 +124,4 @@ jdbc:sap://ykfl00540545a:30115/?autocommit=false&sessionVariable:APPLICATION=mya
 === Snowflake
 
 For all indexing, system, and user-generated queries sent to Snowflake, we tag the query with the JDBC parameter, "application=thoughtspot".
+////
