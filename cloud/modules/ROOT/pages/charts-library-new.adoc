@@ -46,319 +46,6 @@ If you have questions about your instance's rollout status, contact {support-url
 // SOURCE: Google Doc — "13 other chart types like geo, sankey etc. which will continue to exist today and are not being replaced by Muze in 26.7"
 // TODO: verify with engineering — confirm xref filenames for pie, scatter, and bubble chart pages
 
-== Important changes starting in 26.7.0.cl
-
-This section describes significant changes in the new charts library that are introduced in the 26.7.0.cl release.
-
-[tabs]
-====
-Axis configurations::
-+
---
-[discrete]
-==== Facets instead of a single axis
-
-A query utilizing multiple attributes on the X-axis (e.g., Revenue | Category | Color | Ship Mode) now generates a faceted chart. This change introduces mini-grids for each attribute, significantly improving data readability. You can achieve a single axis by using a formula to concatenate the axis fields.
-
-*Old chart:*
-[.bordered]
-image::axis-config-old.png[]
-
-*New chart:*
-[.bordered]
-image::axis-config-new.png[]
-
-[discrete]
-==== N-Axis no longer supported
-
-* Classic charts supported multiple Y-axes (N-axis), allowing one axis per measure.
-* New charts are limited to a maximum of two axes.
-* To visualize bars side-by-side, all related measures must be grouped into a single axis entity.
-* Manual selection of axis positions (left/right) is no longer available.
-
-*Classic chart:*
-[.bordered]
-image::n-axis-old.png[]
-
-*New chart:*
-[.bordered]
-image::n-axis-new.png[]
-
-[discrete]
-==== No more multiple slice by color
-
-* Classic charts allowed multiple attributes for the 'slice by color' function.
-* New charts restrict 'slice by color' to a maximum of one attribute.
-* To incorporate multiple fields, users must first concatenate them using a formula, and then apply that formula to the 'slice by color' setting.
-
-*Classic chart:*
-[.bordered]
-image::no-mult-slice-old.png[]
-
-*New chart:*
-[.bordered]
-image::no-mult-slice-new.png[]
-
-[discrete]
-==== New axis types
-
-Multivariates:
-
-* Individual dimension chips now automatically create multivariates, replacing the former N-axis grouped charts.
-
-*Classic chart:*
-[.bordered]
-image::multi-var-old-1.png[]
-
-[.bordered]
-image::multi-var-old-2.png[]
-
-*New chart:*
-[.bordered]
-image::multi-var-new-1.png[]
-
-[.bordered]
-image::multi-var-new-2.png[]
-
-[discrete]
-==== Grouped axis:
-
-* Users must explicitly create a grouped entity, either by dragging one chip onto another or by utilizing the axis configurator menu.
-* Grouped bars do not support N-axis configurations; they must be represented as a single axis entity.
-
-*Classic chart:*
-[.bordered]
-image::group-axis-old-1.png[]
-
-[.bordered]
-image::group-axis-old.png[]
-
-*New chart:*
-[.bordered]
-image::group-axis-new-1.png[]
-
-[.bordered]
-image::group-axis-new.png[]
-
-[discrete]
-==== Dual axis
-
-* When explicitly used, the dual axis feature now superimposes measures.
-* In contrast to the classic version that has dual axes that are grouped or side-by-side bars, the dual axis functionality in the new version is capable of creating bullet charts.
-
-*Classic chart:*
-[.bordered]
-image::dual-axis-old-1.png[]
-
-[.bordered]
-image::dual-axis-old-2.png[]
-
-*New chart:*
-[.bordered]
-image::dual-axis-new-1.png[]
-
-[.bordered]
-image::dual-axis-new-2.png[]
---
-
-Chart settings::
-+
---
-While new charts introduce several enhancements, certain settings from the previous version are no longer supported.
-
-[discrete]
-==== Axis show / hide settings
-
-* Classic charts provided the option to hide names and labels for individual axes.
-* New charts apply axis visibility settings universally across all axes. This setting has been relocated from the individual column configuration to the general display settings.
-
-*Classic chart:*
-[.bordered]
-image::axis-show-hide-old.png[]
-
-*New chart:*
-[.bordered]
-image::axis-show-hide-new.png[]
-
-[discrete]
-==== Non-visualized fields in tooltip
-
-* The ability to add non-visualized fields to tooltips is not supported in the new charts.
-
-*Classic chart:*
-[.bordered]
-image::non-viz-fields-old-1.png[]
-
-[.bordered]
-image::non-viz-fields-old-2.png[]
-
-*New chart:*
-[.bordered]
-image::non-viz-fields-new-1.png[]
-
-[.bordered]
-image::non-viz-fields-new-2.png[]
-
-[discrete]
-==== Label settings
-
-* Custom font size settings for elements such as data labels and axis labels are no longer supported.
-
-*Classic chart:*
-[.bordered]
-image::label-settings-old.png[]
-
-*New chart:*
-[.bordered]
-image::label-settings-new.png[]
-
-[discrete]
-==== Data-Label settings
-
-* Certain settings, including label length and label background color, are no longer supported.
---
-
-Admin Portal::
-+
---
-You can no longer set granular custom fonts across different chart elements in the Admin portal.
-
-*Old:*
-[.bordered]
-image::chart-admin-portal-old.png[]
-
-*New:*
-[.bordered]
-image::chart-admin-portal-new.png[]
---
-
-
-
-Data limits::
-+
---
-The following data limits apply for a ThoughtSpot instance:
-
-* # of trellis charts: 50
-* # of facets: 1000
-+
-NOTE: 1000 is calculated as the product of cardinalities of all the attributes (except the last one) on the primary axis.
---
-====
-
-== Visual differences starting in 26.7.0.cl
-
-This section describes the visual differences in the new charts library that are introduced in the 26.7.0.cl release.
-
-[discrete]
-=== Column / Bar chart differences
-Difference between classic and new charts:
-
-* Y-axis ranges are different for both the charts.
-* Number of data points. (For example: The number of bars visible in the viewport vary for old and new charts.)
-* Data labels displayed can vary. (For example in old charts, the first label 17.5M is visible but in new charts it's not visible due to a difference in collision logic.)
-* Differences in axis scale calculation.  The old charts dynamically change axis scales when you scroll vs new charts create axis based on the complete data and hence the difference in Y-axis i.e. 40MN vs 65MN
-* There are some subtle visual differences as well. (For example: Data labels appear slightly darker, and bars appear slightly curved in the new charts.)
-
-*Classic chart:*
-[.bordered]
-image::chart-bar-old.png[]
-
-*New chart:*
-[.bordered]
-image::chart-bar-new2.png[]
-
-[discrete]
-=== Line chart differences
-
-Difference between classic and new charts:
-
-* Y-axis ranges are different for both the charts - i.e. 500MN and 650 MN
-* Number of data points. (For example: the old chart shows data up until 1992 and the new chart shows data up until 1993 in the first available viewport.)
-* The axis labels are different. (For example: the old chart shows selective timestamps and the new charts try to show as many timestamps as possible, like all the weeks in the below example.)
-* The orientation of axis labels can differ. (For example: horizontal vs slant on initial render, which can be controlled from settings.)
-
-*Classic chart:*
-[.bordered]
-image::line-chart-old.png[]
-
-*New chart:*
-[.bordered]
-image::line-chart-new.png[]
-
-[discrete]
-=== Sliced chart differences
-
-Difference between classic and new charts:
-
-* The legend items have a small white border and the spacing between the items is not equal i.e. both legends span different heights.
-* There is a default padding between x-axis items. (a white space between each color on the new chart compared to old chart bars starting immediately one after another, which can be controlled through settings.)
-* Data label collision logic is different. Different data labels are visible across both classic and new
-* Sliced bar widths also vary slightly. (For example: Bars on left are thicker than on the right.)
-
-*Classic chart:*
-[.bordered]
-image::sliced-chart-old.png[]
-
-*New chart:*
-[.bordered]
-image::sliced-chart-new.png[]
-
-[discrete]
-=== Stacked chart differences
-
-Difference between classic and new charts
-
-* Bar widths differ slightly.
-* X-axis labels / ticks differ. Classic charts show alternate / skipped ticks, and new charts accommodate the maximum possible axis labels.
-
-*Classic chart:*
-[.bordered]
-image::stacked-chart-old.png[]
-
-*New chart:*
-[.bordered]
-image::stacked-chart-new.png[]
-
-
-[#charts-default]
-== Enable new charts as default
-
-// SOURCE: Google Doc — "Admin page settings" and "TSCLI flags for Muze charts"
-A ThoughtSpot administrator can set the new charts to appear in the _Library_ section of the chart selector panel by using the *Set new charts as default* toggle in the Admin portal.
-
-=== How it works
-
-When enabled:
-
-* Only the new versions of the charts are accessible in the _Library_ section of the chart selector panel.
-* You can switch a new chart used in an Answer to the classic version. For details, see <<#switch-charts, Switching between new and classic charts>>.
-
-When disabled:
-
-* New charts are still accessible in a collapsed _New_ section above the _Library_ section in the chart selector panel.
-* Classic charts are recommended for all new Answers.
-* Answers that were already created using new charts remain fully functional and accessible.
-* New charts cannot be set as default while this toggle is off.
-+
-[CAUTION]
-====
-This setting affects your entire instance and is not configurable per organization. To fully disable the *New* charts, contact ThoughtSpot Support.
-====
-
-=== Enabling new charts as default
-
-To set new charts as default:
-
-. Sign in to ThoughtSpot.
-. Go to *Admin* > *All Orgs* > *Chart customization* > *Settings*.
-. Click *Edit*.
-. Toggle *Set new charts as default* to _Enabled_ and click *Save*.
-
-// TODO: verify with engineering — confirm exact Admin portal navigation path: "Chart customization > Settings"
-// TODO: verify with engineering — confirm whether embedded (TSE) users see the same toggle or a different enablement path
-
-
 == Why move to the new charts library?
 With new charts, ThoughtSpot offers the following key features:
 
@@ -430,6 +117,311 @@ Dragging an attribute in the trellis section, will create these small multiples 
 [.bordered]
 image::trellis.png[Trellis]
 
+== Important changes starting in 26.7.0.cl
+
+This section describes significant changes in the new charts library that are introduced in the 26.7.0.cl release.
+
+[tabs]
+====
+Axis configurations::
++
+--
+[discrete]
+==== Facets instead of a single axis
+
+A query utilizing multiple attributes on the X-axis (e.g., Revenue | Category | Color | Ship Mode) now generates a faceted chart. This change introduces mini-grids for each attribute, significantly improving data readability. You can achieve a single axis by using a formula to concatenate the axis fields.
+
+Classic chart:
+[.bordered]
+image::axis-config-old.png[]
+
+New chart:
+[.bordered]
+image::axis-config-new.png[]
+
+[discrete]
+==== N-Axis no longer supported
+
+* Classic charts supported multiple Y-axes (N-axis), allowing one axis per measure.
+* New charts are limited to a maximum of two axes.
+* To visualize bars side-by-side, all related measures must be grouped into a single axis entity.
+* Manual selection of axis positions (left/right) is no longer available.
+
+Classic chart:
+[.bordered]
+image::n-axis-old.png[]
+
+New chart:
+[.bordered]
+image::n-axis-new.png[]
+
+[discrete]
+==== No more multiple slice by color
+
+* Classic charts allowed multiple attributes for the 'slice by color' function.
+* New charts restrict 'slice by color' to a maximum of one attribute.
+* To incorporate multiple fields, users must first concatenate them using a formula, and then apply that formula to the 'slice by color' setting.
+
+Classic chart:
+[.bordered]
+image::no-mult-slice-old.png[]
+
+New chart:
+[.bordered]
+image::no-mult-slice-new.png[]
+
+[discrete]
+==== New axis types
+
+Multivariates:
+
+* Individual dimension chips now automatically create multivariates, replacing the former N-axis grouped charts.
+
+Classic chart:
+[.bordered]
+image::multi-var-old-1.png[]
+
+[.bordered]
+image::multi-var-old-2.png[]
+
+New chart:
+[.bordered]
+image::multi-var-new-1.png[]
+
+[.bordered]
+image::multi-var-new-2.png[]
+
+[discrete]
+==== Grouped axis:
+
+* Users must explicitly create a grouped entity, either by dragging one chip onto another or by utilizing the axis configurator menu.
+* Grouped bars do not support N-axis configurations; they must be represented as a single axis entity.
+
+Classic chart:
+[.bordered]
+image::group-axis-old-1.png[]
+
+[.bordered]
+image::group-axis-old.png[]
+
+New chart:
+[.bordered]
+image::group-axis-new-1.png[]
+
+[.bordered]
+image::group-axis-new.png[]
+
+[discrete]
+==== Dual axis
+
+* When explicitly used, the dual axis feature now superimposes measures.
+* In contrast to the classic version that has dual axes that are grouped or side-by-side bars, the dual axis functionality in the new version is capable of creating bullet charts.
+
+Classic chart:
+[.bordered]
+image::dual-axis-old-1.png[]
+
+[.bordered]
+image::dual-axis-old-2.png[]
+
+New chart:
+[.bordered]
+image::dual-axis-new-1.png[]
+
+[.bordered]
+image::dual-axis-new-2.png[]
+--
+
+Visual differences::
++
+--
+This section describes the visual differences in the new charts library that are introduced in the 26.7.0.cl release.
+
+[discrete]
+==== Column / Bar chart differences
+Difference between classic and new charts:
+
+* Y-axis ranges are different for both the charts.
+* Number of data points. (For example: The number of bars visible in the viewport vary for old and new charts.)
+* Data labels displayed can vary. (For example in old charts, the first label 17.5M is visible but in new charts it's not visible due to a difference in collision logic.)
+* Differences in axis scale calculation.  The old charts dynamically change axis scales when you scroll vs new charts create axis based on the complete data and hence the difference in Y-axis i.e. 40MN vs 65MN
+* There are some subtle visual differences as well. (For example: Data labels appear slightly darker, and bars appear slightly curved in the new charts.)
+
+Classic chart:
+[.bordered]
+image::chart-bar-old.png[]
+
+New chart:
+[.bordered]
+image::chart-bar-new2.png[]
+
+[discrete]
+==== Line chart differences
+
+Difference between classic and new charts:
+
+* Y-axis ranges are different for both the charts - i.e. 500MN and 650 MN
+* Number of data points. (For example: the old chart shows data up until 1992 and the new chart shows data up until 1993 in the first available viewport.)
+* The axis labels are different. (For example: the old chart shows selective timestamps and the new charts try to show as many timestamps as possible, like all the weeks in the below example.)
+* The orientation of axis labels can differ. (For example: horizontal vs slant on initial render, which can be controlled from settings.)
+
+Classic chart:
+[.bordered]
+image::line-chart-old.png[]
+
+New chart:
+[.bordered]
+image::line-chart-new.png[]
+
+[discrete]
+==== Sliced chart differences
+
+Difference between classic and new charts:
+
+* The legend items have a small white border and the spacing between the items is not equal i.e. both legends span different heights.
+* There is a default padding between x-axis items. (a white space between each color on the new chart compared to old chart bars starting immediately one after another, which can be controlled through settings.)
+* Data label collision logic is different. Different data labels are visible across both classic and new
+* Sliced bar widths also vary slightly. (For example: Bars on left are thicker than on the right.)
+
+Classic chart:
+[.bordered]
+image::sliced-chart-old.png[]
+
+New chart:
+[.bordered]
+image::sliced-chart-new.png[]
+
+[discrete]
+==== Stacked chart differences
+
+Difference between classic and new charts
+
+* Bar widths differ slightly.
+* X-axis labels / ticks differ. Classic charts show alternate / skipped ticks, and new charts accommodate the maximum possible axis labels.
+
+Classic chart:
+[.bordered]
+image::stacked-chart-old.png[]
+
+New chart:
+[.bordered]
+image::stacked-chart-new.png[]
+--
+
+Chart settings::
++
+--
+While new charts introduce several enhancements, certain settings from the previous version are no longer supported.
+
+[discrete]
+==== Axis show / hide settings
+
+* Classic charts provided the option to hide names and labels for individual axes.
+* New charts apply axis visibility settings universally across all axes. This setting has been relocated from the individual column configuration to the general display settings.
+
+Classic chart:
+[.bordered]
+image::axis-show-hide-old.png[]
+
+New chart:
+[.bordered]
+image::axis-show-hide-new.png[]
+
+[discrete]
+==== Non-visualized fields in tooltip
+
+* The ability to add non-visualized fields to tooltips is not supported in the new charts.
+
+Classic chart:
+[.bordered]
+image::non-viz-fields-old-1.png[]
+
+[.bordered]
+image::non-viz-fields-old-2.png[]
+
+New chart:
+[.bordered]
+image::non-viz-fields-new-1.png[]
+
+[.bordered]
+image::non-viz-fields-new-2.png[]
+
+[discrete]
+==== Label settings
+
+* Custom font size settings for elements such as data labels and axis labels are no longer supported.
+
+Classic chart:
+[.bordered]
+image::label-settings-old.png[]
+
+New chart:
+[.bordered]
+image::label-settings-new.png[]
+
+[discrete]
+==== Data-Label settings
+
+* Certain settings, including label length and label background color, are no longer supported.
+--
+
+Admin chart styling::
++
+--
+In addition to the admin portal, these settings are also available in Develop > Styles.
+You can no longer set granular custom fonts across different chart elements in the Admin portal.
+
+Old:
+[.bordered]
+image::chart-admin-portal-old.png[]
+
+New:
+[.bordered]
+image::chart-admin-portal-new.png[]
+--
+
+
+
+====
+
+
+[#charts-default]
+== Enable new charts as default
+
+// SOURCE: Google Doc — "Admin page settings" and "TSCLI flags for Muze charts"
+A ThoughtSpot administrator can set the new charts to appear in the _Library_ section of the chart selector panel by using the *Set new charts as default* toggle in the Admin portal.
+
+=== How it works
+
+When enabled:
+
+* Only the new versions of the charts are accessible in the _Library_ section of the chart selector panel.
+* You can switch a new chart used in an Answer to the classic version. For details, see <<#switch-charts, Switching between new and classic charts>>.
+
+When disabled:
+
+* New charts are still accessible in a collapsed _New_ section above the _Library_ section in the chart selector panel.
+* Classic charts are recommended for all new Answers.
+* Answers that were already created using new charts remain fully functional and accessible.
+* New charts cannot be set as default while this toggle is off.
++
+[CAUTION]
+====
+This setting affects your entire instance and is not configurable per organization. To fully disable the *New* charts, contact ThoughtSpot Support.
+====
+
+=== Enabling new charts as default
+
+To set new charts as default:
+
+. Sign in to ThoughtSpot.
+. Go to *Admin* > *All Orgs* > *Chart customization* > *Settings*.
+. Click *Edit*.
+. Toggle *Set new charts as default* to _Enabled_ and click *Save*.
+
+// TODO: verify with engineering — confirm exact Admin portal navigation path: "Chart customization > Settings"
+// TODO: verify with engineering — confirm whether embedded (TSE) users see the same toggle or a different enablement path
+
 [#switch-charts]
 == Switching between new and classic charts
 
@@ -465,11 +457,17 @@ When you copy a classic chart, the copy is also a classic chart. You can perform
 
 // TODO: verify with engineering — confirm Support contact path for disabling the New charts accordion entirely
 
-== Current limitations
+== Limitations
 // SOURCE: Google Doc — GA plan; Spotter limitation removed as doc states "For all new answers: New Muze charts will be recommended across Search Data, Spotter, SpotterViz"
 * SpotIQ analysis is not available for new charts.
 * Limited style customization options for embedded users. `rules_UNSTABLE` is not supported for these charts, so users cannot directly target any element and apply styling on that class. The classic charts do support this.
 * Non-visualized fields cannot be added to tooltips.
+
+* The following data limits apply for a ThoughtSpot instance:
+** # of trellis charts: 50
+** # of facets: 1000
++
+NOTE: 1000 is calculated as the product of cardinalities of all the attributes (except the last one) on the primary axis.
 
 == FAQs
 
