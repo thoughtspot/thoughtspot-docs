@@ -13,7 +13,7 @@ NOTE: Writeback is a beta feature. To enable this feature, contact {support-url}
 
 With input tables, you can:
 
-* Define the structure of the table using existing attribute and date columns from your data model.
+//* Define the structure of the table using existing attribute and date columns from your data model.
 * Add new input columns. Input columns are editable columns where users can enter or update values directly in the ThoughtSpot UI.
 * Save changes that write the data back to your connected CDW.
 * Use input tables across Answers and Liveboards, just like any other data source.
@@ -96,6 +96,7 @@ Before creating an input table, ensure:
 * You have *Edit permissions* on the relevant object in ThoughtSpot.
 * You have *write access to the target schema* in your CDW.
 * Your organization is connected to a supported CDW.
+* You have *Configure Data Upload* enabled for the connection where the objects are located.
 
 
 ==== Access the Input Table Builder
@@ -114,6 +115,7 @@ An *Input Table* modal opens.
 +
 It appears in the center preview table.
 . Selected attribute columns are *read-only* in the preview.
+. Once the columns are selected click on *Go* in the search bar to populate the values.
 +
 The combination of selected attribute columns automatically becomes the *Primary Key*.
 +
@@ -130,6 +132,8 @@ IMPORTANT: The primary key cannot be modified after the input table is saved.
 +
 All cells in the new column are blank by default.
 . You can add multiple input columns to the same table.
++
+NOTE: Adding an Input column to an existing input table is not supported in Beta.
 +
 NOTE: Added input columns appear in the left-hand data panel under the input table entry after you save.
 
@@ -149,9 +153,9 @@ NOTE: Edits persist *locally* until you save the table.
 
 . Click *Next* when you are ready to save.
 . On the save screen enter:
-- *Connection*: Pre-filled and read-only. This is inherited from your current connection.
-- *Schema*: Required. Select from the available schemas for your connection.
-- *Table Name*: Auto-generated.
+//- *Connection*: Pre-filled and read-only. This is inherited from your current connection.
+//- *Schema*: Required. Select from the available schemas for your connection.
+- *Table Name*: Enter a table name.
 . Click *Create Table*.
 +
 The input table is created in your CDW and a logical table definition is registered in ThoughtSpot.
@@ -183,11 +187,11 @@ It loads in the main Search area.
 
 === Editing the input table structure
 
-. Click *more* next to the input table name in the data panel.
+. Click the *more* menu next to the input table name in the data panel.
 . Select *Edit*.
 +
-The same *Input Table* modal opens.
-. You can add new input columns from this view.
+The *Input Table* modal opens.
+//. You can add new input columns from this view.
 +
 NOTE: If the input table is used in existing Answers or Liveboards, a validation warning appears when you save.
 
@@ -216,10 +220,15 @@ When the underlying source model is updated with new rows, input tables can be *
 [cols="1,2", options="header"]
 |===
 | Action | Required Permission
-| Create an Input Table | Edit permission on the object + write access to CDW schema.
+| Create an Input Table | *Can manage data* and *Can manage input table* privileges.
+
+Edit permission on the object and write access to CDW schema.
+|Edit a linked Input Table|*Can manage data* and *Can manage input table* privileges.
+
+User needs to be added to the *Administrator* group to perform any edit operation.
 | Edit Input Column values | Edit permission on the object.
 | View an Input Table | Standard read access.
-| Delete an Input Table | Admin or owner-level permission.
+//| Delete an Input Table | Admin or owner-level permission.
 |===
 
 
