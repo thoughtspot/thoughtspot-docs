@@ -65,13 +65,15 @@ When a user authenticates through a per-org IdP, ThoughtSpot identifies the *aut
 * Claims that reference any other Org are dropped. Dropped claims do not grant access and are not used for group provisioning in those Orgs.
 * Group claims that carry no Org suffix are automatically scoped to the authorized Org.
 
-For example, if a user logs in through IdP-A, which is bound to Org X, a claim of `PowerUsers@X` is accepted. A claim of `Admins@Y` is dropped.
+For example, if a user logs in through IdP-A, which is bound to Org X, a claim of `PowerUser@X` is accepted. A claim of `Admin@Y` is dropped.
 
 NOTE: Org isolation applies only to per-org IdP logins. Cluster-wide (single IdP) SAML configurations are not affected by this behavior.
 
 ==== Effect on existing Org memberships
 
-Org isolation is non-destructive. If a user already has manually-assigned membership in another Org — granted by a cluster administrator — that membership is preserved after authenticating via a cluster-wide (primary org) IdP. A per-org SAML IdP cannot grant new access to Orgs outside its authorized Org, but it also cannot remove existing, manually-assigned access.
+Logging in through a per-org IdP affects existing Org memberships. When a user authenticates via a per-org IdP, ThoughtSpot evaluates and reconciles the user's Org memberships based on the claims scoped to that IdP's authorized Org.
+
+Alternatively, authenticating through a cluster-wide (primary Org) IdP does not alter existing group memberships.
 
 
 == About SAML authentication
