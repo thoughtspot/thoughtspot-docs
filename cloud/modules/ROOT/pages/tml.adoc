@@ -1,0 +1,77 @@
+= ThoughtSpot Modeling Language
+:page-last_updated: 11/05/2021
+:linkattrs:
+:experimental:
+:page-aliases: /admin/ts-cloud/tml.adoc, /admin/ts-cloud/tsl.adoc, /admin/scriptability/tml.adoc
+:description: Use TML to modify a ThoughtSpot object in a flat-file format. Then, migrate the object to a different instance, or restore it to the same instance.
+:jira: SCAL-188027, SCAL-240697, SCAL-265156, SCAL-264258
+
+Use TML to modify a ThoughtSpot object in a flat-file format. Then, migrate the object to a different instance, or restore it to the same instance.
+
+To work with TML files for Models, views, SQL views, tables, Answers, Liveboards, and Monitor alerts in ThoughtSpot, you can download these objects to a flat file in `.TML` format, modify it, and subsequently upload this file either to the same instance, or to a different instance.
+To learn how to export, change, and update Models, views, tables, Answers, and Liveboards, see xref:scriptability.adoc[Import and export TML files]. To learn how to migrate multiple TML files at a time, see xref:tml-import-export-multiple.adoc[].
+
+In this section, you learn the syntax of the TML files for each object.
+You also learn how to add and modify joins for Models, views, SQL views, and tables.
+
+See the following articles for the full syntax of each type of TML file:
+
+* xref:tml-answers.adoc[TML for Answers]
+* xref:tml-connections.adoc[TML for Connections]
+* xref:tml-coaching.adoc[TML for coaching]
+* xref:tml-joins.adoc[TML for joins]
+* xref:tml-liveboards.adoc[TML for Liveboards]
+* xref:tml-models.adoc[TML for Models]
+* xref:tml-alerts.adoc[TML for Monitor alerts]
+* xref:tml-sql-views.adoc[TML for SQL views]
+* xref:tml-tables.adoc[TML for tables]
+* xref:tml-views.adoc[TML for views]
+
+[#object-id]
+== Object ID in TML files
+
+Rather than using a system-generated GUID to identify individual objects in TML files, you can now manually set an object property (`obj_id`) with a uniqueness constraint on the Org level. This allows you to manage content across multiple Orgs without having to manually change the GUID of an object each time you move it between Orgs. To enable this feature, contact {support-url}.
+
+To use the `obj_id` property:
+
+. Navigate to the object, click the *More* menu and scroll to the TML section.
++
+[.bordered]
+image::tml-edit-image.png[A TML section of the More menu, showing the options to Export, Update answer, or Edit. Edit is selected.]
+
+. Select *Edit*.
+
+. Once the TML file opens, click *Edit* and select *Change ObjectId*.
++
+[.bordered]
+image::change-objectid.png[TML editor with the Edit menu selected, and a highlighted option "Change ObjectId".]
+
+. In the text box, choose a unique string to identify the object. Click *Change*.
++
+[.bordered]
+image::object-id-textbox.png[A modal named Change Object ID, with a text box for New Object ID.]
+
+The resulting two lines at the top of the TML file should look like the below:
+
+[subs=+macros]
+....
+guid: <answer_guid>
+obj_id: <unique_string>
+....
+
+When you migrate an object between Orgs, use the `obj_id` as the primary method of import.
+
+[#fqn]
+=== fqn
+
+fqn refers to the source table's GUID. You can find this string of letters and numbers at the end of the URL for that table or connection.
+
+For example, in `https://<company>.thoughtspot.com/#/data/tables/34226aaa-4bcf-4d6b-9045-24cb1e9437cb`, the GUID is `34226aaa-4bcf-4d6b-9045-24cb1e9437cb`.
+
+Use this optional parameter to reduce ambiguity and identify a specific table, if you have multiple tables with the same name. When exporting a TML file, you have the option to *Export FQNs of referenced objects*, which ensures that the TML files you export contain FQNs for the underlying tables and connections. If you do not add the `fqn` parameter, and the connection or table you reference does not have a unique name, the file import fails.
+
+== Limitations of working with TML files
+
+There are certain limitations to the changes you can apply by editing a Model, Answer, table, view, Liveboard, or xref:monitor.adoc[Monitor alert] through TML.
+
+include::partial$scriptability-limitations.adoc[]

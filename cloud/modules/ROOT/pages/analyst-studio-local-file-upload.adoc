@@ -1,0 +1,156 @@
+= Local file uploads
+:categories: ["Integrations"]
+:categories_weight: 3
+:page-last_updated: Feb 10, 2026
+:description: Analyst Studio's local file integration allows you to upload data directly from your computer into Analyst Studio Datasets.
+:experimental:
+:ogdescription: Analyst Studio's local file integration allows you to upload data directly from your computer into Analyst Studio Datasets.
+:page-aliases:
+:path:
+:product: Analyst Studio
+:jira: SCAL-278073
+
+{product}'s local file integration allows you to upload data directly from your computer into {product} Datasets. This is the fastest way to perform ad-hoc analysis on .csv, .tsv, and .xlsx files without requiring a cloud-based connection.
+
+== Requirements
+
+Before you get started, ensure your file meets the following criteria:
+
+* *Supported formats*: .csv, .tsv, and .xlsx.
+* *File size*: Files must be under 250MB.
+
+=== Tips when preparing your local data for use in {product}
+
+Clean your data:: Remove any empty rows or columns at the end of your file to ensure a clean import.
+
+Date formats:: Ensure date columns follow a consistent format (for example, YYYY-MM-DD) for accurate auto-detection.
+
+Encoding:: For .csv and .tsv files, use UTF-8 encoding to avoid character display issues.
+
+== Creating a local file dataset
+
+To create a new Dataset, select the *Create* button in the top right corner of your {product} home screen and choose the *Upload external data* option in the Datasets section.
+
+[.bordered]
+image::as-personal-local-file.png[Upload local file from Personal.]
+
+Alternatively, navigate to *My Work*, click the *Create* button in the top right corner, and choose the *Upload external data* option.
+
+=== Defining headers
+
+Once you select a file, you will be prompted to declare the header structure:
+
+Are column names defined in first line?:: If the first row contains column names, select *Yes*. If your file starts directly with data, select *No*.
+
+[.bordered]
+image::sample-csv-as.png[Define if column names are included in first line.]
+
+NOTE: If you select *No*, {product} will automatically identify data types from the first row and generate generic column headers (for example, "Column 1").
+
+=== Reviewing and refining columns
+
+After the file is processed, a configuration modal appears. This allows you to verify the data before the Dataset is officially created.
+
+* *Dataset name*: Create a unique name for your dataset.
+* *Dataset description*: Add a description.
+* *Data preview*: View the first five rows of your data as a sample.
+* *Column selection*: Uncheck any columns you do not want to include in your Dataset to save on processing and storage.
+* *Data type assignment*: {product} automatically parses and assigns types (String, Number, Date, etc.).
+
+[.bordered]
+image::create-dataset-file.png[Create a Dataset from your file.]
+
+=== Modifying data types and typecasting
+
+You can override the auto-detected data types using the dropdown menu in the review modal. Changes must follow valid typecasting logic:
+
+* *Compatible casting*: You can change a *Number* to a *String*, or a *Date* to a *Datetime*.
+* *Incompatible casting*: You cannot cast *String* data (for example, "Product A") to a *Numerical* or *Boolean* type. If a type change is invalid, an error message will display explaining the logic.
+
+== Editing your local file Dataset
+
+Once your file data is uploaded, you'll be able to see the results in the Data View. This shows you the columns that were generated from the file.
+
+[.bordered]
+image::local-file-data-view.png[See data view of Dataset.]
+
+You can also see a list of all available fields in the *Fields* tab.
+
+[.bordered]
+image::local-file-fields-view.png[See fields view of Dataset.]
+
+== Describing the fields in your Dataset
+
+We recommend adding field descriptions to build shared understanding around business logic. To add a description, edit the Dataset, navigate to the *Fields* tab, and double-click the row. Descriptions support up to 350 characters and basic text formatting.
+
+== Adding calculated fields to your local file Dataset
+
+You can enhance your local data by adding formulas directly in {product}. Select *New fields* in the Fields view to create new logic (for example, `Revenue - Cost`) without modifying your original source file.
+
+== Viewing source information
+
+To see details about the original file used for the Dataset, navigate to the *Source* tab. This displays the file name, file type, upload date, and the user who performed the upload.
+
+== Updating your Dataset's name and description
+
+You can change the Dataset name or description at any time by clicking the name in the header area of the Dataset view. This does not affect the underlying data.
+
+[.bordered]
+image::rename-dataset.png[Rename your Dataset.]
+
+== Scheduling a local file Dataset
+
+Because local files are point-in-time snapshots from your computer, they do not support automated refresh scheduling. To update the data, you must perform a manual refresh by re-uploading the file.
+
+== Moving a local file Dataset to a Collection
+
+By default, new Datasets are saved to your *My Work* area. To share your analysis with others, open the Dataset, click *Move to a Collection* and select the appropriate team folder.
+
+[.bordered]
+image::move-to-a-collection.png[Select *Move to a Collection]
+
+
+Alternatively, you can click the *More* icon, select *Move to...* and select the Collection.
+[.bordered]
+image::dataset-my-work.png[Open Dataset in My Work]
+
+[.bordered]
+image::dataset-move-to.png[Hover over the Dataset and click the More icon and Move to...]
+
+[.bordered]
+image::move-to-collection.png[Select a Collection to move to.]
+
+== Viewing a local file Dataset
+
+You can view your Dataset at any time from the *Datasets* tab in *My Work*. The view provides a high-level summary of the row count, column count, and last updated timestamp.
+
+== Using your local file Dataset in a Report
+
+Once the upload is complete, a success notification appears. Click *Start Analysis* to immediately open the Chart Builder and begin visualizing your data in a new Report.
+
+== Refreshing data in a Dataset-based Report
+
+To update a Report built on a local file:
+
+. Navigate to the Dataset source.
+. Select *Refresh data*.
+. Upload the new version of your file.
+
+NOTE: The new file must have the same column structure (names and types) as the original to prevent Report breakage.
+
+== Local file Dataset permissions
+
+Access to the Dataset is determined by where it is stored:
+
+* *Personal*: Only you can view or edit Datasets in your private workspace.
+* *Collection*: If moved to a Collection, access is governed by the Collection's permission settings (Viewer, Editor, or Manager).
+
+== Frequently asked questions
+
+Can I change a .csv file to an .xlsx file during a refresh?:: Yes, as long as the internal data structure and column headers match exactly.
+
+What happens if my file has merged cells?:: Merged cells can cause data alignment issues. We recommend unmerging cells and filling them with values before uploading.
+
+Is there a limit to how many local files I can upload?:: There is no limit on the number of files, but your total Workspace storage limit, defined by your admin, still applies.
+
+

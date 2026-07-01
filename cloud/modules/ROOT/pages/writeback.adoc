@@ -1,0 +1,248 @@
+= Writeback
+:page-last_updated: 6/24/2026
+:linkattrs:
+:author: Mary
+:page-layout: default-cloud-beta
+:description: You can create and manage input tables directly inside ThoughtSpot that are connected to your CDW.
+
+Writeback enables you to create and manage input tables directly inside ThoughtSpot. An input table is an editable, logical table that is created in your connected Cloud Data Warehouse (CDW) and is available as a data object in ThoughtSpot.
+
+IMPORTANT: Writeback is currently only supported for Snowflake, Google BigQuery, and Databricks CDWs.
+
+NOTE: Writeback is a beta feature. To enable this feature, contact {support-url}.
+
+With input tables, you can:
+
+//* Define the structure of the table using existing attribute and date columns from your data model.
+* Add new input columns. Input columns are editable columns where users can enter or update values directly in the ThoughtSpot UI.
+* Save changes that write the data back to your connected CDW.
+* Use input tables across Answers and Liveboards, just like any other data source.
+
+
+== Why use writeback?
+
+Traditionally, workflows requiring data edits follow a slow, fragile loop:
+
+. Export data to Excel.
+. Make changes manually.
+. Re-upload the file via an engineering ticket.
++
+NOTE: You lose governance and audit trail in the process.
+
+This creates data inconsistency, engineering dependencies, spreadsheet sprawl, and delayed decisions.
+
+Writeback solves this by allowing business users to enter and update values directly in ThoughtSpot, with the data persisted back to the CDW automatically.
+
+=== Common use cases
+The following are some examples of common use cases:
+
+[cols="1,2", options="header"]
+|===
+| Use Case | Description
+| *Forecasting & Planning* | Adjust revenue targets, sales quotas, or headcount plans inline.
+| *Budget Overrides* | Enter revised budget figures against existing actuals.
+| *Data Enrichment & Tagging* | Tag accounts, label customers, or classify records.
+| *Operational Adjustments* | Make small data corrections without raising engineering tickets.
+|===
+
+
+
+==== Who is this for?
+
+[cols="1,2", options="header"]
+|===
+| Persona | Role
+| *Business Users*  | Finance managers, Sales leaders, RevOps teams and anyone who needs to adjust forecasts, targets, budgets, or tag data
+| *Business Analysts & Admins* | Responsible for governance, permissions, and security of input tables
+|===
+
+
+
+== Supported data warehouses
+
+In this Beta release, writeback is supported on the following cloud warehouses:
+
+* Snowflake
+* Google BigQuery
+* Databricks
+
+
+== Key Concepts
+
+=== Input table
+A logical table created in your CDW and registered as a data object in ThoughtSpot. It combines read-only attribute/date columns from your existing data model with one or more editable input columns.
+
+=== Input column
+An editable column added to an input table. Input columns can be of the following data types:
+
+* *Integer*
+* *Double*
+* *Boolean*
+* *String*
+
+Input columns are visually distinct from source attribute columns in the UI, and are the only columns that can be edited inline.
+
+=== Primary Key
+The combination of attribute columns selected when creating the input table defines the *Primary Key*. This key links the input table to the source model and *cannot be changed* after the table is created.
+
+
+
+== Creating an input table
+
+=== Prerequisites
+
+Before creating an input table, ensure:
+
+* You have *Edit permissions* on the relevant object in ThoughtSpot.
+* You have *write access to the target schema* in your CDW.
+* Your organization is connected to a supported CDW.
+* You have *Configure Data Upload* enabled for the connection where the objects are located.
+
+
+==== Access the Input Table Builder
+
+. Navigate to the *Search data* page.
+. Click the *Add* button.
+. Select *Input Table* from the dropdown menu.
++
+An *Input Table* modal opens.
+
+
+==== Select Base Attributes and Dates
+
+. In the left-hand data panel, browse or search for *Attribute* or *Date* columns.
+. Click a column to select it.
++
+It appears in the center preview table.
+. Selected attribute columns are *read-only* in the preview.
+. Once the columns are selected click on *Go* in the search bar to populate the values.
++
+The combination of selected attribute columns automatically becomes the *Primary Key*.
++
+IMPORTANT: The primary key cannot be modified after the input table is saved.
+
+
+==== Add input columns
+
+. Click *Add Input Column*.
+. In the dialog, specify:
+- *Column Name*: A descriptive name for the editable column.
+- *Data Type*: Select from Integer, Double, Boolean, or String.
+- *Column Hierarchy*: Classify as Measure, Attribute, or Date.
++
+All cells in the new column are blank by default.
+. You can add multiple input columns to the same table.
++
+NOTE: Adding an Input column to an existing input table is not supported in Beta.
++
+NOTE: Added input columns appear in the left-hand data panel under the input table entry after you save.
+
+==== Enter Values (Optional at Creation)
+
+. Click any cell in an *Input Column* to make it editable.
+. Type your value.
++
+It appears in the cell immediately.
++
+ThoughtSpot validates data types as you type. For example, only integers are accepted in an Integer column.
++
+NOTE: Edits persist *locally* until you save the table.
+
+
+==== Save the input table
+
+. Click *Next* when you are ready to save.
+. On the save screen enter:
+//- *Connection*: Pre-filled and read-only. This is inherited from your current connection.
+//- *Schema*: Required. Select from the available schemas for your connection.
+- *Table Name*: Enter a table name.
+. Click *Create Table*.
++
+The input table is created in your CDW and a logical table definition is registered in ThoughtSpot.
++
+A success notification appears.
++
+You are redirected to the Search Data page, where the input table is available immediately.
++
+NOTE: If you don't have write permissions to the selected schema, you will see an error: *"Insufficient Write Permission, table cannot be saved."*.
+
+
+== Editing input tables
+
+After creation, your input table appears in the left-hand data panel on the Search Data page under a dedicated *Input Tables* section. Each table entry can be expanded to reveal its columns, organized by Measure, Attribute, and Date hierarchy.
+
+You can:
+
+* Add the entire *Input Table* to the canvas to create an Answer.
+* Select individual columns to build custom Answers.
+* Add Answers to Liveboards.
+
+=== Editing input column values
+. Select your *Input Table* from the left-hand panel.
++
+It loads in the main Search area.
+. *Attribute columns* are read-only. *Input Columns* are editable inline.
+. Click a cell in an input column to edit it.
+. To save your changes, click *more* on the Answer page and select *Save*.
+
+=== Editing the input table structure
+
+. Click the *more* menu next to the input table name in the data panel.
+. Select *Edit*.
++
+The *Input Table* modal opens.
+//. You can add new input columns from this view.
++
+NOTE: If the input table is used in existing Answers or Liveboards, a validation warning appears when you save.
+
+
+=== Using input tables in Answers and Liveboards
+
+Input tables work like standard data objects in ThoughtSpot.
+
+. Select the input table or individual input columns to build an Answer.
+. Add Measures from your source model.
+. Add Attributes from your source model.
+. Pin Answers to Liveboards.
++
+Input columns appear in drill down, Liveboard filters, and *Show Underlying Data*.
++
+Spotter can discover and query input tables, including input columns, once they are indexed.
+
+
+=== Refreshing an input table
+
+When the underlying source model is updated with new rows, input tables can be *refreshed* to pull in those new rows. The input table structure is preserved, and existing input column values for prior rows are retained.
+
+
+== Permissions
+
+[cols="1,2", options="header"]
+|===
+| Action | Required Permission
+| Create an Input Table | *Can manage data* and *Can manage input table* privileges.
+
+Edit permission on the object and write access to CDW schema.
+|Edit a linked Input Table|*Can manage data* and *Can manage input table* privileges.
+
+User needs to be added to the *Administrator* group to perform any edit operation.
+| Edit Input Column values | Edit permission on the object.
+| View an Input Table | Standard read access.
+//| Delete an Input Table | Admin or owner-level permission.
+|===
+
+
+== Limitations (Beta)
+
+The following are known limitations in this Beta release:
+
+* Input tables are supported only with Snowflake, BigQuery, Databricks.
+* Input columns are limited to data types: Integer, Double, Boolean, String.
+* Input tables cannot be created from two separate connections.
+* Input tables cannot be created on top of a table as data source.
+* Creation of sets using input columns is not supported.
+* The primary key (base attribute columns) cannot be changed after the table is created.
+* CSV upload to create input tables is not available in this Beta release.
+* Governance features (audit snapshots, approval flows, version control) are planned for a future phase.
+* There is no REST API to create input tables programmatically. Creation must be done via the ThoughtSpot UI.
+

@@ -1,0 +1,339 @@
+= Salesforce and ThoughtSpot integration setup guide
+:author: Naomi
+:page-last_updated: 09/05/2025
+:linkattrs:
+:experimental:
+:description: Learn how to configure integration between Salesforce and ThoughtSpot.
+:jira: SCAL-271265
+
+Follow these steps to configure your integration between Salesforce and ThoughtSpot, including all supported authentication configurations and required Content Security Policy (CSP) settings.
+
+== Prerequisites
+
+For Salesforce, this setup requires:
+
+* Salesforce admin access.
+* A Salesforce domain (for example, `mydomain.my.salesforce.com`).
+* Access to manage connected apps.
+
+Alternatively, you can link:https://developer.salesforce.com/developer-legacy/signup[create a new developer edition account].
+
+For ThoughtSpot, this setup requires:
+
+* Admin access to ThoughtSpot.
+
+== Configure your Content Security Policy (CSP)
+
+=== Trusted URLs
+
+. From Setup, in the *Quick Find* box, search for and select *Trusted URLs*.
+
+
+. Add the required trusted sites:
+
+.. ThoughtSpot
+... Trusted Site Name: ThoughtSpot
+... Trusted Site URL: `https://<your-thoughtspot-domain>
+... Allow all CSP Directives
+
+.. Mixpanel
+... Trusted Site Name: ThoughtSpot_Mixpanel
+... Trusted Site URL: `https://api-js.mixpanel.com`
+... Allow all CSP directives
+
+.. Identity Service (environment-specific ThoughtSpot Identity URL)
+... Trusted Site Name: ThoughtSpot_Identity
+... Trusted Site URL: (choose based on your environment
+
+* Staging: `https://identity.thoughtspotstaginglogin.cloud`
+* Production: `https://identity.thoughtspotlogin.cloud`
+* Dev: `https://identity.login-authenticatedev.cloud`
+... Allow all CSP Directives
+
+[.bordered]
+image::salesforce-trusted-urls.png[Salesforce Trusted URLs page, listing local, ThoughtSpot, ThoughtSpot IDentity, ThoughtSpot_IdentityDev, ThoughtSpot_Mixpanel, and ThoughtSpot_tryeverywhere]
+
+=== Remote site settings
+
+. From Setup, in the *Quick Find* box, search for and select *Remote Site Settings*.
+
+
+
+. Search for a credential named ‘ThoughtSpot’. If you find it, update the URL with your ThoughtSpot instance URL. If you don’t find it, create a new one.
+
+. Repeat the step above for ‘Mixpanel’ and ‘Identity Service’ credentials.
++
+[.bordered]
+image:salesforce-remote-site.png[Salesforce Remote Site Settings page, displaying local, tableau, ThoughtSpot, ThoughtSpot_Identity, ThoughtSpot_IdentityDev, ThoughtSpot_Mixpanel, and ThoughtSpot_Tryeverywhere]
+
+=== CORS
+
+. From Setup, in the *Quick Find* box, search for and select *CORS*.
+
+
+. Add the required sites as ThoughtSpot URL, Mixpanel URL, and Identity Service URL.
++
+[.bordered]
+image::salesforce-cors.png[Salesforce CORS settings, showing Origin URL pattern as nebula-lwc.thoughtspotdev.cloud and try-everywhere.thoughtspot.cloud]
+
+=== ThoughtSpot security settings
+. Navigate to the ThoughtSpot Develop tab and click *Security settings*.
+
+. Click *Edit*. Add your Salesforce domain URL to:
+
+* CSP visual embed hosts
+* CSP connect-src domains
+* CSP font-src domains
+* Permitted iFrame domains
+* CSP img-src domains
+* SCP style-src domains
+* CORS whitelisted domains
++
+[.bordered]
+image::thoughtspot-develop-security.png[ThoughtSpot developer security settings page]
+
+== Configure your User Access Policy in Salesforce
+
+User Access Policies allow automated assignment of permission sets based on defined user attributes such as profile, role, or status. This helps streamline access control for integrations like ThoughtSpot.
+
+=== Enable User Access Policy
+
+. Navigate to Setup in Salesforce. In the *Quick Find* box, search for User management settings.
+
+. Scroll down to locate the *User Access Policy* option. Ensure the policy is set to enabled.
+
+. Click *Save* if you made any changes.
++
+[.bordered]
+image::salesforce-uap-enable.png[Salesforce User Management Settings, showing User Access Policies as enabled]
+
+=== Create a new User Access Policy
+
+. From Setup, go to the *Quick Find* box. Search for User Access Policies.
+
+. Click *New User Access Policy*.
+
+. Provide a policy name (for example, ‘ThoughtSpot Access Policy’) and description (optional but recommended).
+
+. Click *Save*.
++
+[.bordered]
+image::salesforce-new-uap.png[Salesforce Create a New User Access Policy popup, showing Policy Name, API name, order, and description.]
+
+=== Define criteria for the policy
+
+. On the newly created policy page, click *Edit Criteria* in the top right corner.
+
+. Under *User criteria*, define filters such as:
+
+* Profile (your desired profile)
+* Role (your desired role)
+* (Optional) Set Active to true to include only active users
+
+NOTE: These filters ensure only relevant users are automatically granted the appropriate permission set.
+
+[.bordered]
+image::salesforce-uap-criteria.png[User Access Policies page open, with User Criteria tab selected]
+
+=== Definite actions for the policy
+
+. Scroll down to the *Actions* section.
+
+.Configure the action as follows:
+
+* Action: Grant
+* Target Type: Permission Set
+* Target Value: ThoughtSpot_Permission_Set (or the name of your custom permission set)
+
+. Click *Save* to finalize the policy.
+
+[.bordered]
+image::salesforce-uap-action.png[Salesforce User Access Policies page, displaying a defined action with action as Grant, target as Permission Set, and value as ThoughtSpot_Permission_Set]
+
+== Configure basic authentication
+
+To configure basic authentication, you don’t need any additional setup or configuration.
+
+== Configure trusted authentication
+
+=== Named credentials
+
+. In Setup, go to the *Quick Find* box, and search for and select *Named Credentials*.
++
+[.bordered]
+image::named-credentials.png[Salesforce Named Credentials page]
+
+. Click on *Edit* under the *Actions* menu for ThoughtSpot_Named_Credential and replace `yourTSurl` in the URL with the actual ThoughtSpot instance URL and save.
++
+[.bordered]
+image::edit-thoughtspot-named-credential.png[Edit ThoughtSpot_Named_Credential popup with URL as yourTSurl.thoughtspotdev.cloud/api/rest/2.0/auth/token/full]
+
+. Click on the external credential tab and click on ThoughtSpot_External_Credential, navigate to the ‘Principals’ section, then click *Edit* under the *Actions* menu.
++
+[.bordered]
+image::external-credentials.png[Named Credentials page, showing External Credentials selected]
++
+[.bordered]
+image::external-credential-details.png[ThoughtSpot_External_Credential, showing a related named credential as ThoughtSpot_named_Credential]
+
+. In ThoughtSpot, navigate to *Develop* > *Customizations* > *Security settings*.
+
+. Click *Edit* in the *Authentication and access* section to get the trusted authentication token.
++
+image::ts-trusted-auth-token.png[ThoughtSpot Security settings in the Develop tab, showing the trusted authentication token]
+
+. In Salesforce, add an authentication parameter with the name ThoughtSpot_Secret_Key and set its value to the token you got from the above step.
++
+[.bordered]
+image::salesforce-edit-principal.png[Edit principal pop-up, displaying Parameter 1 as ThoughtSpot_Secret_Key with a value obscured.]
+
+=== External credential principal mappings
+
+. In Setup, go to the *Quick Find* box and search for Permission Sets.
+
+. Select the permission set used for integration, for example, ThoughtSpot_Permission_Set.
++
+[.bordered]
+image::salesforce-permission-sets.png[Permission Sets, displaying a Permission Set named ThoughtSpot_Permission_Set]
+
+. Within the selected permission set, scroll down to the External Credential Principal Access section.
++
+[.bordered]
+image::permission-sets-external.png[Permission sets with External Credential Principal Access selected]
++
+[.bordered]
+image::permission-sets-ts.png[ThoughtSpot_Permission_Set overview, showing External Credential Principle Access]
+
+. Click *Edit*.
+
+. From the list, select the ThoughtSpot_External_Credential under Available External Credential Principals.
++
+[.bordered]
+image::available-external-credential-principals.png[Available External Credential Principals, with ThoughtSpot_External_Credential selected]
+
+. Click *Add*, then *Save*.
+
+IMPORTANT: This allows users assigned this permission set to use the specified External Credentials when making authenticated calls to external services like ThoughtSpot.
+
+== Configure your SSO
+
+=== Configure Salesforce (identity provider)
+
+. Sign in to your Salesforce org using admin credentials.
+
+. Click on the gear icon ⚙️ in the top right corner. Select *Setup* from the dropdown.
+
+. In the *Quick Find* box, type and select *Identity > Identity Provider*.
+
+. Click *Enable Identity Provider* if it is not enabled.
++
+[.bordered]
+image::enable-identity-provider.png[Identity Provider page, showing an Enable Identity Provider option]
+
+. Create a certificate or choose an existing certificate and save.
++
+image::thoughtspot-idp.png[Identity Provider page, showing a dropdown to select a certificate]
+
+. After saving, click *Download Certificate* to save the .crt file locally.
+
+. Copy the Issuer value shown on the Identity Provider page. You’ll need this for SSO configuration.
++
+[.bordered]
+image::idp-issuer.png[Identity Provider page, with Issuer highlighted]
+
+
+
+
+=== Configure ThoughtSpot (service provider)
+
+. Access your ThoughtSpot instance using your admin credentials.
+
+. Navigate to *Admin settings > All Orgs > Authentication > Single Sign On*.
+
+. Click on *+ Add Identity Provider*.
+
+. Choose SAML 2.0 IDP from the options.
+
+. Under *Connection name*, provide a meaningful name for the connection.
+
+. Click *Upload* next to *IdP provider certificate* and select the .crt file you downloaded from Salesforce.
+
+. Under *IdP issuer id*, paste the Issuer ID you copied from Salesforce.
+
+. Under *IdP single sign on url* use the following format: `<IdP Issuer ID>/idp/endpoint/HttpPost`. Replace <IdP Issuer ID> with the actual issuer URL.
+
+. Keep the Advanced Configuration section as default and click *Continue*.
++
+[.bordered]
+image::thoughtspot-sso-credentials.png[ThoughtSpot Single Sign On section, showing the Specify Identity Provider Details page]
+
+. Under *Map attributes*, configure *Username*, *Email*, and *Display name* as “email”. Click *Save and continue*.
++
+[.bordered]
+image::map-attributes-email.png[Map attributes step selected, with IdP Attribute for Username, Email, and Display name set as “email”]
+
+[#audience]
+. Save *Assertion consumer service url* and *Audience* and click *Enable*.
++
+[.bordered]
+image::add-ts-to-your-idp.png[Add ThoughtSpot to your Identity Provider step, with urls for assertion consumer service url and audience.]
+
+=== Create a connected app in Salesforce
+
+. Open Salesforce and navigate to Setup. Go to the *Quick Find* box and search for and select *App Manager*.
+
+. Click *New Connected App*.
+
+. Select *Create a Connected App*, then click *Continue*.
++
+[.bordered]
+image::lightning-experience-app-manager.png[App manager page in Setup, displaying Lightning Experience App Manager. In the top right, “New connected app” is selected]
++
+[.bordered]
+image::create-a-connected-app.png[Create a Connected App popup, with Create a Connected App selected]
+
+. Fill in the following fields:
+
+Connected App Name (for example, ThoughtSpot SSO)
+Contact Email (your admin/support email)
+Logo/Image URLs (optional, for branding)
+
+. Scroll down and check *Enable SAML*.
+
+. Fill in the following fields:
+
+* Entity ID: Use the <<audience,Audience>> value from ThoughtSpot.
+* ACS URL: Use the <<audience,assertion customer service url>> from ThoughtSpot.
+* Start URL: Enter the ThoughtSpot login URL (for example, https://<your-thoughtspot-domain>.cloud/#/login or the login URL you plan to use)
+* IdP Certificate: Select the certificate created or chosen earlier in the Identity Provider setup.
+* Signing Algorithm for SAML Messages: Select the algorithm that matches what is configured under *Advanced SAML Configuration* in ThoughtSpot (For example, SHA-256). To find this configuration, navigate to *Admin* > *All Orgs* > *Authentication* > *Single Sign On* > *Advanced Configuration*.
++
+[.bordered]
+image::manage-connected-apps.png[Manage Connected Apps page with details filled in]
+
+. Click *Save* to complete the configuration.
++
+[.bordered]
+image::setup-details-saved.png[Setup page with details saved]
+
+. Click *Manage*.
++
+[.bordered]
+image::connected-apps-manage.png[Click Manage]
+
+. Scroll to Profiles, then click *Manage Profile*.
++
+[.bordered]
+image::profile-managed.png[Profile details page]
+
+. Scroll down and choose System Administrator or any suitable role and save.
++
+[.bordered]
+image::profile-sys-admin.png[Select System Administrator]
+
+. Scroll down to *Permission set* and click on *Manage permission set*.
+
+. Choose *ThoughtSpot_Permission_Set* and save.
++
+[.bordered]
+image::thoughtspot-permission-set.png[Application permission set assignment, showing ThoughtSpot_Permission_Set selected]
