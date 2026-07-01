@@ -4,6 +4,9 @@
 :experimental:
 :page-aliases:
 
+// Review needed before publishing!
+
+////
 [.lead]
 The issues users and admins hit most often, with what to try first. Organized by symptom. If your issue isn't here, contact {support-url}.
 
@@ -14,28 +17,22 @@ The issues users and admins hit most often, with what to try first. Organized by
 . Confirm you can sign in to your ThoughtSpot tenant. AgentSpot sign-in is via the same SSO; if ThoughtSpot is broken, AgentSpot is too.
 . Try an incognito window — stale browser cookies are a common cause.
 . If your IdP requires MFA, complete the prompt fully before re-trying.
-. Still stuck: contact your AgentSpot admin.
+. If none of those work, contact your AgentSpot admin.
 
-=== I signed in but I don't see *Agents* in the left navigation
+=== I signed in but I don't see any agents
 
-You're signed in but you don't hold any AgentSpot role. Your admin needs to:
+You're signed in but you haven't been assigned any AgentSpot role. Your admin needs to:
 
 * Add you to an IdP group that's mapped to an AgentSpot role.
 * Or map an existing group of yours to one.
 
-After they fix it, sign out and back in — roles are evaluated at sign-in.
+After they fix it, sign out and back in. Roles are evaluated at sign-in.
 
 === I see *Agents* but the list is empty
 
 You hold a role but no agent has been shared with your group. Either no one has built any yet, or none have been published to a group you're in. Ask your team lead.
 
 == Using an agent
-
-=== "I don't have access to that data"
-
-* Confirm the data source is attached to the agent (visible on the agent's detail page).
-* Confirm your admin has shared the data source with your group.
-* For ThoughtSpot Worksheets: row-level security applies — the agent only sees what your ThoughtSpot identity can see.
 
 === The agent gives confident but wrong answers
 
@@ -50,7 +47,7 @@ This is a prompt issue, not a user issue. Report it to the agent's owner with th
 
 === Different answers to the same question on different days
 
-Underlying data has changed. Ask the agent: "What's the as-of date of this answer?" If the date is recent, the answer reflects current data. If you need a stable snapshot, ask the owner to attach a frozen snapshot data source.
+Underlying data has changed. Ask the agent: "What's the as-of date of this answer?" If the date is recent, the answer reflects current data.
 
 === Citations are missing
 
@@ -61,7 +58,7 @@ Underlying data has changed. Ask the agent: "What's the as-of date of this answe
 
 * Long, complex questions take longer than short, specific ones.
 * The first call in a session is slower than subsequent calls (the agent is loading data).
-* Persistent slowness on simple questions is worth reporting to the owner; the agent may have too much attached data.
+* Persistent slowness on simple questions is worth reporting to the owner.
 
 == Building an agent
 
@@ -71,15 +68,15 @@ You don't hold the *Agent Builder* role. Ask your admin.
 
 === Test preview returns "no model available"
 
-Your admin hasn't shared a model provider with your group. Ask them.
+Your admin hasn't shared a model provider with your group. Contact your admin.
 
 === Test preview returns "no data sources available"
 
-Same — your admin hasn't shared any data sources with your group.
+Your admin hasn't shared any data sources with your group. Contact your admin.
 
 === Agent ignores formatting rules
 
-Move the formatting rules to the top of the *Instructions*. The first ~50 words carry the most weight. If the rules are at the bottom of a 500-word prompt, the model misses them.
+Move the formatting rules to the top of the *Instructions*. The first ~50 words carry the most weight. If the rules are at the bottom of a 500-word prompt, the model may miss them.
 
 === Agent keeps using the wrong data source
 
@@ -93,39 +90,39 @@ Answer historical close rates using emea_closed_history.
 
 Naming explicitly is more reliable than "use the appropriate source."
 
-=== *Publish* button is greyed out
+=== *Share agent* button is greyed out
 
 * You may have unsaved changes — save first.
-* You may not have publish permission on this agent (if it was created by someone else).
+* You may not have share permission on this agent (if it was created by someone else).
 
-=== New version published but users still see old behavior
+=== New version of agent shared but users still see old behavior
 
-Active conversations finish on the previous version. Ask users to start a *New conversation* to pick up the new version.
+Active conversations finish on the previous version. Ask users to start a *New chat* to pick up the new version.
 
 == Building a workflow
 
 === Test run never starts
 
-* For *Schedule* triggers, you can't test by waiting — use *Test run* manually with sample inputs.
-* For *Webhook* triggers, confirm the calling system is hitting the right URL with the right auth header. Check the webhook's audit on AgentSpot's side.
-* For *Event* triggers, confirm the event source is producing events (test in the source system first).
+* For schedule triggers, you must use *Test run* manually with sample inputs.
+// * For *Webhook* triggers, confirm the calling system is hitting the right URL with the right auth header. Check the webhook's audit on AgentSpot's side.
+* For event-based triggers, confirm the event source is producing events (test in the source system first).
 
 === Step turns red with an auth error
 
-The connected credential expired. Ask your admin to reauthorize the connector in *Admin Settings* > *Connectors*.
+The connected credential expired. Contact your admin for assistance.
 
-=== Step outputs aren't in the next step's input picker
+// === Step outputs aren't in the next step's input picker
 
-Save the upstream step first. Downstream pickers only see *saved* outputs.
+//Save the upstream step first. Downstream pickers only see *saved* outputs.
 
-=== Scheduled runs aren't firing
+// === Scheduled runs aren't firing
 
-* Confirm the workflow is *Active* (not just *Published*).
-* Confirm the schedule's timezone is what you intended. Schedules default to UTC.
+// * Confirm the workflow is *Active* (not just *Published*).
+// * Confirm the schedule's timezone is what you intended. Schedules default to UTC.
 
-=== Same workflow runs twice for one event
+// === Same workflow runs twice for one event
 
-Most event sources don't dedupe. Your workflow needs an idempotency check (e.g. record the event id in a *Memory* entry, skip if already seen) or your trigger needs a dedup window.
+//Most event sources don't dedupe. Your workflow needs an idempotency check (e.g. record the event id in a *Memory* entry, skip if already seen) or your trigger needs a dedup window.
 
 == Connectors
 
@@ -177,3 +174,4 @@ Too many runs of the same workflow are in flight. Either wait for them to finish
 === Connector tool call blocked with "rate limit"
 
 You've hit either AgentSpot's per-user quota for that connector or the downstream system's rate limit. Slow down, retry later, or ask the admin to investigate.
+////
