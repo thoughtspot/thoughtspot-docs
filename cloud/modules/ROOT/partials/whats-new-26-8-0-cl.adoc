@@ -38,7 +38,7 @@ The Command Palette (Cmd+K / Ctrl+K) includes several enhancements in this relea
 [discrete]
 === Deprecation of Homepage v1 and v2 and Nav v1 and v2
 // Mary. jira: SCAL-312731. docs jira: SCAL-312732
-// PM: Rudram
+// PM: Rudram (not in Slack anymore, PRD & other docs are in owner's trash so I've reached out to Arpit) - waiting on confirmation of details: looks like all but focussed homepage will be removed
 
 
 [#26-8-0-cl-wysiwyg]
@@ -65,6 +65,20 @@ endif::[]
 [#26-8-0-cl-query]
 [discrete]
 === Query cancellation
+ThoughtSpot now stops in-flight queries on your cloud data warehouse (CDW) when you change or abandon a search. This reduces unnecessary CDW spend and lets you iterate faster.
+
+Previously, queries continued running until timeout or completion even after you modified the search, navigated away, or edited an Answer. This release introduces two cancellation mechanisms:
+
+* Implicit cancellation.
++
+ThoughtSpot automatically sends a cancel signal to the CDW when your action clearly indicates you no longer need the current result. For example, when you change the search bar, navigate to a different page, or open an Answer for editing from a Liveboard or Spotter.
+* Explicit cancellation.
++
+A Cancel button is available on the *Search Data* page for queries you want to stop manually.
+
+This release covers the Search Data page, loading and editing of Answers, and sessions that arrive on *Search Data* via the edit option from Liveboards and Spotter. To enable this feature, contact your administrator.
+
+//For more information, see Query cancellation.
 // Mary. jira: SCAL-293396. docs jira: SCAL-293397
 // PM: Abhijit
 
@@ -185,31 +199,50 @@ We have removed the auto-generated business terms feature, which previously was 
 
 Reference questions and business terms now respect column aliases built in the underlying Model.
 
+////
 [#26-8-0-cl-admin]
 [discrete]
 === Admin modern experience
 
 // Mary. jira: SCAL-305687. docs jira: SCAL-305688
-// PM: Swarnima
+// PM: Swarnima - PM confirmed that this and Admin portal 2.0 are the same feature.
+////
 
 [#26-8-0-cl-portal]
 [discrete]
 === Admin portal 2.0
+ThoughtSpot introduces a redesigned *Admin settings* experience. These changes provide administrators with a cleaner, more intuitive experience that is built to scale with multi-Org, enterprise deployments. The following are some of the enhancements:
 
+* Org management
+** Create, rename, and delete Orgs from one central place.
+** Assign Org admins, and manage users across multiple Orgs without needing to contact your instance admin.
+* Navigation
+** Admin settings are now organized by users, Orgs, features, appearance, and security, so you only see the sections relevant to your role.
+* Feature management
+** Enable or disable Early Access and GA features at the Org level without affecting other Orgs or requiring a system restart.
+* Redesigned application settings
+** All application settings are now in a single section.
+* Org-level overrides
+** Org admins can customize settings like styles and notifications for their own Org without touching instance defaults.
 // Mary. jira: SCAL-306083. docs jira: SCAL-306084
-// PM: Reshma
+// PM: Swarnima
 
 [#26-8-0-cl-download]
 [discrete]
 === Split download privilege
+Split download permissions for Liveboards and schedules
+Separate download permissions for Liveboards and schedules are now generally available (GA). The download privilege has been split into separate, more granular permissions to enhance data security and administrative control. Administrators can now assign download privileges for visual downloads (PDF/PNG) and data exports (XLSX/CSV) independently. These new permissions are respected for both direct downloads and scheduled reports.
+
+Users who previously had the general download privilege will automatically receive both new permissions, while users without prior download access will not be assigned the new privileges by default. Administrators can manage these permissions in the Admin settings under roles and groups.
 // Mary. jira: SCAL-273333. docs jira: SCAL-273334
 // PM: Siddhant
 
 [#26-8-0-cl-snowflake]
 [discrete]
 === Snowflake semantic integration
+
 // Mary. jira: SCAL-307916. docs jira: SCAL-307917
-// PM: Prayansh
+// PM: Prayansh - waiting on info (no PRD and requirements link goes to a blank JIRA).
 
 [#26-8-0-cl-csr]
 [discrete]
@@ -235,9 +268,15 @@ ifdef::pendo-links[]
 [#26-8-0-cl-view]
 [discrete]
 === Improve portability of personalized views [.badge.badge-early-access-whats-new]#Early Access#
+ThoughtSpot now protects user-created Personalised Views when you promote Liveboard TML across environments. Previously, importing an updated Liveboard TML from a development environment would overwrite all views in production, including those created by end users. With this release, ThoughtSpot uses a smart merge approach. Views that exist only in production are preserved, new views from the source TML are added, and views present in both are updated. This release also removes the previous 100-view limit on import and introduces APIs for programmatic creation, update, deletion, and ownership assignment of views.
+
+//To enable this feature, contact ThoughtSpot support.
+
+//For more information, see Personalised Views.
+
 endif::[]
 // Mary. jira: SCAL-307283. docs jira: SCAL-307284
-// PM: Siddhant
+// PM: Siddhant - need to verify enablement
 
 
 
@@ -273,7 +312,7 @@ image::clickhouse-connection.png[ClickHouse connection]
 === Guard rails for caching feature
 
 // Mary. jira: SCAL-294332. docs jira: SCAL-?
-// PM: Siddhant
+// PM: Siddhant - waiting on info from PM
 
 [#26-8-0-cl-discoverable]
 [discrete]
