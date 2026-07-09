@@ -6,10 +6,173 @@
 :description:
 :jira: SCAL-284295, SCAL-284296
 
-Aggregate-aware Model switching in ThoughtSpot allows you to define multiple Models at different levels of aggregation. You could create detailed and summarized models. Then, when a user queries the data, ThoughtSpot automatically and switches between these Models based on the granularity of the query. The user does not need to manually switch between Models.
+Aggregate-aware Model switching in ThoughtSpot is a transparent query optimisation feature where Search Data automatically switches from detailed Models to associated aggregate Models. This provides a mechanism to manage and reduce cloud spend and improve query latency whilst maintaining insight accuracy.
 
-For example, if a user asks for yearly or monthly data, the system will use the summarized or aggregate model. If they drill down to daily or transactional data, ThoughtSpot will switch to the detailed model.
+When a user queries the data, ThoughtSpot automatically switches between Models based on the granularity of the query — the user does not need to manually switch between Models or be aware that switching has occurred.
 
-This helps to optimize query performance and reduce costs.
+Aggregate-aware query execution is designed to:
+
+* Reduce resource consumption — Minimize the number of rows scanned and reduce the required size or capacity of the underlying data warehouse for high-volume queries.
+* Improve query performance — Achieve a measurable reduction in average query latency across key platform components (Liveboards, Search Data, Spotter, Agents) by automatically routing queries to smaller aggregate Models.
+* Ensure transparency — Enable automatic query switching across all major ThoughtSpot consumption surfaces with no visible change to the user experience.
 
 To enable this feature contact {support-url}.
+
+
+== How it works
+
+Aggregate awareness is achieved through ThoughtSpot's proprietary search. When a user submits a query:
+
+. ThoughtSpot evaluates the tokens in the query (columns, date buckets, filters, etc.).
+. If an associated aggregate Model has a matching token set that can fully answer the query, ThoughtSpot re-routes the query to that Model.
+. If the query cannot be answered by an aggregate Model — for example, if the user drills down to a transactional level — ThoughtSpot falls back to the detailed Model automatically.
+
+This allows the user to follow their train of thought from aggregate-level analysis to detailed and vice versa. The analytical path is not constrained.
+
+=== Example
+
+Consider a Sales Model where the detailed data has one row per order line item (product, quantity, revenue). This dataset may contain hundreds of millions of records. Aggregate Models can serve common query patterns far more efficiently:
+
+[cols="3,2,2", options="header"]
+|===
+| Query pattern | Model used | Approximate row count
+
+| _Total revenue by month for the last 7 years_
+| Sales Monthly Aggregate
+| 86 rows
+
+| _Revenue by department and product category_
+| Sales Company Aggregate
+| 10s–100s of millions
+
+| _Show me individual order line items for last week_
+| Sales (detailed)
+| 100s of millions
+|===
+
+
+== Setup
+
+. Create the detailed Model.
+* Create a ThoughtSpot Model at the detailed level, including all columns and formulas required to meet the business case. This is your *primary Model*.
+
+. Create aggregate Models.
+* Create one or more aggregate Models in ThoughtSpot. These models must:
+
+** Use the *same column names* as defined in the primary Model (query switching is based on column name matching).
+** Have formulas defined to return accurate results at the aggregated grain (e.g., `SUM(revenue)` not `revenue` at line-item level).
+** Have the same semantic rules applied as the primary Model.
++
+NOTE: Aggregate Models don't need to be defined in the same connection as the primary Model.
+
+. Define the association in TML.
+* In the primary Model's TML file, add the `aggregated_models` block to declare which aggregate Models are associated and at what granularity each operates.
+
+
+== TML definition
+
+Add the `aggregated_models` key to your primary Model's `.model.tml` file. Each entry specifies an aggregate Model by its `id` and, optionally, the date column and bucket it is optimised for.
+
+=== Syntax
+
+[source,yaml]
+----
+aggregated_models:
+  - id: <model_id>
+    date_aggregation_info:
+      - column_id: <date_column_id>
+        bucket: <BUCKET_LEVEL>
+----
+
+==== Properties:
+
+[cols="2,1,4", options="header"]
+|===
+| Property | Required | Description
+
+| `id`
+| Yes
+| The unique name of the associated aggregate Model.
+
+| `date_aggregation_info`
+| No
+| Declares which date column and bucket this Model is optimised for. Omit for dimension-only or company-level aggregates.
+
+| `column_id`
+| Yes (if `date_aggregation_info` present)
+| The date column in the source Model to match on. Must exactly match the column name in the aggregate Model.
+
+| `bucket`
+| Yes (if `date_aggregation_info` present)
+| The aggregation granularity. Supported values: `HOURLY`, `DAILY`, `WEEKLY`, `MONTHLY`, `QUARTERLY`, `YEARLY`.
+|===
+
+=== Example: Three aggregate Models on a Sales Model
+
+The following TML snippet defines three aggregate Models. One optimised for monthly queries, one for yearly queries, and one as a general company-level aggregate with no date bucketing:
+
+[source,yaml]
+----
+aggregated_models:
+  - id: Sales Monthly Aggregate
+    date_aggregation_info:
+      - column_id: order_date
+        bucket: MONTHLY
+  - id: Sales Yearly Aggregate
+    date_aggregation_info:
+      - column_id: order_date
+        bucket: YEARLY
+  - id: Sales Company Aggregate
+----
+
+*How ThoughtSpot selects the Model at query time:*
+
+[cols="3,2", options="header"]
+|===
+| User query | Model selected
+
+| _Revenue by month last year_
+| Sales Monthly Aggregate
+
+| _Total sales by year_
+| Sales Yearly Aggregate
+
+| _Revenue by region_ (no date dimension)
+| Sales Company Aggregate
+
+| _Order line items for last week_
+| Sales (detailed) — fallback
+|===
+
+
+
+[#considerations]
+== Considerations
+
+* Column name matching
+** Query switching is based on column names. Column names in the aggregate Models *must exactly match* the column names in the primary Model, including case.
+
+* Schema differences
+** The associated Models will not have the same logical table structure as the primary Model. The primary Model may be a complex star or chasm trap schema, whereas the associated aggregate Models are typically single logical tables.
+
+* Connection flexibility
+** Aggregate Models do *not* have to be defined in the same connection as the primary Model. This enables:
+
+*** Independent sizing: The detailed Model may require large instances where aggregate Models may only need small instances, which reduce cost.
+*** ThoughtSpot cache layer: Aggregate Models can be stored in ThoughtSpot's caching layer, removing computation costs from the database layer entirely.
++
+NOTE: Data latency must be considered when using the cache layer. Cached data should be synchronised with the underlying database on an appropriate schedule.
+
+* Semantic rule parity
+** The data analyst must ensure that all semantic rules applied to the detailed Model are also applied to the associated aggregate Models. This includes:
+*** Formula correctness: Formulas must be defined at the correct grain for the aggregate. An `AVG` that is additive at the line-item level may need to be treated differently at a pre-aggregated level.
+*** Row-level security (RLS): Apply the same RLS rules to prevent unauthorised data access.
+*** Column-level security (CLS): Apply the same CLS rules to restrict sensitive column visibility.
+
+
+== Related resources
+
+* xref:tml-models.adoc[TML for Models]
+* xref:scriptability.adoc[Import and export TML files]
+* xref:tml-models.adoc#mandatory-models-date-column-filters[Mandatory date column filters in Models]
+
