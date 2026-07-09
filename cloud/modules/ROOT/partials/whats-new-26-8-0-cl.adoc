@@ -59,12 +59,20 @@ endif::free-trial-feature[]
 // Mark. jira: SCAL-305208. docs jira: SCAL-305209
 // PM: Rudram
 
-The Command Palette (kbd:[`Cmd`] + kbd:[`K`] on Mac / kbd:[`Ctrl`] + kbd:[`K`] on Windows and Linux) includes several enhancements in this release:
+The command palette (kbd:[`Cmd`] + kbd:[`K`] on Mac / kbd:[`Ctrl`] + kbd:[`K`] on Windows and Linux) includes several enhancements in this release:
 
 * Smarter search results — Search results are now ranked by relevance, surfacing the most useful answers, Liveboards, and destinations based on your query and usage history.
 * Navigate with / filters — Type /navigate in the palette to scope results to application destinations, including sub-section headings. Navigation results respect your role and permissions, so you only see sections you can access.
 * Onboarding tips — First-time users see contextual guidance in the palette's empty state, helping you discover what the command palette can do without leaving your current page.
 * Updated visual design — Refreshed color tokens bring the palette's appearance in line with the latest ThoughtSpot design system.
+
+For more information, see
+ifndef::pendo-links[]
+xref:thoughtspot-homepage.adoc#command-palette[Command palette].
+endif::[]
+ifdef::pendo-links[]
+xref:thoughtspot-homepage.adoc#command-palette[Command palette,window=_blank].
+endif::[]
 
 ////
 [#26-8-0-cl-homepage]
@@ -105,24 +113,24 @@ endif::[]
 
 [#26-8-0-cl-query]
 [discrete]
-=== Query cancellation
+=== Search data query cancellation
 ThoughtSpot now stops in-progress queries on your cloud data warehouse (CDW) when you change or abandon a search. This reduces unnecessary CDW spend and lets you iterate faster.
 
-Previously, queries continued running until timeout or completion even after you modified the search, navigated away, or edited an Answer. This release introduces two cancellation mechanisms:
+Previously, queries made using Search data continued running until timeout or completion even after you modified the search, navigated away, or edited an Answer. This release introduces two cancellation mechanisms:
 
-* Implicit cancellation.
+* Implicit cancellation
 +
 ThoughtSpot automatically sends a cancel signal to the CDW when your action clearly indicates you no longer need the current result. For example, when you change the search bar, navigate to a different page, or open an Answer for editing from a Liveboard or Spotter.
-* Explicit cancellation.
+* Explicit cancellation
 +
-A Cancel button is available on the *Search Data* page for queries you want to stop manually.
+A Cancel button is available on the *Search data* page for queries you want to stop manually.
 
 //This release covers the Search Data page, loading and editing of Answers, and sessions that arrive on *Search Data* via the edit option from Liveboards and Spotter.
 //To enable this feature, contact your administrator.
 
 //For more information, see Query cancellation.
 // Mary. jira: SCAL-293396. docs jira: SCAL-293397
-// PM: Abhijit. confirm if EA. Feature Enhancement (FE).
+// PM: Abhijit. confirm if EA. Feature Enhancement (FE). add picture of cancel query button.
 
 
 
@@ -193,12 +201,11 @@ endif::[]
 === Spotter onboarding
 
 // Naomi. jira: SCAL-293483. docs jira: SCAL-293484
-// PM: Aaghran
+// PM: Aaghran. add video.
 
 You can now add potential first search options-- quick searches with preselected questions, deep analyses, or data knowledge prompts-- to guide first-time users of Spotter.
 
-[.bordered]
-image::spotter-onboarding-q.png[]
+
 
 ////
 [#26-8-0-cl-business]
@@ -212,7 +219,7 @@ We have removed the auto-generated business terms feature, which previously was 
 
 [#26-8-0-cl-portal]
 [discrete]
-=== Admin portal 2.0
+=== Admin portal enhancements
 ThoughtSpot introduces a redesigned *Admin settings* experience. These changes provide administrators with a cleaner, more intuitive experience that is built to scale with multi-Org, enterprise deployments. The following are some of the enhancements:
 
 * Navigation
@@ -221,7 +228,7 @@ ThoughtSpot introduces a redesigned *Admin settings* experience. These changes p
 ** Create, rename, and delete Orgs from one central place.
 ** Assign Org admins, and manage users across multiple Orgs without needing to contact your instance admin.
 ** View Org details such as when it was created, who it was created by, users, groups, feature flags enabled in a single spot.
-* User Management
+* User management
 ** One interface customized for cluster administrators, another customized for Org administrators.
 * Feature management
 ** Enable or disable Early Access and GA features at the Org level without affecting other Orgs or requiring a system restart.
@@ -234,7 +241,7 @@ ThoughtSpot introduces a redesigned *Admin settings* experience. These changes p
 
 NOTE: This feature will be released to customers throughout 26.8.0.cl. To inquire about the status of your deployment or for assistance, contact {support-url}.
 // Mary. jira: SCAL-306083. docs jira: SCAL-306084
-// PM: Swarnima. Add screenshots to article.
+// PM: Swarnima. Add screenshots to article. combine org-level overrides and feature management. don't need a bullet for org management. make user management bullet a full sentence.
 
 [#26-8-0-cl-alias]
 [discrete]
@@ -242,7 +249,7 @@ NOTE: This feature will be released to customers throughout 26.8.0.cl. To inquir
 // Naomi. jira: SCAL-315879. docs jira: SCAL-?
 // PM: Anant
 
-Reference questions and business terms now respect column aliases built in the underlying Model. For example, if you create column aliases in Spanish for a data model with English column titles, the reference question built on the Model would display the alias for users with Spanish locales.
+Reference questions and business terms now respect column aliases built in the underlying Model. For example, if you create column aliases in Spanish for a data model with English column titles, the reference question in the Memory sources page would display the alias for users with Spanish locales.
 
 [#26-8-0-cl-aliases]
 [discrete]
@@ -268,18 +275,21 @@ Column aliasing for UDF columns is now generally available (GA) and is enabled b
 === Split download permissions for Liveboards and schedules
 Separate download permissions for Liveboards and schedules are now generally available (GA). The download privilege has been split into separate, more granular permissions to enhance data security and administrative control. Administrators can now assign download privileges for visual downloads (PDF/PNG) and data exports (XLSX/CSV) independently. These new permissions are respected for both direct downloads and scheduled reports.
 
+////
 Users who previously had the general download privilege will automatically receive both new permissions, while users without prior download access will not be assigned the new privileges by default. Administrators can manage these permissions for their Orgs in *Admin settings* under *User management* on the *Roles* tab.
+////
 // Mary. jira: SCAL-273333. docs jira: SCAL-273334
 // PM: Siddhant. confirm what the tab name is under Admin to control this setting (not roles and groups).
 //It is User management > Roles and Groups are tabs within that. Select Admin settings > User management > Roles tab. Click on the role that you want to edit privileges for and select *Edit*. In the *Edit role* window, click *Next*. On the *Configure roles* page, scroll down to the *Download control* section and select the privileges you want to assign to the role. Click Save.
 
+////
 [#26-8-0-cl-snowflake]
 [discrete]
 === Snowflake semantic integration
 
 // Mary. jira: SCAL-307916. docs jira: SCAL-307917
 // PM: Prayansh - waiting on info (no PRD and requirements link goes to a blank JIRA).
-
+////
 [#26-8-0-cl-csr]
 [discrete]
 === Column security rules
@@ -377,12 +387,13 @@ image::clickhouse-connection.png[ClickHouse connection]
 // PM: Siddhant. release notes only.
 ////
 
+////
 [#26-8-0-cl-object]
 [discrete]
 === Object ID for Collections
 // Rani. jira: SCAL-317357. docs jira: SCAL-318240
 // PM: Shreyash
-
+////
 // Developer
 
 ifndef::free-trial-feature[]
