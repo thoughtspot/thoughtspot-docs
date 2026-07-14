@@ -94,31 +94,30 @@ image::dbt4.png[dbt4]
 [#faqs]
 == FAQs
 
-[discrete]
-=== *Q: If I have multiple dbt jobs, which job ID should I add to {product}?*
+[.faq]
+--
+If I have multiple dbt jobs, which job ID should I add to {product}?::
 
 A job in dbt represents the deployment of a dbt project on a schedule.
 It is common for organizations to have multiple dbt Cloud jobs, so they should choose the job that serves as the primary mechanism for updating production data.
 This job must also have freshness checks configured for relevant sources to surface data freshness in {product}.
 
-[discrete]
-=== *Q: Where does "`source data last refreshed`" timestamp come from?*
+Where does "`source data last refreshed`" timestamp come from?::
 
 The timestamp considers all tables in the Report from a Connection that has dbt enabled.
 Those tables are mapped to dbt models, for which we get the time at which the oldest source model's last loaded.
 
-[discrete]
-=== *Q: What if I create a Report using one dbt-enabled Connection and another Connection that does not have dbt enabled?*
+What if I create a Report using one dbt-enabled Connection and another Connection that does not have dbt enabled?::
 
 The freshness timestamp will simply ignore the tables from that Connection.
 The tables from the Connection without dbt enabled will not be shown in Report Details.
 No errors will be displayed.
 
-[discrete]
-=== *Q: Why is the Source data last refreshed value slightly different in the Report header than in View Details?*
+Why is the Source data last refreshed value slightly different in the Report header than in View Details?::
 
 This sometimes happens if you have left a Report open.
 Refreshing the Report will surface the most up-to-date timestamp for data freshness from dbt.
+--
 
 [#troubleshooting]
 == Troubleshooting
@@ -128,8 +127,9 @@ If {product} is unable to connect to dbt or unable to map any tables in the Repo
 If some tables do not have a freshness timestamp, they will be surfaced in Report Details, with the message `No models found in dbt`.
 This may happen if the table contains only historical data and none of its sources has freshness checks configured, or if the table is not modeled in dbt (that is, raw data).
 
-[discrete]
-=== *1. What does "`no models found in dbt`" mean?*
+[.faq]
+--
+What does "`no models found in dbt`" mean?::
 
 Timestamps may not be shown if we can't map a {product} table back to a dbt model.
 This usually happens if the table is not modeled in dbt (that is, raw data).
@@ -137,11 +137,11 @@ This usually happens if the table is not modeled in dbt (that is, raw data).
 The tables with "`data unavailable`" messaging will *_not_* be shown if the Connection does not have dbt enabled.
 Only tables from Connections that have dbt enabled will be shown in the list or count toward error messaging.
 
-[discrete]
-=== *2. What does "`Data unavailable`" mean?*
+What does "`Data unavailable`" mean?::
 
 This error will only be shown if no timestamp can be shown in Report Activity.
 This may be due to:
 
 * An issue connecting with dbt's API (that is, bad credentials).
 * Tables not having corresponding dbt models.
+--
