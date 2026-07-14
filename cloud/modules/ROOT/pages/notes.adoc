@@ -6,6 +6,7 @@
 :description: These release notes include information about new and enhanced features.
 :jira: SCAL-277691, SCAL-305410, SCAL-301650
 
+ifdef::preview-docs[]
 ++++
 <style>
 h2#_new_navigation_and_homepage_coming_soon {
@@ -216,7 +217,6 @@ i.fa.icon-announce::before {
 }
 </style>
 ++++
-ifdef::preview-docs[]
 ++++
 <div class="admonitionblock announce">
 <table>
@@ -235,7 +235,6 @@ ifdef::preview-docs[]
 </div>
 ++++
 endif::[]
-
 
 ThoughtSpot Cloud {version} is now available.
 
@@ -256,21 +255,111 @@ The latest release of ThoughtSpot Cloud contains several new and enhanced featur
 [#26-8-0-cl-business-user]
 === For the Business User
 
+[#spotterviz-insights]
+SpotterViz insight tiles [.badge.badge-early-access-relnotes]#Early Access#::
 
+// Naomi. jira: SCAL-309017. docs jira: SCAL-309018
+// PM: Rahul PJP. add to user side. add screenshot.
 
+Insight tiles display AI-generated text analysis on a Liveboard. You configure the tile with instructions that define how the data should be interpreted — including which signals to surface and what conditions should be flagged. Each time the Liveboard loads, the agent executes those instructions against the current data and produces a text output. The tile supports outputs ranging from a single summary sentence to a multi-step analysis, depending on how the prompt is written. To enable this feature, contact your ThoughtSpot administrator.
+
+[#command-palette]
+Command palette enhancements::
+// Mark. jira: SCAL-305208. docs jira: SCAL-305209
+// PM: Rudram
+The command palette (kbd:[`Cmd`] + kbd:[`K`] on Mac / kbd:[`Ctrl`] + kbd:[`K`] on Windows and Linux) includes several enhancements in this release:
+
+* Smarter search results — Search results are now ranked by relevance, surfacing the most useful answers, Liveboards, and destinations based on your query and usage history.
+* Navigate with / filters — Type /navigate in the palette to scope results to application destinations, including sub-section headings. Navigation results respect your role and permissions, so you only see sections you can access.
+* Onboarding tips — First-time users see contextual guidance in the palette's empty state, helping you discover what the command palette can do without leaving your current page.
+* Updated visual design — Refreshed color tokens bring the palette's appearance in line with the latest ThoughtSpot design system.
+
+For more information, see
+xref:thoughtspot-homepage.adoc#command-palette[Command palette].
+
+[#continuous-liveboard]
+Continuous Liveboard PDF experience::
+The continuous Liveboard PDF experience is now generally available (GA). This feature eliminates page breaks and preserves the layout of the original Liveboard, ensuring the exported PDF remains true to the on-screen experience.
+For more information, see xref:liveboard-download-pdf.adoc[Download a Liveboard].
+
+[#timezone-aware]
+Timezone-aware keywords::
+// Mark. jira: SCAL-298371. docs jira: SCAL-298372
+// PM: Abhijit
+Time zone-aware keywords are now generally available (GA). Time zone-aware keywords ensure that relative date filters in ThoughtSpot — like "today," "yesterday," and "last 7 days" — always reflect the correct time for each user, no matter where they are in the world. This ensures that all searches, Liveboards, and dashboards automatically show time-based data that matches local business hours. For more information, see
+xref:keywords.adoc#time-zone-keywords[Time-zone aware keywords].
+
+[#search-data]
+Search data query cancellation::
+// Mary. jira: SCAL-293396. docs jira: SCAL-293397
+// PM: Abhijit. confirm if EA. add picture of cancel button
+ThoughtSpot now stops in-progress queries on your cloud data warehouse (CDW) when you change or abandon a search. This reduces unnecessary CDW spend and lets you iterate faster.
++
+Previously, queries made using Search data continued running until timeout or completion even after you modified the search, navigated away, or edited an Answer. This release introduces two cancellation mechanisms:
++
+* Implicit cancellation
++
+ThoughtSpot automatically sends a cancel signal to the CDW when your action clearly indicates you no longer need the current result. For example, when you change the search bar, navigate to a different page, or open an Answer for editing from a Liveboard or Spotter.
+* Explicit cancellation
++
+A Cancel button is available on the *Search data* page for queries you want to stop manually.
+
+//This release covers the Search Data page, loading and editing of Answers, and sessions that arrive on *Search Data* via the edit option from Liveboards and Spotter.
+To enable this feature, contact your administrator.
 
 [#26-8-0-cl-analyst]
 === For the Analyst
 
+[#spotter-model]
+SpotterModel::
+// Naomi. jira: SCAL-306340. docs jira: SCAL-306341
+// PM: Akshat. add image or gif.
+SpotterModel is now generally available (GA). You can use SpotterModel to generate comprehensive, optimized Models ready to use in your analysis. SpotterModel automates table selection, join creation, and column selection, while allowing you to review and customize each step. For more information, see xref:spotter-model-create.adoc[SpotterModel].
 
 
 [#26-8-0-cl-data-engineer]
 === For the Data Engineer
 
+[#spotter-analysts]
+Spotter Analysts [.badge.badge-early-access-relnotes]#Early Access#::
+// Naomi. jira: SCAL-310399. docs jira: SCAL-310400
+// PM: Aaghran. add video. who can create analysts? is it linked to can manage agents privilege?
+Spotter analysts are now Early Access (EA). You can create Spotter Analysts-- focused, governed analysts that tailor Spotter to a specific team, use case, or domain. Instead of accessing the general Spotter experience, configure the context once: which data models the agent can see, custom instructions that shape its behavior, the connectors it can use, and who the workspace is shared with. Open a Spotter Analyst and you enter a pre-configured experience the moment you start. To enable this feature, contact your administrator. For more information, see
+xref:spotter-analysts.adoc[Spotter Analysts].
 
+[#spotter-model]
+SpotterModel::
+// Naomi. jira: SCAL-306340. docs jira: SCAL-306341
+// PM: Akshat. add image or gif.
+SpotterModel is now generally available (GA). You can use SpotterModel to generate comprehensive, optimized Models ready to use in your analysis. SpotterModel automates table selection, join creation, and column selection, while allowing you to review and customize each step. For more information, see xref:spotter-model-create.adoc[SpotterModel].
 
+[#spotter-onboarding]
+Spotter onboarding::
+// Naomi. jira: SCAL-293483. docs jira: SCAL-293484
+// PM: Aaghran. add video.
+You can now add potential first search options-- quick searches with preselected questions, deep analyses, or data knowledge prompts-- to guide first-time users of Spotter.
 
+[#admin-portal]
+Admin portal enhancements::
+ThoughtSpot introduces a redesigned *Admin settings* experience. These changes provide administrators with a cleaner, more intuitive experience that is built to scale with multi-Org, enterprise deployments. Admin settings are now organized by users, Orgs, features, appearance, and security, so you only see the sections relevant to your role. The following are some of the enhancements:
 
+* Org and user management
+** Create, rename, and delete Orgs from one central place.
+** Assign Org admins, and manage users across multiple Orgs without needing to contact your instance admin.
+** View Org details such as when it was created, who it was created by, users, groups, feature flags enabled in a single spot.
+** Manage Orgs and users in one interface customized for cluster administrators.
+** Manage users in another interface designed just for Org administrators.
+* Feature management
+** Enable or disable Early Access and GA features at the Org level without affecting other Orgs or requiring a system restart.
+** Org admins can customize settings like styles, features, and notifications for their own Org without touching instance defaults.
+* Configuration
+** Configure application settings, customizations, AI settings, and Search & SpotIQ in one place.
+* Monitor
+** Everything that you need to monitor your system's health, performance, stats, adoption and usage is available in the same location.
+
+NOTE: This feature will be released to customers throughout 26.8.0.cl. To inquire about the status of your deployment or for assistance, contact {support-url}.
+// Mary. jira: SCAL-306083. docs jira: SCAL-306084
+// PM: Swarnima.
 
 [#26-8-0-cl-developer]
 === For the Developer
