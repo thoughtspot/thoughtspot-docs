@@ -1,0 +1,184 @@
+= User-defined column aliases
+:page-last_updated: 11/24/2025
+:linkattrs:
+:experimental:
+:page-aliases:
+:description: UDF Column Aliases let you map custom column names by user group, locale, or Org — enabling multilingual, multi-tenant analytics from a single model.
+:jira: SCAL-301051
+
+[.lead]
+User-defined column aliases let you define custom names for data columns in ThoughtSpot — tailored to different audiences, languages, teams, or tenants — without changing the underlying data model.
+
+ThoughtSpot models often include generic user-defined field (UDF) columns — for example, `UDF1`, `UDF2` — whose meaning varies depending on which organization or client group is accessing the data.
+UDF column aliases let you map these generic column names to meaningful display names for each audience, without duplicating the underlying model.
+
+For example, `UDF1` might display as *Region* for one client group and *Department* for another — all from a single shared model.
+
+== How column aliases work
+
+An alias is a display name that ThoughtSpot resolves at query time based on one or more of the following criteria:
+
+[cols="1,2", options="header"]
+|===
+| Criteria | Description
+| *ThoughtSpot group* | The group or groups the user belongs to in ThoughtSpot.
+| *ThoughtSpot org* | The org the user is accessing ThoughtSpot from.
+| *User locale* | The language/region setting associated with the user (for example, `EN-US`, `FR`, `SE`).
+|===
+
+At least one criterion must be specified for each alias definition.
+You can combine criteria in a single row.
+Use `TS_WILDCARD_ALL` in any criterion column to indicate that the alias applies regardless of that criterion's value.
+
+=== Alias resolution order
+
+When a user searches or views a Liveboard, ThoughtSpot evaluates alias definitions and applies the first matching alias found for that user.
+If a user belongs to multiple groups that each have an alias defined for the same column, no alias is applied and the default model column name is shown instead.
+
+=== Scope and restrictions
+
+* Alias definitions can only be created and managed in the *owning org*.
+You cannot create, download, or delete alias definitions from a published org.
+* The maximum number of aliases per cluster is *500,000*.
+// SOURCE: PRD https://docs.google.com/document/d/1OGwK3Cord4q3Jl5tWqkkf2_Ppwg7R5XeQ3wM6QumGLc
+* Aliases apply to column display names and descriptions.
+They do not apply to column names shown in the model editor — the base column name is always shown there.
+* Spotter support for UDF column aliases is not available in this release.
+// TODO: verify with engineering — confirm Spotter support timeline
+
+== Define aliases
+
+You can define UDF column aliases using any of the following methods:
+
+* <<csv-upload,CSV upload>>
+* <<tml-import,TML import and export>>
+* <<git-integration,Git integration>>
+
+
+[#csv-upload]
+=== CSV upload
+
+Prepare a CSV file with the following columns.
+The `Locale`, `Org`, and `Group` columns are optional but at least one must be present and populated.
+
+[cols="1,1,3", options="header"]
+|===
+| Column | Required | Description
+| `Column Name` | Yes | The base column name as it appears in the model.
+| `Locale` | No | A BCP 47 language tag, for example `EN-US`, `FR`, `SE`. Use `TS_WILDCARD_ALL` to match all locales.
+| `Org` | No | The ThoughtSpot org name. Use `TS_WILDCARD_ALL` to match all orgs.
+| `Group` | No | The ThoughtSpot group name. Use `TS_WILDCARD_ALL` to match all groups.
+| `Display Name` | Yes | The alias to display for users matching these criteria.
+| `Display Description` | No | An optional alias for the column description.
+|===
+
+==== Example: group-based aliases
+
+The following CSV defines different display names for the `UDF1` column based on the client group:
+
+[source,csv]
+----
+Column Name,Group,Display Name
+UDF1,client1,Region
+UDF1,client2,Country
+UDF1,client3,Product
+----
+
+==== Example: group and locale-based aliases
+
+The following CSV combines group membership and locale to define localized display names:
+
+[source,csv]
+----
+Column Name,Locale,Group,Display Name,Display Description
+Revenue,EN-US,Admin,Company Revenue,Total revenue earned by the company.
+Revenue,EN-US,Data Management,Cleaned Revenue,Revenue adjusted for anomalies.
+Revenue,EN-US,TS_WILDCARD_ALL,Total Revenue,Total revenue across company
+Revenue,EN-UK,Admin,Company Revenue,Total revenue earned by the company.
+Revenue,EN-UK,TS_WILDCARD_ALL,Total Revenue,Total revenue across company
+----
+
+To upload a CSV file:
+
+. In ThoughtSpot, open the model you want to add aliases to.
+. Select the *Aliases* tab.
+// TODO: verify with engineering — confirm exact UI navigation path and tab name
+. Select *Upload CSV*.
+. Select your CSV file and confirm the upload.
+
+[#tml-import]
+=== TML import and export
+
+Alias definitions are stored as a separate TML object associated with the model, not embedded within the model's TML file itself.
+You can download, edit, and re-upload alias definitions using TML APIs or the model editor.
+
+Typical workflow:
+
+. Maintain alias definitions in a source database table.
+. Write code to generate TML from that table.
+. Use the ThoughtSpot TML REST API to upload the alias definitions to the model.
+. Optionally, load the database table as a ThoughtSpot table to provide a UI for reviewing alias definitions.
+
+[#git-integration]
+=== Git integration
+
+If your team uses ThoughtSpot Git integration, alias TML objects are included in the set of associated objects downloaded with the model.
+You can commit alias definitions to your repository and deploy them as part of your standard CI/CD pipeline.
+
+== Monitor alias usage
+
+Use the REST API to check how many aliases are defined in your cluster and on individual models.
+
+=== Fetch alias count
+
+`GET /api/rest/2.0/metadata/translations/fetchAliasDetails`
+
+[cols="1,1,3", options="header"]
+|===
+| Parameter | Type | Description
+| `metadata_identifier` | String | GUID of the model to query. If omitted, returns counts across all models in the cluster.
+| `getCountPerEachModel` | Boolean | When `true`, returns a per-model breakdown of alias counts.
+|===
+
+==== Example response
+
+[source,json]
+----
+{
+  "status": {
+    "code": "OK"
+  },
+  "total_count": 550,
+  "translation_counts": [
+    {
+      "model_name": "Sales Model",
+      "guid": "4da3a07f-fe29-4d20-8758-260eb1315071",
+      "aliases_count": 150
+    },
+    {
+      "model_name": "Finance Model",
+      "guid": "9ab1c23e-ab12-5e31-9869-371fc2426182",
+      "aliases_count": 200
+    }
+  ]
+}
+----
+
+Access to this API requires the user to have edit access to the specified model and either the `DATAMANAGEMENT` or `CAN_MANAGE_WORKSHEET_VIEWS_TABLES` privilege.
+
+== Limitations
+
+* Aliases apply to *Search Data* and Liveboards. They do not currently apply to Spotter natural language queries.
+* Aliases are not shown in the model editor — the base column name is always displayed there.
+* If a user belongs to multiple groups that each define a different alias for the same column, the base column name is shown (no alias is applied).
+* Alias definitions can only be managed from the owning org. Published orgs cannot create, modify, or delete alias definitions.
+* Partial CSV updates are not supported. A full upload replaces the existing alias definitions.
+* Alias synonyms, worksheet parameters, and set-level aliasing are not supported.
+* The maximum alias count per cluster is 500,000.
+
+== Related resources
+
+* xref:worksheet-col-alias.adoc[Column aliases for worksheets and models]
+* xref:tml.adoc[ThoughtSpot Modeling Language (TML)]
+* xref:git-integration.adoc[Git integration]
+* link:https://developers.thoughtspot.com/docs/rest-apiv2-reference[REST API v2 reference]
