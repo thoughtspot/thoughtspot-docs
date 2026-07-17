@@ -1,0 +1,501 @@
+= Spreadsheet View
+:categories: ["Integrations"]
+:categories_weight: 3
+:page-last_updated: July 16, 2026
+:author: Rani
+:description: Spreadsheet in Analyst Studio provides a native, governed environment for high-stakes data transformation.
+:experimental:
+:ogdescription: Spreadsheet in Analyst Studio provides a native, governed environment for high-stakes data transformation.
+:page-aliases:
+:path:
+:product: Analyst Studio
+:jira: SCAL-324047
+
+== Overview
+
+Spreadsheet in Analyst Studio provides a native, governed environment for high-stakes data transformation.
+Designed for financial and data analysts, this capability enables you to build advanced datasets directly on top of governed warehouse data without the security risks of exporting to external tools.
+
+By merging the intuitive flexibility of a spreadsheet with enterprise-grade governance, you can scale basic datasets into sophisticated financial snapshots, encoding complex business logic that remains persistent and reusable.
+
+When your transformation is complete, publish the dataset to the Data workspace, where it can be consumed by Liveboards and Spotter.
+If you continue working after publishing, the *Republish* option lets you update the published dataset in place.
+
+== Access the Spreadsheet view
+
+The Spreadsheet interface is deeply integrated into the Analyst Studio reporting layer, allowing you to begin transformation from any data source.
+
+*Flat file ingestion*::
+Upload any flat file and land directly in the Spreadsheet view to profile and clean your data immediately.
+See xref:local-file-uploads.adoc[Local file uploads], xref:google-sheets.adoc[Google Sheets], and xref:excel-workbook.adoc[Excel workbook].
+
+*Warehouse-connected data (SQL/Python)*::
+From any successful query result in the SQL editor or Python Notebook, click *Edit in spreadsheet* to perform post-processing.
+See xref:querying-cdw-data.adoc[Querying CDW data].
+
+*Existing datasets*::
+Open any reusable dataset in a Report to add a new spreadsheet layer for metric enrichment.
+See xref:reusable-datasets.adoc[Reusable datasets].
+
+== Use the Spreadsheet
+
+The interface is optimized to maximize grid space while keeping advanced actions accessible.
+
+=== Data integrity controls
+
+*Undo*::
+Reverts your last action.
+Analyst Studio supports a multi-level undo history, meaning you can step back through a series of changes sequentially.
+
+*Redo*::
+Restores an action that was previously undone.
+This is useful during what-if analysis when comparing two different states of your data.
+
+=== Column sorting
+
+*Global sort*::
+Click the *Sorting* icon to open the advanced sort manager.
+You can add multiple sort levels (for example, sort by `[Region]` ascending, then by `[Spend]` descending).
+Clear all applied sorts using the *Clear sorts* option in the toolbar.
+
+*Interactive header sort*::
+Click any column header to toggle between ascending and descending order.
+
+*Visual cues*::
+A numerical indicator appears in the header (for example, `1` or `2`) to show the hierarchy of your multi-column sort.
+
+=== Conditional formatting
+
+Conditional formatting allows you to visually highlight outliers, risks, or performance wins based on cell values.
+You can assign colors of different intensities to values depending on their relative position within a specified range.
+Access conditional formatting from the toolbar.
+
+*Logic-based styling*::
+Apply color scales (for example, green-to-red) or single-color highlights based on cell values or text (for example, highlight red if `Variance > 20%`).
+
+=== Numerical and financial formatting
+
+*Currency support*::
+Apply localized currency symbols with a single click.
+The system handles currency as a visual layer over numerical data, preserving the ability to perform math on the underlying values.
+
+*Percentage conversion*::
+Instantly convert decimal ratios (for example, `0.85`) into readable percentages (`85%`).
+
+*Decimal precision management*::
+Use *Increase Decimals* and *Decrease Decimals* controls for financial rounding.
+This is useful for moving between high-level millions (0 decimals) and granular per-unit costs (4 or more decimals).
+
+*Standard number formatting*::
+Toggle between scientific, accounting, and comma-separated formats to match corporate reporting standards.
+
+=== Text formatting and cell styling
+
+*Text alignment*::
+Use the alignment control (Left, Center, or Right) for optimal grid readability.
+
+*Text wrapping*::
+Toggle between *Clip* (keeps row height uniform) and *Wrap* (expands row height to show all text content).
+This is useful for long memo fields or transaction descriptions.
+
+*Text formatting*::
+Click the *Format (T)* icon.
+Options change based on the data type of the selected column:
++
+--
+* *Numerical:* Currency, Percentage, Scientific, and precision controls (Increase/Decrease Decimals).
+* *String:* Case transformation (Upper/Lower) and text cleanup.
+* *URL:* Format a field as a URL from the *Format* options in the top toolbar or using the format option in the field context menu.
+** *Basic hyperlink:* Display the URL as text, text with underline, or as an icon.
+This formatting creates hyperlinks that serve as references to other web pages or resources.
+** *Custom:* Offers advanced options to tailor the display and functionality of hyperlinks, including customizing the displayed link text and using a reference field as the URL address.
+--
+
+=== Cell and grid organization
+
+*Cell style settings*::
+The Cell Style modal provides the following options:
++
+--
+* *Alternating row colors:* Improves readability for wide financial models.
+* *Gridline toggles:* Switch between full grid, horizontal only, or no gridlines.
+* *Text wrapping:* Toggle the Wrap Text option to ensure long memo fields do not break the grid's visual flow.
+--
+
+*Column sizing*::
++
+--
+* *Size to fit:* Automatically calculates the optimal column width based on the longest string in the current view.
+* *Manual resize:* Hover over the boundary of a column header and drag to your desired width.
+--
+
+=== Column management and schema control
+
+The *Select Columns* modal is the primary tool for shaping the dataset output.
+
+*Hide/Unhide*::
+Toggle the visibility of columns in bulk.
+Hide technical system IDs to focus the grid on business metrics.
+
+*Reorder via drag-and-drop*::
+Grab the handle next to any column name in the list and drag it to change its position in the grid.
+
+== Filter by data type
+
+Filtering in Spreadsheet is a logic-driven engine that adapts its behavior based on the column's data type.
+
+=== Numerical filtering
+
+When filtering numeric columns, the system provides three filter modes:
+
+*Range of values*::
+Set a Between, Greater than, or Less than boundary (for example, show only transactions over $50,000).
+
+*Individual values*::
+A checklist of every unique number in the column, allowing you to exclude specific amounts.
+
+*Top/Bottom analysis*::
+Apply a Top N or Bottom N filter (for example, show the top 10 cost centers by spend).
+
+=== String and Boolean filtering
+
+*Multi-select checklist*::
+Search and toggle specific categories (for example, filter to only `EMEA` and `APAC` regions).
+
+*Search-to-filter*::
+A dedicated search bar within the filter modal to quickly isolate specific strings in datasets with thousands of unique values.
+
+=== Date and time filtering
+
+*Relative date ranges*::
+Select predefined ranges such as *Last 7 Days*, *Quarter to Date*, or *Last Year*.
+
+*Custom date picker*::
+Define a specific start and end date for audit-specific lookback windows.
+
+== Publish and republish
+
+*Publish*::
+Click *Publish Dataset* in the top right corner of the Spreadsheet view.
+In the *Publish to the Data workspace* window, enter the dataset name and click *Publish*.
+The dataset is published as a table in the Data workspace, ready for Liveboards and Spotter.
+
+*Republish*::
+If you make further changes in the Spreadsheet — or the source dataset itself changes — the *Republish Dataset* option appears.
+Republishing updates the previously published dataset in place, so dependent Liveboards and Spotter content continue to work.
+This applies to spreadsheets layered on xref:analyst-studio-querying-data.adoc[SQL query results], xref:analyst-studio-google-sheets-integration.adoc[Google Sheets], xref:analyst-studio-excel-workbook-integration.adoc[Excel workbooks], and xref:analyst-studio-local-file-upload.adoc[local files].
++
+[.bordered]
+image::image1-sheet-view.png[Repulish dataset]
+
+== Calculated fields
+
+Calculated fields enable you to create derived columns in Spreadsheet by applying expressions to existing dataset columns.
+
+Using calculated fields, you can:
+
+* Derive new metrics from existing columns
+* Apply business logic and classification rules
+* Perform mathematical and statistical calculations
+* Transform and standardize data values
+* Handle missing data safely
+* Prepare datasets for downstream analytics and AI workflows
+
+=== Calculated field structure
+
+Spreadsheet calculated fields are composed of four elements:
+
+[cols="1,3",options="header"]
+|===
+|Element |Description
+
+|Column references
+|Existing dataset fields used as inputs
+
+|Operators
+|Mathematical or logical operations
+
+|Functions
+|Predefined operations applied to values
+
+|Literal values
+|Constants such as numbers, strings, or dates
+|===
+
+=== Column reference syntax
+
+All dataset columns must be referenced using square brackets:
+
+[source]
+----
+[COLUMN_NAME]
+----
+
+Examples:
+
+[source]
+----
+[Revenue]
+[Customer Name]
+[Order Date]
+----
+
+Columns with spaces are supported because the bracket syntax preserves the full column name:
+
+[source]
+----
+[Gross Revenue]
+----
+
+=== Operators
+
+==== Arithmetic operators
+
+[cols="1,1,3,3",options="header"]
+|===
+|Symbol |Name |Description |Example
+
+|`+` |Addition |Adds numeric values |`[Revenue] + [Tax]`
+|`-` |Subtraction |Subtracts values |`[Revenue] - [Cost]`
+|`*` |Multiplication |Multiplies values |`[Price] * [Quantity]`
+|`/` |Division |Divides values |`[Revenue] / [Orders]`
+|`%` |Modulus |Returns remainder |`MOD([Revenue],100)`
+|===
+
+==== Comparison operators
+
+[cols="1,1,3,3",options="header"]
+|===
+|Symbol |Name |Description |Example
+
+|`=` |Equal |True if values match |`[Region] = 'West'`
+|`!=` |Not equal |True if values differ |`[Region] != 'West'`
+|`>` |Greater than |True if left value is larger |`[Revenue] > 10000`
+|`<` |Less than |True if left value is smaller |`[Revenue] < 10000`
+|`>=` |Greater or equal |True if left value is larger or equal |`[Revenue] >= 10000`
+|`\<=` |Less or equal |True if left value is smaller or equal |`[Revenue] \<= 10000`
+|===
+
+==== Logical operators
+
+[cols="1,3,3",options="header"]
+|===
+|Operator |Description |Example
+
+|`AND` |Returns true if both conditions are true |`[Revenue] > 10000 AND [Region] = 'West'`
+|`OR` |Returns true if either condition is true |`[Revenue] > 10000 OR [Orders] > 50`
+|`NOT` |Negates a condition |`NOT ([Region] = 'West')`
+|`IN` |Tests if a value exists in a list |`[Region] IN {'West','East'}`
+|`NOT IN` |Tests if a value does not exist in a list |`[Region] NOT IN {'West','East'}`
+|===
+
+=== Conditional logic
+
+Conditional calculated fields allow you to encode decision rules directly within the dataset.
+
+*Syntax:*
+
+[source]
+----
+IF condition THEN result ELSE result END
+----
+
+*Example:*
+
+[source]
+----
+IF [Revenue] > 50000
+THEN 'High Value'
+ELSE 'Standard'
+END
+----
+
+*Common use cases:*
+
+* Revenue banding
+* Risk classification
+* Operational flags
+* Customer segmentation
+
+=== Functions
+
+==== Numeric functions
+
+[cols="1,3,3",options="header"]
+|===
+|Function |Description |Example
+
+|`ABS` |Returns absolute value |`ABS([Profit])`
+|`ROUND` |Rounds a numeric value |`ROUND([Revenue],2)`
+|`CEIL` |Rounds a value upward |`CEIL([Price])`
+|`FLOOR` |Rounds a value downward |`FLOOR([Price])`
+|`POWER` |Raises a number to a power |`POWER([Value],2)`
+|`SQRT` |Returns the square root |`SQRT([Area])`
+|`MOD` |Returns the remainder |`MOD([Revenue],100)`
+|`EXP` |Returns the exponential value |`EXP([Score])`
+|`LOG` |Returns the natural logarithm |`LOG([Revenue])`
+|===
+
+==== Date functions
+
+[cols="1,3,3",options="header"]
+|===
+|Function |Description |Example
+
+|`DATEDIFF` |Calculates the difference between two dates |`DATEDIFF('day',[Order Date],[Ship Date])`
+|`DATEADD` |Adds an interval to a date |`DATEADD('day',7,[Order Date])`
+|`YEAR` |Extracts the year from a date |`YEAR([Order Date])`
+|`MONTH` |Extracts the month from a date |`MONTH([Order Date])`
+|`DAY` |Extracts the day from a date |`DAY([Order Date])`
+|`WEEK` |Extracts the week number |`WEEK([Order Date])`
+|`QUARTER` |Extracts the quarter |`QUARTER([Order Date])`
+|`NOW` |Returns the current timestamp |`NOW()`
+|===
+
+==== String functions
+
+[cols="1,3,3",options="header"]
+|===
+|Function |Description |Example
+
+|`CONCAT` |Concatenates strings |`CONCAT([First Name],' ',[Last Name])`
+|`LOWER` |Converts text to lowercase |`LOWER([City])`
+|`UPPER` |Converts text to uppercase |`UPPER([City])`
+|`LENGTH` |Returns the string length |`LENGTH([Customer Name])`
+|`TRIM` |Removes leading and trailing whitespace |`TRIM([Customer Name])`
+|`LEFT` |Returns a left substring |`LEFT([Customer Name],3)`
+|`RIGHT` |Returns a right substring |`RIGHT([Customer Name],2)`
+|`SUBSTRING` |Extracts a portion of a string |`SUBSTRING([Customer Name],1,4)`
+|`REPLACE` |Replaces a substring |`REPLACE([City],'NY','New York')`
+|===
+
+==== Null handling functions
+
+[cols="1,3,3",options="header"]
+|===
+|Function |Description |Example
+
+|`ZN` |Replaces null with zero |`ZN([Revenue])`
+|`IFNULL` |Returns a fallback value if null |`IFNULL([Revenue],0)`
+|`ISNULL` |Tests if a value is null |`ISNULL([Phone])`
+|`COALESCE` |Returns the first non-null value |`COALESCE([Phone],[Backup Phone])`
+|===
+
+==== Aggregate functions
+
+[cols="1,3,3",options="header"]
+|===
+|Function |Description |Example
+
+|`SUM` |Returns the sum of values |`SUM([Revenue])`
+|`AVG` |Returns the average value |`AVG([Revenue])`
+|`MIN` |Returns the smallest value |`MIN([Revenue])`
+|`MAX` |Returns the largest value |`MAX([Revenue])`
+|`COUNT` |Counts rows |`COUNT([Order ID])`
+|`COUNT_DISTINCT` |Counts distinct values |`COUNT_DISTINCT([Customer ID])`
+|===
+
+==== Cumulative functions
+
+[cols="1,3,3",options="header"]
+|===
+|Function |Description |Example
+
+|`CUMULATIVE_SUM` |Running sum |`CUMULATIVE_SUM([Revenue],[Order Date])`
+|`CUMULATIVE_AVERAGE` |Running average |`CUMULATIVE_AVERAGE([Revenue],[Order Date])`
+|`CUMULATIVE_MAX` |Running maximum |`CUMULATIVE_MAX([Revenue],[Region])`
+|`CUMULATIVE_MIN` |Running minimum |`CUMULATIVE_MIN([Revenue],[Region])`
+|===
+
+=== Calculated field examples
+
+*Revenue margin*
+[source]
+----
+[Revenue] - [Cost]
+----
+
+*Profit percentage*
+[source]
+----
+([Revenue] - [Cost]) / [Revenue]
+----
+
+*Customer value classification*
+[source]
+----
+IF [Revenue] > 50000
+THEN 'High Value'
+ELSE 'Standard'
+END
+----
+
+*Delivery delay*
+[source]
+----
+DATEDIFF('day',[Expected Delivery],[Actual Delivery])
+----
+
+*Cost center priority*
+[source]
+----
+IF [Spend] > 10000
+THEN 'Priority Action'
+ELSE 'Normal'
+END
+----
+
+=== Analytical modeling workflow
+
+Spreadsheet supports a layered modeling workflow where derived columns progressively transform raw data into actionable insights:
+
+----
+Raw Dataset → Derived Metrics → Feature Engineering → Business Rules → Analytics & AI Queries
+----
+
+=== Best practices
+
+*Use descriptive column names*::
+Choose names that communicate meaning clearly.
++
+--
+Good examples: `revenue_margin`, `customer_segment`, `priority_action`
+
+Avoid generic names such as `calc1`, `score2`, or `value3`.
+--
+
+*Build calculated fields incrementally*::
+Start with base metrics and add additional derived columns step by step.
+
+*Handle null values safely*::
+Wrap columns in null-handling functions when necessary.
++
+[source]
+----
+ZN([Revenue])
+----
+
+*Keep business logic readable*::
+Decision rules should be understandable by both analysts and business stakeholders.
++
+[source]
+----
+IF [Spend] > 10000
+THEN 'High Priority'
+ELSE 'Standard'
+END
+----
+
+== Summary
+
+Spreadsheet calculated fields enable analysts to extend datasets with derived analytical columns.
+Using calculated fields, you can:
+
+* Transform raw data
+* Compute business metrics
+* Implement operational rules
+* Prepare AI-ready datasets
+* Build analytical models directly inside Analyst Studio
+
+This approach combines spreadsheet-style flexibility with warehouse-scale data processing, allowing you to perform complex transformations without exporting data outside the governed analytics platform.
+When ready, publish your dataset to the Data workspace and use *Republish* to keep the published version in sync as your model evolves.
