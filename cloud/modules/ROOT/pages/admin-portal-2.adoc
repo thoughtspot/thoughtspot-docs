@@ -15,36 +15,23 @@ The redesigned portal solves the problem of a cluttered and fragmented administr
 NOTE: The redesigned Admin settings portal is rolling out in phases. Your cluster will be upgraded during the 26.8.0.cl release, with some customers receiving access earlier than others to facilitate real-world testing.
 
 
-=== Old vs. new interface comparison
+== What's New?
 
-//New IA - Left nav - 4 buckets created with a story in mind
-//New UI - in Application Settings - refer the slide
-//Org Management - improved CRUD
-//User Management - consolidated tabs; improved CRUD
+The new Admin settings portal include the following key changes:
 
-The following screenshots illustrate the visual difference between the legacy Admin Console and the redesigned Admin Portal Information Architecture.
-
-[#old-ia-screenshot]
-.Legacy Admin Console interface (before)
-//image::
-The legacy architecture
-
-[#new-ia-screenshot]
-.Admin settings tab (after)
-//image::
-
-The redesigned portal introduces a cleaner, more organized layout with the four primary sections:
-
-* Home
-* Management
-* Configuration
-* Monitor
+* A new information architecture. The new architecture consists of four primary sections:
+** Home
+** Management
+** Configuration
+** Monitor
+* A new interface for Application Settings
+* An improved workflow to Create, Read, Update, and Delete (CRUD) Orgs
+* An improved interface and workflow to Create, Read, Update, and Delete (CRUD) Users
 
 These are all accessible from a streamlined navigation sidebar.
 
-=== What's new
-
-The enhanced Admin settings portal introduces the following key improvements over the previous Admin Console:
+////
+The enhanced Admin settings portal introduces the following key improvements over the previous Admin settings portal:
 
 * A reorganized Information Architecture (IA) with four primary sections:
 ** Home
@@ -56,6 +43,7 @@ The enhanced Admin settings portal introduces the following key improvements ove
 * Granular feature management with a two-tiered hierarchy that delegates authority from cluster-level to Org-level.
 * An *Attribute Mapping Wizard* for 1:1 mapping between Identity Provider (IdP) fields and ThoughtSpot definitions.
 * A *secure deletion workflow* that requires manual confirmation to prevent accidental, destructive deletions.
+////
 
 == Access the Admin settings
 
@@ -63,9 +51,20 @@ To access Admin settings:
 
 . Log in to your ThoughtSpot instance.
 . Select the *Admin settings* tab from the left navigation.
++
+The Admin settings portal opens.
++
+If you are an Org administrator, by default it opens to *User management*.
+[.bordered]
+image::admin2-org-nav.png[]
+If you are an cluster administrator, by default it opens to *Org management*.
+[.bordered]
+image::admin2-cluster-nav.png[]
 
-The Admin portal opens to *User management* if you are an Org administrator, or *Org management* if you are a cluster administrator.
+The organization of this navigation menu will help you determine if you are using the old Admin settings interface, or the enhanced version. The information architecture sorts the navigation into four categories, Home, Management, Configuration, and Monitor if you are using the enhanced version.
 
+
+////
 == User roles and permissions
 
 Admin settings support the following administrative roles:
@@ -77,24 +76,24 @@ Admin settings support the following administrative roles:
 | ThoughtSpot Administrators
 | Full administrative access to all ThoughtSpot functionality, including cluster-level and org-level settings.
 
-| Cluster Admins
+| Cluster admins
 | Responsible for overarching settings and *allocating features* to Orgs.
 Cluster admins control which features are available for delegation to individual Org.
 
-| Org Admins
+| Org admins
 | Responsible for managing their specific organization environment.
-Org Admins can *toggle allocated features* within their org but cannot access features that have not been allocated to them by a Cluster Admin.
+Org admins can *toggle allocated features* within their org but cannot access features that have not been allocated to them by a cluster admin.
 
 | Users
 | Standard users with no administrative access.
-They interact with ThoughtSpot through Search, Liveboards, and Answers but cannot access the Admin Portal.
+They interact with ThoughtSpot through Search, Liveboards, and Answers but cannot access the Admin settings portal.
 |===
 
 
-For Org admins to toggle a feature, the Cluster admin must first allocate that feature to the Org.
+For Org admins to toggle a feature, the cluster admin must first allocate that feature to the Org.
 If a feature is not allocated, the Org inherits the cluster-level setting.
 
-
+////
 == Information Architecture
 
 The enhanced Admin settings portal reorganizes the administrative interface into four primary sections:
@@ -190,8 +189,14 @@ Enhanced Admin settings introduce a streamlined Org management experience with t
 The streamlined creation flow allows you to:
 
 . Input the org name.
++
+image::admin2-create-org1.png[]
 . Instantly add existing users.
++
+image::admin2-create-org2.png[]
 . Allocate access features.
++
+image::admin2-create-org3.png[]
 
 All three steps occur within a *single, unified workflow* — there is no need to navigate between multiple pages or modals.
 
@@ -206,10 +211,14 @@ Deleting an organization is a destructive, irreversible action.
 The secure deletion workflow requires the administrator to manually type a confirmation word before the deletion proceeds.
 This safeguard prevents accidental data loss.
 
+image::admin2-delete-org.png[]
+
 == User management for cluster administrators
 
 === Users
 You can add new users manually or import users from this page. You can also filter users by *Orgs* or *Status*.
+[.bordered]
+image::admin2-cluster-users.png[]
 
 === Authentication
 
@@ -218,6 +227,8 @@ Enhanced Admin settings brings end-to-end IdP setup natively within the Authenti
 ==== Configure an IdP
 
 . Select your identity provider from the available options.
++
+image::admin2-idp-config1.png[]
 . Fill out the credentials directly in the tab.
 . Use the *Attribute Mapping Wizard* to map IdP fields to ThoughtSpot definitions on a 1:1 basis.
 
@@ -232,7 +243,8 @@ A consolidated *bulk import tool* is available for importing users through the I
 
 Enhanced Admin settings simplify user management with direct creation and instant actions.
 
-//image::user-management-ui.png[User Management UI, 700, width=70%, align="center"]
+image::admin2-org-users.png[]
+
 
 === Create a user
 
@@ -242,11 +254,13 @@ You can directly create users by providing:
 * Username
 * Display name
 
-During creation, you can seamlessly assign the user to a target organization.
+During creation, you can seamlessly assign the user to a target Org.
 
 === Instant action menu
 
 Each user row includes a *more* menu that provides immediate access to the following actions:
+
+image::admin2-org-user-menu.png[]
 
 [cols="1,2", options="header"]
 |===
@@ -268,12 +282,16 @@ Each user row includes a *more* menu that provides immediate access to the follo
 | Export the user's data.
 |===
 
+
+
 === Filter users
 
 You can use *multi-select filtering* to isolate users by combining:
 
 * Groups
 * Account statuses
+
+image::admin2-users-filter.png[]
 
 This makes it easy to find specific users in environments with large user populations.
 
@@ -289,70 +307,72 @@ Enhanced Admin settings introduce an intuitive group creation experience:
 
 == Feature Management
 
-Feature Management in Admin Portal 2.0 introduces a *granular, hierarchical system* that transitions from cluster-level configurations to delegated authority at the org level.
+Feature Management in the enhanced Admin settings portal introduces a *granular, hierarchical system* that transitions from cluster-level configurations to delegated authority at the org level.
 
 === Two-tiered hierarchy
 
 The feature management system operates on a two-tiered model:
 
-. *Cluster Admin allocates a feature:* The Cluster Admin must first allocate a feature to an Org.
-Once allocated, the Org Admin gains authority to toggle that feature on or off within their organization.
+. *Cluster admin allocates a feature:* The cluster admin must first allocate a feature to an Org.
+Once allocated, the Org admin gains authority to toggle that feature on or off within their organization.
 
 . *Org inherits cluster-level setting:* If a feature is not allocated to an Org, the Org simply inherits the cluster-level setting.
-The Org Admin cannot modify features that have not been allocated to them.
+The Org admin cannot modify features that have not been allocated to them.
 
 [cols="2,3", options="header"]
 |===
 | Tier | Responsibility
 
-| Tier 1: Cluster Admin
+| Tier 1: Cluster admin
 | Allocates features to orgs.
 Controls which features are available for delegation.
 Sets cluster-level defaults.
 
-| Tier 2: Org Admin
+| Tier 2: Org admin
 | Toggles allocated features on or off within their organization.
 Cannot access unallocated features.
 |===
 
 === Global setting overrides
 
-When a Cluster Admin enables a feature globally, they are prompted to choose:
+When a cluster admin enables a feature globally, they are prompted to choose:
 
 * *Override all orgs:* Apply the new setting across all organizations, replacing any local overrides.
-* *Preserve local overrides:* Keep the choices made by individual Org Admins where applicable.
+* *Preserve local overrides:* Keep the choices made by individual Org admins where applicable.
 
 [TIP]
 ====
-Cluster Admins should preserve local overrides when changing a global setting to maintain the choices made by individual Org Admins, where appropriate.
+Cluster admins should preserve local overrides when changing a global setting to maintain the choices made by individual Org admins, where appropriate.
 This respects the autonomy of org-level administrators and avoids unintended disruptions.
 ====
 
+////
 == Use cases
 
-Admin Portal 2.0 is designed to support the following key use cases:
+Admin settings portal enahncements are designed to support the following key use cases:
 
 [cols="1,3", options="header"]
 |===
 | Use case | Description
 
 | Agility
-| Reduces bottlenecks on Cluster Admins by making the system self-serve for Org Admins.
+| Reduces bottlenecks on cluster admins by making the system self-serve for Org admins.
 
 | Granular control
 | Provides decentralized visibility and control over feature availability at the org level.
 
 | Empowerment
-| Org Admins can manage their own environments based on specific user needs without depending on Cluster Admins.
+| Org admins can manage their own environments based on specific user needs without depending on cluster admins.
 
 | Troubleshooting
 | Troubleshooting and verification directly from the portal via User Impersonation *(roadmap feature)*.
 |===
+////
 
 == Best practices
 
 * Use the *secure deletion workflow* (typing a confirmation word) to prevent accidental, destructive deletions of organizations.
-* Cluster Admins should *preserve local overrides* when changing a global setting to maintain choices made by individual Org Admins, where appropriate.
+* Cluster admins should *preserve local overrides* when changing a global setting to maintain choices made by individual Org admins, where appropriate.
 * Consolidate branding and style management into the single *Customisation* tab to maintain a single source of truth for your organization's visual identity.
 
 == Frequently asked questions
@@ -360,21 +380,22 @@ Admin Portal 2.0 is designed to support the following key use cases:
 === How does the hierarchy work for feature flags?
 
 The system is two-tiered.
-The Cluster Admin must first "allocate" a feature to an Org.
-Once allocated, the Org Admin gains authority to toggle it.
+The cluster admin must first "allocate" a feature to an Org.
+Once allocated, the Org admin gains authority to toggle it.
 If not allocated, the Org simply inherits the cluster-level setting.
 
-=== What happens if a Cluster Admin changes a global setting?
+=== What happens if a cluster admin changes a global setting?
 
-When enabling a feature, the Cluster Admin is prompted to choose whether to override all orgs or preserve local overrides (keeping the choices made by individual Org Admins).
+When enabling a feature, the cluster admin is prompted to choose whether to override all orgs or preserve local overrides (keeping the choices made by individual Org admins).
 
+////
 == Glossary
 
 [cols="1,3", options="header"]
 |===
 | Term | Definition
 
-| Admin Portal 2.0
+| Enhanced Admin settings portal
 | A completely redesigned administrative experience for ThoughtSpot.
 
 | Information Architecture (IA)
@@ -383,10 +404,10 @@ When enabling a feature, the Cluster Admin is prompted to choose whether to over
 | Feature Management
 | A granular, hierarchical system transitioning from cluster-level configurations to delegated authority at the org level.
 
-| Cluster Admin
+| Cluster admin
 | Administrator role responsible for overarching settings and allocating features to orgs.
 
-| Org Admin
+| Org admin
 | Administrator role responsible for managing their specific organization environment and toggling allocated features.
 
 | Attribute Mapping Wizard
@@ -398,9 +419,10 @@ When enabling a feature, the Cluster Admin is prompted to choose whether to over
 | Instant Action Menu
 | A three-dot menu (⋮) on user rows providing immediate access to Resend Activation, Edit Details, Reset MFA, Delete, and Export actions.
 |===
+////
 
 == Related information
 
-* link:https://docs.thoughtspot.com/software/latest/admin-portal[Admin Console (legacy)] — Documentation for the previous admin interface.
-* link:https://docs.thoughtspot.com/cloud/latest/admin-portal-users[Manage users] — Detailed instructions for user management.
-* link:https://docs.thoughtspot.com/cloud/latest/admin-portal-groups[Manage groups] — Detailed instructions for group management.
+* xref:administration.adoc[Admin settings portal (legacy)] — Documentation for the previous admin interface.
+* xref:admin-portal-users.adoc[Manage users] — Detailed instructions for user management.
+* xref:admin-portal-groups.adoc[Manage groups] — Detailed instructions for group management.
