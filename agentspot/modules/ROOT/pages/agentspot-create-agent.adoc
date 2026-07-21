@@ -1,5 +1,5 @@
 = Creating an agent in AgentSpot
-:last_updated: June 18, 2026
+:last_updated: July 21, 2026
 :linkattrs:
 :experimental:
 :page-aliases:
@@ -36,20 +36,18 @@ Agents with a clear, specific purpose are more useful and more likely to be adop
 When you create an agent, AgentSpot builds and populates the following components automatically based on your prompt.
 You can review and adjust each one in the side panel.
 
-* *Connectors*: The external applications your agent connects to (for example, Google Calendar or Slack).
-Added automatically based on your prompt; you can manually add or remove connectors as needed.
+
+* *Instructions*: The core behavior definition for your agent — its persona, mission, response rules, and guardrails. For example, instructions can prevent the agent from drafting a message or making a tool call without your confirmation. Generated automatically; you can edit the instructions manually at any time.
+* *Skills*: Reusable knowledge your agent can draw on (for example, how to format a document using your company template). Some skills are pre-populated. You can also add your own.
+* *Conversation starters*: Suggested prompts shown to users at the start of a chat. Generated automatically. You can edit them or add your own.
 * *Tools*: Functional capabilities such as web search or image generation.
 Added automatically; you can manually select or deselect tools as needed.
+* *Connectors*: The external applications your agent connects to (for example, Google Calendar or Slack).
+Added automatically based on your prompt; you can manually add or remove connectors as needed.
 * *ThoughtSpot models*: Your organization's ThoughtSpot data models.
 Adding a model allows your agent to work with large structured data sets — a key differentiator for AgentSpot.
-* *Skills*: Reusable knowledge your agent can draw on (for example, how to format a document using your company template).
 Some skills are pre-populated; you can add your own.
-// TODO: verify with engineering — confirm whether file/PDF upload is a separate component from ThoughtSpot models
-* *Conversation starters*: Suggested prompts shown to users at the start of a chat.
-Generated automatically; you can edit or add your own.
-* *Instructions*: The core behavior definition for your agent — its persona, mission, response rules, and guardrails.
-For example, instructions can prevent the agent from drafting a message or making a tool call without your confirmation.
-Generated automatically; you can edit the instructions manually at any time.
+* *Files*: documents you want your agent to have in context to help you with your work. Supports documents, spreadsheets, PDF, and images (TXT, MD, PDF, DOCX, PPTX, XLSX, XLSM, CSV, TSV, JSON, YAML, HTML, XML, PNG, JPG, WEBP, GIF).
 
 [TIP]
 .Tips for writing effective prompts
@@ -90,7 +88,7 @@ Test a few conversations before sharing — you can return to edit mode at any t
 Powerful agents should be shared! Sharing agents allows others in your organization to leverage the skillset of your agent, and prevents “AI silos”, where every contributor creates similar agents that won't all behave in the exact same way, potentially creating confusion in the organization.
 
 . In the upper-right corner, click *Share agent*.
-. In the *Add people or groups* field, find the people or groups you want to share with.
+. In the *Add people* field and find the people you want to share with.
 You can share with your entire organization by selecting the organization-wide option.
 . For each person or group, select *Can use* or *Can edit*.
 . Click *Done*.
@@ -103,7 +101,7 @@ To provide value, agents require context and the ability to act. If an agent req
 
 . *Identify requirements*: The agent interface indicates if an application is not yet connected.
 . *Authenticate*: Click *Connect*.
-. *Authorize*: Complete the OAuth flow in the pop-up window to grant AgentSpot access.
+. *Authorize*: Complete the authentication flow in the pop-up window to grant AgentSpot access.
 . Once connected, the agent can search for context and perform tasks such as creating tickets or updating records.
 
 == Managing your agents
@@ -113,19 +111,12 @@ When you find a useful agent in the library, you must decide how to keep it:
 |===
 | Action | Description | Best For...
 | *Save to team* | Bookmarks the shared agent. Updates made by the owner are reflected automatically. | Users who want to use the agent as-is and receive future improvements.
-| *Make a copy* | Creates a private version of the agent. | Users who want to modify instructions or add private connectors.
 
 |===
 
-== Using your agents
-
 Once set up, your agents are available from the AgentSpot home page.
 
-* *Chat history*: Resume any previous conversation from the left-hand panel.
-* *New session*: To start a fresh conversation with an agent, click the new session button in the upper-left corner of the agent window.
-Start a new session when the conversation context is getting long or when you want to switch to a different topic.
-* *Search and filter*: Use the list view to find agents by category, such as "Marketing" or "HR."
-* *Contextual actions*: Agents with connectors (such as Jira or Slack) can perform actions on your behalf, such as drafting and sending messages or creating tickets.
+For details on how to use an agent, see xref:agentspot-use-agent.adoc[].
 
 == Troubleshooting
 
@@ -133,18 +124,12 @@ Start a new session when the conversation context is getting long or when you wa
 |===
 |Symptom |What to try
 
-|"I don't have access to that data."
-|Confirm the data source is attached and that your admin shared it with your group.
-
 |Confident but wrong answers.
-|Tighten instructions ("only answer from attached data"), lower temperature, add per-table data descriptions.
+|Switch the Agent edit mode to tighten instructions ("only answer from attached data").
 
 |Formatting instructions are ignored.
 |Move formatting to the top of the prompt; shorten the overall instructions.
 
 |Agent answers out-of-scope questions.
 |Add an explicit *What not to do* section naming the topics and re-test.
-
-|Citations missing.
-|Confirm *Citations* is on in *Settings* and that the source supports citations. ⚠️ Confirm per-source citation support.
 |===
