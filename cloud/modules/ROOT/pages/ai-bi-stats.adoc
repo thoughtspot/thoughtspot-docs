@@ -1,5 +1,6 @@
 = AI and BI System Liveboard
 :page-last_updated: Feb 17, 2026
+:author: Rani
 :linkattrs:
 :experimental:
 :page-aliases:
@@ -37,7 +38,24 @@ The *Provisioned users* KPI will not reflect the Org specific data by using only
 
 Use this Liveboard to view and analyze information about the following topics:
 
+== Before you begin
+
+To access the *AI and BI Stats* Liveboard and its underlying data model, confirm the following requirements:
+
+* You must have the *Administrator* role, or a role that includes the *Can manage system* privilege.
+
+* If your ThoughtSpot deployment uses Orgs, you must have Primary Org administrator access to view data across all Orgs. Org-level administrators can view usage data for their own Org only.
+
+* The *TS: AI and BI stats* data model must be shared with your user or group. Non-admin users require explicit access to both the Liveboard and the data model.
+
+
+[NOTE]
+====
+Sharing a Liveboard authored by a System User (such as *AI and BI Stats* or *Spotter Conversation*) with non-admin users requires that the user also has direct access to the underlying data model. If a non-admin user sees a *Request Access* message, verify that the *TS: AI and BI stats* model has been explicitly shared with that user or group.
+====
+
 === Overview
+Track overall query activity and user engagement across your ThoughtSpot instance.	Monitor active user counts across all time periods and identify the most-used content.
 
 [.bordered]
 image::ai-bi-overview.png[AI and BI Stats, Overview tab]
@@ -55,6 +73,7 @@ Users are compared against the immediate preceding period, which means this week
 ** Top 20 Models, Liveboards and Answers  at the time when the user is viewing the Liveboard (Top 20 Models, Top 20 Liveboards, Top 20 Answers)
 
 == Adoption
+Understand how users are engaging with ThoughtSpot content over time. Track Liveboard impressions, data exports, and top contributors.
 
 [.bordered]
 image::ai-bi-adoption.png[AI and BI Stats, Adoption tab]
@@ -69,6 +88,8 @@ image::ai-bi-adoption.png[AI and BI Stats, Adoption tab]
 ** Users with the maximum daily activity across the ThoughtSpot application (Top 50 Power Use Engagement)
 
 == Credit Consumption
+Monitor credits consumed by all query activity across your instance.	Track cumulative and monthly credit usage by activity type.
+
 [.bordered]
 image::ai-bi-credit.png[AI and BI Stats, Credit Consumption tab]
 
@@ -79,6 +100,8 @@ image::ai-bi-credit.png[AI and BI Stats, Credit Consumption tab]
 ** Monthly credits consumed by ad-hoc queries and activities performed within Analyst Studio (Analyst Studio - Adhoc)
 
 == Groups
+Analyze query activity and content engagement at the group level.	Identify top-performing groups, popular data models, and per-group user action breakdowns.
+
 [.bordered]
 image::ai-bi-grouptab.png[AI and BI Stats, Groups tab]
 
@@ -87,6 +110,7 @@ image::ai-bi-grouptab.png[AI and BI Stats, Groups tab]
 ** Count of user action impressions for each group and for each user within that group (Group Breakdown)
 
 == Performance
+Review query execution times and error rates to identify bottlenecks. Categorize queries by response time and drill into the 50 slowest queries.
 
 [.bordered]
 image::ai-bi-performance.png[AI and BI Stats, Performance tab]
@@ -99,13 +123,27 @@ image::ai-bi-performance.png[AI and BI Stats, Performance tab]
 ** List of 50 slowest queries with query success status, time taken, latency experienced, and the query string (50 Slowest Search Data Queries)
 
 == Productivity
+Measure time saved through features like Drill Down, Explore, Search, and Spotter.	Quantify monthly productivity impact across your organization.
 
 [.bordered]
 image::ai-bi-productivity.png[AI and BI Stats, Productivity tab]
 
 ** Monthly time saved by users across activities such as Drill Down, Explore, Search data, and Spotter.
 
+== Entitlements
+Review purchased entitlements and track consumption against contracted quantities.	Verify account details, pricing type, and current usage of purchased units or credits.
+
+** Name of the customer account (Account Name)
+** The environment type of the cluster, for example, Production or Development (Cluster Type)
+** The subscription or pricing model associated with the entitlement (Pricing Type)
+** The SKU or product code for the purchased entitlement (Product Code)
+** The ThoughtSpot product associated with the entitlement, for example, ThoughtSpot Enterprise or ThoughtSpot Embedded (Product Offering)
+** The sales opportunity identifier associated with the entitlement contract (Opportunity ID)
+** The total number of units or credits purchased under the entitlement (Quantity Purchased)
+** The total number of units or credits consumed to date (Quantity Consumed)
+
 == Appendix
+View metadata about the Liveboard including query date ranges and known limitations.	Understand data boundaries and verify which data sources are included.
 
 [.bordered]
 image::ai-bi-appendix.png[AI and BI Stats, Appendix tab]
@@ -129,7 +167,52 @@ The *AI and BI Stats* Liveboard contains valuable information you can use to mon
 * Understand Spotter usage and adoption
 * Improve latency time for users across the ThoughtSPot application by analysing the slow performing queries and other health markers
 
+== Troubleshooting
 
+=== Model name appears as NULL in query stats
+
+*Symptom:* The *AI and BI Stats* system model shows `NULL` for model names in query stats, and no model details are displayed.
+
+*Cause:* This can occur in the following cases:
+
+* A Liveboard or answer has been shared with a user who does not have access to the underlying model. In this case, model name fields are empty by design.
+* The answer was edited in a way that changed the query object from a model to a table. This is expected behavior.
+* The system cannot resolve the model reference from the query specification. This is a known issue addressed in release 26.7.0.cl.
+
+*Resolution:*
+
+. Verify that the user viewing the Liveboard has access to the underlying *TS: AI and BI stats* model.
+. If model names are missing for a specific answer, check whether the answer references a model or a raw table.
+. If the issue persists after confirming access, this may indicate the known resolution issue fixed in 26.7.0.cl (patch available in 26.6.0.cl-66). Contact ThoughtSpot Support if you are on an affected release.
+
+// SOURCE: SCAL-319541, SCAL-322924
+
+
+=== Sharing System User Liveboards with non-admin users
+
+*Symptom:* A non-admin user sees a *Request Access* message when trying to open a Liveboard authored by a System User (for example, *AI and BI Stats* or *Spotter Conversation*), even after the Liveboard has been shared with them.
+
+*Cause:* From release 26.5.0.cl, sharing a System User-authored Liveboard also requires explicitly sharing the underlying data model. Sharing the Liveboard alone is not sufficient.
+
+*Resolution:*
+
+. Navigate to *Data* and locate the *TS: AI and BI stats* model (or the relevant system model).
+. Share the model directly with the user or group who needs access.
+. Ask the user to refresh their browser and try opening the Liveboard again.
+
+=== Liveboard takes 2–3 minutes to load
+
+*Symptom:* The *AI and BI Stats* Liveboard takes 2 to 3 minutes to fully load visualizations. SQL execution times in excess of 60,000 ms may be visible in system logs.
+
+*Cause:* The *TS: AI and BI stats* model queries your cloud data warehouse (CDW) for query stats data. On large clusters with significant query history, CDW-side query execution can be slow, particularly on Snowflake.
+
+*Resolution:*
+
+* Filter the Liveboard by a shorter date range to reduce the volume of data queried from the CDW.
+* Work with your Snowflake or CDW administrator to review query performance for the underlying stats tables.
+* If load times exceed 5 minutes consistently, contact ThoughtSpot Support and provide the affected request IDs from your browser network capture.
+
+---
 > **Related information**
 >
 > * xref:system-liveboards.adoc[]
