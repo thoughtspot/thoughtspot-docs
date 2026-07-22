@@ -25,18 +25,25 @@ Use following notes above feature that is deprecated. Send a link back to this d
 NOTE: This feature is now deprecated. You may not use it starting with release 7.1. For details, see xref:deprecation.adoc[Deprecation Announcements].
 ////
 
-== Deprecated in 26.8.0.cl
-- *Send every N minutes* frequency in Liveboard schedules
+== Removed in 26.8.0.cl
+
 
 === What is changing
 Starting in 26.8.0.cl, ThoughtSpot no longer supports the *every N minutes* schedule frequency for Liveboard schedules.
 
-* All existing schedules set to *every N minutes* will be automatically changed to *every 1 hour* upon deprecation.
-* If your workflows require the *Send every N minutes* frequency after this change takes effect, contact ThoughtSpot Support. Beyond reinstating the *Send every N minutes* frequency, ThoughtSpot will not provide ongoing maintenance for that frequency.
+* All existing schedules set to *every N minutes* will be automatically changed to *every 1 hour*.
+* If your workflows require the *Send every N minutes* frequency after this change takes effect, contact {support-url}. Beyond reinstating the *Send every N minutes* frequency, ThoughtSpot will not provide ongoing maintenance for that frequency.
 * To send a Liveboard report immediately, use the xref:liveboard-schedule.adoc#scheduling_a_liveboard[Send now] option instead.
+
+* The running or paused status of each converted schedule is preserved — no schedules are deleted
+
+* Attempts to create or update a schedule with a sub-hourly frequency via the REST API will return a `403 Forbidden` error
+
+If you have scripts or integrations that create or update schedules using sub-hourly cron expressions, update them to use a minimum frequency of every 1 hour before upgrading.
 
 This feature will be removed in a future release. For assistance, contact {support-url}.
 
+[#remove-make-lb]
 == Removed in 26.8.0.cl
 
 The release of ThoughtSpot Cloud targeted for August 2026 removes the following features:
@@ -44,8 +51,6 @@ The release of ThoughtSpot Cloud targeted for August 2026 removes the following 
 * *Make this Liveboard discoverable* and *Make this Answer discoverable* checkboxes
 
 * Auto-generated business terms
-
-
 
 === What is changing
 
@@ -62,6 +67,26 @@ ThoughtSpot has decided to remove this feature, because of low and declining usa
 For business terms:
 
 * We are removing the process of adding business terms directly from a conversation. Starting in 26.8.0.cl, the only way to add a business term to coaching will be from the Business terms tab in the Memory sources page.
+
+== Removed in 26.8.0.cl
+
+The release of ThoughtSpot Cloud targeted for August 2026 removes the following features:
+
+* Sub-hourly Liveboard schedule frequency
+
+=== What is changing
+
+After upgrading to 26.8.0.cl, the *Every N minutes* frequency option is no longer available when creating or editing a Liveboard schedule. The minimum supported schedule frequency is now every 1 hour.
+
+* The *Every N minutes* option will be removed from the schedule creation and editing dialog
+
+* Existing sub-hourly schedules will be automatically converted to an hourly frequency on upgrade
+
+* The running or paused status of each converted schedule is preserved — no schedules are deleted
+
+* Attempts to create or update a schedule with a sub-hourly frequency via the REST API will return a `403 Forbidden` error
+
+If you have scripts or integrations that create or update schedules using sub-hourly cron expressions, update them to use a minimum frequency of every 1 hour before upgrading.
 
 == Removed in 26.6.0.cl
 

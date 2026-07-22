@@ -1,0 +1,75 @@
+= Set up column security rules
+:page-last_updated: Jul 21, 2026
+:linkattrs:
+:experimental:
+:description: In this article, you learn how to set up column security rules.
+:jira: SCAL-301699
+
+Use column security rules to protect sensitive columns in a table and control which groups can access them. You must be a table owner or administrator to complete these steps.
+
+[NOTE]
+====
+Column security rules must be enabled on your ThoughtSpot cluster before you can use this feature. Contact your administrator if you do not see the *Manage access* option described below.
+====
+
+== Mark a column as protected
+
+. From the left-hand navigation, go to *Data workspace*.
+. Open the table you want to configure.
+. Select the *Columns* tab.
+. Find the column you want to protect and enable the *Protected* toggle for that column.
+. Click *Save*.
+
+The column is now protected. Until you assign at least one group to it, only the table owner and administrators can access it.
+
+[IMPORTANT]
+====
+Protecting a column with no group assignments makes it inaccessible to all other users immediately. Make sure to assign groups in the next step before saving if you do not want to block access.
+====
+
+== Assign groups to a protected column
+
+. Open the table in *Data workspace*.
+. Click *Manage access*.
++
+The Manage access panel shows all columns in the table and the groups that have access to each protected column.
+. Select the protected column you want to configure.
+. Search for and select the groups that should have access to this column.
+. Click *Save*.
+
+Users in the selected groups can now access the protected column, provided they also have access to the table itself.
+
+== View all column security rules on a table
+
+. Open the table in *Data workspace*.
+. Click *Manage access*.
+
+The panel displays a matrix of your protected columns and their assigned groups. You can filter and sort the list to review your configuration.
+
+== Remove a group from a protected column
+
+. Open the table in *Data workspace*.
+. Click *Manage access*.
+. Select the protected column.
+. Remove the group you want to revoke access from.
+. Click *Save*.
+
+== Remove protection from a column
+
+. Open the table in *Data workspace*.
+. Select the *Columns* tab.
+. Find the column and disable the *Protected* toggle.
+. Click *Save*.
+
+The column is no longer protected. All users with table access can now see it, subject to the table's existing sharing settings.
+
+[NOTE]
+====
+Removing protection from a column also removes all group assignments for that column. If you re-enable protection later, you will need to reassign groups.
+====
+
+== What users see when a column is protected
+
+Users who do not have access to a protected column will not see it in search suggestions, answers, liveboards, or SpotIQ results. If an existing answer or liveboard includes a protected column and the user does not have access, that column's data will not appear.
+
+Worksheet, model, and view columns derived from a protected base column are also protected automatically. Users who do not have access to the base column will not be able to see the derived column either.
