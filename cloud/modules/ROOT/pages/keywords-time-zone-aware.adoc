@@ -165,6 +165,15 @@ In this approach, the timezone string — for example, `Asia/Kolkata` — is fix
 
 If your data model uses hardcoded timezone values and you want to take advantage of per-user or per-Org timezone configuration, update your passthrough formula to use `ts_var(ts_user_timezone)` instead.
 
+== Daylight Saving Time (DST) Limitation for non-UTC instances
+
+During Daylight Saving Time (DST) transitions, queries using `Last X Hours` or `Next X Hours` filters on datetime columns may fail if the selected time range crosses a DST boundary. Starting in the 26.8.0.cl release, ThoughtSpot displays a generic query error in these cases.
+
+*Workaround*: Modify the relative hour filter (for example, change Last 24 Hours to Last 23 Hours or Last 25 Hours) or use an equivalent date-based filter where applicable.
+
+As a result of this limitation, We strongly suggest you set your instance timezone to UTC.
+
+
 == Additional resources
 
 * xref:formula-reference.adoc#passthrough-functions[Formula function reference] — learn more about passthrough functions in ThoughtSpot.
