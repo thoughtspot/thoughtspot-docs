@@ -52,6 +52,116 @@
 
 The following release notes cover weekly changes to the ThoughtSpot Cloud release. These enhancements and fixes are automatically deployed to customer instances. For the latest monthly release notes see the xref:notes.adoc[{version} release notes].
 
+[#july-20-2026]
+== July 20, 2026
+[cols="10%,90%a", grid=none, frame=none]
+|====================
+|[.badge.badge-fix-relnotes]#Fix#|ThoughtSpot now generates ClickHouse queries using the new functions sets like `toDate32` and `toDateTime64` to query the dates which are older than 1970. This ensures that historical date data is handled correctly and that date-based filtering and bucketing work as expected across your full dataset.
+|====================
+
+[cols="10%,90%a", grid=none, frame=none]
+|====================
+|[.badge.badge-enhance-relnotes]#Enhancement#|The SpotterCode MCP server origin is now allowlisted for CORS and SAML redirects by default on all ThoughtSpot instances. Administrators no longer need to manually add the SpotterCode origin to the CORS allowlist or SAML redirect allowlist to use the authenticated SpotterCode MCP server.
+|====================
+
+
+[#july-06-2026]
+== July 06, 2026
+[cols="10%,90%a", grid=none, frame=none]
+|====================
+|[.badge.badge-fix-relnotes]#Fix#|The Liveboard memory sources page now automatically refreshes to reflect the latest status when memory generation completes. Previously, users had to manually reload the page to see that generation had finished, which could give the impression that the process was still running. With this improvement, the screen polls for status changes and updates in place smoothly, so you always see the current state without any manual intervention.
+|====================
+
+
+[#jun-29-2026]
+== June 29, 2026
+[cols="10%,90%a", grid=none, frame=none]
+|====================
+|[.badge.badge-fix-relnotes]#Fix#|The REST APIs now correctly validate role assignments on the ALL group when RBAC is enabled. You can make multiple sequential calls to add, remove, or replace roles on the ALL group without hitting a 403.
+|====================
+
+[#jun-22-2026]
+== June 22, 2026
+=== Spotter
+[cols="10%,90%a", grid=none, frame=none]
+|====================
+|[.badge.badge-enhance-relnotes]#Enhancement#| Spotter now uses SpotQL — a smart semantic query engine — for answer generation. This update delivers faster response times, improved answer accuracy, and more consistent
+results across your data conversations. Just ask your question in plain English, and Spotter handles which queries gets answer via SpotQL. No configuration changes are required — the improvement
+applies automatically when Spotter generates answers from your data. This feature is currently Beta. Contact ThoughtSpot support to enable it on Spotter.
+|====================
+
+[cols="10%,90%a", grid=none, frame=none]
+|====================
+|[.badge.badge-enhance-relnotes]#Enhancement#|Spotter can now generate and share PDF reports. It can turn any analysis into a polished, shareable PDF using natural prompts. This is particularly useful for recurring workflows where accuracy, speed, and presentation quality all matter. You receive a consistent, professional report in seconds, directly from the conversation where the analysis happened.
+
+Available to users with *Can download data* privilege. Users without it do not see the download options.
+
+It is currently unavailable on clusters which have opted in to the granular *Can download detailed data* and *Can download visuals* privilege.
+|====================
+
+[cols="10%,90%a", grid=none, frame=none]
+|====================
+|[.badge.badge-enhance-relnotes]#Enhancement#|Spotter now also supports CSV download for advanced analytics results. When Spotter uses its
+advanced analytics skills to answer your question, an inline preview of the result appears in the conversation. You can download the full dataset as a CSV file directly from that preview.
+This is useful when the result is too large for the preview, or when you want to use the data in another tool or notebook.
+
+Available to users with *Can download data* privilege. Users without it do not see the download options.
+
+It is currently unavailable on clusters which have opted in to the granular *Can download detailed data* and *Can download visuals* privilege.
+|====================
+
+
+[cols="10%,90%a", grid=none, frame=none]
+|====================
+|[.badge.badge-fix-relnotes]#Fix#|Resolved an issue where Spotter's code tool returned an error during active or resumed
+conversation sessions. A background cleanup job was removing temporary files before
+Spotter had finished using them — including when a saved conversation was reloaded. The cleanup job now accounts for conversation session duration, and the files are kept for a minimum of 6 hours.
+Spotter also handles missing files more gracefully. If a file you uploaded is no longer available, Spotter prompts you to re-upload it. If the file was generated by Spotter
+during analysis, Spotter re-runs the query automatically.
+|====================
+
+=== Administration and Authentication
+
+[cols="10%,90%a", grid=none, frame=none]
+|====================
+|[.badge.badge-fix-relnotes]#Fix#|The actual sender address used for all outbound emails — including Liveboard schedules, sharing notifications, and welcome emails — is `notification@notification.thoughtspot.com`. The Admin UI now correctly displays this as the sender address.
+|====================
+
+[cols="10%,90%a", grid=none, frame=none]
+|====================
+|[.badge.badge-fix-relnotes]#Fix#|When users were created in ThoughtSpot through Just-in-Time (JIT) provisioning via an SSO identity provider, group assignments for those users were not updated by the user sync process. ThoughtSpot now correctly identifies federated users during sync and skips
+unsupported identity provider update calls for those users. Group assignments are now applied successfully for all users, including those provisioned through JIT SSO.
+|====================
+
+=== REST APIs
+[cols="10%,90%a", grid=none, frame=none]
+|====================
+|[.badge.badge-fix-relnotes]#Fix#|Resolved an issue where updating a sensitive connection variable (such as a password or private
+key) using the `REPLACE` operation via the following REST API v2.0 endpoints did not apply
+the new value:
+
+* `POST /api/rest/2.0/template/variables/update-values`
+* `POST /api/rest/2.0/template/variables/{identifier}/update`
+
+The variable appeared updated but continued to resolve to the previous value, requiring users
+to perform a manual removal step before setting the new value. This issue affected variables of
+type `CONNECTION_VARIABLE` with `is_sensitive: true`. The fix ensures that a `REPLACE`
+operation on sensitive variables atomically removes the old value and writes the new one,
+without requiring an additional API call.
+|====================
+
+[cols="10%,90%a", grid=none, frame=none]
+|====================
+|[.badge.badge-fix-relnotes]#Fix#|Resolved an issue where the `POST /api/rest/2.0/groups/search` API returned `null` for the
+`roles` field when called by an Org Admin user. This occurred only when Role-Based Access
+Control (RBAC) was enabled. The roles were correctly visible in the ThoughtSpot UI, creating an inconsistency for applications relying on the v2.0 response.
+
+The issue was caused by the roles field population being gated exclusively on a Cluster Admin
+privilege check, which excluded Org Admins with `USER_ADMINISTRATION` privileges. Org Admins
+and Group Admins can now retrieve full group role details via the v2.0 API as expected.
+
+|====================
+
 [#jun-01-2026]
 == June 01, 2026
 
