@@ -1,16 +1,31 @@
 = TML for Monitor alerts
-:page-last_updated: 5/3/2023
+:page-last_updated: 7/22/2026
 :author: Teresa Killmond
 :linkattrs:
 :experimental:
 :description: Use TML to modify Monitor alerts in a flat-file format. Then, migrate the Monitor alert to a different cluster, or restore it to the same cluster.
 :object: Monitor alerts
-:jira: SCAL-190426, SCAL-264258
+:jira: SCAL-190426, SCAL-264258, SCAL-300461
 
 include::partial$tml-intro.adoc[]
 
 [#syntax-alerts]
 include::partial$tml-syntax-alert.adoc[]
+
+[#inter-org-limitation]
+== Limitation: importing Monitor alert TML across orgs
+
+[IMPORTANT]
+====
+Importing a Monitor alert TML file into a *different org* fails when the alert is associated with a Personalized View (PV). The Alert TML stores static references to the source org's Liveboard ID (`pinboard_id`), visualization ID (`viz_id`), and Personalized View ID (`personalised_view_id`). When a Liveboard TML is imported into a new org, ThoughtSpot generates *new* IDs for the Liveboard and its visualizations. The Alert TML is not automatically updated to reflect these new IDs, so it continues to reference the original org's IDs, which are invalid in the destination org.
+
+*Workaround — manually update IDs before or after import:*
+
+. In the destination org, locate the newly created Liveboard and note its new *Liveboard ID* (`pinboard_id`) and *visualization ID* (`viz_id`).
+. If the alert uses a Personalized View, locate the correct *Personalized View ID* (`personalised_view_id`) in the destination org.
+. Open the Alert TML file and replace the old `pinboard_id`, `viz_id`, and `personalised_view_id` values with the new destination org IDs.
+. Save and re-import (or re-publish) the updated TML.
+====
 
 [#alert-parameters]
 == TML parameters for {object}
@@ -127,7 +142,7 @@ Container for the xref:monitor.adoc[Monitor] threshold-based alert condition. Co
 creator::
 Container for information about the creator of a xref:monitor.adoc[Monitor alert]. The creator information is only visible for administrators.
 +
-NOTE: Only administrators can change the owner/creator of an alert, and only at the time of alert creation. You can’t change the owner of an alert after the alert is created.
+NOTE: Only administrators can change the owner/creator of an alert, and only at the time of alert creation. You can't change the owner of an alert after the alert is created.
 
 [#cron]
 cron::
@@ -216,6 +231,8 @@ Container for the xref:monitor.adoc[Monitor] threshold-based alert condition, if
 [#personalised_view_id]
 personalised_view_id::
 ID of the personalised View the monitor alert is based on. If no personalised_view_id is included, this TML creates an alert with no ad-hoc filters applied. If a personalised_view_id is available and supplied as part of the metric_id, the filters and parameters applied to the personalised View are applied to create the contextual alert.
++
+IMPORTANT: This ID is org-specific. If you import this Alert TML into a different org, you must replace this value with the Personalized View ID from the destination org before or after import. See <<inter-org-limitation,Limitation: importing Monitor alert TML across orgs>>.
 
 [#personalised_view_info]
 personalised_view_info::
@@ -227,6 +244,8 @@ pinboard_id::
 The GUID of a Liveboard. Used in xref:monitor.adoc[Monitor alert] TML files to specify the KPI used to create the alert. If you are importing or editing an Answer, use <<answer_id,answer_id>> instead, and do not include any part of the <<pinboard_viz_id,pinboard_viz_id>> section.
 +
 You can find this string of letters and numbers at the end of the URL for a Liveboard.
++
+IMPORTANT: This ID is org-specific. When a Liveboard TML is imported into a different org, ThoughtSpot generates a new Liveboard ID. The Alert TML is not automatically updated to reflect the new ID. If you are migrating an alert across orgs, you must manually update this value to the new Liveboard ID in the destination org. See <<inter-org-limitation,Limitation: importing Monitor alert TML across orgs>>.
 
 [#pinboard_viz_id]
 pinboard_viz_id::
@@ -270,13 +289,13 @@ type:: The type of date filter.
 user_email::
 The email address of the creator of a xref:monitor.adoc[Monitor alert], or the email addresses of subscribed users for a Monitor alert. The creator information is only visible for administrators. If you specify both a `username` and a `user_email` for the creator of a Monitor alert, the `username` specified takes precedence. If the `user_email` is the only parameter specified and multiple ThoughtSpot users have that email address, the TML validation returns an error, and you must specify a username.
 +
-NOTE: Only administrators can change the owner/creator of an alert, and only at the time of alert creation. You can’t change the owner of an alert after the alert is created.
+NOTE: Only administrators can change the owner/creator of an alert, and only at the time of alert creation. You can't change the owner of an alert after the alert is created.
 
 [#username]
 username::
 The username of the creator of a xref:monitor.adoc[Monitor alert], or the usernames of subscribed users for a Monitor alert. The creator information is only visible for administrators. If you specify both a `username` and a `user_email` for the creator of a Monitor alert, the `username` specified takes precedence.
 +
-NOTE: Only administrators can change the owner/creator of an alert, and only at the time of alert creation. You can’t change the owner of an alert after the alert is created.
+NOTE: Only administrators can change the owner/creator of an alert, and only at the time of alert creation. You can't change the owner of an alert after the alert is created.
 
 [#value]
 value::
@@ -292,4 +311,5 @@ viz_id::
 The GUID of a Liveboard visualization. Used in xref:monitor.adoc[Monitor alert] TML files to specify the KPI used to create the alert. If you are importing or editing an Answer, use <<answer_id,answer_id>> instead, and do not include any part of the <<pinboard_viz_id,pinboard_viz_id>> section.
 +
 You can find this string of letters and numbers at the end of the URL for a Liveboard visualization. Under the visualization's *more* image:icon-more-10px.png[more menu icon] menu, select *Copy link*. The link copies to your clipboard. The second string of letters and numbers in the URL is the visualization GUID.
-
++
+IMPORTANT: This ID is org-specific. When a Liveboard TML is imported into a different org, ThoughtSpot generates new visualization IDs. The Alert TML is not automatically updated to reflect these new IDs. If you are migrating an alert across orgs, you must manually update this value to the new visualization ID in the destination org. See <<inter-org-limitation,Limitation: importing Monitor alert TML across orgs>>.
