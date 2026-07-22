@@ -1,5 +1,5 @@
 = TML for Liveboards
-:page-last_updated: 4/26/2023
+:page-last_updated: 7/22/2026
 :author: Teresa Killmond
 :linkattrs:
 :experimental:
@@ -7,7 +7,7 @@
 :page-aliases: /admin/scriptability/tsl-pinboard.adoc, /admin/scriptability/tml-pinboard.adoc, /admin/ts-cloud/tsl-pinboard.adoc
 :description: Use TML to modify Liveboards in a flat-file format. Then, migrate the Liveboard to a different cluster, or restore it to the same cluster.
 :object: Liveboards
-:jira: SCAL-264258
+:jira: SCAL-264258, SCAL-266034
 
 include::partial$tml-intro.adoc[]
 
@@ -20,7 +20,7 @@ These parameters and their definitions are specific to {object}; this list doesn
 
 [width="100%",grid="none",options="header"]
 |===
-| a - i | k - t | v - y
+| a - i | k - v | v - y
 a| <<answer,answer>>
 
 <<column,column>>
@@ -57,15 +57,23 @@ a| <<key,key>>
 
 <<tabs,tabs>>
 
-a| <<value,value>>
+<<value,value>>
 
 <<values,values>>
+
+<<view_filters,view_filters>>
+
+<<view_guid,view_guid>>
+
+<<view_parameters,view_parameters>>
+
+<<views,views>>
 
 <<visualization_id,visualization_id>>
 
 <<visualizations,visualizations>>
 
-<<viz_guid,viz_guid>>
+a| <<viz_guid,viz_guid>>
 
 <<width,width>>
 
@@ -152,6 +160,8 @@ For example, if you sorted by `Quarter` in your search, from the `Commit Date` c
 Refer to https://developers.thoughtspot.com/docs/?pageid=search-data-api[Components of a Search Query^] to understand syntax.
 +
 In the `parameter_overrides` section for an Answer or Liveboard, `name` refers to the xref:parameters-create.adoc[Parameter] name.
++
+In the <<views,views>> section, `name` refers to the display name of the xref:personalized-liveboard-views.adoc[personalized Liveboard view].
 
 [#oper]
 oper::
@@ -184,6 +194,32 @@ The configured value of the Parameter referenced in a formula in the last saved 
 values::
 The values being filtered (excluded or included) in a Liveboard.
 
+[#view_filters]
+view_filters::
+List of filters applied to a xref:personalized-liveboard-views.adoc[personalized Liveboard view]. Each entry follows the same structure as Liveboard-level <<filters,filters>>: a `column` id, an <<oper,oper>> operator, and a list of <<values,values>>. Only appears within a <<views,views>> entry.
+
+[#view_guid]
+view_guid::
+The GUID of a xref:personalized-liveboard-views.adoc[personalized Liveboard view]. ThoughtSpot uses this to uniquely identify the view within the Liveboard. Only appears within a <<views,views>> entry.
++
+You can find this string of letters and numbers at the end of the URL when you open a personalized view on a Liveboard.
+
+[#view_parameters]
+view_parameters::
+List of parameter overrides applied to a xref:personalized-liveboard-views.adoc[personalized Liveboard view]. Each entry follows the same structure as <<parameter_overrides,parameter_overrides>>: a parameter `name`, its `id` (GUID), and the `override_value`. Only appears within a <<views,views>> entry.
+
+[#views]
+views::
+List of xref:personalized-liveboard-views.adoc[personalized Liveboard views] associated with the Liveboard. When you export a Liveboard TML, ThoughtSpot includes all personalized views that are accessible to the exporting user — both public views and any private views belonging to that user. Each entry contains:
+
+* <<view_guid,view_guid>> — the GUID of the personalized view.
+* `name` — the display name of the view.
+* `is_public` — whether the view is public (`true`) or private (`false`).
+* <<view_filters,view_filters>> — the filters saved in the view.
+* <<view_parameters,view_parameters>> — the parameter overrides saved in the view.
++
+See <<personalised-views-limitation,Limitation: personalized views in exported TML>>.
+
 [#visualization_id]
 visualization_id::
 The id of a visualization.
@@ -212,6 +248,19 @@ The horizontal location of the Liveboard visualization, relative to the upper le
 [#y]
 "y"::
 The vertical location of the Liveboard visualization, relative to the upper left of the Liveboard.
+
+[#personalised-views-limitation]
+== Limitation: personalized views in exported Liveboard TML
+
+[IMPORTANT]
+====
+When you export a Liveboard TML file, ThoughtSpot automatically includes *all* xref:personalized-liveboard-views.adoc[personalized Liveboard views] that are accessible to the user performing the export. This includes:
+
+* *Public views* — views that any user with access to the Liveboard can see.
+* *Private views* — views that belong to the exporting user and are not visible to others.
+
+There is currently no automated way to exclude private views from a Liveboard TML export. If you do not want to migrate private personalized views when importing the TML into a different cluster or org, you must manually remove the relevant entries from the `views` section of the TML file before importing.
+====
 
 [#limitations]
 == Limitations of working with TML files
