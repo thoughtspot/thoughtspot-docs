@@ -1,0 +1,76 @@
+= Make your data model AI-ready
+:page-last_updated: Jul 28, 2025
+:author: Naomi
+:linkattrs:
+:experimental:
+:description:
+:jira: SCAL-320863
+
+Before adding memory or instructions, your data model needs to be readable by Spotter. Memory generation reads your model's columns, values, and structure to extract patterns. If the Model has unclear names, disabled indexing, or missing metadata, generated memory will be low quality.
+
+Think of this as preparing the foundation. Spotter can only learn what the data model makes legible.
+
+[IMPORTANT]
+Fix data model issues at the Model level. Memory is for business logic and context — not for compensating for a poorly-structured Model. If Spotter is consistently misreading column names or types, the fix belongs in the data model, not in memory or instructions.
+
+
+
+== What's covered here
+
+[options="header"]
+|===
+| Area | What it does
+|---|---
+| <<optimize-your-data-model-structure,Optimize your data model structure>> | Clean column names, correct types, indexing enabled, synonyms defined
+| <<generate-and-review-ai-context,Generate and review AI context>> | Column-level metadata that tells Spotter how to interpret each column
+| <<diagnose-with-spotter,Diagnose with Spotter>> | Use Spotter itself to surface gaps before adding memory or instructions
+|===
+
+
+
+[#optimize-your-data-model-structure]
+== Optimize your data model structure
+
+A well-structured Model has human-readable column names, a wide table layout, indexing enabled on query-relevant columns, and synonyms defined for terms your team uses. Keeping the Model under 100 columns improves Spotter's ability to identify the right column for a given query, and PII columns should be excluded from indexing.
+
+ThoughtSpot provides three built-in optimization tools at **Model > Enable Spotter > Spotter optimization tab**: Enable Indexing, Fix Date Value Issues, and Fix Column Type Mismatches. Run these before generating memory or AI context.
+
+For more information, see xref:spotter-model.adoc[Optimize your data model]
+
+
+
+[#generate-and-review-ai-context]
+== Generate and review AI context
+
+AI context is column-level metadata that tells Spotter how to use each column — how to interpret it, when to apply it, and what it represents in your business. This is different from column descriptions, which are written for humans. AI context is written as instructions to the AI.
+
+Spotter can auto-generate AI context from your data model, but the output should be manually reviewed and refined. Around 200 characters per field is the optimal length. Review generated context before relying on it for memory generation.
+
+[IMPORTANT]
+Re-generating AI context overwrites all existing context, including manual edits. Do not re-run generation if you have made significant manual edits to existing AI context fields.
+
+For more information, see xref:spotter-ai-context.adoc[AI context].
+
+
+[#diagnose-with-spotter]
+== Diagnose with Spotter
+
+Before moving to memory, verify the data model is legible to Spotter. One prompt surfaces gaps:
+
+> *"Show me the data model columns you're confused about and what specifically is causing the confusion."*
+
+Spotter will surface ambiguous columns, conflicting signals, and missing context. Fix what it flags — either in AI context or in column descriptions. Re-run the prompt until Spotter has no significant confusion to report. At that point the model is ready.
+
+//*For diagnosing issues after Spotter is live — wrong answers, inconsistent results, wrong columns selected — see [Best practices](URL-TBD).*
+
+
+== Quick check before moving on
+
+----
+✓ Column names are descriptive and human-readable.
+✓ Indexing is enabled on relevant columns (PII columns excluded).
+✓ AI context has been generated and reviewed.
+✓ Spotter self-diagnosis prompt run — gaps fixed.
+----
+
+As a next step, reference xref:spotter-instructions.adoc[Spotter instructions] or xref:spotter-liveboard-learn.adoc[Add memory from Liveboards].

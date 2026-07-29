@@ -1,21 +1,23 @@
-= Import and export coaching TML
-:page-last_updated: 8/20/25
+= Import and export legacy memory source TML
+:page-last_updated: Jul 28, 2026
 :author: Naomi
 :linkattrs:
 :experimental:
-:description: You can now migrate coaching between Models or Worksheets using the coaching TML file.
-:jira: SCAL-226681, SCAL-253054, SCAL-254633, SCAL-250703, SCAL-265156
+:description: You can now migrate memory sources between Models or Worksheets using the legacy memory source TML file.
+:jira: SCAL-226681, SCAL-253054, SCAL-254633, SCAL-250703, SCAL-265156, SCAL-320863
+:page-aliases: migrate-coaching.adoc
 
-
-You can now migrate coaching from one Model to another across different Orgs and instances using the coaching xref:tml-coaching.adoc[TML file]. This feature allows you to transfer coaching insights efficiently, eliminating the need to duplicate efforts in training Spotter for each Model separately. To export or import coaching, you must have edit access to the respective Models.
+Reference questions and business terms are the original tools for adding context to Spotter. This page covers how to migrate them across Orgs, clusters, and data models using TML export and import.
 
 For more information about TML files, see xref:tml.adoc[].
+
+NOTE: **Data model instructions** use a separate migration path — see xref:spotter-migrate-instructions.adoc[Migrate instructions].
 
 
 == Migration target scenarios
 
 
-The three main factors to consider in migrating Spotter coaching are:
+The three main factors to consider in migrating Spotter memory sources are:
 
 
 * Target and source environments.
@@ -84,13 +86,13 @@ You need to adapt the data to maintain the relevance and effectiveness of traini
 
 
 
-== Export coaching from a Model
+== Export memory sources from a Model
 
 
-You can export coaching TML files from the Model view in the Data workspace by following these steps:
+You can export legacy memory source TML files from the Model view in the Data workspace by following these steps:
 
 
-. Navigate to the Data workspace and select the Model containing the coaching you want to export.
+. Navigate to the Data workspace and select the Model containing the memory sources you want to export.
 
 
 . Select the *more options* icon image:icon-more-10px.png[more options icon] and hover over the *TML* section.
@@ -104,8 +106,8 @@ image::hover-tml.png[Hover over the TML section]
 . If you select *Export TML*:
 
 
-* Select *Export Model* and *Export associated Spotter feedback* to download the Model TML file and coaching TML file. Click *Export*.
-* Alternatively, select *Export Model & associated objects (tables etc.)* and *Export associated Spotter feedback* to download the TML files for the Model, all upstream objects, and the coaching. Click *Export*.
+* Select *Export Model* and *Export associated Spotter feedback* to download the Model TML file and legacy memory source TML file. Click *Export*.
+* Alternatively, select *Export Model & associated objects (tables etc.)* and *Export associated Spotter feedback* to download the TML files for the Model, all upstream objects, and the memory sources. Click *Export*.
 +
 [.bordered]
 image::export-tml.png[Choose what to export]
@@ -118,22 +120,22 @@ image::export-tml.png[Choose what to export]
 .  If you select *Export coaching TML*:
 
 
-* Select *Export Spotter feedback only* to download only the TML file containing all coaching objects. Click *Export*.
-* Select *Export Spotter feedback & associated objects (models etc.)* to download the TML files for the Model, all upstream objects, and the coaching. Click *Export*.
+* Select *Export Spotter feedback only* to download only the TML file containing all memory source objects. Click *Export*.
+* Select *Export Spotter feedback & associated objects (models etc.)* to download the TML files for the Model, all upstream objects, and the memory sources. Click *Export*.
 +
 [.bordered]
-image::export-feedback-tml.png[Export coaching TML]
+image::export-feedback-tml.png[Export legacy memory source TML]
 
 
 
 
-NOTE: No coaching file is created if there are no coaching entries associated with the Model.
+NOTE: No memory source file is created if there are no memory source entries associated with the Model.
 
 
-== Export coaching from Coach Spotter
+== Export memory source from Coach Spotter
 
 
-You can export coaching from the Spotter coaching pages in the Data workspace. To export coaching from the Spotter coaching pages, follow these steps:
+You can export memory sources from the Reference questions and Business terms pages pages in the Data workspace. To export memory sources from the Reference questions and Business terms pages, follow these steps:
 
 
 . Navigate to the Data workspace and select *Reference questions* or *Business terms* from the left menu.
@@ -152,34 +154,34 @@ You can export coaching from the Spotter coaching pages in the Data workspace. T
 
 
 
-== Export coaching using ThoughtSpot Embedded APIs
+== Export memory sources using ThoughtSpot Embedded APIs
 
 
-You can download coaching TML files from ThoughtSpot Embedded APIs as long as you are using v2. The specific API is `/api/rest/2.0/metadata/tml/export`.
+You can download legacy memory source TML files from ThoughtSpot Embedded APIs as long as you are using v2. The specific API is `/api/rest/2.0/metadata/tml/export`.
 
 
-To export only the TML of coaching associated with an object, set the GUID of the object as `identifier` and set the `type` as `FEEDBACK` in the `metadata` array.
+To export only the TML of memory sources associated with an object, set the GUID of the object as `identifier` and set the `type` as `FEEDBACK` in the `metadata` array.
 
 
-To export the TML of an object along with the coaching associated with it, set the GUID of the object as `identifier`, set the `type` as `LOGICAL_TABLE` in the `metadata` array, and set `export_with_associated_feedbacks` in `export_options` to true.
+To export the TML of an object along with the memory source associated with it, set the GUID of the object as `identifier`, set the `type` as `LOGICAL_TABLE` in the `metadata` array, and set `export_with_associated_feedbacks` in `export_options` to true.
 
 
-We also support custom object IDs in coaching TML files.
+We also support custom object IDs in legacy memory source TML files.
 
 
 NOTE: xref:tml.adoc#object-id[Object IDs] are in beta and off by default. To enable them, contact {support-url}.
 
 
-== Import coaching into ThoughtSpot
+== Import memory sources into ThoughtSpot
 
 
 === Import into a Model
 
 
-To import a coaching TML file directly into a Model, follow these steps:
+To import a legacy memory source TML file directly into a Model, follow these steps:
 
 
-. Navigate to the Data workspace and open the Model you want to import TML coaching into.
+. Navigate to the Data workspace and open the Model you want to import TML memory sources into.
 
 
 . Select the *more options* icon image:icon-more-10px.png[more options icon] and hover over the *TML* section.
@@ -200,7 +202,7 @@ image::hover-tml.png[Hover over the TML section]
 [.bordered]
 image::feedback-import-ux.png[Select .tml file to upload]
 +
-NOTE: Ensure that the GUID in the coaching TML matches the target Model GUID.
+NOTE: Ensure that the GUID in the legacy memory source TML matches the target Model GUID.
 
 
 
@@ -208,12 +210,12 @@ NOTE: Ensure that the GUID in the coaching TML matches the target Model GUID.
 . The *Import* screen appears, showing the object name, file name, status, and possible actions. You can select *Edit* to edit the TML file. When ready, select the checkbox next to the file or files and click *Import _n_ selected*.
 +
 [.bordered]
-image::feedback-import.png[Import coaching]
+image::feedback-import.png[Import memory sources]
 
 
 
 
-. Click *Exit*. The coaching will be appended to the Model’s coaching TML file.
+. Click *Exit*. The memory sources will be appended to the Model’s legacy memory source TML file.
 
 
 ////
@@ -300,19 +302,19 @@ image::feedback-import.png[Import coaching]
 == Resolving errors
 
 
-To avoid errors with coaching TML files, check the following before uploading:
+To avoid errors with legacy memory source TML files, check the following before uploading:
 
 
 * Check that the GUID present at the top of the file is a valid Model already present in the system.
 +
-NOTE: We do not currently support importing a new Model and its coaching in the same zip file.
-* Check the sanity of the TML file, making sure you don’t have missing fields, invalid entries for fields like `type`, `access`, `chart_type`, or `display_mode`, invalid `search_tokens` for the Model, or invalid formula expressions for the Model that coaching entries are being targeted for.
+NOTE: We do not currently support importing a new Model and its memory sources in the same zip file.
+* Check the sanity of the TML file, making sure you don’t have missing fields, invalid entries for fields like `type`, `access`, `chart_type`, or `display_mode`, invalid `search_tokens` for the Model, or invalid formula expressions for the Model that memory source entries are being targeted for.
 
 
-* Check for similar entries within the file: No two coaching entries can have the same 'feedback_phrase'. This can occur when uploading coaching entries on the user level, which can have the same coaching phrase. The system will throw an error when uploading multiple such entries. You have the option to edit the coaching TML to avoid such scenarios.
+* Check for similar entries within the file: No two memory source entries can have the same 'feedback_phrase'. This can occur when uploading memory source entries on the user level, which can have the same memory source phrase. The system will throw an error when uploading multiple such entries. You have the option to edit the legacy memory source TML to avoid such scenarios.
 
 
-* Check for conflicts with existing entries: The coaching entry should not have the same 'feedback_phrase' as a coaching present already on the target Model. It will throw a warning and will override the existing coaching entry if import is still completed. You have the option to edit the coaching TML or modify the existing entries to avoid the conflict.
+* Check for conflicts with existing entries: The memory source entry should not have the same 'feedback_phrase' as a memory source present already on the target Model. It will throw a warning and will override the existing memory source entry if import is still completed. You have the option to edit the legacy memory source TML or modify the existing entries to avoid the conflict.
 
 
 * Do not modify the values for the following fields: `display_mode`, `chart_type`, and `axis_config`. Changes to these fields are not validated by the system during upload and may lead to unintended behavior.
@@ -322,3 +324,6 @@ NOTE: We do not currently support importing a new Model and its coaching in the 
 > **Related information**
 >
 > * xref:tml-coaching.adoc[]
+> **Migrating everything at once?** This page covers reference questions and business terms only.
+> - For Liveboard and conversation memory → xref:spotter-export-memory.adoc[Export memory]
+> - For Spotter instructions and data model instructions → xref:spotter-migrate-instructions.adoc[Migrate instructions]

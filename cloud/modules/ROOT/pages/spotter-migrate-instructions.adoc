@@ -1,0 +1,100 @@
+= Migrate instructions
+:page-last_updated: Jul 28, 2025
+:author: Naomi
+:linkattrs:
+:experimental:
+:description: Learn how to migrate instructions.
+:jira: SCAL-320863
+
+Spotter instructions and data model instructions both have REST API v2 endpoints for reading and writing. The migration workflow is the same for both: read from source, write to target. Copy-paste is the manual alternative when API access isn't available.
+
+[options="header"]
+|===
+| | Spotter instructions | Data model instructions
+|---|---|---
+| **Scope** | Org-wide — applies to all users | Per data model — applies to all users on that model
+| **Who can migrate** | Users with can manage Spotter privileges | Users with can manage Spotter or data model edit access
+| **API available since** | 26.6.0.cl | 10.15.0.cl
+| **Character limit** | 5,000 | 10,000
+|===
+
+== Migrate Spotter instructions
+
+=== Option 1 — API (recommended)
+
+**Step 1 — Read from source org**
+
+```
+GET /api/rest/2.0/ai/agent/instructions/get
+```
+
+Returns the current Spotter instructions text for the org. Copy the response value.
+
+**Step 2 — Write to target org**
+
+```
+PUT /api/rest/2.0/ai/agent/instructions/set
+```
+
+Pass the instructions text in the request body. The update takes effect immediately — no separate publish step.
+
+> For full request and response schemas, use the link:https://developers.thoughtspot.com/docs/restV2-playground[REST API v2 playground].
+
+
+=== Option 2 — Copy-paste
+
+1. On the source Org: open Spotter, click the settings icon, select **Spotter Instructions**, and copy the full text.
+2. On the target Org: open the same screen, paste, and save.
+
+Use this when you don't have API access or are making a one-off migration. For repeated migrations across environments, use the API.
+
+== Migrate data model instructions
+
+Data model instructions are scoped to a specific Model. You need the data model GUID of both the source and target models.
+
+=== Option 1 — API (recommended)
+
+**Step 1 — Read from source model**
+
+```
+POST /api/rest/2.0/ai/instructions/get
+```
+
+Request body:
+```json
+{
+  "metadata_identifier": "<source-data-model-guid>"
+}
+```
+
+Returns the instructions text for that Model.
+
+**Step 2 — Write to target Model**
+
+```
+POST /api/rest/2.0/ai/instructions/set
+```
+
+Request body:
+```json
+{
+  "metadata_identifier": "<target-data-model-guid>",
+  "instructions": "<instructions-text-from-step-1>"
+}
+```
+
+> The target data model must exist before you write instructions to it. Instructions apply to all users querying that Model immediately after the call.
+
+> For full request and response schemas, use the link:https://developers.thoughtspot.com/docs/restV2-playground[REST API v2 playground].
+
+=== Option 2 — Copy-paste
+
+1. On the source: open the data model, select the **Instructions** tab, and copy the full text.
+2. On the target: open the same tab on the target Model, paste, and save.
+
+== Migrating everything at once
+
+Instructions are one part of a full environment migration. For the complete picture:
+
+- **Memory** xref:spotter-export-memory.adoc[Export memory](Liveboard and conversation-generated).
+- **Legacy memory sources** xref:spotter-migrate-legacy.adoc[Migrate legacy memory sources](reference questions, business terms)

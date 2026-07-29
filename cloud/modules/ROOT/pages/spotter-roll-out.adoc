@@ -1,0 +1,86 @@
+= Roll out and improve Spotter
+:page-last_updated: Jul 28, 2025
+:author: Naomi
+:linkattrs:
+:experimental:
+:description: Roll out in phases, watch how people use it, and use those signals to keep the memory current.
+:jira: SCAL-320863
+
+Building memory is not the finish line — it's the prerequisite. Once Spotter is loaded with context, the next step is getting it in front of users deliberately, not all at once. Roll out in phases, watch how people use it, and use those signals to keep the memory current.
+
+== Roll out in phases
+
+Start small. A full Org rollout before you have signal from real users makes problems harder to diagnose — noise from many users obscures the patterns you need to fix things quickly.
+
+[options="header"]
+|===
+| Phase | Who | What to watch
+|---|---|---
+| **Power users / champions** | 2 to 3 analysts who know the data model well and will give honest feedback | Do they trust the answers? What do they correct? What questions fail entirely?
+| **Target team** | The one business team you identified in usecase discovery | Are they asking the questions you scoped? Where do they rephrase or drop off?
+| **Org-wide** | All users on that data model | Volume of unanswered questions, quality regressions, downvote patterns
+|===
+
+Don't move to the next phase until the current one produces clean signal. Champions surface the most important gaps fastest. One team's real usage patterns tell you what the org will do at scale.
+
+== Share access
+
+=== Give champions Manage Memory access
+
+Champions need to correct Spotter in conversation and have those corrections saved as shared memory. That requires **Can manage Spotter** — the privilege for managing memory and Spotter instructions across the Org.
+
+**How to assign it:**
+
+- In clusters with **RBAC enabled:** add Can manage Spotter to a role, then assign the role to a group. Add your champions to that group.
+- In clusters **without RBAC:** add Can manage Spotter directly to a user group.
+
+> **Use a group, not individual grants.** Assign Can manage Spotter to a group, add champions to it. When you expand to more users later, you add them to the group — you don't re-configure the privilege.
+
+Can manage Spotter implies Can use Spotter — no separate Spotter privilege is needed.
+
+For reference on permissions, see xref:spotter-memory-permissions.adoc[Memory permissions & governance].
+
+=== Enable personal memory for your Org
+
+Once you're ready to expand beyond champions, enable personal memory so all users can teach Spotter about themselves.
+
+1. Go to **Admin > All Orgs > AI settings**.
+2. Toggle on **"Enable personal memory learning for all users"**.
+
+This is a separate flag from the main memory toggle. The main memory flag must be on for personal memory to work — but you can have the main flag enabled without enabling personal memory.
+
+See xref:spotter-personal-memory.adoc[Personal memory] for what users can do once this feature is enabled.
+
+== Read the signals and act
+
+Once users are active, the Spotter Conversations Liveboard shows you where Spotter is and isn't working. Check it regularly — weekly during the champion phase, at least monthly after full rollout.
+
+[options="header"]
+|===
+| Signal | What it means | What to do
+|---|---|---
+| Questions with no answer | Memory coverage gap for that topic | Add a relevant Liveboard source or teach in conversation
+| Same question rephrased multiple times | Wrong memory applied, or retrieval miss | Correct the rule in conversation
+| Downvoted answers | A specific memory rule is producing bad output | Find and correct it in Managing memory
+| Low usage despite enablement | Spotter not trusted, or users don't know it's available | Run a live session with champion users to demonstrate
+|===
+
+See xref:spotter-conversation-history-enable.adoc[Spotter Conversations Liveboard] to learn where to find it, what KPIs it shows, and how to read exact usage data.
+
+**The improvement loop:**
+
+----
+Spotter Conversations Liveboard
+        ↓
+  Identify gap or bad rule
+        ↓
+  Add or correct memory
+  ├── New topic gap      →   Add memory from Liveboards
+  └── Wrong rule         →   Correct in conversation or Managing memory
+        ↓
+  Retest with champion users
+        ↓
+  Monitor again
+----
+
+The loop doesn't stop. Memory stays current by cycling through it — champions surface issues, you fix them, you verify they're fixed, you watch for the next round.

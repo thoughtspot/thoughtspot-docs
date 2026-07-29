@@ -1,0 +1,225 @@
+= Spotter personal memory
+:page-last_updated: Jul 28, 2025
+:author: Naomi
+:linkattrs:
+:experimental:
+:description: Personal memory is what Spotter knows about you specifically — your role, your context, and your preferences.
+:jira: SCAL-320863
+:page-layout: default-cloud-early-access
+
+Personal memory is what Spotter knows about you specifically — your role, your context, and your preferences. It is not about your data; it is about you as a user. Personal memory applies only to your sessions and does not affect how Spotter answers anyone else.
+
+Every user builds personal memory through conversation. You teach Spotter by stating what you want it to know. Spotter does not learn from your query patterns passively — nothing is saved unless you tell it explicitly.
+
+Before you start:: Spotter saves personal context only when you state it clearly — for example, *"Remember I'm Head of CS for EMEA"* or *"Always show me tables."* Conversations without explicit instructions do not generate personal memory.
+
+
+== Shared memory versus personal memory
+
+[options="header"]
+|===
+| | Shared memory | Personal memory
+|---|---|---
+| **Built by** | Users with Manage Memory access (and from Liveboards) | Any user
+| **Applies to** | All users on that data model | You only
+| **Covers** | Business definitions, query patterns | Role, preferences, personal context
+| **Managed via** | Memory Sources page | Conversation
+| **Example** | *"Revenue excludes returns"* | *"I'm Head of CS for EMEA, focused on renewals"*
+|===
+
+
+== Two layers of personal memory
+
+Personal memory has two distinct layers, applied at different times.
+
+=== Layer 1 — Your profile
+
+Who you are and how you want to interact with Spotter, regardless of which data model you are querying. Your profile comes with you in every session.
+
+[options="header"]
+|===
+| What you tell Spotter | How it helps
+|---|---
+| *"I'm Head of CS for EMEA, focused on renewals"* | Frames every response through a CS leadership lens
+| *"I manage a team of 6 CSMs"* | Scopes team-level queries to your team correctly
+| *"I prefer tables over charts for trend data"* | Returns tabular output by default
+| *"Keep answers concise — I don't need long explanations"* | Leads with the answer, skips preamble
+| *"Always show me month-over-month, not absolute numbers"* | Applies MoM framing without you specifying each time
+| *"Respond in French"* | Responds in your preferred language
+|===
+
+=== Layer 2 — Data model-specific personal context
+
+Your personal preferences, scoping, and definitions for a specific data model. This layer applie only when you are querying that model.
+
+[options="header"]
+|===
+| What you tell Spotter | How it helps
+|---|---
+| *"When I ask about pipeline, I mean EMEA only"* (GTM model) | Filters pipeline queries to EMEA whenever you are on GTM
+| *"For me, performance means revenue attainment vs. quota"* (GTM model) | Uses your definition, not the default one
+| *"Churn for me means logo churn, enterprise accounts only"* (CS model) | Applies your definition when you are querying CS data
+| *"My accounts are my 30 EMEA enterprise accounts"* (CS model) | Filters correctly whenever you say "my accounts"
+|===
+
+Personal terms can differ across data models. Spotter keeps them separate and applies the right definition based on which Model you are querying.
+
+[options="header"]
+|===
+| Term | Your definition on GTM model | Your definition on CS model
+|---|---|---
+| "Performance" | Revenue attainment vs. quota | Renewal rate and NPS
+| "Churn" | — | Logo churn, enterprise accounts only
+| "Pipeline" | EMEA open opportunities only | —
+|===
+
+**How Spotter fetches personal memory:**
+
+----
+Querying the GTM data model?
+  ✓ Your profile           — always fetched
+  ✓ Your GTM preferences   — fetched because GTM is in scope
+  ✗ Your CS preferences    — not fetched (not in scope)
+----
+
+There is no fixed list of what is worth teaching. If telling Spotter something about yourself would change how you want it to answer, it is worth saving.
+
+
+
+== How to teach Spotter
+
+Teach Spotter through conversation — state what you want it to know, and Spotter saves it with a confirmation.
+
+**What triggers a save:**
+
+- *"Remember I'm Head of CS for EMEA focused on renewals"*
+- *"Always show me tables, not charts"*
+- *"My renewal target is 95%, not the team's 85%"*
+- *"When I say 'my accounts', filter to my EMEA book"*
+
+Vague statements do not trigger a save. *"That looked off"* or *"I want better answers"* are not saved — Spotter requires explicit intent.
+
+**What Spotter confirms:**
+
+When personal memory is saved, Spotter confirms inline:
+
+> **User:** "Always show me results in a table. And remember my region is EMEA."
+>
+> **Spotter:** "Got it — I've saved two things to your personal memory: output format set to table, and your region set to EMEA."
+
+**Teach once, applied in every session after:**
+
+> **Session 1**
+> **User:** "Remember I'm Head of CS for EMEA. My focus is renewals and adoption."
+> **Spotter:** "Got it — saved to your personal memory: role is Head of CS for EMEA, focus areas are renewals and adoption."
+>
+> **Session 2 (new conversation, no re-explanation needed)**
+> **User:** "How are my accounts doing this quarter?"
+> **Spotter:** *(applies EMEA region filter, leads with renewal risk and adoption gaps)* "Here's the picture for your EMEA book this quarter — three accounts are below your renewal threshold and flagged at risk..."
+
+
+== Priority order
+
+When Spotter forms an answer, it weighs multiple layers of context. Personal memory sits in the middle — below hard org rules, above the general data model context.
+
+----
+Explicit in-query instruction    ("show me absolute numbers this time")
+        ↓ overrides
+Spotter instructions             (Org-wide hard rules — always win)
+        ↓
+Personal memory                  (your context frames the answer)
+        ↓
+Shared memory                    (data model context, all users)
+----
+
+Hard guardrails in Spotter instructions always win. No personal preference can override a compliance rule or topic deflection your org admin has configured. For softer preferences — format, tone, scope — Spotter applies your personal memory when instructions do not specify otherwise.
+
+> **Note:** Behavior for soft preference conflicts between Spotter instructions and personal memory is not guaranteed to be consistent in this release.
+
+== What does Spotter know about you?
+
+Ask Spotter directly:
+
+> *"What do you know about me?"*
+
+Spotter summarises all saved personal memory for your account.
+
+To understand why a specific response was personalised:
+
+> *"Why did you filter to EMEA?"*
+
+Spotter explains which saved context it applied for that answer.
+
+== Correcting and deleting personal memory
+
+Both happen through conversation.
+
+**To correct:** State the updated information. Spotter overrides the previous entry and confirms.
+
+> *"My region is now DACH, not EMEA."*
+
+**To delete a specific memory:**
+
+> *"Forget that my region is EMEA."*
+> *"Delete my output format preference."*
+
+**To clear all personal memory:** Available from user settings.
+
+== Enabling personal memory
+
+=== For admins
+
+Personal memory learning is off by default in Early Access. Two steps to enable it for your org.
+
+**Step 1 — Enable memory (if not already on):**
+
+1. Navigate to cluster-level admin settings.
+2. Toggle on **"Memory from Liveboards and conversations"**.
+
+**Step 2 — Enable personal memory for all users:**
+
+1. Navigate to the same admin settings tab.
+2. Toggle on **"Enable personal memory learning for all users"**.
+
+When this second flag is off, end users cannot generate or see personal memories. Users with Manage Memory access can still write shared data model memory from conversation.
+
+For TSE deployments, the personal memory flag is available at the Org level — TSE Org admins can control personal memory independently for their Org.
+
+**What happens when the flag is turned off:**
+
+- No new personal memories can be written by end users.
+- Existing personal memories are preserved — they are not deleted.
+- Re-enabling the flag makes all existing personal memories active again immediately.
+
+=== For users
+
+When personal memory is enabled for your Org, you control your own participation from your profile settings.
+
+Navigate to **Profile settings** > **Personal Memory** toggle.
+
+- **On (default when Org flag is enabled):** Spotter saves personal context from your conversations.
+- **Off:** Your conversations do not generate personal memories. Existing personal memories are preserved but not applied.
+
+== Early Access limitations
+
+- **No memory management UI.** View, correct, and delete personal memories through conversation only. A dedicated personal memory view is planned for a future release.
+- **Active learning only.** Spotter saves personal context when you explicitly teach it. It does not infer preferences from your query patterns passively.
+- **No admin visibility into personal memories.** Admins cannot view the personal memories of individual users in this release.
+- **No import.** There is no mechanism to bulk-import personal context in this release.
+
+//> **⚠️ TODO before publishing:** Confirm the last two limitations with engineering before this page goes live — specifically that (1) admin visibility is still not available in EA, and (2) there is no import or migration path even for advanced users or via API.
+
+== Permissions summary
+
+[options="header"]
+|===
+| Action | Who can do it
+|---|---
+| Enable the master memory flag | Admins only
+| Enable personal memory learning for all users | Admins only
+| Write personal memory from conversation | Any user (when Org admin flag is on)
+| View own personal memory | Any user — ask Spotter: *"What do you know about me?"*
+| Correct or delete own personal memory | Any user, via conversation
+| Turn personal memory off for themselves | Any user (Profile settings toggle)
+| View another user's personal memory | Not available in this release
+|===
