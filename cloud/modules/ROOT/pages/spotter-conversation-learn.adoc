@@ -5,9 +5,11 @@
 :experimental:
 :page-layout: default-cloud-early-access-spotter-3
 :description: Learning from conversation lets coaching users teach Spotter directly during a conversation.
-:jira: SCAL-300551, SCAL-303800, SCAL-306618, SCAL-307520, SCAL-304168
+:jira: SCAL-300551, SCAL-303800, SCAL-306618, SCAL-307520, SCAL-304168, SCAL-320863
 
 Learning from conversations lets coaching users teach Spotter directly during a conversation. When a coaching user defines something or corrects an incorrect answer, that context is saved as a xref:spotter-memory.adoc#rule-recipe[rule] in memory, and applies to future questions on the same data model.
+
+You can upload data to Spotter via CSV upload or connectors, and have Spotter extract memory from these sources.
 
 
 == Enable learning from conversations
@@ -72,6 +74,129 @@ What conversation learning does not write:
 * Single data model per session — if a conversation spans multiple data models, memory is not written across them.
 * No xref:spotter-auto-mode.adoc[auto-mode] — memory writing from conversation is not supported in auto-mode.
 * You should test the question again after telling Spotter to remember a correction.
+
+== Learn from other sources
+
+Your team has likely already documented business definitions, KPI logic, and operational rules somewhere — a metric glossary, a Confluence wiki, a SharePoint handbook. This tab covers how to load that existing knowledge directly into Spotter's memory, rather than re-entering it through conversation one correction at a time.
+
+Two source types are supported: structured files (CSV) and connected knowledge bases (Confluence, SharePoint, Notion, and other connectors).
+
+=== Source type 1 — CSV or structured file
+
+A CSV is the fastest way to bulk-load definitions into memory when you already have a structured list — metric definitions, a business glossary, KPI calculation rules, or column-level business logic.
+
+**What works well as a CSV source:**
+
+- Metric definitions table (metric name → formula → business rules)
+- Business glossary (term → definition → scope/exceptions)
+- Column-level annotations (column name → how to interpret → what to exclude)
+- Filter rules (dimension → valid values → exclusion logic)
+
+**How to do it:**
+
+**Step 1 — Prepare the file**
+
+Structure the CSV with clear column headers. Two-column format (Term, Definition) works well for glossaries. Three-column format (Term, Definition, Scope) works for anything with model-specific rules.
+
+
+**Step 2 — Provide the file to Spotter and ask it to extract**
+
+> *"Here is our metrics glossary [paste CSV content]. Review it and identify all definitions and calculation rules that are relevant to the [data model name] data model."*
+
+> *"Read this table of metric definitions and tell me which ones you can directly apply as memory for this data model, and which ones you'd need clarification on."*
+
+**Step 3 — Verify before saving**
+
+Ask Spotter to repeat back what it intends to save before confirming. A misread definition in memory is harder to fix than a blank slate.
+
+> *"Before saving anything, summarize in plain language the definitions you're about to write to memory. I'll confirm."*
+
+**Step 4 — Confirm the saves**
+
+> *"Those look correct — save all of them to memory for the [data model name] data model."*
+
+> *"Save the first three. Hold off on the fourth — the definition of 'active account' needs checking."*
+
+**Step 5 — Test that it stuck**
+
+Start a new conversation and ask a question that requires one of the definitions you just loaded. If Spotter answers correctly without you restating the context, the memory was saved successfully.
+
+> *"What is our definition of ARR? Walk me through how you would calculate it for this data model."*
+
+If it gets it wrong or hesitates, correct it in conversation and ask it to update its memory.
+
+=== Source type 2 — Connected knowledge bases
+
+If your team documents business context in Confluence, SharePoint, Notion, or another connected tool, you can point Spotter directly at those pages and ask it to extract and save what's relevant — without copying anything manually.
+
+**Supported connectors:**
+
+[options="header"]
+|===
+| Source | Good for
+|---|---
+| Confluence | Team wikis, metric definitions, runbooks, release notes
+| SharePoint | Company docs, operational procedures, business glossaries
+| Notion | Product specs, team handbooks, definitions databases
+| Other connectors | Any source connected via the ThoughtSpot connector framework
+|===
+
+=== Admin setup
+
+Connected sources require a one-time admin setup before any user can reference them in Spotter conversations.
+
+1. Go to **Admin Panel > Integrations > Connectors**.
+2. Add your source (Confluence, SharePoint, Notion, etc.).
+3. Authenticate and configure access scope.
+
+Once set up, every user on the org can reference those sources in Spotter conversations. Connectors respect source-level permissions — Spotter can only read pages the authenticated user has access to.
+
+=== How to learn from a connected source
+
+**Step 1 — Reference the page in conversation**
+
+You can reference a connected page by name, by URL, or by topic — Spotter will locate and retrieve it.
+
+> *"Read our Confluence page called 'Revenue Metric Definitions' and tell me what it says about ARR."*
+
+> *"Search Confluence for our definition of 'active accounts' and summarize how we calculate it."*
+
+> *"Read this page: [paste URL]. Extract any definitions or rules relevant to how we measure pipeline health."*
+
+**Step 2 — Ask Spotter to identify what's relevant**
+
+> *"Read our 'Sales Metrics Handbook' in Confluence. Identify any definitions or calculation rules relevant to the [data model name] data model. Tell me what you found before saving anything."*
+
+**Step 3 — Verify before saving**
+
+> *"Before you save, repeat back the definitions you're about to write to memory. Confirm the extracted definition matches what the source page says."*
+
+> **Verify before saving.** Ask Spotter to summarize what it's about to write before confirming. External docs sometimes contain outdated language, edge-case caveats, or team-specific shorthand that reads differently in isolation. A quick review here prevents bad definitions from getting into memory.
+
+**Step 4 — Confirm the saves**
+
+> *"Save the definition of ARR, the denominator logic for Spotter adoption, and the active account filter to memory for this data model."*
+
+**Step 5 — Test that it stuck**
+
+Start a new conversation and ask a question that requires the definition it just learned.
+
+> *"What is our definition of ARR? Walk me through how you would calculate it."*
+
+=== What to expect from Spotter
+
+[options="header"]
+|===
+| Scenario | What Spotter does | What you should do
+|---|---|---
+| Page or file is long with lots of content | Reads the full source but surfaces only sections it considers relevant to your question | Be specific in your prompt — name the section or metric you want it to focus on
+| Content is ambiguous or conflicts with existing memory | Surfaces the conflict and asks for clarification before saving | Give it the authoritative version and ask it to overwrite the conflicting memory
+| Page not found or access denied | Tells you it cannot access the page | Check the connector is set up, the page name is correct, and you have access in the source system
+| Content is outdated relative to actual practice | Saves what the source says — it cannot know what's stale | Review extracted content before saving; correct outdated definitions in the same conversation
+| CSV has ambiguous or conflicting rows | Flags the ambiguity and asks which definition to use | Clarify in conversation, then confirm the save
+|===
+
+> **Combine with Liveboard learning:** Use external sources to load your *definitions* — ARR formula, active account filter, revenue exclusions. Then use a Liveboard to teach Spotter how those definitions map to actual query patterns and chart structures in ThoughtSpot. The two approaches complement each other: sources give Spotter the business logic, Liveboards show it how that logic appears in your data.
 
 == Permissions
 
