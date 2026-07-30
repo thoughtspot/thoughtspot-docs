@@ -1,9 +1,10 @@
 = Identity and Access Management V2
-:page-last_updated: 8/4/2022
+:page-last_updated: July 30, 2026
 :linkattrs:
 :experimental:
 :description: Understand ThoughtSpot's industry-standard cloud authentication method through Okta.
-:jira: SCAL-252573
+:jira: SCAL-252573, SCAL-322500
+
 
 ThoughtSpot supports an industry-standard cloud authentication method through Okta. With this feature, ThoughtSpot powers its internal authentication with Okta, which is the industry-leading authentication platform. The change to Okta is internal and has no impact on customers. After ThoughtSpot enables this feature by default, all user authentication will automatically use the internal Okta service. This feature set involves several external improvements to authentication, including security enhancements.
 
@@ -38,6 +39,24 @@ To set up your ThoughtSpot environment for IAM V2, complete the following  proce
 To set up your ThoughtSpot environment for IAM V2, complete the following  procedures.
 
 NOTE: In keeping with IAM best practices, and due to user workflows for self-serve password resets, email addresses are mandatory for all users on TS cloud clusters for successful IAMv2 migration.
+
+=== Usernames must not contain whitespace
+
+IAM V2 does not support SSO usernames that contain whitespace characters.
+When ThoughtSpot migrates your cluster to IAM V2, the internal Okta service validates all user identifiers.
+If a SSO `username` contains a space — for example, because the SAML identity provider (IdP) is configured to send a user's full name instead of their email address — IAM V2 rejects the login with the following error:
+
+----
+Transformed userId contained whitespace: '<username>'
+----
+
+This is a breaking change.
+SSO usernames that contain spaces work in the legacy IAM system but fail after migration to IAM V2.
+
+Audit all usernames in your ThoughtSpot environment and confirm that no username contains a space.
+Specifically, SAML SSO users whose IdP attribute mapping sends a display name or full name as the login identifier.
+
+To identify affected users, check the username values in *Admin* > *Users* and confirm that every username is in a valid format, such as an email address with no spaces. You can also modify user properties by sending a request to the `POST /api/rest/2.0/users/{user_identifier}/update` API.
 
 === Allowlist URLs
 
