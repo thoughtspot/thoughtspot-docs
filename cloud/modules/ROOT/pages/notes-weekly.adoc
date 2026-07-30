@@ -52,6 +52,39 @@
 
 The following release notes cover weekly changes to the ThoughtSpot Cloud release. These enhancements and fixes are automatically deployed to customer instances. For the latest monthly release notes see the xref:notes.adoc[{version} release notes].
 
+[#july-27-2026]
+== July 27, 2026
+=== REST APIs
+[cols="10%,90%a", grid=none, frame=none]
+|====================
+|[.badge.badge-fix-relnotes]#Fix#|In embedded ThoughtSpot applications using `AppEmbed`, the Favorites and Trending homepage tiles displayed an incorrect or transparent background color after upgrading to 26.6.0.cl. This issue is resolved. Favorites and Trending tile backgrounds and title colors now render correctly in embedded applications without requiring custom CSS overrides.
+|====================
+
+[cols="10%,90%a", grid=none, frame=none]
+|====================
+|[.badge.badge-fix-relnotes]#Fix#|When using the `persist_option: REPLACE` parameter in the trusted authentication token API (`/auth/token/custom`), a variable could enter a state where it simultaneously held a specific value and `TS_WILDCARD_ALL`. In this state, subsequent `REPLACE` operations failed to clear the wildcard, leaving the variable in an invalid mixed state. This issue is resolved. The `Replace` operation now correctly clears all existing variable values, including `TS_WILDCARD_ALL`, before applying the new values.
+|====================
+
+[cols="10%,90%a", grid=none, frame=none]
+|====================
+|[.badge.badge-fix-relnotes]#Fix#|When downloading a Liveboard containing a Pivot table as an XLSX file, the exported file showed incorrect values for the grand total row and percentage-based subtotal columns. Percentage columns were summed rather than properly aggregated, and the date at the top of the export was inaccurate. The issue was specific to Liveboard XLSX downloads — exporting the same visualization directly as an Answer produced correct values. This issue is resolved. Grand totals and percentage subtotals in Pivot table Liveboard XLSX exports now reflect correct aggregated values.
+|====================
+
+[cols="10%,90%a", grid=none, frame=none]
+|====================
+|[.badge.badge-fix-relnotes]#Fix#|When downloading a Pivot table from a Liveboard as an XLSX file, two formatting issues occurred in the exported file: certain columns rendered with merged cells, and numeric string values with leading zeros — such as dealer codes formatted as `00089` — were converted to plain integers, stripping the leading zeros. Both values appeared correctly in the Liveboard visualization. This issue is resolved. Pivot table XLSX exports now preserve cell boundaries and retain leading zeros in numeric string values.
+|====================
+
+[cols="10%,90%a", grid=none, frame=none]
+|====================
+|[.badge.badge-fix-relnotes]#Fix#|In multi-org ThoughtSpot deployments, the Variables administration page failed to load and returned a 500 error. This issue is resolved. The Variables page now loads correctly in all multi-org environments.
+|====================
+
+[cols="10%,90%a", grid=none, frame=none]
+|====================
+|[.badge.badge-fix-relnotes]#Fix#|In multi-org ThoughtSpot deployments, users could be locked out of the platform after switching orgs. This occurred when the session store contained org IDs that were no longer present in the user's actual org membership — causing a 500 error on page reload and invalidating the session. This issue is resolved. The org-switching flow now validates org membership before committing the session, preventing phantom org entries from locking out users.
+|====================
+
 [#july-20-2026]
 == July 20, 2026
 [cols="10%,90%a", grid=none, frame=none]
