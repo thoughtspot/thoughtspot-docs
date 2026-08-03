@@ -5,7 +5,7 @@
 :experimental:
 :page-layout: default-cloud-spotter-3
 :description: In addition to bringing Spotter into other platforms, you can now integrate connectors to Spotter to make connections to wherever your data is stored.
-:jira: SCAL-287506, SCAL-301858, SCAL-297359, SCAL-309104, SCAL-312267, SCAL-307870
+:jira: SCAL-287506, SCAL-301858, SCAL-297359, SCAL-309104, SCAL-312267, SCAL-307870, SCAL-307665
 
 In addition to bringing Spotter into other platforms, you can now integrate connectors to Spotter to make connections to wherever your data is stored. This allows you to do things like search Confluence or Snowflake for unstructured data to add to your analysis, or send direct messages from Spotter to Slack with your data. By connecting your third-party ecosystem (Slack, Jira, Confluence, Snowflake, Glean) directly to ThoughtSpot, you can transition from insight to execution without needing to switch tabs.
 
@@ -63,6 +63,7 @@ NOTE: Spotter as an MCP host is only available with Spotter 3 and must be enable
 
 NOTE: When adding a custom connector and using the OAuth authentication method, you must whitelist ThoughtSpot’s callback URL: https://oauth.thoughtspot.app/callback.
 
+[#test]
 == Test your connection
 
 You can now validate that your MCP connectors are connecting and functioning, from the Spotter AI settings panel. If the connection fails, you see a detailed error showing what needs to be done to fix the connection.
@@ -94,6 +95,30 @@ image::connection-test-successful.png[Successful connection]
 . Any error that appears in the process of testing a connection displays at which step the verification failed, and offers additional steps you can take to resolve the issue, like reaching out to the MCP server owner.
 
 . Once the connection is successful, click *Save*.
+
+[#manage]
+== Manage tool permissions
+
+You can now edit tool call permissions individually when you set up a Spotter connector. Although the default is that read-only tools are enabled for all users, and write/delete tools and interactive tools require user approval, you can individually change the needed permissions for each tool.
+
+To edit tool permissions:
+
+. Navigate to *Admin settings* > *ThoughtSpot AI*. Scroll to the *Spotter Connectors* section and click *Edit*.
+
+. Scroll to the desired connector, select the *More* icon image:icon-more-10px.png[icon] and click *Manage Permissions*.
+
+. The Spotter tool permissions window appears.
++
+[.bordered]
+image::spotter-tool-permissions.png[]
+
+. Each section is divided by the functionality of the tools, whether they are read-only, write/delete, or interactive. You can click the dropdown above an entire section to categorize all tools together, as `Always allow`, `Needs user approval`, or `Always deny`.
+
+. You can also click the toggle next to a particular tool to specifically mark it as
+allowed (checkmark), custom (key), or blocked (prohibited symbol). Tools marked as "custom" require user permission in conversation before the tool will work. Tools that are blocked cannot be accessed, although Spotter will tell you in conversation that they are prohibited by the connector's configuration.
+
+. Click *Save* once you're happy with your selections.
+
 
 == Authentication methods
 
