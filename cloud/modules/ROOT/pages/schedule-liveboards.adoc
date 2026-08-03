@@ -86,14 +86,17 @@ You can download more than 1M rows for an Answer *only* in CSV format. This is b
 * Columns limit: 16,384
 ====
 
-The size of each email is limited to 22 MB, which matches most email services size limitations.
+== Limitations
 
-The total number of recipients for a scheduled Liveboard job cannot exceed the default of 1000.
+* The size of each email is limited to 22 MB, which matches most email services size limitations.
 
-Liveboard schedule pdf/csv/xlsx sent via emails is stored in the cluster until either of the following conditions are met:
+* The total number of recipients for a scheduled Liveboard job cannot exceed the default of 1000.
 
-* The cluster is restarted.
-* When there is another scheduled run for a Liveboard, all pdfs older than 24 hrs for that Liveboard are cleared.
+* Liveboard schedule pdf/csv/xlsx sent via emails is stored in the cluster until either of the following conditions are met:
+** The cluster is restarted.
+** When there is another scheduled run for a Liveboard, all pdfs older than 24 hrs for that Liveboard are cleared.
+
+* If a Liveboard contains visualizations from an OAuth connection, and the user is not logged in to OAuth at the time of scheduling, the schedule will still run. However, the affected visuals will display an error message in the exported PDF. This is expected behaviour. The schedule status is reported as successful, but individual visuals that depend on OAuth will error out if the user is not authenticated. The exported file will contain the error message in place of the visual.
 
 
 '''
