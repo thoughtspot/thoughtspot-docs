@@ -1,0 +1,73 @@
+= Column security rules
+:page-last_updated: Jul 21, 2026
+:linkattrs:
+:experimental:
+:description: In this article, you learn how column security rules work.
+:jira: SCAL-301699
+
+[.lead]
+Column security rules (CSR) let you protect specific columns in a table and control which groups can access them. Unlike the existing column-level security model, CSR decouples security from sharing — you can share a table broadly while still restricting access to sensitive columns.
+
+
+When you mark a column as protected, only users who belong to a group that has been explicitly granted access to that column can see it. All other users who have access to the table will see the remaining columns, but not the protected one.
+
+For example, if a table has three columns — `name`, `department`, and `salary` — and you mark `salary` as protected:
+
+* Users in the HR group (granted access to `salary`) can see all three columns
+* All other users who have table access can see `name` and `department` only
+* No one loses access to the table itself — only the protected column is restricted
+
+[NOTE]
+====
+A protected column with no groups assigned is inaccessible to everyone except the table owner and administrators. Assign at least one group to make the column accessible to other users.
+====
+
+== How CSR differs from column-level security
+
+ThoughtSpot's existing column-level security (CLS) ties sharing and security together — restricting a column requires you to individually share every other column *on the same table* with every user or group. This works but becomes difficult to manage at scale.
+
+Column security rules take a different approach:
+
+[cols="1,1,1"]
+|===
+|  | Column-level security (CLS) | Column security rules (CSR)
+
+| How it works
+| Mark columns as protected and share other columns explicitly.
+| Mark columns as protected and assign groups to protected columns.
+
+| Sharing required
+| Table sharing is not required for business users. This is because they will use the Model. Table sharing is only required with COLUMN LEVEL SHARING because of the Strict Object Mode setting. This is not required for CSR. Table sharing is only required for those users that will manage these tables. That is, Data Analysts.
+| Table sharing is only required for business users if both Column Level Sharing and Column Security Rules is enabled. This is only required for those clients that are migrating to CSR.
+
+| Default if no rule is set
+| Column is accessible if the table is shared.
+| Protected column is inaccessible to all users except the owner and admins.
+
+| Where rules are managed
+| Column sharing panel.
+| Manage access panel on the table.
+|===
+
+CLS and CSR coexist — enabling CSR does not remove or replace your existing CLS configuration.
+
+== Column protection in worksheets and models
+
+When you mark a base table column as protected, that protection is automatically inherited by any worksheet, model, or view column that is derived from it. You do not need to configure CSR separately on derived objects.
+
+For formula columns, if any of the underlying base columns is protected, the formula column is also marked as protected.
+
+[NOTE]
+====
+The Model will show a read-only representation of CSR rules that have been inherited from the tables.
+====
+
+== Who can manage column security rules
+
+Only table owners and administrators can create, edit, or delete column security rules on a table. Users with view-only access to the table cannot modify its security rules.
+
+== Limitations
+
+* Column security rules apply to groups only — you cannot create a rule for an individual user
+* CSR rules cannot be set directly on worksheet, model, or view columns — only on base table columns
+* CSR does not apply to published objects in non-primary orgs

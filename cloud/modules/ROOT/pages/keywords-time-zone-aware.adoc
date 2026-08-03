@@ -1,0 +1,181 @@
+= Timezone-aware keywords and filters
+:page-last_updated: 11/19/2019
+:linkattrs:
+:experimental:
+:description: Use keywords to help define a search.
+:jira: SCAL-199692, SCAL-310739
+:description: Configure timezone preferences for users and Orgs so that date and time keywords resolve correctly for users in different regions.
+
+ThoughtSpot allows administrators to configure a preferred timezone for individual users, for an Org, or for both. When configured, ThoughtSpot uses this timezone preference when resolving date and time keywords in search queries, Spotter conversations, and Liveboard filters.
+
+NOTE: To enable timezone-aware filtering for your ThoughtSpot instance, contact {support-url}.
+
+== Overview
+
+Date and time keywords such as `today`, `yesterday`, `last 7 days`, and `month-to-date` tell ThoughtSpot which time period to include in a query. By default, ThoughtSpot resolves these keywords using the timezone of your ThoughtSpot instance — not the timezone of the person asking the question.
+
+For teams with users in multiple regions, this can produce unexpected results. For example, a user in New York and a user in Singapore may both search for `today's sales`, but because they are in different timezones, they might expect different date ranges. Without timezone awareness, both users see results based on the same instance-level timezone, which may not match either user's local time.
+
+The timezone awareness feature resolves this by letting administrators assign a timezone to each Org or individual user. When a user runs a search or opens a Liveboard, ThoughtSpot automatically applies the correct timezone for that user.
+
+With timezone-aware filtering, your organization can:
+
+* Set a default timezone for an entire Org, so all users in that Org see date keyword results in their region's local time.
+* Override the timezone for individual users without affecting anyone else in the Org.
+* Apply timezone-aware filtering consistently across Search Data, Spotter, Liveboards, scheduled jobs, KPI Alerts, and SpotIQ analysis.
+
+== How ThoughtSpot resolves timezones
+
+When a user runs a search or opens a Liveboard, ThoughtSpot checks for a timezone preference in the following order:
+
+[cols="1,3", options="header"]
+|===
+| Timezone scope | Description
+
+| User-level timezone
+| An individual override set for a specific user. This takes the highest priority and overrides both the Org default and the system default.
+
+| Org-level timezone
+| A default timezone set for all users in the Org. Applies when no user-level override is configured. Overrides the system default.
+
+| Default instance timezone
+| The platform default. ThoughtSpot uses this timezone when no user or Org preference has been configured.
+|===
+
+ThoughtSpot evaluates this order automatically every time a user runs a query or loads a Liveboard, and applies the resolved timezone to all relative date calculations.
+
+=== Where timezone-aware filtering applies
+
+When timezone awareness is enabled, the configured timezone is applied in the following ThoughtSpot interfaces:
+
+* Search Data
+* Spotter
+* Charts and Liveboards
+* Liveboard filters
+* Liveboard schedules
+* KPI alerts
+* SpotIQ
+
+== Configuring timezones
+
+Timezone preferences are managed by administrators using the ThoughtSpot REST API. The built-in system variable `ts_user_timezone` controls the timezone setting for users and Orgs.
+
+To configure timezone preferences, an administrator must have the `ADMINISTRATION` privilege and the `CAN_MANAGE_VARIABLES` role privilege.
+
+For more detail on Time zon
+
+=== Valid timezone values
+
+Timezone values must use link:https://www.iana.org/time-zones[IANA timezone strings^]. Common examples include:
+
+* `America/New_York`
+* `Asia/Kolkata`
+* `Europe/London`
+* `America/Chicago`
+* `Asia/Singapore`
+
+[IMPORTANT]
+====
+UTC offset strings such as `UTC+5:30` or `GMT-8` are not supported. Always use the IANA timezone string format.
+====
+
+=== Supported calendar types
+
+Timezone configuration works with all calendar types in ThoughtSpot, including standard (Gregorian), fiscal, and custom calendars.
+
+=== Supported column types
+
+Timezone preferences apply only to columns with the `DATE` or `DATE_TIME` data type.
+
+=== Setting the timezone for an Org
+
+To set a default timezone for an Org, an administrator uses the `/api/rest/2.0/template/variables/ts_user_timezone/update-values` REST API endpoint, specifying the Org name or ID and the IANA timezone string.
+
+Once set, all users in that Org will have their date and time keywords resolved using the Org's configured timezone, unless they have a personal override.
+
+=== Setting the timezone for an individual user
+
+To override the timezone for a specific user, an administrator uses the same API endpoint and specifies the user's ID along with the desired IANA timezone string. The user-level override takes priority over the Org default.
+
+=== Verifying the timezone configuration
+
+After configuring timezone preferences, administrators can verify the values using the `/api/rest/2.0/template/variables/search` API endpoint. The response shows the timezone values configured for each Org and user.
+
+To verify that the configuration is working correctly:
+
+* Run a search query using a relative date keyword such as `today` or `last 7 days` and confirm the results reflect the expected time period for the configured timezone.
+* If your instance has multiple Orgs with different timezones configured, switch to another Org, run the same query, and verify that the results reflect the Org's timezone.
+* Confirm that a user-level timezone override produces different results than the Org default when querying the same date keywords.
+* Check Liveboard scheduled jobs. Timezone changes apply only to upcoming scheduled executions — previously scheduled jobs are not affected.
+
+== Using timezone-aware formulas in data models
+
+[NOTE]
+====
+This section is relevant to users who have edit access to data models in ThoughtSpot and work with passthrough formulas. If you are an analyst who only queries data, no action is required on your part — timezone resolution is automatic when an administrator has configured `ts_user_timezone` for your Org or user.
+====
+
+If your cloud data warehouse stores timestamps in UTC or a different timezone than your users, the data model may need a passthrough formula to convert timestamp values to the correct timezone before ThoughtSpot applies keyword filters.
+
+=== Using the timezone variable in formulas
+
+When `ts_user_timezone` is configured for an Org or user, you can reference it directly in a passthrough formula. ThoughtSpot will automatically substitute the correct IANA timezone string for each user at query time, without requiring any hardcoded values in the formula.
+
+Example formula syntax:
+
+[source]
+----
+sql_date_time_op("CONVERT_TIMEZONE('UTC', {0}, {1})", ts_var(ts_user_timezone), [<your_datetime_column>])
+----
+
+In this formula:
+
+* `sql_date_time_op` is the ThoughtSpot passthrough function for date and datetime operations.
+* `CONVERT_TIMEZONE` is the timezone conversion function in your data warehouse. The exact function name may differ depending on your warehouse — for example, `CONVERT_TZ` in MySQL.
+* `UTC` is the source timezone — the original timezone in which your timestamps are stored.
+* `ts_var(ts_user_timezone)` is the dynamic timezone variable. At query time, ThoughtSpot replaces this with the IANA timezone string configured for that user or Org.
+* `[<your_datetime_column>]` is the date or datetime column you want to apply the conversion to.
+
+For example, if a user has `ts_user_timezone` set to `America/New_York`, the formula resolves to:
+
+[source]
+----
+CONVERT_TIMEZONE('UTC', 'America/New_York', "<your_datetime_column>")
+----
+
+If another user has `ts_user_timezone` set to `Asia/Kolkata`, the same formula resolves to:
+
+[source]
+----
+CONVERT_TIMEZONE('UTC', 'Asia/Kolkata', "<your_datetime_column>")
+----
+
+Using `ts_var(ts_user_timezone)` means the formula automatically adapts to each user's configured timezone without requiring a separate formula per region.
+
+=== Using hardcoded timezone values (legacy)
+
+In ThoughtSpot Cloud 26.5.0.cl and earlier, timezone values had to be hardcoded directly in the passthrough formula. For example:
+
+[source]
+----
+sql_date_time_op("CONVERT_TIMEZONE('UTC', {0}, {1})", 'Asia/Kolkata', [<your_datetime_column>])
+----
+
+In this approach, the timezone string — for example, `Asia/Kolkata` — is fixed in the formula and does not change based on who is querying the data. All users querying that column see results converted to the same hardcoded timezone.
+
+If your data model uses hardcoded timezone values and you want to take advantage of per-user or per-Org timezone configuration, update your passthrough formula to use `ts_var(ts_user_timezone)` instead.
+
+== Daylight Saving Time (DST) Limitation for non-UTC instances
+
+During Daylight Saving Time (DST) transitions, queries using `Last X Hours` or `Next X Hours` filters on datetime columns may fail if the selected time range crosses a DST boundary. Starting in the 26.8.0.cl release, ThoughtSpot displays a generic query error in these cases.
+
+*Workaround*: Modify the relative hour filter (for example, change Last 24 Hours to Last 23 Hours or Last 25 Hours) or use an equivalent date-based filter where applicable.
+
+As a result of this limitation, We strongly suggest you set your instance timezone to UTC.
+
+
+== Additional resources
+
+* xref:formula-reference.adoc#passthrough-functions[Formula function reference] — learn more about passthrough functions in ThoughtSpot.
+* link:https://www.iana.org/time-zones[IANA Timezone Database^] — find the correct IANA timezone string for your region.
+* For information about the Variable API, see the REST API Playground in your ThoughtSpot instance.

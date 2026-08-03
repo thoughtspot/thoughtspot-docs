@@ -1,0 +1,161 @@
+= Semantic layer
+:page-last_updated: June 1, 2026
+:linkattrs:
+:experimental:
+:author: Naomi, Mark
+:description:
+:jira: SCAL-305564
+
+AI has made asking a question easier than ever. You type in natural language, and within seconds, a chart appears. But there's a deceptively hard problem hiding behind that process: _the AI might be answering the wrong question_.
+
+Not because it misheard you. Because it doesn't *know* your business.
+
+When a sales manager asks *"What's our revenue this quarter?"*, the answer depends on decisions that live nowhere in a database schema:
+
+- Which revenue definition does Finance use?
+- Does "this quarter" follow the fiscal calendar or the calendar year?
+- Should this include refunds? Pending deals? Specific regions?
+
+Without a shared understanding of those rules, an AI agent does what large language models always do when faced with ambiguity — it guesses based on probability. Sometimes it guesses right. Often, it doesn't. And when two people ask similar questions and get different answers, trust in agentic analytics collapses entirely.
+
+This is the core problem that **Spotter semantics**, **ThoughtSpot's agentic semantic layer**, is designed to solve.
+
+== What is a semantic layer?
+
+A **semantic layer** is a structured translation layer that sits between your raw data and the systems that query it. Its job is to encode *business meaning* — turning cryptic column names like `rev_adj` or `cust_acq_dt` into governed, agreed-upon definitions like *"Finance-approved net revenue, excluding refunds"* or *"Customer first purchase date."*
+
+Note that even before the widespread adoption of AI, ThoughtSpot has supported a semantic layer in order to translate your raw data into easily understandable tables and Models. Our Models are not just designed for human consumption, they’re augmented with AI context and instructions to make the data more digestible by AI. As AI became the interface for analytics, we're doubling down on making our semantic layer the definitive source of truth that AI can reason over with confidence.
+
+Traditional semantic layers were designed for **dashboards**. Tools like Looker or Power BI used them to ensure that every chart in a report pulled from the same metric definition. That worked well when analysts explored curated views along known, predictable paths.
+
+But **AI agents operate differently.** They support dynamic, open-ended conversations — users refine questions, pivot across data domains, and ask follow-ups that were never anticipated when the model was built. Static, dashboard-first semantic architectures simply can't keep up.
+
+
+
+== ThoughtSpot's answer: Spotter semantics
+
+Spotter Semantics encodes your company's data in a form that both **humans can verify** and **AI agents can leverage**, bridging the gap between raw warehouse tables and trusted business answers.
+
+Formally defined: **Spotter Semantics is ThoughtSpot's governed, AI-native semantic foundation — enabling agentic AI to translate natural-language intent into queries grounded in approved business definitions.**
+
+[.bordered]
+image::spotter-semantics-diagram.png[Diagram of Spotter semantics]
+
+
+== The three pillars of Spotter semantics
+
+=== 1.  Human-verified definitions
+
+The semantic model is not built by AI guessing your business logic. It is **defined and verified by humans**, capturing tacit knowledge — the kind that lives in spreadsheets, email threads, and the heads of your most senior analysts — and encoding it formally.
+
+ThoughtSpot's **token-based approach** makes this practical. Verifying a definition doesn't require writing or reviewing SQL. Business users and data stewards can crowdsource definitions in plain language, without needing to understand the underlying database structure. This turns governance from an onerous upfront project into a living, evolving practice.
+
+=== 2.  Built for agents
+
+Most metadata systems were built for BI tools, not AI. Spotter semantics is different: the semantic model is stored in a **format that AI agents can directly leverage**, giving them the full context they need to resolve user intent correctly.
+
+When Spotter receives a natural language question, it doesn't just pattern-match against column names. It consults a structured representation of your business — metric definitions, join logic, fiscal calendars, row-level security rules, AI context — and uses that context to generate an answer that is grounded, not guessed.
+
+
+
+=== 3.  Deterministic query generation
+
+This is ThoughtSpot's most technically distinctive capability. Rather than letting an LLM hallucinate SQL, ThoughtSpot uses **proprietary, database-specific query generation** to ensure every answer is:
+
+[options=”header”]
+|===
+| Guarantee | What it means
+|---|---
+| **Row & column-level security** | Users only ever see data they're authorized to see — no bypasses.
+| **Applied modeling semantics** | Join logic, filters, and aggregations are enforced, not assumed.
+| **Galaxy & multi-star schemas** | Handles complex, multi-table enterprise data models correctly.
+| **Codified business metrics** | Revenue, churn, ARR — defined once, applied consistently everywhere.
+|===
+
+The result: *agents can interpret intent probabilistically and return deterministic results.* The question is flexible; the answer is rigorous.
+
+
+
+== What makes ThoughtSpot special?
+
+Other AI analytics tools translate your question into SQL and hope for the best. ThoughtSpot takes a fundamentally different architecture:
+
+[options=”header”]
+|===
+| Capability | Generic AI analytics | ThoughtSpot Spotter semantics
+|---|---|---
+| **Metric definitions** | Inferred from column names | Human-verified, governed
+| **Business logic** | Probabilistic (LLM guesses) | Deterministic (encoded rules)
+| **Security** | Ad hoc | Row and column-level, always enforced
+| **Agent readiness** | Dashboard-first, retrofitted | Native, agent-first architecture
+| **Crowdsourcing** | No | Yes — token-based, no SQL required
+| **Schema complexity** | Single tables, simple joins | Galaxy schemas, multi-star models
+|===
+
+The agentic semantic layer is not a feature bolted onto ThoughtSpot — **it is the architecture**. It acts as the "digital definition of the business itself," making every AI interaction grounded in approved, consistent, governed knowledge.
+
+
+
+== Real-world use cases
+
+===  For the business user: instant trusted answers
+
+**Scenario:** Maria is a regional VP of Sales preparing for a board meeting. She opens Spotter and asks: *"What's our Q1 pipeline coverage by segment compared to last year?"*
+
+Without a semantic layer, the AI would pick whichever column looks most like "pipeline" and apply whatever date logic seems reasonable. Maria might receive an answer — but she wouldn't know if it matched the definition her CFO uses.
+
+With Spotter semantics, the query is automatically grounded in Finance-approved pipeline definitions, the company's fiscal Q1 dates, and Maria's regional data access permissions. She gets a reliable, board-ready answer in seconds — no analyst in the loop required, no second-guessing the numbers.
+
+
+
+=== For the analyst: governed self-service at scale
+
+**Scenario:** James is a senior data analyst at a retail company. His team is constantly fielding ad-hoc requests: *"What's the return rate for our new product line?"* or *"Which stores had the highest basket size last month?"* Each request takes hours to translate into a correct, governed query.
+
+With ThoughtSpot's semantic model, James can encode the official definitions once — `return rate = orders with a return flag / total orders, excluding cancelled orders` — and expose them as governed, searchable metrics. You can define this context in your queries, as well as adding it to your Models before searching. Non-technical users can ask these questions themselves through Spotter without writing SQL.
+
+James's team now focuses on *expanding* the semantic model and tackling higher-order analysis, rather than acting as a query translation service. The crowdsourcing model means subject-matter experts across the business can contribute definitions, with James's team playing a validation and governance role.
+
+=== For the admin: security that can't be bypassed
+
+**Scenario:** Priya is a data platform admin at a healthcare company. Her biggest anxiety is simple: *what happens when an AI agent generates a query and returns data the user shouldn't see?*
+
+With generic AI analytics tools, this is a real risk — the LLM generates SQL, and if the security rules aren't embedded in the query itself, a user could receive rows they're not authorized to access.
+
+ThoughtSpot's deterministic query generation applies **row-level and column-level security as part of the query construction process** — not as a post-processing filter. It's architecturally impossible for a user to receive data outside their permission scope, regardless of how they phrase their question. Priya can roll out AI analytics to the entire organization with confidence, knowing governance is enforced at the Model layer, not just the UI layer.
+
+== Why the semantic layer is no longer optional
+
+The shift from passive dashboards to autonomous AI agents has changed the stakes. Executives want systems that can act on data, not just display it. Product managers are embedding analytics directly into applications. Data teams are expected to support all of it at enterprise scale.
+
+None of that is achievable if your AI is guessing at what your data means.
+
+As ThoughtSpot puts it, the semantic layer is more than just a translation layer for raw data — *"it is a digital definition of the business itself."* And in an agentic world, a business without a governed semantic foundation is a business whose AI can't be trusted.
+
+Spotter semantics is ThoughtSpot's answer to that challenge: a human-verified, agent-native, deterministically governed layer that turns natural language questions into answers you can stake a decision on.
+
+== Building a semantic model
+
+Building a semantic model in ThoughtSpot is easier than ever– you can use xref:spotter-model.adoc[SpotterModel] to automate the creation and join definitions of your Model, fitting it to the use case you describe. If you create a semantic model in an external tool, such as xref:snowflake-semantic-integration.adoc[Snowflake] or xref:dbt-metricflow-integration.adoc[dbt using MetricFlow], ThoughtSpot supports importation so you don’t have to re-create your model.
+
+== Semantics glossary
+
+Metadata:: Metadata refers to the building blocks and properties of data, which are part of the context that semantics draw from. Metadata that helps provide context to data for AI agents can be seen as semantics. The metadata is the “what”, semantics are the “why” and “how”.
+
+Semantics:: Semantics refers to the _meaning_ of data — not just its structure or syntax, but what it actually represents in a business context. This context translates data for the AI system, and without it, the system can only take meaning from statistical patterns.
+
+Semantic layer:: The semantic layer is the architectural component that sits between the place your data is stored (warehouses, lakehouses) and the tools the AI uses to query them. ThoughtSpot has supported a semantic layer that helped translate data for our analytical tools from the beginning, it has simply been optimized for AI analytics.
+
+Semantic models:: Semantic models are representations of how raw data maps to approved business definitions, logic, and rules. They translate the physical schema (tables, views, joins) and the conceptual language of your business data (metrics, KPIs).
+
+
+Spotter semantics:: Spotter semantics are ThoughtSpot's governed, AI-native semantic foundation — the specific implementation of the semantic layer that powers Spotter, ThoughtSpot's agentic AI. It enables Spotter to translate natural-language questions into queries grounded in approved definitions.
+
+
+'''
+> **Related information**
+>
+> * link:https://www.thoughtspot.com/data-trends/agentic-semantic-layer[What is an Agentic Semantic Layer? — ThoughtSpot]
+> * link:https://www.thoughtspot.com/blog/spotter-semantics[Spotter Semantics — ThoughtSpot's Rosetta Stone for Agentic AI]
+> * xref:snowflake-semantic-integration.adoc[]
+> * xref:dbt-metricflow-integration.adoc[]

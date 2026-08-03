@@ -1,0 +1,112 @@
+= Memory permissions and governance
+:page-last_updated: Jul 28, 2025
+:author: Naomi
+:linkattrs:
+:experimental:
+:description: Spotter Memory has several permission levels that determine who can build, manage, and use memory
+:jira: SCAL-320863
+
+Spotter memory has several permission levels that determine who can build, manage, and use memory. This page is the single reference for the complete permission model — what each level can do, which admin controls exist, and how security policies interact with memory.
+
+== Permission levels
+
+[options="header"]
+|===
+| Permission | How it's granted | What it allows
+|---|---|---
+| **Admin** | ThoughtSpot admin account | Enable or disable all memory features; access all memory downloads; delete any memory source; manage Spotter instructions; assign Can manage Spotter to users.
+| **Can manage Spotter** | Privilege assigned by an admin (via role in RBAC clusters, or user group otherwise) | Manage memory and data model instructions across all data models the user can read; manage Spotter instructions Org-wide; manage all Spotter Analysts in the Org; delegate memory access to other users. Does not grant data model edit access. Implies Can use Spotter.
+| **Manage Memory access** | Granted per data model by an admin or Can manage Spotter holder | Add Liveboards as memory sources; write shared memory from conversations; add data model instructions — scoped to the granted data model only.
+| **Data model edit access** | Granted per data model | Same as Manage Memory access for all memory purposes.
+| **Any user** | Default — all Spotter users | Write personal memory from conversations; view memory that applies to their queries; add and edit reference questions and business terms (legacy features).
+|===
+
+> **Can manage Spotter vs. Manage Memory access:** Manage Memory access is a per-data-model grant — it gives a user memory permissions on one Model. Can manage Spotter is an Org-level privilege — it gives a user memory permissions across every data model they can read, plus Spotter instructions and Spotter Analyst management. A user can hold both; they are additive.
+
+== Who should get which access
+
+=== Can manage Spotter — for your Spotter administrator or Org-wide power users
+
+Assign this to the analyst or power user responsible for how Spotter behaves across the Org. A Can manage Spotter holder can build and manage memory holistically — across all data models they can read — and is the only non-admin role that can configure Spotter instructions, which shape Spotter's behaviour for every user in the org.
+
+**When to use it:**
+
+- You want one or two trusted people to own Spotter's quality across all use cases.
+- You need someone to set or update Spotter instructions (output format rules, topic guardrails, Org-wide behavioural constraints).
+- You want them to delegate memory access to domain-level analysts without admin involvement.
+
+Keep this list small.:: A Can manage Spotter holder can modify memory on any data model they can read — including Models owned by other teams. Assign it to people who understand the full picture of how your org uses Spotter.
+
+=== Manage Memory access — for domain SMEs and per-team power users
+
+This is a per-data-model grant, similar to can-edit or can-read access on a data model. Users with Manage Memory access can add Liveboards, write shared memory from conversation, and set instructions — but only on the data model they were explicitly granted access to. They cannot view or touch memory on any other data model.
+
+**When to use it:**
+
+- You have SMEs or power users who are the right people to manage memory for their team's data model, but should not have visibility into memory from other teams.
+- You want domain-level ownership without giving broad Org-wide access.
+- You are concerned about sensitive memory in one data model being visible to users from another team.
+
+**Example:** Your sales team's power user gets Manage Memory access on the GTM data model. They can fully manage memory for sales use cases. They cannot see or modify memory on the Finance or CS data models.
+
+== Feature-level permission matrix
+
+[options="header"]
+|===
+| Action | Admin | Can manage Spotter | Manage Memory / Edit access | Any user
+|---|---|---|---|---
+| Enable / disable Memory feature | ✓ | — | — | —
+| Enable / disable Personal memory | ✓ | — | — | —
+| Generate memory from Liveboards | ✓ | ✓ (readable Models) | ✓ (granted Model) | —
+| Generate memory from multi-Model Liveboards | ✓ | ✓ (readable Models only) | — | —
+| Delete Liveboard memory source | ✓ | ✓ (readable Models) | ✓ (own sources) | —
+| Write shared memory from conversation | ✓ | ✓ (readable Models) | ✓ (granted Model) | —
+| Write personal memory from conversation | ✓ | ✓ | ✓ | ✓
+| Add / edit reference questions | ✓ | ✓ | ✓ | ✓
+| Add / edit business terms | ✓ | ✓ | ✓ | ✓
+| Set data model instructions | ✓ | ✓ (readable Models) | ✓ (granted Model) | —
+| Set Spotter instructions (Org-wide) | ✓ | ✓ | — | —
+| Manage Spotter Analysts [.badge.badge-beta]#Beta# | ✓ | ✓ (all Analysts in Org) | — | —
+| Delegate memory access to other users | ✓ | ✓ (within own read boundary) | — | —
+| View memory (answers) | ✓ | ✓ | ✓ | ✓
+| Download all memory | ✓ | ✓ (readable Models) | Scoped to own Models | —
+| Clear personal memory | ✓ | ✓ (own) | ✓ (own) | ✓ (own)
+|===
+
+//> **⚠️ TODO before publishing:** Confirm GA/EA status — current understanding: memory, data model instructions, and Spotter instructions are GA in 26.7; Spotter Analysts are Early Access. Confirm with docs team before publish and add EA label to Spotter Analysts row if needed.
+
+== Admin controls
+
+[options="header"]
+|===
+| Control | Location | What it does
+|---|---|---
+| Enable Memory feature | Admin > All Orgs > AI settings > Spotter 3 capabilities | Turns Liveboard memory and conversation memory on or off globally.
+| Enable personal memory | Admin > All Orgs > AI settings | Turns personal memory on or off for all users (separate flag) .
+| User personal memory toggle | User settings | Individual users can disable their own personal memory.
+|===
+
+== How to grant permissions
+
+=== Assign Can manage Spotter
+
+Only an admin can assign Can manage Spotter privileges.
+
+- **RBAC enabled:** Add the privilege to a role, then assign the role to a group.
+- **RBAC disabled:** Add the privilege directly to a user group.
+
+Can manage Spotter is Org-scoped — a holder manages Spotter within their own Org only. It does not grant control across Orgs.
+
+NOTE: Assign Can manage Spotter to a small, trusted set of users. A holder can add or change memory and instructions on any data model they can read — including Models maintained by other teams.
+
+=== Grant Manage Memory access
+
+Manage Memory access is granted per data model by an admin or Can manage Spotter holder.
+
+== Security notes
+
+Memory does not create new data access pathways. Existing security policies remain in effect.
+
+- **Column-level security (CLS):** Memory respects CLS. Users cannot access columns they don't have permission to see through memory.
+- **Row-level security (RLS):** Memory does not bypass RLS. Answers generated using memory still respect RLS configured on the data model.
+- **Read boundary:** Can manage Spotter does not grant read access to any data model. On Models a Can manage Spotter holder cannot read, they cannot manage memory — including Models within a multi-Model Liveboard.

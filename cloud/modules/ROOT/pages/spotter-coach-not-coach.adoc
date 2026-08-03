@@ -1,0 +1,287 @@
+= Coaching best practices
+:page-last_updated: Feb 4, 2026
+:author: Naomi
+:linkattrs:
+:experimental:
+:description: Avoid overcoaching or trying to coach Spotter for scenarios it’s not designed for.
+:jira: SCAL-287506, SCAL-300551, SCAL-309567
+
+Coaching helps Spotter respond more accurately by shaping how it reasons about questions, not by enforcing fixed answers. It helps Spotter understand your organization's data and business language. But coaching is only as good as the foundation beneath it-- most accuracy issues trace back to the data model, not missing coaching.
+
+Before adding coaching, it is critical to ensure that your xref:spotter-model.adoc[data model is well-optimized]. In many cases, improving the data model eliminates the need for coaching altogether. Coaching should only be used when ambiguity remains after model optimization. Optimize the model first, then build context, then fine-tune.
+
+This article explains how to think about coaching, how to choose the right coaching tool, and how to apply coaching responsibly.
+
+== xref:spotter-model.adoc[Optimize your data model]
+
+Coaching is not a substitute for a clear and well-structured data model. A well-prepared model reduces ambiguity so dramatically that it often eliminates the need for coaching entirely.
+
+Column names and synonyms::
+Use human-readable column names — avoid abbreviations, internal codes, and jargon. If a column is named `txn_dt`, rename it to `Transaction Date` or add `Transaction Date`, `Purchase Date`, `Sale Date` as synonyms. Keep your Model focused: aim for under 50 columns. Lean Models are easier for Spotter to navigate and produce more predictable answers.
+
+Formulas::
+If a metric has a fixed definition, define it once in the Model as a formula (including pre-aggregated formulas). This reduces latency and prevents Spotter from inferring the wrong calculation.
+Example;; define `Net Revenue` as `Gross Revenue - Refunds - Discounts` at the Model level rather than relying on Spotter to reconstruct it from context.
+
+xref:spotter-ai-context.adoc[AI Context]::
+AI Context embeds permanent, instructional knowledge directly on each column. It tells Spotter how to interpret and use the column — not for humans to read, but as a direct instruction to the AI.
++
+To generate AI Context, open the data model, click the More icon image:icon-more-10px.png[more icon], select *Generate AI Context*, then review and refine.
++
+Write AI Context as a command, not a description. Keep it under 400 characters. Focus on columns that are ambiguous, frequently used, or have non-standard values.
++
+[options="header"]
+|===
+| Use case | Example
+| Disambiguation between similar columns | "Prefer this column for all revenue queries. This is the primary date for when a sale occurred."
+| Boolean / indicator columns | "true = valid transaction, false = invalid transaction"
+| Internal codes or shortforms | "Contains medicine shortforms. 'MP' = Metoprolol"
+| Deprecated columns | "Do not use this column. Replaced by Order Date v2."
+|===
+
+Spotter self-diagnosis:: After generating AI Context, ask Spotter to surface its own confusion:
++
+"Show me the data model columns you're confused about and what specifically is causing the confusion."
++
+Spotter highlights ambiguous columns, missing context, and conflicting signals. Fix those in AI Context or column descriptions. You can also clarify directly in conversation — ask Spotter to remember any correction, and it will save it to memory for that model.
++
+Run the Spotter Optimization tool from the Model menu to auto-fix indexing, date formatting, and column type mismatches before proceeding.
+
+
+////
+Before adding any coaching, make sure you have:
+
+* Clear, unambiguous column names.
+* Accurate column descriptions and AI context.
+* Column synonyms for common business language.
+* Consistent data types and date columns.
+* Well-defined joins and grain.
+* Model-level formulas where appropriate.
+
+Always begin by testing Spotter on common questions. If incorrect behavior can be fixed by improving metadata or context, do that first instead of coaching.
+
+In practice, the most effective way to improve accuracy is to reduce ambiguity in the data model, not to add more coaching.
+////
+
+== How to think about coaching
+
+Coaching provides guidance signals that Spotter uses during interpretation and reasoning.
+
+Spotter:
+
+* Weighs multiple coaching signals together.
+* Adapts responses based on conversational context.
+* May generate different responses to similar questions when appropriate.
+
+As a result, coaching should teach patterns, not outcomes. The goal is better reasoning, not deterministic answers. High-quality, minimal coaching is more effective than exhaustive coverage.
+
+== Coaching tools
+
+Each coaching tool serves a distinct role. They are complementary, not interchangeable.
+
+xref:data-model-instructions.adoc[]::
+Establish global rules and defaults that apply broadly across questions.
+
+xref:spotter-reference-questions.adoc[]:: Act as guiding examples that Spotter can draw from when reasoning within a conversation or across similar questions.
+
+xref:spotter-business-terms.adoc[]:: Define rigid, universally true meanings for specific business vocabulary.
+
+xref:spotter-memory.adoc[]:: AI-generated context built automatically from Liveboards or conversation. Works alongside the tools above-- additive, not a replacement.
+
+This page focuses on how to choose and combine these tools, not how to configure them.
+
+
+=== Choosing the right coaching tool
+
+When deciding how to coach, start with what requires the least manual effort and gives you the broadest coverage first. Then layer in more targeted, manually authored coaching where needed.
+
+==== Start with learning from Liveboards
+
+Once your Model is ready, the fastest way to give Spotter broad business knowledge is to point it at a trusted Liveboard — without writing anything manually.
+
+To generate Memory from a Liveboard, follow these steps:
+
+. Navigate to the Data Workspace, click Memory sources, and select the  Liveboards tab.
+. Click *Learn from Liveboards and select one or more trusted Liveboards from the modal. Click *Next*.
+
+. [Optional] Enter a description of the Liveboard in the Add context box, and select the underlying data model(s).
+
+. Click *Generate memory*. Spotter reads the Liveboard's visualizations and absorbs definitions, filters, and metric logic automatically.
+
+After generating, verify: test Spotter with questions that mirror the Liveboard's charts. Correct anything wrong directly in conversation — Spotter saves corrections as memory and applies them to all future queries on that Model.
+
+.When Liveboard memory is not suitable
+[options="header"]
+|===
+| Situation | Better approach
+| Model or Liveboards change frequently. | Prefer conversation learning — it stays current.
+| Need consistent context across instances (for example, development to production). | Memory can't be cleanly exported; use xref:data-model-instructions.adoc[data model instructions] or xref:spotter-reference-questions.adoc[reference questions].
+|===
+
+
+==== Correct and refine with learning from conversation
+
+Conversation is your primary ongoing training mechanism. Use it while working, not just during setup.
+
+* Correct Spotter directly when an answer is wrong — tell it what's right and ask it to remember. It saves the correction as memory for all future queries on that model.
+* Surface hidden assumptions before they cause problems: "What are your assumptions about [topic]?" — confirm correct ones, correct wrong ones, ask Spotter to remember each.
+* Keep definitions correct — whenever a metric definition, filter, or business rule changes, update it in conversation. Always use conversation to keep definitions accurate rather than waiting to do a formal coaching pass.
+
+=== When conversation isn't enough
+
+==== Data model instructions
+
+Data model instructions serve the same purpose as memory from conversation — they teach Spotter rules for the Model. Use them when conversational learning isn't resolving a particular issue, or to state explicit overrides: rules that are stable and should not evolve.
+
+* Default filters that always apply regardless of context.
+* Rules where you do not want Spotter to update or revise the definition over time.
+
+Example;; "Always filter for production and paid clusters unless the user specifies otherwise."
+
+Write instructions as direct commands. Use "Prefer A over B" rather than hard overrides where possible. Group related rules; separate unrelated ones on new lines.
+
+
+==== Reference questions and natural language context
+
+Use only when a specific question requires a very particular answer that memory cannot generalize. Typically: complex formulas with exact denominators, specific date columns, or non-standard filter logic.
+
+Always add xref:spotter-context.adoc[natural language context] — the reference question shows Spotter what the correct answer looks like; the natural language context explains why. This is what enables generalization to similar future questions.
+
+Consider reference questions as guiding examples, not stored answers. They influence how Spotter reasons, rather than forcing a specific response.
+
+==== Business terms
+
+Use when you need to migrate consistent value mappings across Orgs or clusters (for example `"N.Am."` → `country = 'North America'`). For everything else, conversation learning is faster to maintain and easier to update.
+
+If a term's meaning changes by scenario, you should not define it as a business term.
+
+== Instructions versus rules, when to use each
+
+Memory generates rules, which serve a similar purpose to instructions but behave differently.
+
+[options="header"]
+|===
+| | Instructions | Rules (Memory)
+| Created by | You, manually | AI — from Liveboards or conversation
+| Maintained by | You, manually | AI — conflicts auto-merged
+| Enforcement | Strictly followed; Spotter prioritizes instructions over rules | Applied contextually
+|===
+
+Use instructions for hard constraints that must never be violated.
+
+Use memory (rules) for definitions and business logic that evolve over time — corrections made in conversation update naturally as your data and usage change.
+
+=== Diagnosing common problems
+
+Start by asking Spotter to explain its reasoning — it can surface its own confusion. Diagnose before adding coaching.
+
+[options="header"]
+|===
+| What you're seeing | Diagnose first | Fix
+| Spotter picks the wrong column (for example, uses `Ship Date` instead of `Order Date`). | Ask: "Why did you use [column X] for this?" | Review AI Context on the correct column — is it clear and instructional? Fix synonyms and indexing. Correct in conversation only if the issue persists after fixing the data model.
+| Spotter doesn't know your business definitions (for example, wrong definition of "active customers"). | Ask: "What do you understand by [term]?" | For a broad topic, add a relevant Liveboard to memory. For a specific question, correct in conversation and ask Spotter to remember.
+
+| Formula is wrong or calculation fails (for example, ARR incorrect, wrong % contribution logic). | Is this a rigid formula (always the same definition, for example ARR, Net Revenue) or a flexible calculation (adapts by context, for example, monthly growth %, % contribution)?
+a| For rigid, define once in the data model as a formula (Step 1). No coaching needed. +
+For flexible, add a reference question with the correct pattern and natural language context explaining the logic so Spotter can generalize to similar queries.
+| Incorrect value selection (for example, wrong status code, region name, or category value) | Ask: "Why didn't you choose [column + value]?" | Review indexing status of the column — indexing lets Spotter see actual values. Review AI Context and data model semantics. Fine-tune with conversation if the issue persists after fixing the model. Use business terms only if you need to migrate consistent value mappings across Orgs.
+| Inconsistent results — different answers each time | Ask Spotter: "Why are you confused about [topic]? What context is conflicting or unclear?" — ask it to surface conflicts in memory, instructions, or data model context.
+| Review data model semantics and fix any conflicts within metadata and coaching. Correct remaining inconsistencies in conversation. If the rule must be stable, add a data model instruction.
+|===
+
+
+== How much coaching is enough?
+
+Coaching is sufficient once Spotter can generalize correctly.
+
+After adding coaching:
+
+* Ask similar but uncoached questions.
+* Observe behavior across a conversation.
+* Look for consistent reasoning improvements.
+
+If failures are inconsistent, adding more reference questions is usually not the right fix. Revisit the data model or global instructions instead.
+
+Teams see the best results when they:
+
+* Use reference questions to teach intent and logic, not phrasing.
+* Pair reference questions with concise context. Write context as guidance you would give to a human analyst reviewing the question.
+* Keep global rules explicit and limited.
+* Treat business terms as long-term definitions.
+* Use conversation learning for definitions that change — rather than manually updating instructions or reference questions each time.
+
+Effective coaching improves accuracy without making Spotter brittle.
+
+=== When to prefer coaching over memory
+
+Memory — xref:spotter-liveboard-learn.adoc[Learning from Liveboards] and xref:spotter-conversation-learn.adoc[learning from conversation] — is a powerful workflow to get broad coverage quickly with minimal manual effort. However, prefer reference questions, business terms, and instructions in these two scenarios:
+
+When you need to migrate context across instances:: Memory cannot be cleanly migrated between environments. If you need consistent coaching context across dev, staging, and production instances, define it using reference questions, business terms, or instructions instead.
+
+When your data model or Liveboards change frequently:: Memory generated from a Liveboard reflects the state of that Liveboard and data model at the time generation was run. It does not sync automatically when columns are renamed, metrics are redefined, or the Liveboard is edited. If your data model is actively evolving, memory can go stale quickly and produce incorrect answers.
+
+In these cases, prefer reference questions and instructions — these are authored manually and remain accurate until you explicitly change them.
+
+.Tool reference
+[options="header"]
+|===
+| | Data model optimization| Memory from Liveboard | Memory from conversation | Data model instructions | Reference questions | Business terms
+
+a| *Use when* | Before any coaching — the foundation everything else builds on.
+| Cold start; need broad coverage fast without manual writing.
+| Ongoing corrections, evolving definitions, keeping context current.
+| A rule is stable and must never be overridden by memory.
+| A specific query needs an exact formula or logic locked in.
+| Migrating simple value mappings across Orgs or clusters.
+
+| *Example* | Rename txn_dt → Transaction Date. Define Net Revenue as a formula in the Model. | Add the Revenue Dashboard — Spotter absorbs all revenue definitions at once. | Spotter calculates ARR wrong — correct it in conversation and ask it to remember. | Always filter for production and paid clusters unless the user specifies otherwise. | "% Spotter adoption" needs a specific denominator — lock it in with a reference answer. | "N.Am." → country = 'North America'.
+
+| *Use as* | Foundation | Primary tool | Primary tool | Override | Precision fix | Last resort
+|===
+
+=== What not to coach
+
+Avoid using coaching to compensate for structural issues or subjective interpretation.
+
+Do not coach for:
+
+* Broken or unclear data models.
+* Logic that changes frequently.
+* Subjective concepts without strict definitions.
+* User-specific or personalized interpretations.
+* Visualization or formatting preferences.
+
+Coaching influences data interpretation, not presentation.
+
+== Recommended coaching sequence
+
+To avoid rigidity and over-coaching, follow this sequence:
+
+. Optimize the data model first. Reduce ambiguity through metadata, context, and structure. Define column names, synonyms, formulas, AI context, and run Spotter optimization.
+
+. Run Spotter self-diagnosis. Ask it what it's confused about, and fix those gaps in the metadata.
+
+. Add relevant Liveboards as memory sources. Give Spotter a broad understanding of your business logic from trusted, existing content.
+
+. Verify and correct in conversation. Test with representative questions and correct any inaccurate learnings directly in conversation. Ask Spotter to remember your corrections.
+
+. Add data model instructions, only for stable, explicit overrides that must not evolve. Establish global defaults and rules.
+
+. Add reference questions and natural language context, only for specific complex queries with exact formula requirements. Teach recurring reasoning patterns using strong examples.
+
+. Add business terms selectively, as a last resort. Lock down only the definitions that must always be universally true.
+
+This order builds broad coverage first, then layers in precision where needed.
+
+////
+== Coaching guidelines
+
+Good coaching is intentional, restrained, and iterative.
+
+* Start with the data model.
+* Teach patterns, not exceptions.
+* Prefer clarity over completeness.
+* Revisit coaching as data and usage evolve.
+
+When used thoughtfully, coaching allows Spotter to reason more accurately and contextually, without sacrificing flexibility.
+////
