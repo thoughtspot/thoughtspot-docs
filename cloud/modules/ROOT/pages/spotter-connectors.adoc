@@ -5,7 +5,7 @@
 :experimental:
 :page-layout: default-cloud-spotter-3
 :description: In addition to bringing Spotter into other platforms, you can now integrate connectors to Spotter to make connections to wherever your data is stored.
-:jira: SCAL-287506, SCAL-301858, SCAL-297359, SCAL-309104, SCAL-312267
+:jira: SCAL-287506, SCAL-301858, SCAL-297359, SCAL-309104, SCAL-312267, SCAL-307870
 
 In addition to bringing Spotter into other platforms, you can now integrate connectors to Spotter to make connections to wherever your data is stored. This allows you to do things like search Confluence or Snowflake for unstructured data to add to your analysis, or send direct messages from Spotter to Slack with your data. By connecting your third-party ecosystem (Slack, Jira, Confluence, Snowflake, Glean) directly to ThoughtSpot, you can transition from insight to execution without needing to switch tabs.
 
@@ -46,7 +46,7 @@ NOTE: Spotter as an MCP host is only available with Spotter 3 and must be enable
 [#register]
 === Register a new connector
 
-. Navigate to *Admin settings* > *ThoughtSpot AI*. Scroll to the *Spotter Connectors* section and click *Edit*.
+. Open Spotter and click the gear icon in the lower left corner. Select *Connectors*.
 . You can enable a connector from the pre-defined list or *Add custom connector*.
 . When adding a connector from the pre-defined list, simply click *Add*.
 . When adding a custom connector, you must provide the following details:
@@ -62,6 +62,38 @@ NOTE: Spotter as an MCP host is only available with Spotter 3 and must be enable
 --
 
 NOTE: When adding a custom connector and using the OAuth authentication method, you must whitelist ThoughtSpot’s callback URL: https://oauth.thoughtspot.app/callback.
+
+== Test your connection
+
+You can now validate that your MCP connectors are connecting and functioning, from the Spotter AI settings panel. If the connection fails, you see a detailed error showing what needs to be done to fix the connection.
+
+To test a connection, follow these steps:
+
+. Open Spotter and click the gear icon in the lower left corner. Select *Connectors*.
+
+. Create a new connector, or select the *More* icon image:icon-more-10px.png[more icon] next to an existing connector and click *Edit*.
++
+[.bordered]
+image::spotter-test-connection.png[Test connections]
+
+. Click *Test connection*.
+
+. Depending on the authentication type, Spotter asks for validating information. If the authentication type is OAuth, a pop-up appears asking you to connect to the connector. If another authentication type is used, a prompt appears to enter validating information, like the token.
+
+. Spotter performs three checks:
+
+.. Server connection: Verifies the MCP URL is correct. Checks that the server is running and accessible from your network.
+
+.. Tool discovery: Fetches the tool listing from the MCP server. Confirms the server is responding and returning tools.
+
+.. Tool call: Invokes a tool against the live MCP server and validates a successful response. This is the definitive check — passing Step 3 confirms that connectivity, authentication, and tool access are all working end to end.
++
+[.bordered]
+image::connection-test-successful.png[Successful connection]
+
+. Any error that appears in the process of testing a connection displays at which step the verification failed, and offers additional steps you can take to resolve the issue, like reaching out to the MCP server owner.
+
+. Once the connection is successful, click *Save*.
 
 == Authentication methods
 
