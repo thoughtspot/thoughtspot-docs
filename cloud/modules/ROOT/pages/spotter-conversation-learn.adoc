@@ -47,54 +47,96 @@ To enable:
 
 For personal memory, enable the additional flag, *Enable personal memory learning for all users*.
 
-When this feature is not enabled:
+When memory from Liveboards and conversations is not enabled:
 
 * No new memory can be written from conversation for either shared or personal memory.
 * Spotter stops fetching and applying any previously generated memory.
 * Existing memory is not deleted; if the feature is re-enabled, all previously written memory becomes active again immediately.
 * Reference questions, business terms, and instructions are not affected.
 
-== Who can teach Spotter from conversation
+== Shared memory
 
-Spotter now supports personal memory, where what you tell Spotter, or how you correct its answers, persists in your later conversations. For example, you could tell Spotter, “I am a store manager from the East region”. In future conversations, Spotter automatically filters the data in your searches to show only the East region.
+This feature is available to all users with Manage memory permission, data model edit access, or admin access.
 
-You can opt out of personal memory at any time by clicking the gear  icon in the lower left corner of the Spotter screen, and toggling off *Personal memory*.
+=== What triggers a save
 
-[.bordered]
-image::user-level-memory.png[]
+Spotter listens for explicit corrections and definitions scoped to the data model being queried:
 
-NOTE: Personal memory is in Early Access. To enable this feature for your instance, navigate to *Admin settings* > *All* > *AI settings*, and set *Personal memory (EA)* as Enabled.
+- *"Remember this: [definition]"*
+- *"Always [do X]"* / *"Never [do Y]"*
+- Corrective statements after an incorrect answer — *"No, Sets usage = cohort-save event."*
+- *"Correct. Save this."*
+
+Vague dissatisfaction — *"this looks off"* — does not trigger a write.
 
 
-== What triggers learning
+=== What gets stored
 
-Spotter does not learn from every message. Learning is triggered by explicit user intent.
+Shared memory from conversation is scoped to the data model being queried and applies to all users on that Model.
 
-For example:
+What does NOT get stored:
+- Instructions, data model AI context, reference questions, or business terms — these must be managed manually
+- Charting preferences or visualization types
+- Personal preferences — these go to personal memory, not shared memory
 
-* "Remember this: [definition]"
-* "Always [do X]" / "Never [do Y]"
-* Corrective statements after an incorrect answer -- for example, "No, vegetables are labeled as Produce."
-* "Correct. Save this."
+=== What Spotter confirms
 
-Vague dissatisfaction (for example, "this looks off") does not trigger learning.
+> **User:** "Same-store sales only includes stores open for more than 12 months — filter by `store_age_months > 12`, not total store count."
+> **Spotter:** "Got it — I've saved this to shared memory: same-store sales filters to stores open more than 12 months using `store_age_months > 12`."
 
-== What is stored as memory
+== Personal memory
 
-Conversation learning writes only rules: business definitions, constraints, and conventions scoped to the data model being queried. Rules are stored at the data model level and apply to all users querying that Model.
+This feature is available to all users when the personal memory flag is enabled.
 
-What conversation learning does not write:
+=== What triggers a save
 
-* xref:data-model-instructions.adoc[Instructions], xref:spotter-ai-context.adoc[AI context], xref:spotter-reference-questions.adoc[reference questions], or xref:spotter-business-terms.adoc[business terms]-- these remain separate and must be managed manually.
-* Charting preferences or visualization types.
-* Personal preferences (for example, "always respond in bullet points").
+Spotter listens for explicit statements about the user themselves:
+
+- *"Remember I'm Head of CS for EMEA focused on renewals."*
+- *"Always show me tables, not charts."*
+- *"My renewal target is 95%, not the team's 85%."*
+- *"When I say 'my accounts', I mean my 30 EMEA enterprise accounts."*
+
+Vague statements do not trigger a save. *"I'd prefer better answers"* or *"that didn't look right"* are not saved — explicit, personal intent is required.
+
+=== What gets stored
+
+Personal memory stores context about the individual user across four categories:
+
+[options="header"]
+|===
+| Category | Examples
+|---|---
+| **Role and goals** | Job title, team, focus areas, expertise level
+| **Preferences** | Output format, verbosity, time granularity, language
+| **Personal context** | Accounts, region, team, personal targets
+| **Recent work context** | Current project, last analysis run
+|===
+
+Personal memory is scoped to the user. It is not visible to other users and does not affect how Spotter answers questions for anyone else.
+
+=== What Spotter confirms
+
+Spotter confirms inline when personal memory is saved.
+
+> **User:** "Always show me results in a table. And remember my region is EMEA."
+> **Spotter:** "Got it — I've updated your personal memory: output format set to table, and your region set to EMEA."
+
+**When a user with Manage Memory access triggers both tracks in one conversation:**
+
+> **User:** "Always show me results in a table. Also, Spotter adoption is measured by the `spotter-ai-answer-loaded` event."
+> **Spotter:** "Updating memory with the following. Personal memory — output format set to table. Shared memory — Spotter adoption is tracked by `spotter-ai-answer-loaded`."
+
 
 == Scope and limitations
 
-* Data model layer only — memory is scoped to the data model being queried in the current conversation.
-* Single data model per session — if a conversation spans multiple data models, memory is not written across them.
-* No xref:spotter-auto-mode.adoc[auto-mode] — memory writing from conversation is not supported in auto-mode.
-* You should test the question again after telling Spotter to remember a correction.
+**Shared memory:**
+- Data model layer only — memory is scoped to the data model being queried in the current conversation.
+- Single data model per session — if a conversation spans multiple data models, memory is not written across them.
+
+**Personal memory:**
+- Active learning only — Spotter saves context when explicitly told. It does not passively infer preferences from query patterns.
+- No memory management UI currently — corrections and deletions happen through conversation.
 
 == Learn from other sources
 
@@ -224,7 +266,10 @@ Start a new conversation and ask a question that requires the definition it just
 [options="header"]
 |===
 | Action | Who can do it
-| Enable/ disable memory | Admins only
-| Write data model memory from conversation | Users with coaching permission, data model edit access, or admin access
-| View memory written from conversation | Any user with access to that data model
+| Enable / disable the Memory admin flag | Admins only
+| Enable personal memory for all users | Admins only
+| Write shared memory from conversation | Users with Manage Memory permission, data model edit access, or admin access
+| Write personal memory from conversation | Any user (when personal memory admin flag is on)
+| View shared memory written from conversation | Any user with access to that data model
+| View own personal memory | Any user — ask Spotter: *"What do you know about me?"*
 |===
