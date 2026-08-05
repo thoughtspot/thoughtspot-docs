@@ -215,6 +215,57 @@ It might help to think of it like this: If Search mode is a high-speed calculato
 
 For more information, see xref:spotter-research-mode.adoc[].
 
+[#date-calendar-queries]
+== #Date and calendar-aware queries#
+
+Spotter understands your organization's calendar configuration and uses it to resolve date expressions accurately. You can ask date-based questions using natural language, and Spotter applies your org's actual fiscal or custom calendar — not a Gregorian default.
+
+NOTE: Calendar-aware date resolution is available in Spotter 3 and Spotter Agent (Spotter 2). It requires ThoughtSpot Cloud 26.5.0.cl or later.
+
+=== Standard and fiscal date expressions
+
+Spotter resolves common relative date expressions using your org's calendar settings, including the fiscal year start month, week start day, and date format.
+
+.Examples
+[options="header"]
+|===
+| Question | Description
+
+| Show me total sales for last quarter.
+| Returns results for the most recently completed quarter according to your org's fiscal calendar — not the Gregorian calendar quarter.
+
+| What was the revenue year to date?
+| Calculates revenue from the start of your fiscal year to today, based on the fiscal year start date configured for your org.
+
+| Show me the sales growth from Q1 to Q2 this fiscal year.
+| Compares Q1 and Q2 as defined by your fiscal calendar, regardless of whether they align with the Gregorian calendar.
+
+| How did we perform in FY 2025?
+| Retrieves data for the full fiscal year 2025, using your org's fiscal year boundary — not the calendar year January–December.
+
+|===
+
+=== Custom calendar date expressions
+
+If your data model includes columns associated with a custom calendar — for example, a 4-5-4 retail calendar — Spotter resolves date expressions directly against that custom calendar definition. This ensures that period boundaries and labels (such as week names and quarter labels) match what is defined in your custom calendar table.
+
+.Examples
+[options="header"]
+|===
+| Question | Description
+
+| Show me total sales for this period.
+| Returns data for the current period as defined in your custom calendar table, not a standard Gregorian period.
+
+| What were the sales in Period 7 last year?
+| Looks up the exact date boundaries for Period 7 in your custom calendar and filters results accordingly.
+
+| Compare sales in the last 28 days to the previous 28 days.
+| Uses the custom calendar's period definitions to apply the correct boundaries for 28-day rolling periods, avoiding Gregorian calendar offset errors.
+
+|===
+
+For information about setting up a custom calendar, see xref:connections-cust-cal.adoc[Custom calendar overview].
 
 
 == Spotter Connectors [.badge.badge-early-access]#Early Access#
