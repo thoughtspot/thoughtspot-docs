@@ -4,48 +4,92 @@
 :page-layout: default-cloud-early-access-spotter-3
 :linkattrs:
 :experimental:
-:jira: SCAL-300551, SCAL-308946
+:jira: SCAL-300551, SCAL-308946, SCAL-320863
 :description: Memory is the new AI-generated context that Spotter uses when answering questions.
 
-== What is memory?
+== Before you start
 
-Every agent-- whether it's helping you analyze sales data, answer a business question, or plan a workflow-- needs context to do its job well.
+- Spotter 3 must be enabled for your org.
+- The Memory feature must be enabled by your ThoughtSpot administrator.
+- See xref:spotter-before-you-start.adoc[Before you start] for full prerequisites.
 
-The human brain works this way naturally. Over time, it accumulates knowledge from experience, remembers what has worked before, and builds intuition about how to approach familiar problems. The more context it holds, the better its judgment becomes.
 
-Memory gives any agent this same ability. It is the context you build into an agent through your interactions and the knowledge you add to it. The agent accumulates what it learns, applies it the next time it is relevant, and keeps improving as you continue to use it.
+== What is agent memory?
+
+AI agents are stateless by default. Every request starts from scratch — no knowledge of past sessions, no understanding of your business, no record of what worked before. For a one-off question that is fine. But to give consistent answers over time without asking users to re-explain their context every session, agents need memory.
+
+Memory is context at runtime. When a query comes in, the agent retrieves the relevant context — business definitions, proven patterns, user preferences — and applies it to reach the right outcome, without the user having to correct the path each time. Critically, the agent also manages that context over time: improving it, rewriting entries based on new interactions, and keeping it current so the context it retrieves gets more accurate, not just larger.
 
 == What is Spotter memory?
 
-Think of a skilled analyst joining your team. On day one, they are capable but general. Over time, they learn how your business defines revenue, which metrics your leadership tracks, and the steps your team follows to answer recurring questions reliably. They remember what worked, build on it, and stop re-deriving answers they have already reached.
+Think of a skilled analyst joining your team. On day one they are capable but general. Over time, they learn how your business defines revenue, which metrics leadership tracks, and the steps your team follows to answer recurring questions reliably. That understanding becomes standing knowledge — applied automatically, without needing to be re-stated.
 
-Spotter memory works the same way. It is the context Spotter builds about your data and your business — so it can give accurate, consistent answers without you having to re-explain your data model every session.
+Spotter Memory works the same way. It is the context Spotter accumulates so it can give accurate, consistent answers without you re-explaining the same things every session.
+
+Spotter Memory has two layers: **shared memory** and **personal memory**. Shared memory — built from Liveboards and conversations by users with Manage Memory access — works the same way as global coaching did in the past: it applies to all users on that data model. Personal memory applies to a specific user to refine and personalise their Spotter responses.
 
 IMPORTANT: In the future, all coaching workflows will move to the memory format. For now, memory is additive; your existing reference questions, business terms, and instructions are not affected and continue to work exactly as before.
 
+== Two types of memory
+
+[options="header"]
+|===
+| | Shared memory | Personal memory
+|---|---|---
+| **Built by** | Users with Manage Memory access, and from Liveboards | Any user
+| **Applies to** | All users on that data model | That user only
+| **Covers** | Business definitions, query patterns | Role, preferences, personal context
+| **Visible in** | Memory Sources page and conversation | Conversation only
+| **Example** | *"Rep performance is measured by Booked ACV — use the `booked_acv_closed_per_quarter` column, filtered to current quarter"* | *"I'm Head of CS for EMEA, focused on renewals"*
+|===
+
+Shared memory and personal memory run simultaneously. Enabling personal memory does not change or replace shared memory. Users with Manage Memory access can contribute to both. Other users contribute to personal memory only — they cannot write or modify shared data model definitions.
+
+== How memory applies
+
+Four layers determine how Spotter answers any question.
+
+----
+Your question
+      ↓
+Spotter instructions       ← always on, Org-wide hard rules
+      ↓
+Personal memory            ← retrieved when relevant, you only
+(your role, preferences, context frames the answer)
+      ↓
+Shared memory              ← retrieved when relevant, all users
+(rules + recipes from Liveboards and users with Manage Memory access)
+      ↓
+Spotter's answer
+----
+
+Hard guardrails set in Spotter instructions always win — no personal preference can override a compliance rule or topic deflection configured for your org. Personal memory sits above shared memory because your context frames how shared memory is applied to your specific role and scope. For the full interaction between Spotter instructions and memory, see xref:spotter-instructions.adoc[Spotter instructions].
+
 == How to add memory to Spotter
 
-There are two ways to add memory to Spotter:
+There are three ways to add memory to Spotter:
 
 xref:spotter-liveboard-learn.adoc[Learning from Liveboards]:: Add a trusted Liveboard as a memory source. Spotter analyzes the charts to learn how to work with your data model -- the correct columns, values, and formulas needed to answer similar questions.
 
-xref:spotter-conversation-learn.adoc[Learning from conversation]:: When you define or correct something during a Spotter conversation, that context is saved as memory and applied to future questions on the same data model.
+xref:spotter-conversation-learn.adoc[Learning from conversation (shared)]:: When you define or correct something during a Spotter conversation, that context is saved as memory and applied to future questions on the same data model.
+
+xref:spotter-personal-memory.adoc[Learning from conversation (personal)]:: — When any user explicitly teaches Spotter something about themselves — their role, preferences, or context — that is saved as personal memory and applies to that user's sessions only.
 
 Users with *Can manage Spotter* privileges can manage memory across the data models they can read, including memory from Liveboards that span multiple data models. Models they cannot read remain inaccessible.
 
-
-
 [#rule-recipe]
-== Types of memory
+== What Spotter stores
 
-Learnings are stored as memory in two formats:
+[options="header"]
+|===
+| Memory type | What it is | Scope | How it helps Spotter
+|---|---|---|---
+| **Rules** | Business concepts, definitions, and constraints specific to your data model. Example: *revenue excludes returns* or *active user = logged in within 30 days.* | Shared — all users | Spotter applies the right definition automatically whenever a relevant question comes in — no guessing, no inconsistency across users.
+| **Recipes** | Step-by-step workflows for questions your team answers repeatedly — which columns to filter on, which formula to apply, which tool or connector to call. | Shared — all users | Guides Spotter toward the correct path and helps it improvise for similar questions.
+| **Personal context** | What Spotter knows about an individual user — their role, goals, output preferences, and personal scope (accounts, region, team). | Personal — that user only | Spotter frames answers around that user's context without them re-stating it each session.
+|===
 
-Rules:: Business concepts, definitions, and constraints specific to your data model. Similar to instructions.
-Example;; "Revenue always excludes returns" or "active user = logged in within 30 days". Rules are generated from both Liveboard learning and conversation learning.
-How it helps Spotter;; Spotter applies the right definition automatically whenever a relevant question comes in — no guessing, no inconsistency across users.
-Recipes:: Step-by-step workflows for questions your team answers repeatedly: which columns to filter on, which formula to apply, which computation steps to follow.
-Example;; "MTTR of critical bugs per track — filter incidents to P0 and P1, compute resolution time as resolved_date minus created_date in days, group by engineering track, restrict to last quarter."
-How it helps Spotter;; Guides Spotter toward the correct path and helps it improvise for similar questions. If Spotter knows to check the #customer-feedback channel when asked "What is Client A's feedback?", it applies the same approach when asked "What is Client B's feedback?" — without needing to be told again.
+
 
 == Key capabilities
 
@@ -56,7 +100,17 @@ Multilingual:: Memory works across languages. A memory entry written in one lang
 == Limitations
 
 Spotter 3:: Memory is only generated and applied when Spotter 3 is enabled for your Org.
-
-Migration:: Memory cannot be migrated between Orgs and instances.
-
+Enablement:: Memory must be enabled by your ThoughtSpot administrator.
+Migration:: Memory cannot be migrated between Orgs and instances. You can download it, but there is no upload mechanism.
 Syncing:: Memory does not automatically sync with data model changes.
+Editing:: Shared memory rules cannot be edited directly — correct via conversation or delete and regenerate.
+
+'''
+> *Related information*:
+>
+> * xref:spotter-instructions.adoc[Spotter instructions]
+> * xref:spotter-conversation-learn.adoc[Teaching Spotter from conversation]
+> * xref:spotter-personal-memory.adoc[Spotter personal memory]
+> * xref:spotter-liveboard-learn.adoc[Learn from a Liveboard]
+> * xref:spotter-memory-manage.adoc[Managing memory]
+> * xref:spotter-memory-faq.adoc[Memory FAQs]

@@ -1,4 +1,4 @@
-= Learn from a Liveboard
+= Add memory from Liveboards
 :page-last_updated: Mar 18, 2025
 :author: Naomi
 :linkattrs:
@@ -6,44 +6,52 @@
 :page-layout: default-cloud-early-access-spotter-3
 :page-aliases:
 :description:
-:jira: SCAL-300551, SCAL-289467, SCAL-295867, SCAL-306618
+:jira: SCAL-300551, SCAL-289467, SCAL-295867, SCAL-306618, SCAL-320863
 
-Learning from Liveboard lets you point Spotter at a trusted Liveboard — one that already reflects how your team queries a dataset — and generate memory from it. Spotter analyzes the visualizations, extracts xref:spotter-memory.adoc#rule-recipe[rules and recipes], and uses them as context when answering future questions on the associated data models.
+Spotter can read a Liveboard and extract structured memory — business rules, metric definitions, and analytical patterns — that it applies to future questions automatically. This page covers how to generate that memory, what gets captured, and how to validate and correct it.
 
 NOTE: To enable this feature, contact your administrator.
 
-Only users with data model access can use this feature.
+== Before you start
 
-== Enable learning from Liveboards
+[options="header"]
+|===
+| Requirement | Details
+|---|---
+| **Feature enabled** | An admin must enable Memory from Liveboards and conversations (Admin > All Orgs > AI settings > Spotter 3 capabilities)
+| **Spotter version** | Spotter 3 required
+| **Permission** | Manage Memory access or data model edit access on the associated data model
+| **Liveboard type** | Must be built on data models — Liveboards built entirely on tables or Views are not supported
+|===
 
-Learning from Liveboards is off by default and is enabled by the same Early Access option as xref:spotter-conversation-learn.adoc[learning from conversations].
+== Enable memory from Liveboards
+
+Memory from Liveboards is off by default and is enabled by the same Early Access option as xref:spotter-conversation-learn.adoc[learning from conversations].
 
 To enable:
 
 . Navigate to the Admin tab and select *All Orgs*.
 
-. Select *ThoughtSpot AI* under *Application settings*.
+. Select *AI settings* under *Application settings*.
 
 . Click *Edit* for the *Spotter 3 capabilities* section and set *Memory from Liveboards and conversations* to Enabled.
 
 . Click *Save*.
 
-What happens when the feature is turned off:
+What happens when memory is disabled:
 
 * No new memory can be generated from Liveboards.
-* Spotter stops fetching and applying any previously generated memory.
-* Existing memory is not deleted — if the feature is re-enabled, all previously generated memory becomes active again immediately.
+* Spotter stops fetching and applying any previously-generated memory.
+* Existing memory is not deleted — if the feature is re-enabled, all previously-generated memory becomes active again immediately.
 * Reference questions, business terms, and instructions are not affected.
 
 == Who can generate memory from a Liveboard
 
-Users with coaching access or data model edit access on the data models associated with the Liveboard can generate memory.
-
-If a Liveboard touches Models the user cannot access or cannot coach, those Models are excluded — memory generation proceeds on the accessible models only.
+Users with Manage Memory access or data model edit access on the data models associated with the Liveboard can generate memory from it. If a Liveboard touches data models the user cannot access, those models are excluded from generation.
 
 == How to generate memory from a Liveboard
 
-. Navigate to *Data workspace* > *Memory sources* > *Liveboards tab* > *Learn from Liveboards*.
+. Navigate to *Data workspace* > *Memory sources* > *Liveboards tab* > *+ Add Liveboards*.
 
 . The *Select Liveboards* modal appears. Choose up to three Liveboards to learn from. Start with Liveboards that reflect your most common or trusted query patterns.
 +
@@ -69,6 +77,21 @@ image::liveboard-add-context.png[Add context to memory.]
 
 . Click *Generate memory*. Generation runs asynchronously, and typically takes ten to twenty minutes depending on the size of the Liveboard. You can reference the status column to see if memory generation is complete. ThoughtSpot notifies you once memory is fully generated.
 
+== Writing a useful context description
+
+The context description is the most important input. Spotter uses it to interpret what the Liveboard represents and which patterns are worth generalizing into memory. Describe the business purpose and audience — not the charts.
+
+[options="header"]
+|===
+| Good context | Bad context
+|---|---
+| "This Liveboard tracks pipeline health for the EMEA sales team — used by sales managers to review weekly deal progression" | "Show Spotter the revenue chart and skip the usage chart"
+| "Used by CS leadership for quarterly retention review — focuses on renewal risk and time-to-value metrics" | "Use the formulas exactly as shown in the Liveboard"
+| "Focuses on product adoption for enterprise accounts during the first 90 days post-onboarding" | "Ignore the filters at the top — those are for a specific event"
+|===
+
+Good context tells Spotter what the Liveboard means. Bad context gives Spotter instructions about how to process it — Spotter derives those patterns itself.
+
 == What will not be remembered as memory
 
 The following are not stored as memory:
@@ -78,7 +101,7 @@ The following are not stored as memory:
 * Sets created from visualizations.
 * Global filters and parameters applied on the Liveboard.
 
-If a Liveboard is built entirely on tables or Views, memory will not generate. If the Liveboard has a mix of data model charts and table/View charts, generation proceeds on the data model charts only.
+If a Liveboard is built entirely on tables or Views, memory generation fails. If the Liveboard has a mix of data model charts and table/View charts, generation proceeds on the data model charts only.
 
 == Validating generated memory
 
@@ -90,7 +113,7 @@ After generation completes, verify what Spotter has learned before relying on it
 
 The most reliable approach is to run five to ten representative questions on the data model after generation and compare answers to your baseline.
 
-== Troubleshooting
+== Correcting wrong memory
 
 If Spotter's answers degrade after generation, use the Thinking view to identify which memory context was applied on a bad answer.
 
@@ -115,8 +138,10 @@ If the Liveboard is edited after generation:: Memory is not refreshed automatica
 |===
 | Action | Who can do it
 | Enable or disable the memory feature | Admins only
-| Generate memory from a Liveboard | Users with coaching or data model edit access on the associated Models
+| Generate memory from a Liveboard | Users with Manage memory or data model edit access on the associated Models
 | Delete a Liveboard memory source | User who added it, or admin user
 | View and download memory | Visible to all users. Download scope determined by role and data model/ Liveboard access
 | View memory per Liveboard | Users with object-level view access to that Liveboard
 |===
+
+After generating memory, use xref:spotter-conversation-learn.adoc[Add memory from conversations] to correct anything that's wrong and continue building context as your team uses Spotter.

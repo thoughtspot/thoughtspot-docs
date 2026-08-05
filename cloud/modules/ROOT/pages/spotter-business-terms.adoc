@@ -4,11 +4,18 @@
 :description: Business terms let you define how specific words or phrases used by your organization map to data and logic in your Model.
 :linkattrs:
 :experimental:
-:jira: SCAL-300551,SCAL-310648
+:jira: SCAL-300551,SCAL-310648, SCAL-320863
 
 Business terms let you define how specific words or phrases used by your organization map to data and logic in your Model.
 
 They ensure Spotter uses your business's exact definitions (not general assumptions) when interpreting questions that reference those terms.
+
+Business terms are best for universally fixed definitions that never vary by context. For most definitions, memory from conversations is faster and more flexible.
+
+[IMPORTANT]
+====
+Business terms are legacy memory sources. To create new definitions, add memory xref:spotter-conversation-learn.adoc[from a conversation]. Business terms continue to work and are not being removed.
+====
 
 == What are business terms?
 
@@ -20,7 +27,7 @@ A business term is a global, reusable definition that maps a word or phrase to:
 
 Once defined, a business term applies consistently whenever that term appears in a question on the Model.
 
-Business terms are the most specific and rigid form of coaching. Because of this, they should only be used as a "last resort" for definitions that are *universally true* across all contexts to create a specific, reusable ThoughtSpot Modeling Language (TML) mapping for a term.
+Business terms are the most specific and rigid form of memory. Because of this, they should only be used as a "last resort" for definitions that are *universally true* across all contexts to create a specific, reusable ThoughtSpot Modeling Language (TML) mapping for a term.
 
 == How business terms help Spotter
 
@@ -34,7 +41,7 @@ Therefore, use this feature to create simple, universally true definitions, such
 
 == Create a business term
 
-To begin coaching business terms:
+To begin creating business terms:
 
 
 . Navigate to the Data workspace.
@@ -42,10 +49,10 @@ To begin coaching business terms:
 . Select the *Business terms* tab.
 . Click on *Add business term*.
 +
-This will lead you directly into the coaching flow, where you can begin refining responses and improving Spotter's accuracy. You can use the data source tab next to the Search bar to select the data source for which you want to define a business term.
+This will lead you directly into the memory creation flow, where you can begin refining responses and improving Spotter's accuracy. You can use the data source tab next to the Search bar to select the data source for which you want to define a business term.
 +
 [.bordered]
-image:spotter-coach-business.png[Coach Spotter references]
+image:spotter-coach-business.png[Add Spotter references]
 
 
 
@@ -62,9 +69,9 @@ You can modify the search tokens to refine the response. Changing these tokens u
 Once you're satisfied with the adjustments, click *Submit* to save the response as a reference for future, similar queries.
 
 
-. You return to the Business terms tab in Memory sources, where you can see the coaching you've added.
+. You return to the Business terms tab in Memory sources, where you can see the memory you've added.
 
-NOTE: If you edit the column name of a Model underlying coaching, the coaching entries are accordingly modified by the system.
+NOTE: If you edit the column name of a Model underlying memory sources, the entries are accordingly modified by the system.
 
 
 == Scope and permissions
@@ -77,13 +84,13 @@ Depending on your role (for example, admin or Model editor), saving a business t
 |===
 | Principle | Why it matters | Example
 
-| Meaningful addition | Only define terms that an LLM can’t reliably guess or that have a very specific meaning in your business. | Avoid coaching "customer" as "customer column" if it's the obvious choice in columns and Spotter is able to pick it up without coaching.
+| Meaningful addition | Only define terms that an LLM can’t reliably guess or that have a very specific meaning in your business. | Avoid teaching "customer" as "customer column" if it's the obvious choice in columns and Spotter is able to pick it up without coaching.
 
 | Business-specific logic | Focus on how your company uniquely defines things like revenue, churn, or contribution. | “Sales contribution” might seem obvious but often has a specific calculation method in your business which the LLM might not be able to predict.
 
-| Consistency across contexts | Spotter applies business terms globally; the term must hold the same meaning in all contexts it can be used for that Model. So avoid context-specific logic. | Be cautious when coaching general time-related terms if you have multiple date fields. For example, coaching “this year” to always use `created_date` can cause issues if a user asks about “this year” related to `transaction_date`.
+| Consistency across contexts | Spotter applies business terms globally; the term must hold the same meaning in all contexts it can be used for that Model. So avoid context-specific logic. | Be cautious when teaching general time-related terms if you have multiple date fields. For example, teaching “this year” to always use `created_date` can cause issues if a user asks about “this year” related to `transaction_date`.
 
-| Correct logic | Ensure the underlying definition (filters, formulas) is accurate and aligns with business intent. | Avoid coaching "profit" as `sales - material cost` if the definition of profit varies across categories. Coach "material profit" and "net profit" separately.
+| Correct logic | Ensure the underlying definition (filters, formulas) is accurate and aligns with business intent. | Avoid teaching "profit" as `sales - material cost` if the definition of profit varies across categories. Teach "material profit" and "net profit" separately.
 
 Similarly, if "best products" means "most selling products" for products in the North American region but "highly-rated products" in the European region, do not save this business term. Instead, coach on two reference questions using this term in different region questions to highlight the difference.
 |===

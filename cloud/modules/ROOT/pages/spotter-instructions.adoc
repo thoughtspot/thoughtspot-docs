@@ -5,11 +5,47 @@
 :page-aliases: spotter-agent-instructions.adoc
 :experimental:
 :description: Spotter instructions let an administrator shape how Spotter behaves across an Org — its tone, persona, output format, scope, and guardrails.
-:jira: SCAL-293536, SCAL-303390
+:jira: SCAL-293536, SCAL-303390, SCAL-320863
 
-Spotter instructions let an administrator shape how Spotter behaves across an Org — its tone, persona, output format, scope, and guardrails. They are written in plain language and apply to every user in the Org.
+Spotter instructions shape how the agent communicates — its tone, persona, format, and what topics it will or won't answer. They are separate from memory: memory is what Spotter knows about your business; instructions are how it behaves. Set your instructions before building memory — they take priority over everything memory generates.
 
-This page covers what they are, how they differ from data model instructions, when to use them, what to put in them, and several examples you can adapt.
+This page covers what instructions are, how they differ from data model instructions, when to use them, what to put in them, and several examples you can adapt.
+
+Instructions versus memory:: Use instructions for hard rules that must always apply: topic restrictions, required disclaimers, persona. Use memory for business logic, definitions, and context that the AI should learn and adapt. Instructions always override memory. Set hard guardrails here before adding memory.
+
+== Requirements
+
+
+You must have *Can manage Spotter* privilege(Org admin) to create instructions.
+- We support one set per Org; instructions apply to all users.
+- Instructions take effect immediately on save.
+
+
+
+== Spotter instructions vs data model instructions
+
+Both Spotter instructions and xref:data-model-instructions.adoc[data model instructions] affect Spotter, but they answer different questions.
+
+[options="header"]
+|===
+| | Data model instructions | Spotter instructions
+
+| Answers the question | What does this data mean? | How should the agent behave?
+
+| Configured by | Data model owner or data engineer | Admin or Org admin
+
+| Where it lives | On the Model, in the Data workspace | In Spotter settings, at the Org level
+
+| Scope | Everyone who queries that Model | Everyone in the Org, across all Models
+
+| Example | "Revenue excludes intercompany transactions." | "Always lead with attainment %, never absolute quota numbers."
+
+| Example | "Default time period is the last 30 days." | "Decline questions about HR data and redirect users to the People workspace."
+|===
+
+The one-line test:: If the rule would still be true if a different team used the same data, it belongs in the data model. If the rule is about _how the agent should respond_ — tone, format, what to flag, what to refuse — it belongs in Spotter instructions.
+
+When you have both, Spotter applies data model instructions first (because they define the data) and then layers Spotter instructions on top (because they shape the response).
 
 == What are Spotter instructions
 
@@ -37,30 +73,6 @@ What format should I use?:: Plain language. No code, no schema. Up to 5,000 char
 
 What will Spotter instructions not do?:: Spotter instructions cannot override ThoughtSpot's core safety guardrails, and they cannot manipulate data. Spotter still respects the row-level security and data permissions configured on your data models.
 
-== Spotter instructions vs data model instructions
-
-Both Spotter instructions and xref:data-model-instructions.adoc[data model instructions] affect Spotter, but they answer different questions.
-
-[options="header"]
-|===
-| | Data model instructions | Spotter instructions
-
-| Answers the question | What does this data mean? | How should the agent behave?
-
-| Configured by | Data model owner or data engineer | Admin or Org admin
-
-| Where it lives | On the Model, in the Data workspace | In Spotter settings, at the Org level
-
-| Scope | Everyone who queries that Model | Everyone in the Org, across all Models
-
-| Example | "Revenue excludes intercompany transactions." | "Always lead with attainment %, never absolute quota numbers."
-
-| Example | "Default time period is the last 30 days." | "Decline questions about HR data and redirect users to the People workspace."
-|===
-
-The one-line test:: If the rule would still be true if a different team used the same data, it belongs in the data model. If the rule is about _how the agent should respond_ — tone, format, what to flag, what to refuse — it belongs in Spotter instructions.
-
-When you have both, Spotter applies data model instructions first (because they define the data) and then layers Spotter instructions on top (because they shape the response).
 
 == When to add Spotter instructions
 

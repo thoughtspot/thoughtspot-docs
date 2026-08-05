@@ -1,249 +1,295 @@
-= Frequently asked questions for memory
+= Frequently asked questions for getting Spotter ready
 :page-last_updated: Apr 14, 2026
 :author: Naomi
-:jira: SCAL-300551
+:jira: SCAL-300551, SCAL-320863
 :linkattrs:
 :experimental:
 :description: Explore frequently-asked questions for memory.
 [.faq]
 --
-== What is memory and how is it different from earlier options?
 
-We already had reference questions, business terms, and instructions. What is memory adding on top of that?:: Memory is a new, AI-managed layer on top of existing coaching. The core difference:
+This page covers the full setup journey for Spotter: use case discovery, data model readiness, instructions, and memory. Use the section headings to jump to what you need.
+
+== Use case discovery
+
+How many Liveboards should I start with?::
+Start with one to three. Choose Liveboards that represent your most common, most trusted query patterns — not your most complex ones. The goal is to give Spotter a clear signal about how your team actually uses the data, not to upload everything at once.
 +
-[options="header"]
-|===
-| | Existing coaching | Memory
-| How it's created | Manually authored by a user | AI generates from Liveboards or learns from conversation
+Adding more Liveboards before validating the first batch creates noise. Get one Liveboard generating clean memory, run representative questions, and expand from there.
 
-| How it's consumed | Verbatim-- Stored exactly as written | Semantically-- retrieved based on relevance to the current question
-
-| Who creates it | Users with coaching or data model edit access | Users with coaching or data model edit access
-
-| In the current release | Continues to work exactly as before | New, additive layer
-|===
+What if I don't have any Liveboards yet?:: You can still set up Spotter without Liveboards. Write instructions and AI context manually to cover your core business definitions and constraints. Conversation learning is available from day one — users with Can manage Spotter privileges can correct Spotter mid-conversation and those corrections become shared memory.
 +
-IMPORTANT: Nothing about reference questions, business terms, or instructions changes in this release. Memory is additive — Spotter will use both your existing coaching and newly generated memory when answering questions.
---
+Plan to add a trusted Liveboard once your team has built one around the answers you want Spotter to replicate.
 
-[.faq]
---
-Why are we doing this? What problem does memory solve?::
-* Liveboards already contain trusted answer patterns — Memory learns from them automatically instead of requiring manual transcription into reference questions.
-* Corrections made mid-conversation persist going forward.
-* Memory is retrieved semantically, not by keyword match — works even when phrasing varies, and supports multilingual queries.
-
-Does memory replace reference questions, business terms, and instructions?::
-No. They continue to work unchanged. The long-term direction is to unify all coaching into the memory system (so that adding a reference question automatically generates memory in the backend).
---
-
-== What gets generated-- rules and recipes
-[.faq]
---
-What types of memory does the system generate?::
-Two types:
-* Rules — business definitions, constraints, and conventions that should apply consistently. Example: "Revenue always excludes returns." Rules are written from both Liveboard learning and conversation learning.
-* Recipes — proven query patterns derived from Liveboards. A recipe captures the exact columns, filters, and computation steps that produced a trusted answer. Example: "MTTR by priority — use cohort-based events filtered to last month."
-
-What does the system NOT learn?::
-* Charting preferences or visualization types
-* How to apply Sets
-* General interaction style preferences (e.g. "always respond in bullet points")
-* Anything derived from tables or Views — Memory generates from data models only
-
-What is the difference between xref:data-model-instructions.adoc[instructions] and rules? Should I use one or the other?::
-Both help Spotter follow business logic. The difference is in how they're managed and enforced.
+Can I use someone else's Liveboard?:: Yes, as long as you have view access to it and the Liveboard is built on a data model (not a table or View). The memory generated from that Liveboard is scoped to the data model — it applies to anyone querying that Model, regardless of who added the Liveboard source.
 +
-[options="header"]
-|===
-| | Instructions | Rules (Memory)
-| Created by | User, manually | AI -- from Liveboards or conversation
-| Maintained by | User, manually | AI -- conflicts auto-merged
-| Enforcement | Strictly followed; agent prioritizes instructions over rules | Applied contextually. Analysts should verify before using.
-|===
+If the Liveboard owner later modifies or deletes the Liveboard, the memory already generated is not affected. Memory reflects the Liveboard state at generation time.
+
+== Data model readiness
+
+What if my data is a View?:: Memory generation does not work on Liveboards built on tables or Views — only on data models. If your Liveboard has a mix of charts (some from a data model, some from a View), generation proceeds on the data model charts only. Charts built on Views are skipped without error.
 +
-When to use each:
+Instructions and AI context work regardless of underlying source type.
 
-* Instructions — hard constraints that must never be violated; stable, well-understood directives.
-* Conversation learning — lean into this wherever possible. Definitions change over time; corrections taught in conversation evolve naturally.
-* Liveboard learning — cold start on a new data model, or to get coverage on a use case you haven't coached for yet.
+Do I need to complete data model readiness before generating memory?:: You do not need to complete every data model readiness step before generating memory, but the quality of memory depends on the quality of the data model. A poorly named or underdocumented data model produces vague or incorrect rules.
 +
-Both coexist. Instructions are enforced more strictly because rules are AI-generated and need analyst verification.
+Recommended minimum before generating memory:
++
+--
+- Column names and descriptions are accurate and human-readable.
+- Key metrics are defined consistently.
+- Any columns not relevant to Spotter queries are excluded from the data model.
+--
++
+Do not use memory to compensate for a poorly-structured data model. If your underlying columns are ambiguous, clean them up first — memory will encode the ambiguity, not fix it.
+
+What happens if I re-run AI context generation after making manual edits?::
+Re-running AI context generation overwrites any manual edits you made to the AI context fields. If you have customized AI context manually, document what you changed before re-running, or do not re-run.
++
+AI context and memory are separate systems. Re-running AI context generation does not affect memory; rules and recipes generated from Liveboards are unaffected.
+
+== Instructions
+
+When should I use Spotter instructions versus data model instructions?::
+Use **Spotter (agent-level) instructions** for behavioral constraints that apply across all queries in that Spotter instance — output format requirements, personas, escalation rules, or org-wide policies.
++
+Use **data model instructions** for constraints specific to a dataset — how a metric is defined, which columns to avoid, scope limitations for that data model.
++
+If a constraint needs to be consistent everywhere Spotter is deployed, it belongs in agent instructions. If it only matters for one data model, it belongs in data model instructions.
+
+When should I use instructions versus memory?::
+Use **instructions** for hard constraints that must always be followed — they are prioritized over memory and applied strictly. Use instructions when the rule is non-negotiable and you want no ambiguity in enforcement.
++
+Use **memory** for definitions, patterns, and conventions that Spotter should apply contextually. Memory is retrieved semantically and applied with judgment — it is better suited to nuanced business logic that depends on context.
++
+A common pattern: use instructions to define the boundary (e.g., "never include cancelled orders in revenue"), and let memory handle the details of how revenue is calculated for different query types.
+
+Can instructions conflict with memory — and which one wins?::
+Yes, they can conflict. Instructions win. Spotter prioritizes instructions over memory rules when they contradict each other.
++
+If you find Spotter ignoring a memory rule, check your instructions first — a broadly-written instruction may be overriding the rule you expect to apply. The fix is usually either to narrow the instruction or to remove the conflicting memory rule.
+
+== Memory
+
+What is memory and how is it different from earlier options?::
++
+Memory is an AI-managed knowledge layer distinct from reference questions, business terms, and instructions. The key differences:
++
+--
+- **Earlier options** (Reference questions, business terms, instructions) — manually authored; stored and consumed verbatim; requires upfront work before Spotter can use it.
+- **Memory** (Rules and recipes) — generated by AI from Liveboards or written through conversation; retrieved semantically based on relevance, not exact match; supports varied phrasing and multilingual queries.
+--
++
+Nothing about reference questions, business terms, or instructions changes with the introduction of memory. Memory is additive.
+
+What are the two types of memory?::
+Starting in 26.7, Spotter Memory has two distinct types:
++
+--
+- **Shared memory** — data model Rules and Recipes built by users with Can manage Spotter and from Liveboards. Applies to all users querying that data model. This is what "memory" meant in 26.5 and 26.6 — the name is new, the behavior is not.
+- **Personal memory** — context built by individual users about themselves (role, preferences, accounts, recent work). Applies only to the user who created it.
+--
++
+Both types are active simultaneously. Enabling personal memory does not change how shared memory works.
+
+Why implement memory?::
+Three problems memory solves:
++
+--
+- Liveboards contain trusted, proven answer patterns. Memory learns from them automatically rather than requiring manual transcription into Reference Questions.
+- Corrections made mid-conversation persist going forward — no need to update instructions manually after every Spotter error.
+- Memory retrieves semantically, so it applies even when the user phrases a question differently or uses a different language.
 --
 
-== Enabling memory
-[.faq]
---
-Is memory on by default in this release?::
-No. The feature is disabled by default. An admin must explicitly enable it.
+What gets stored in memory?::
+**Rules** capture business definitions, constraints, and conventions that should apply consistently. Example: *"Revenue always excludes returns."*
++
+**Recipes** (shared memory only) represent proven query patterns from Liveboards — specific columns, filters, and computation steps behind a trusted answer. Example: *"MTTR by priority — use cohort-based events filtered to last month."*
++
+**Personal context** captures what Spotter knows about an individual user — role, goals, output preferences, and personal scope. Stored and applied only for that user.
++
+The system does NOT store: visualization preferences, global filter states, interaction style patterns from passive observation, or patterns from tables/Views.
 
-How does an admin enable memory?::
-Navigate to the Admin tab. Select *All Orgs* > *ThoughtSpot AI*. Scroll to *Other AI features* and enable *Memory from Liveboards and conversations*. This option controls both Learning from Liveboards and Learning from conversation.
+== Memory: common mistakes
 
-What happens when the admin disables memory?::
-* No new memory can be generated (from Liveboards or conversation).
-* Spotter stops consuming any previously generated memory.
-* Reference questions and business terms continue to work normally — they are not affected by this feature.
-* Existing memory is not deleted. If the feature is re-enabled, all previously generated memory becomes active again immediately.
---
+Can I use memory to fix a poorly structured data model?::
+No. Memory encodes what it finds in the Liveboard. If the underlying data model has ambiguous column names, inconsistent metric definitions, or missing relationships, memory will reflect that ambiguity — not correct it. Fix the data model first, then generate memory.
 
-== Learning from Liveboards
-[.faq]
---
-What is learning from Liveboard?::
-It lets a user point Spotter at a trusted Liveboard — one that already reflects how your team queries a dataset — and generate memory from it. Spotter analyzes the charts and their underlying queries, extracts rules and recipes, and uses them when answering future questions on the associated data models.
+How do I avoid teaching Spotter things it already knows?::
+Spotter infers a significant amount from data model structure, column descriptions, and context. Before writing explicit memory rules, test whether Spotter already answers correctly without them. Avoid writing rules for behavior Spotter already demonstrates reliably — duplicate rules create noise and can introduce conflicts.
 
-How do you add memory from a Liveboard?::
-Navigate to the Memory sources page, select the Liveboard tab, and click + Add Liveboard. Select the Liveboard(s) from the modal, add context and verify the data models, and click Generate.
-Generation typically takes 10–20 minutes depending on the size of the Liveboard.
+What's wrong with creating near-duplicate reference questions?::
+Near-duplicate reference questions (e.g., "revenue this month" and "revenue in current month") create ambiguity for Spotter at retrieval time. If you need to cover phrasing variations, write one canonical question and let Spotter's semantic retrieval handle the variants. Review your reference questions periodically and consolidate duplicates.
+
+Does memory update automatically when the data model changes?::
+No. Memory does not refresh when columns are renamed, metrics are redefined, or relationships change. Stale memory — rules that no longer match the data model — can silently degrade answer quality.
++
+After any significant data model change, review your memory: correct specific stale rules in conversation, or delete the Liveboard source and regenerate from the updated Liveboard.
+
+== Memory: enabling and setup
+
+Is memory on by default?::
+No. Admins navigate to **cluster admin settings → AI settings** and enable **"Memory from Liveboards and conversations"** under Spotter capabilities.
++
+For personal memory specifically: an additional flag — **"Enable personal memory learning for all users"** — must also be on.
+
+What happens when memory is disabled?::
+- Generation stops.
+- Spotter stops consuming any previously generated memory.
+- Reference Questions, Business Terms, and Instructions continue normally.
+- Existing memory is retained — re-enabling restores it immediately.
+
+== Memory: learning from Liveboards
 
 Who can generate memory from a Liveboard?::
-Users who have coaching access or data model edit access on the data models associated with the Liveboard. Users can only generate memory on Models they have the right permissions for. If a Liveboard touches Models the user cannot access, those Models are excluded — generation proceeds on the accessible models only.
+Users with Can manage Spotter, Manage Memory access, or data model edit access.
 
-Can you use a Liveboard that's built on a table or View (not a data model)?::
-No. Memory generation requires data models. If a Liveboard is built entirely on tables or Views, you see an error when you try to generate memory. If the Liveboard has a mix of data model charts and table/View charts, generation proceeds on the data model charts only — tables and Views are excluded.
+How long does generation take?::
+10–20 minutes depending on Liveboard size.
 
-How do I verify what the system actually learned from my Liveboard before relying on it?::
-There are three ways to check:
+What are the Liveboard requirements?::
+Data models only. Liveboards built on tables or Views return an error. For mixed Liveboards, generation proceeds on data model charts only.
 
-* Download: Use the Download memory option on the Memory sources page to get the full set of generated rules and recipes as a JSON file.
-* Ask the agent: In a Spotter conversation, ask "What do you remember about this dataset?" and Spotter will surface relevant rules it is holding.
-* Thinking view: While asking questions in Spotter, expand the Thinking view to see exactly which memory context is being fetched and applied for that query.
+How do I verify memory after generation?::
+Three methods:
 +
-We recommend you run five to ten representative questions on the dataset after generation and compare the answers to your baseline — that is the most reliable way to validate what the system has learned.
-
-Spotter's answers got worse after I generated memory from a Liveboard. What do I do?::
-First, identify what changed — use the Thinking view to see which memory context was applied on a bad answer. This tells you whether the issue is a specific incorrect rule or recipe.
-+
-Once identified, you have two options:
-+
-Correct it in conversation:::
-A coaching user can tell Spotter the correct definition mid-conversation — for example, "No, that's wrong — Sets usage = cohort-save event. Remember this." Spotter will update that specific rule and confirm what was saved.
-Delete the source and regenerate:::
-If the Liveboard itself is the problem (too broad, mixed signals, outdated), delete the Liveboard source from Memory sources — this automatically deletes all memory generated from it — and regenerate from a cleaner or smaller Liveboard.
-
-Can I edit individual rules directly without deleting the whole Liveboard source?::
-We do not currently support rule-level editing. The two correction paths are to edit in conversation (for targeted fixes) or delete and regenerate (for a full reset). Conversation correction is the faster option when only a few rules are wrong.
 --
-
-== Learning from conversations
-[.faq]
+1. Download memory as JSON from the Memory Sources page.
+2. Ask Spotter: *"What do you remember about this dataset?"*
+3. Check the Thinking view during a query.
 --
-What is Learning from conversation?::
-When a coaching user corrects Spotter or explicitly teaches it something during a conversation, that learning is saved as a rule on the data model — and applies to future answers for everyone using that dataset.
-
-Who can teach Spotter from conversation?::
-Coaching users only. Specifically, users who have data model coaching permission, data model edit access, or admin access.
 +
-End users without coaching permission cannot currently write data model memory.
+Run 5–10 representative questions after generation and compare to your baseline answers.
 
-What triggers learning?::
-Explicit user intent — Spotter does not learn from every message. Triggers include:
+What should I do if answers get worse after generation?::
 
-* "Remember this: [definition]"
-* "Always [do X]" / "Never [do Y]"
-* Corrective statements like "No, Sets usage = cohort-save event" after an incorrect answer
-* "Correct. Save this."
+- **Correct in conversation** — tell Spotter the right definition; it updates that specific rule.
+- **Delete and regenerate** — remove the Liveboard source; this automatically deletes all memory generated from it, then add it again and regenerate.
+
+Can I edit individual rules directly?::
+
+Not currently.
+
+== Memory: learning from conversations
+
+Who can write shared memory from conversation?::
+Users with Can manage Spotter, Manage Memory access, data model edit access, or admin access. End users without these permissions cannot write shared data model memory.
 +
-Vague dissatisfaction ("this looks off") does not trigger learning.
+In 26.7, all users can write **personal** memory from conversation (see the Personal memory section). This restriction applies to shared data model memory only.
 
-What exactly does the system learn from a conversation? Does it also update Instructions or the data model AI context?::
-No. Conversation learning only writes to memory — specifically rules at the data model layer. It does not update instructions, data model AI context, reference questions, or business terms. Those remain separate and must be managed manually as before.
+What triggers memory learning from a conversation?::
+Explicit intent:
 +
-A few important scope boundaries for this release:
-
-* Data model layer only. Memory from conversation is scoped to the data model being queried. There is no user-level preference learning (for example, "always show me tables") and no enterprise-wide learning that applies across all data models.
-* No cross-data-model learning. If a conversation spans multiple data models, memory is not written across them.
-
-Does conversation learning work in Auto-mode?::
-No. Memory writing from conversation is not supported in auto-mode.
-
-Does it work across multiple data models in one conversation?:: No. In 26.5, memory is scoped to a single data model per session. Cross-data-model learning is not supported.
 --
+- *"Remember this: [definition]"*
+- *"Always [do X]"* / *"Never [do Y]"*
+- Corrective statements after an incorrect answer
+- *"Correct. Save this."*
+--
++
+Vague dissatisfaction does not trigger learning.
+
+Does conversation learning update instructions or reference questions?::
+No. Conversation learning writes memory at the data model layer — it does not update instructions, AI context, reference questions, or business terms.
+
+== Personal memory
+
+What is personal memory?::
+Personal memory is context Spotter builds about an individual user — their role, goals, output preferences, and personal scope (accounts, region, team). It is separate from shared data model memory and applies only to that user's sessions.
+
+Who can create personal memory?::
+Any user, once the admin enables the **"Enable personal memory learning for all users"** flag. Can manage Spotter is not required.
+
+What can users teach Spotter about themselves?::
+Four categories:
+- **Role and goals** — job title, team, focus areas, expertise level
+- **Preferences** — output format, verbosity, time granularity, language
+- **Personal context** — accounts, region, team, personal performance targets
+- **Recent work context** — current project, last analysis run
+
+How does a user teach Spotter their personal context?::
+Through conversation — the same mechanism as shared memory. Explicit statements like *"Remember I'm Head of CS for EMEA focused on renewals"* or *"Always show me tables"* trigger a save. Spotter confirms what was saved.
++
+Personal memory is not written passively. Spotter only saves what is explicitly stated. Conversations without explicit instructions do not create personal memory.
+
+How does Spotter use personal memory?::
+Applied quietly in every session — the user does not re-state their context. Explicit in-query instructions always override personal memory for that query.
++
+Personal memory sits below agent-level instructions in the priority order. Hard guardrails set by Org admins in agent instructions always win. For soft preferences like output format, Spotter weighs both and makes a judgment call — behavior is not guaranteed to be consistent in this release.
+
+What happens when personal memory conflicts with shared data model memory?::
+Personal memory does not override shared data model Rules. If shared memory defines *"revenue excludes returns"* and a user has personal context that suggests otherwise, the data model definition takes precedence. Personal memory shapes context and preference, not data definitions.
+
+How do users see what Spotter knows about them?::
+Ask in conversation: *"What do you know about me?"* Spotter summarises all saved personal memory for that user.
++
+To understand a specific personalisation: *"Why did you filter to EMEA?"* Spotter explains which saved context it applied.
+
+How do users correct or delete personal memory?::
+Both through conversation:
++
+--
+- **Correct:** *"My region is now DACH, not EMEA."*
+- **Delete:** *"Forget that my region is EMEA."*
+--
++
+There is no personal memory management UI in this release.
+
+Can admins see a user's personal memory?::
+No. Admins cannot view the personal memories of individual users in this release. The memory download from the Memory Sources page covers shared memory only.
+
+How do users turn personal memory off for themselves?::
+Open Spotter, click the *Settings* icon in the lower left corner, and toggle *Personal memory* off. Existing personal memories are preserved but not applied. Re-enabling the toggle makes them active again.
 
 == Permissions
 
 [options="header"]
 |===
 | Action | Who can do it
-| Enable or disable the Memory feature | Admins only
-| Generate memory from a Liveboard | Users with coaching or data model edit access on the associated models
-| Write data model memory from conversation | Coaching users (data model coaching permission, edit access, or admin)
+|---|---
+| Enable / disable the master memory flag | Admins only
+| Enable personal memory for all users | Admins only
+| Generate shared memory from a Liveboard | Users with Can manage Spotter, Manage Memory access, or data model edit access
+| Write shared memory from conversation | Users with Can manage Spotter, Manage Memory access, data model edit access, or admin access
 | Delete a Liveboard source | User who added it, or admin
-| View generated memory (summary, download) | Any user with access to that data model
+| Write personal memory from conversation | Any user (when personal memory admin flag is on)
+| View own personal memory | Any user — ask Spotter: *"What do you know about me?"*
+| Correct or delete own personal memory | Any user, via conversation
+| Turn personal memory off for themselves | Any user (profile settings toggle)
+| View shared memory | Any user with access to that data model
+| View another user's personal memory | Not available in this release
 |===
 
-== Staleness and data model changes
-[.faq]
---
-What happens if the underlying data model changes after memory is generated?::
-Memory does not automatically update when a data model changes. If column names, metric definitions, or relationships change, existing memory referencing the old state becomes stale.
-+
-Workarounds:
+== Staleness and updates
 
-* Correct specific stale rules from conversation.
-* Delete the Liveboard source and regenerate after the data model has stabilized.
-+
-The practical mitigation is to regenerate memory after significant data model changes, and validate with representative test questions before and after.
+Shared memory does not automatically refresh when data models change. Column renames, metric redefinitions, and relationship changes can all produce stale memory. Correct specific stale rules through conversation, or delete the Liveboard source and regenerate after the data model stabilizes.
 
-I edited the Liveboard I learned from. Does the system automatically update the memory?::
-No. Memory reflects the state of the Liveboard at the time generation was run. Edits do not trigger a refresh.
-+
-Workarounds:
+Liveboard edits do not trigger a refresh — memory reflects Liveboard state at generation time.
 
-* Correct specific stale rules from conversation.
-* Delete the Liveboard source from Memory sources and re-trigger generation on the same Liveboard.
---
+Personal memory becomes stale when a user's role, accounts, or context changes and they have not updated Spotter. Users can correct stale personal memory in conversation at any time — *"My region is now DACH, not EMEA."* There is no automatic freshness mechanism in this release.
 
 == Environment and migration
-[.faq]
---
-Can I generate memory in a dev instance and push it to a prod instance?::
-Not directly. There is no tooling to migrate memory between environments in this release. The recommended approach:
 
-. Add the Liveboard to the dev environment and generate memory there.
-. Test with representative questions in dev.
-. Add the same Liveboard to the prod environment and generate memory independently.
+No tooling exists for migrating memory between development and production environments. the recommended approach is to generate in dev, test, then generate independently on the same Liveboard in production.
 
-Can memory be exported and imported?::
-Memory can be downloaded as JSON for inspection, but there is no import/upload mechanism in this release. Each environment maintains its own memory store independently.
+Memory downloads support JSON export for inspection. No import mechanism exists in this release.
 
-Memory — from Liveboard or conversation — is hurting answer quality. What do I do?::
-Disable *Memory from Liveboards and conversations* in instance settings.
-+
-Once disabled:
+If memory is hurting answer quality and you need to stop it immediately: disable **"Memory from Liveboards and conversations"** in instance settings. This stops generation and fetching but retains all existing memory. Reference questions, business terms, and instructions continue normally. Re-enabling restores all memory.
 
-* Memory stops being generated (no new learning from Liveboards or conversation).
-* Spotter stops fetching and applying any existing memory during conversations.
-* All previously generated memory is retained in the system — it is not deleted.
-* Reference questions, business terms, and instructions continue to work normally.
+== Technical
 
-+
-When you re-enable the feature, all existing memory becomes active again immediately. This gives you a clean way to isolate whether memory is the cause of accuracy issues, and a safe off-switch if it is.
---
+Where is memory stored?:: Separately from Reference Questions, Business Terms, and Instructions.
 
+Is there a TTL on memory?:: No. Memory persists — shared or personal — until explicitly deleted.
 
-== Technical questions
-[.faq]
---
-Where is memory stored? Is it the same as coaching?::
-No. Memory is stored separately from where coaching (reference questions, business terms, instructions) is stored.
-
-Is there a TTL (time-to-live) on memory?::
-No. There is no TTL on memory in this release. Memory persists until explicitly deleted.
-
-What LLM is used to generate memory from Liveboards and conversation?::
-Claude Sonnet 4.5.
---
+What LLM generates memory?:: Claude Sonnet.
 
 == Activation checklist
 
-For a customer turning on memory for the first time:
-
-. Admin enables *Memory from Liveboards and conversations* in instance settings.
-. Identify 1–3 trusted Liveboards that reflect how your team queries a key data model.
-. A coaching user opens Memory sources > Liveboard tab > + Add Liveboard, selects the Liveboards, adds context, and starts generation.
-. Wait ten to twenty minutes for async generation to complete.
-. Download memory as JSON from the Memory sources page to review what was generated, or ask Spotter directly: "What do you remember about this dataset?"
-Run five to ten representative questions in Spotter and compare quality before and after.
-. If any generated rules are wrong, correct them directly in conversation or delete the source and regenerate from a cleaner Liveboard.
+1. Read xref:spotter-before-you-start.adoc[Before you start]— confirm data model readiness and identify your use cases.
+2. Admin enables the Memory feature in cluster admin settings.
+3. Identify one to three trusted Liveboards reflecting key data model usage.
+4. User with Can manage Spotter opens *Memory Sources* > *Liveboards* tab > *+ Add Liveboard*.
+5. Wait 10–20 minutes for asynchronous generation.
+6. Download memory as JSON or ask Spotter what it remembers.
+7. Run 5–10 representative questions and compare quality — correct wrong rules via conversation or delete and regenerate.
