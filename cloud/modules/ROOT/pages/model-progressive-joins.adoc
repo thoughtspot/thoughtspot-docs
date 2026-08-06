@@ -1,5 +1,5 @@
 = How the Model join rule works
-:page-last_updated: 7/31/2025
+:page-last_updated: 8/6/2025
 :linkattrs:
 :experimental:
 :description: The Model join rule specifies when to apply joins when searching on a Model.
@@ -21,6 +21,68 @@ When using *Apply joins progressively*, the number of rows in a search using the
 The Model contains the results of a defined query in the form of a table.
 So if a particular dimension table is left out of the search, its joins are not applied.
 
+== Apply all joins
+
+The *Apply all joins* setting forces all tables in a Model to be included in every query, regardless of which columns are actually selected in the search.
+
+[IMPORTANT]
+====
+*Apply all joins* is considered an anti-pattern and is not recommended for most use cases.
+Enabling this setting significantly increases query cost because every table in the Model is joined on every search, even when most of those tables are not needed.
+There are very few business cases that justify this behavior.
+Use *Apply joins progressively* unless you have a specific and well-understood reason to do otherwise.
+====
+
+=== Behavior by Model type
+
+The effect of the *Apply all joins* setting varies depending on the schema type of your Model.
+
+[cols="1,2,2", options="header"]
+|===
+| Model schema type | Apply all joins: OFF (progressive) | Apply all joins: ON
+
+| *Single star schema* +
+(one fact table, one or more dimension tables)
+| Only the tables needed for the selected columns are joined.
+| All tables in the Model are joined on every query, regardless of which columns are selected.
+
+| *Fan trap* +
+(multiple fact tables, no shared dimensions between them)
+| Only the tables needed for the selected columns are joined.
+| All tables in the Model are joined on every query, regardless of which columns are selected.
+
+| *Chasm trap* +
+(multiple fact tables sharing one or more dimension tables)
+| The chasm trap methodology applies. Progressive join settings are ignored.
+| *This setting is ignored.* ThoughtSpot always uses the chasm trap join methodology. See <<chasm-trap-joins>>.
+|===
+
+=== Example: Single star schema
+
+Consider a Model with one fact table (`factInventory`) and three dimension tables (`DM_DATE_DIM`, `DM_PRODUCT`, and `DM_CATEGORY`, where `DM_CATEGORY` snowflakes off `DM_PRODUCT`).
+
+* With *Apply joins progressively*: a search using only a column from `DM_PRODUCT` joins only `DM_PRODUCT`. The fact table and other dimension tables are not included.
+* With *Apply all joins*: the same search joins all four tables — `factInventory`, `DM_DATE_DIM`, `DM_PRODUCT`, and `DM_CATEGORY` — even though only `DM_PRODUCT` columns were selected.
+
+=== Example: Fan trap
+
+Consider a Model with two fact tables (`factOrderRows` and `factOrderHeader`), where `factOrderHeader` has its own set of dimension tables and `factOrderRows` shares a product and category hierarchy.
+
+* With *Apply joins progressively*: only the tables relevant to the selected columns are joined.
+* With *Apply all joins*: all fact and dimension tables across both star schemas are joined on every query.
+
+[#chasm-trap-joins]
+== How joins are applied with chasm traps
+
+When working with Models and row-level security, you need to understand how joins are applied.
+This is particularly important with chasm trap schemas.
+For chasm trap schemas, if row-level security is only set on one of the tables, people could see data they should not see if the scope of their search does not include that table.
+
+For chasm trap _Models_, progressive and non-progressive joins do not apply.
+There is an entirely different methodology for how Model joins on a chasm trap schema work with row-level security.
+The *Apply all joins* setting is silently ignored for chasm trap Models — ThoughtSpot always executes a simple, optimized query using the chasm trap methodology regardless of how this setting is configured.
+So you can safely ignore that setting for chasm trap Models.
+
 == Rule-based row-level security (RLS) with Models
 
 With rule-based RLS, you need to protect every table that contains any sensitive data.
@@ -34,24 +96,14 @@ Users will never be able to see data they should not, regardless of what their s
 Imagine you have a Model that contains a `Sales` fact table, and `Customer` and `Product` dimensions that are joined on `Customer SSN` and `Product Code` columns.
 In order to secure the `Sales` table, you can use `Customer Name` from the `Customer` column to create a row-level security rule.
 
-== How joins are applied with chasm traps
-
-When working with Models and row-level security, you need to understand how joins are applied.
-This is particularly important with chasm trap schemas.
-For chasm trap schemas, if row-level security is only set on one of the tables, people could see data they should not see if the scope of their search does not include that table.
-(this protects them from having people see the wrong things if they have chasm trap).
-
-For chasm trap _Models_, progressive and non-progressive joins do not apply.
-There is an entirely different methodology for how Model joins on a chasm trap schema work with row-level security.
-So you can safely ignore that setting.
-
 '''
-> **Related information**
->
-> * xref:model-formula.adoc[Create a formula in a Model]
-> * xref:model-filter.adoc[Create a Model filter]
-> * xref:model-inclusion.adoc[Create join rule or RLS for a Model]
-> * xref:join-add.adoc[Create a join relationship]
-> * xref:join-worksheet-edit.adoc[Modify joins between v tables]
-> * xref:model-delete.adoc[Delete Models or tables]
-> * xref:scriptability.adoc[Migrate or restore Models]
+.Related information
+****
+* xref:model-formula.adoc[Create a formula in a Model]
+* xref:model-filter.adoc[Create a Model filter]
+* xref:model-inclusion.adoc[Create join rule or RLS for a Model]
+* xref:join-add.adoc[Create a join relationship]
+* xref:join-worksheet-edit.adoc[Modify joins between tables]
+* xref:model-delete.adoc[Delete Models or tables]
+* xref:scriptability.adoc[Migrate or restore Models]
+****
