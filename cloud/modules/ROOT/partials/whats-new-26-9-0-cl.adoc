@@ -64,7 +64,7 @@ You can now view the Answers you create in Search data as spreadsheets, showing 
 [#26-9-0-cl-cancellation]
 [discrete]
 === Search data query cancellation
-ThoughtSpot query cancellation is now generally available (GA). You can now stop in-progress queries on your cloud data warehouse (CDW) when you change or abandon a search. This reduces unnecessary CDW spend and lets you iterate faster.
+ThoughtSpot query cancellation for Search data is now generally available (GA). You can now stop in-progress queries on your cloud data warehouse (CDW) when you change or abandon a search. This reduces unnecessary CDW spend and lets you iterate faster.
 
 Previously, queries made using Search data continued running until timeout or completion even after you modified the search, navigated away, or edited an Answer. This release introduces two cancellation mechanisms:
 
@@ -75,11 +75,9 @@ ThoughtSpot automatically sends a cancel signal to the CDW when your action clea
 +
 A Cancel button is available on the *Search data* page for queries you want to stop manually.
 
-//This release covers the Search Data page, loading and editing of Answers, and sessions that arrive on *Search Data* via the edit option from Liveboards and Spotter.
-//To enable this feature, contact your administrator.
-
+image::query-cancellation.png[]
 // Mary. jira: SCAL-293396. docs jira: SCAL-293397
-// PM: Abhijit. clarify that this is Search data query cancellation. add image highlighting cancel button.
+// PM: Abhijit.
 
 [#26-9-0-cl-grab]
 [discrete]
@@ -101,11 +99,13 @@ A Cancel button is available on the *Search data* page for queries you want to s
 
 [#26-9-0-cl-freeze]
 [discrete]
-=== Auto freeze and unfreeze new pivot tables and charts facet vectors
+==== Unified horizontal scrollbar for charts and pivot tables
+ThoughtSpot now renders a horizontal scrollbar across all chart types, including pivot tables, cartesian, stacked, combo, scatter, and polar charts. For pivot tables, this removes the previous row-header column width cap, so attribute labels render at their full natural width instead of being truncated. The scrollbar behavior is consistent across chart types and viewport sizes.
 
+NOTE: This feature requires New Charts to be enabled and applies to both embedded and non-embedded ThoughtSpot instances.
 // Mary. jira: SCAL-312449. docs jira: SCAL-?
 // PM: Anshul
-// Pivot table mobile app enhancement. Waiting for confirmation of doc req from PM.
+// This is direct to GA in 26.9.0.cl but behind a flag. Waiting for clarification on this rollout/enablement.
 
 
 // Analyst
@@ -160,55 +160,35 @@ The Command Palette (⌘K / Spotlight) has also been extended so every admin scr
 
 [#26-9-0-cl-ea]
 [discrete]
-=== Access to EA flags that are not Org-aware
+==== Early Access flag management for cluster admins
+
+Cluster admins can now view and manage Early Access flags that are not Org-aware directly from *Admin* > *Feature Management* > *Early Access*. Previously, these flags were only accessible via CLI and did not appear in the *Feature Management* UI.
+
+Early Access flags that are not Org-aware appear as On/Off toggles. Toggling a flag applies the change cluster-wide, with no per-Org assignment required. Org-aware Early Access flags are unaffected and retain the existing per-Org assignment experience.
+
+This feature is visible only to cluster admins. Org Admins do not see non-Org-aware flags in *Feature Management*.
 
 // Mary. jira: SCAL-319110. docs jira: SCAL-319128
-// PM: Sidharth
+// PM: Sidharth - Waiting for confirmation about if any specific non-org-aware EA flags ship with 26.9.0.cl or if this is infrastructure for future flags. Also need to confirm enablement as this is marked as EA.
 
 [#26-9-0-cl-scheduled]
 [discrete]
-=== Scheduled Liveboards: include other process types for connection configuration
-You can now create a dedicated connection configuration for *Scheduled Liveboards*, allowing scheduled Liveboard queries to use a separate warehouse, credentials, or non-OAuth authentication method, instead of the parent connection's default configuration.
+=== Scheduled Liveboards: dedicated connection configuration
 
-A new *Scheduled Liveboard* checkbox has been added to the *Processes* policy type in connection configuration, alongside the existing *Row count stats* option.
+You can now add a *Scheduled Liveboards* process type to a connection configuration, so scheduled Liveboard queries can use a separate warehouse, credentials, or non-OAuth authentication method instead of the parent connection's defaults.
 
-// Mary. possibly combine these blurbs. add value prop/use case.
+Look for the new *Scheduled Liveboard* checkbox under the *Processes* policy type in Connection Configuration, alongside the existing *Row count stats* option.
 
-[#26-9-0-cl-config]
-[discrete]
-=== Connection configuration: scheduled Liveboards process type
-
-You can now create a dedicated connection configuration for *Scheduled Liveboards*, allowing scheduled Liveboard queries to use a separate warehouse, credentials, or non-OAuth authentication method—instead of the parent connection's default configuration.
-
-A new *Scheduled Liveboard* checkbox has been added to the *Processes* policy type in Connection Configuration, alongside the existing *Row count stats* option.
-
-==== Key details
-
-[cols="1,3", options="header"]
+[cols="1,3"]
 |===
-| Detail | Description
-
-| *Supported connectors*
-| Snowflake, Databricks, Google BigQuery
-
-| *One config per process type*
-| Only one configuration per process type; multiple processes can be selected under a single configuration
-
-| *Authentication*
-| Non-OAuth only; OAuth configurations display an error
-
-| *Shared metadata*
-| All configurations share the same metadata and data; only authentication type, credentials, and warehouse may differ
-
-| *Query routing*
-| Scheduled Liveboard tasks automatically use the Scheduled Liveboard configuration instead of the parent connection
-
-| *Lifecycle*
-| Configurations can be edited, enabled, or disabled after creation
+| Supported connectors | Snowflake, Databricks, Google BigQuery
+| Authentication | Non-OAuth only
+| Query routing | Scheduled Liveboard tasks automatically route to this configuration
+| Limits | One configuration per process type; multiple processes can share a single configuration
 |===
-
+image::LBsched-connection-config.png[]
 // Mary. jira: SCAL-312738. docs jira: SCAL-312739
-// PM: Prayansh - waiting on info, JIRA marked as pre-GA, feature enablement marked as GA (on by default). remove table.
+// PM: Prayansh - waiting on info, JIRA marked as pre-GA, feature enablement marked as GA (on by default).
 
 [#26-9-0-cl-encoding]
 [discrete]
@@ -233,7 +213,7 @@ Collections now support starring and filtering. You can mark a collection as a f
 [#26-9-0-cl-aggregate-aware]
 [discrete]
 === Aggregate-aware query execution
-Aggregate-aware query execution is now generally available (GA). This is a transparent query optimization feature where *Search data* automatically switches from detailed Models to associated aggregate Models. This provides a mechanism to manage and reduce cloud costs and improve query latency while maintaining insight accuracy. For more information, see
+Aggregate-aware query execution is now generally available (GA). Search data automatically switches from detailed Models to associated aggregate Models based on query granularity, reducing cloud costs and improving query latency without affecting insight accuracy. For more information, see
 ifndef::pendo-links[]
 xref:model-aggregate-aware.adoc[Aggregate-aware Model switching].
 endif::[]
@@ -243,15 +223,29 @@ endif::[]
 // Mary. jira: SCAL-296396. docs jira: SCAL-296397
 // PM: Damian
 
-////
+
 [#26-9-0-cl-aggregate]
 [discrete]
-=== Table summaries - table aggregate
-Summary rows and headline cells in tables now use table aggregates to compute measures at the table's aggregate grain, eliminating the double- and triple-counting caused by many-to-many joins. Data rows remain correct; only the rollups were affected.
+=== Table summaries: table aggregate for all measure types
+ThoughtSpot now supports table aggregate (TABLE_AGGR) as a selectable headline aggregation option for all measure types in tables and pivot tables, including composable measures such as sum, min, max, and count.
 
+Previously, table aggregate was available only for non-composable measures (for example, average and unique count). This caused incorrect headline and summary values in data models with many-to-many joins, where join fan-out inflated rollup totals. With this change, you can select TABLE_AGGR for any measure to compute a true grand total across the result set.
+
+[cols="1,3"]
+|===
+| Default aggregation | Unchanged for composable measures — TABLE_AGGR becomes a selectable option only, not the new default
+
+| Incompatible measures | Constant and variable expressions do not qualify for TABLE_AGGR even when the flag is enabled
+
+| Incompatible formulas | Summary cells for measures incompatible with table aggregate semantics render blank rather than returning an error; row-level values are unaffected
+
+| Scope | Headline cells and summary/subtotal rows in tables and pivot tables
+|===
+
+To enable this feature, contact your administrator.
 // Mary. jira: SCAL-318874. docs jira: SCAL-318875
-// PM: Anshul - waiting on info. potentially release notes only.
-////
+// PM: Anshul - waiting on info - confirm EA?. potentially release notes only.
+//This feature is controlled by the `headlineTableAggrForAllMeasuresEnabled` flag, which is disabled by default. Contact your ThoughtSpot administrator to enable it.
 
 [#26-9-0-cl-databricks]
 [discrete]
