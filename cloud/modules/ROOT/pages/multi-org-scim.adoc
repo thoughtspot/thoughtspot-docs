@@ -8,6 +8,7 @@
 If your ThoughtSpot instance has Orgs enabled and you want to provision users to specific Orgs via SCIM, you must follow a specific setup pattern in your identity provider (IdP).
 Deviating from this pattern causes users to be provisioned to the wrong Org.
 
+
 == How it works
 
 // SOURCE: SCAL-309838, Google Doc
@@ -19,6 +20,8 @@ When your IdP sends a provisioning request, ThoughtSpot reads the bearer token i
 * SCIM tokens are Org-scoped.
 * The token configured on an IdP application determines the target Org — not the application's role in the SSO flow.
 * Configuring the wrong Org's token on any application silently provisions users into the wrong Org.
+* If your deployment includes users with the Cluster Admin role, SCIM group assignment may silently fail for those users in Orgs where they have implicit membership. See xref:multi-org-scim.adoc#scim-multiorg-known-limitations[Known limitations] for details and resolution steps.
+
 ====
 
 == Internal users — shared SSO app with per-Org SCIM apps
@@ -75,7 +78,6 @@ Each Org requires:
 [NOTE]
 ====
 Generate each Org's SCIM token from that Org's *Admin* > *Security settings* page in ThoughtSpot.
-// TODO: verify with engineering — confirm the exact navigation path for generating a per-Org SCIM token in the ThoughtSpot UI (Admin > Security or equivalent).
 ====
 
 === User assignment requirements
@@ -240,7 +242,6 @@ Disable SCIM on the base app and create a dedicated Primary Org app configured w
 +
 Check your IdP's provisioning logs and ThoughtSpot audit logs for SSO login events versus SCIM provisioning events.
 If only SSO login events appear for a user with no preceding SCIM provisioning event, the account was created via JIT provisioning and the user was placed in the Primary Org by default.
-// TODO: verify with engineering — confirm what customers should check when diagnosing JIT vs. SCIM provisioning events. Clarify the recommended ThoughtSpot UI path or audit log location. The source draft references an internal log term that must not appear in customer-facing content.
 
 - *Is the correct Org-specific token configured in each IdP application?*
 +
@@ -252,4 +253,31 @@ This applies to both the internal-user and external-user scenarios.
 +
 Assigning an external user to multiple applications provisions them into multiple Orgs, which violates the single-Org isolation expected for external users.
 Remove the extra assignment and deprovision the user from the unintended Org.
-// TODO: verify with engineering — confirm the steps for deprovisioning a user from an Org they were incorrectly provisioned to (UI path or API call).
+
+[#scim-multiorg-known-limitations]
+== Known limitation
+In multi-Org deployments, SCIM group assignment can silently fail for users who have the Cluster Admin role.
+
+*Why this happens*
+
+Cluster Admins have implicit membership in all Orgs. When SCIM processes a group-membership update, ThoughtSpot's internal membership filter requires an *explicit* Org ID match for each user. Because Cluster Admins' Org membership is implicit rather than explicit, the filter excludes them from the group-update operation, and no error is returned to the identity provider.
+
+//through a system attribute called `belongToAllOrgs`
+
+This is why the behavior appears inconsistent across Orgs:
+
+* In Orgs where the Cluster Admin was *explicitly* added (with a direct org membership record), the filter passes and group assignment succeeds.
+* In Orgs where the Cluster Admin exists only through implicit membership, the filter excludes them and group assignment is silently skipped.
+
+NOTE: This limitation affects group updates only. User creation and other SCIM operations are not affected.
+
+*Symptoms*
+
+* SCIM provisioning logs in your identity provider show no errors, but specific users are not added to the expected groups.
+* The identity provider displays the warning: _No users or groups will be provisioned who were not provisioned in the provisioning cycle._
+* The issue affects only users with the Cluster Admin role. Standard users are provisioned to groups correctly.
+* The same SCIM configuration works correctly for the affected users in other Orgs where they have explicit membership.
+
+*Resolution*
+
+To resolve this issue, contact {support-url} to enable the configuration flag that allows SCIM group assignment to honor implicit Cluster Admin Org membership. Once enabled, SCIM will correctly add Cluster Admin users to groups in all Orgs, including Orgs where their membership is implicit.
