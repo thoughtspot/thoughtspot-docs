@@ -152,11 +152,12 @@ When an admin enables a connector (e.g., Jira), each user must log in with their
 [#slack-bot]
 === Slack bot
 
-The AgentSpot Slack bot lets users interact with their AgentSpot agents directly
-from Slack.
-After an administrator connects a Slack workspace and maps channels to agents,
-users can @mention a bot in a channel thread and receive agent responses in the
+The AgentSpot Slack bot lets users interact with their agents from Slack. Once an admin connects a Slack app
+and binds a channel to an agent, anyone in that channel can @mention the bot and receive agent responses in the
 same thread.
+
+Setup crosses back and forth between Slack and AgentSpot. The order matters, and AgentSpot states it directly
+on the page: use the event request URL in Slack, then verify the app before binding channels.
 
 Here's what it supports:
 
@@ -165,15 +166,315 @@ Here's what it supports:
 ** The agent processes your message and replies back in the same Slack thread
 ** Works in public channels, private channels (with appropriate permissions), and direct messages (off by default, but the admin can opt-in).
 
-==== Installation
+==== Before you begin
+- You need permission to create and install a Slack app in your workspace. Scope changes may require
+workspace-admin approval.
+- You need admin access to AgentSpot (Admin Settings)
+- At least one agent must already exist, and be ready to bind.
+- Binding supports public channels only.
 
-Prerequisites for installation:
+[#part1]
+==== Part 1: Create the Slack app from a manifest
 
-* A Slack workspace where you have permission to install apps.
-* At least one agent has been created in AgentSpot and is ready to be mapped to a channel.
+. Go to https://slack.com[slack.com^].
+. Click the *Your Apps* button in the top right corner of the page.
+. Sign into your Slack account if prompted.
+. In the Slack API console, click *Create New App*, then choose *From a manifest* under "Or start your own way."
++
+[.bordered]
+image::slack-bot-new-app.png[]
 
-For assistance with installing the Slack bot, contact {support-url}.
 
++
+TIP: *From a manifest* accepts JSON or YAML files.
+
+Starting from a manifest sets the bot profile, scopes, and event subscriptions in one shot, which avoids the
+missing-scopes failure entirely.
+
+.Socket Mode hides the Request URL
+[IMPORTANT]
+====
+This manifest ships with `socket_mode_enabled: true`. AgentSpot delivers events over an HTTP event request URL, and Slack hides the Request URL field in Event Subscriptions
+while Socket Mode is on. If you cannot find that field in Part 4, turn Socket Mode off under *Settings > Socket Mode*.
+====
+
+[source,JSON]
+----
+{
+  "display_information": {
+    "name": "agentspot-help",
+    "description": "I help answer questions!~",
+    "background_color": "#0d0e0f"
+  },
+  "features": {
+    "app_home": {
+      "home_tab_enabled": false,
+      "messages_tab_enabled": true,
+      "messages_tab_read_only_enabled": false
+    },
+    "bot_user": {
+      "display_name": "agentspot-help",
+      "always_online": true
+    },
+    "slash_commands": [
+      {
+        "command": "/agentspot-help",
+        "description": "Get back a private answer!",
+        "usage_hint": "Put your question here!",
+        "should_escape": false
+      }
+    ]
+  },
+  "oauth_config": {
+    "scopes": {
+      "bot": [
+        "app_mentions:read",
+        "channels:history",
+        "channels:join",
+        "channels:read",
+        "chat:write",
+        "commands",
+        "files:read",
+        "files:write",
+        "groups:history",
+        "groups:read",
+        "im:history",
+        "im:read",
+        "mpim:history",
+        "reactions:write",
+        "users:read.email",
+        "users:read"
+      ]
+    },
+    "pkce_enabled": false
+  },
+  "settings": {
+    "event_subscriptions": {
+      "bot_events": [
+        "app_mention",
+        "message.channels",
+        "message.groups",
+        "message.im",
+        "message.mpim"
+      ]
+    },
+    "interactivity": {
+      "is_enabled": true
+    },
+    "org_deploy_enabled": false,
+    "socket_mode_enabled": true,
+    "token_rotation_enabled": false
+  }
+}
+----
+
+Rename `agentspot-help` and the slash command to suit the integration.
+[#part2]
+==== Part 2: Copy the credentials
+
+As soon as the app is created and installed, Slack shows a "
+<app-name> is ready!" dialog with Your app
+credentials. This is the easiest place to grab the bot token. The eye icon reveals it, the copy icon copies it.
+
+[.bordered]
+image::agentspot-bot-ready.png[]
+
+Shown immediately after creating the app from a manifest. Copy the Bot token here.
+
+. In the _Your app credentials_ section, copy the *Bot token* and save it to a text file or other document.
++
+.About the App token
+[NOTE]
+====
+The xapp-... App token is generated because the manifest sets
+`socket_mode_enabled: true`. AgentSpot's Admin UI does not ask for it. It only needs Bot token, Signing secret, and App ID. Ignore it unless you are building a Socket Mode app of your own.
+====
+. Go to *Basic information* > *App Credentials* and copy both *App ID* and *Signing Secret* and paste them into a text file or some other document. You'll need to copy and paste each one in another step.
++
+[cols="20%,55%,25%"]
+|===
+|Value |Where in Slack |Format
+
+|Bot token
+|"is ready!" dialog, or OAuth & Permissions > OAuth tokens
+|`xoxb-...`
+
+|App ID
+|Basic Information > App Credentials
+|`A...`
+
+|Signing Secret
+|Basic Information > App Credentials
+|Hex string
+|===
++
+.A Client Secret is not the Bot token.
+[IMPORTANT]
+====
+A Client Secret is a plain hex string and is the wrong value. The Bot token
+field rejects anything that is not a valid xoxb- token and save it in a text file or other document.
+====
++
+If you dismiss that dialog, or need the token again later, go to *OAuth & Permissions >
+OAuth Tokens*:
++
+[.bordered]
+image::slack-oauth-permissions.png[]
++
+Any time you change scopes a yellow banner appears (as shown in the above image), prompting you to reinstall. You must reinstall your app before the token picks the scopes, and reinstalling reissues the token.
+
+==== Part 3: Add the Slack app in AgentSpot
+
+. In AgentSpot, go to *Admin Settings > Slack bot* and click *+Add Slack app*.
+. Paste in the Slack app ID, Signing secret, and Bot token.
++
+[cols="1,1"]
+|===
+|Name in Slack API |Name in AgentSpot admin settings
+
+|App ID
+|Slack app ID
+
+|Signing Secret
+|Signing secret
+
+|Bot User OAuth Token
+|Bot token
+|===
++
+[.bordered]
+image::add-the-slack-app.png[]
++
+Admin Settings, Slack bot. New apps start as `verification_failed` with "Workspace not verified yet", This message remains until Parts 4 and 5 are done.
++
+Once saved, the app appears under Installed Slack Apps with a status badge, its App ID, and an Event request URL. The URL is unique per installation and follow this format:
++
+[source]
+----
+https://app.<tenant>.thoughtspot.cloud/api/v1/slack/tenants/<tenantId>/installations/<installationId>
+----
+
+==== Part 4: Paste the Event request URL into Slack
+
+Copy the Event request URL from the app's row, then in the Slack API console go to Event Subscriptions:
+
+. Toggle *Enable Events* to on.
+. Paste the Request URL and wait for Slack to show *Verified*. Copy it exactly, with no trailing white space. It must begin with `https://`.
+. Under *Subscribe to bot events*, confirm `app_mention` is listed. The manifest adds it, but be sure to confirm it is listed.
+
+If verification fails and the URL is definitely correct, then it is an endpoint issue. In that case, contact {support-url}.
+
+==== Part 6: Invite the bot, then bind it to a channel
+
+. In Slack, in the target channel run this command: `/invite @your-bot-name`
+. Back in AgentSpot reload the Admin Settings > Slack bot page.
+. Under *Public Channel Bindings*, do the following:
+.. Select the Slack app, the Agent, and the Public channel.
+.. Select the acknowledgement checkbox.
+.. Click *Bind*.
+
+==== Part 7: Test
+
+- Mention the bot in the bound channel. The agent replies in the same thread.
++
+TIP: Test at the top level of the channel first rather than inside an existing thread. It rules out a whole class of
+ambiguity if something is wrong.
+
+==== Required scopes
+
+AgentSpot enforces a minimum set and names the missing ones in the error. The following are mandatory:
+
+[source]
+----
+app_mentions:read, channels:read, users:read, users:read.email
+----
+The full manifest grants 16. Trim to least privilege for your actual flows, because excess scopes raise operational and security risk.
+
+
+|===
+|Purpose |Scopes |Needed when
+
+|Core mention and
+reply
+|`app_mentions:read , chat:write`
+|Always.
+
+|Channel listing and
+joining
+|`channels:read , channels:join , channels:history`
+|Always. `channels:read` populates the binding dropdown.
+
+|User identity
+|`users:read , users:read.email`
+|Always. Maps the Slack sender to an
+AgentSpot user.
+
+|Private channels
+|`groups:history , groups:read`
+|Not usable using this UI today.
+
+|Direct messages
+|`im:history , im:read`
+|Not usable using this UI today.
+
+|Group DMs
+|`mpim:history`
+|Not usable using this UI today.
+
+|Slash command
+|`commands`
+|Using `/agentspot-help`
+
+|Files
+|`files:read , files:write`
+|Agent handles file uploads or outputs.
+
+|Reactions
+|`reactions:write`
+|Bot acknowledges with emoji.
+|===
+
+==== Troubleshooting
+
+Every failure in this flow is silent. You get a disabled control or a generic status, never an explanation. These are
+the four, in the order that they occur.
+
+[.faq]
+--
+Slack token is missing required Slack scopes::
+Adding scopes does not grant them to an existing token. Slack shows a yellow
+banner reading "You've changed
+the permission scopes your app
+uses. Please reinstall your app for these changes to take effect."
+
+. Open *OAuth & Permissions > Bot Token Scopes* and confirm the scopes are under Bot, rather than User. They are two separate columns.
+.  Click *Reinstall to <workspace>*.
+. Copy the new Bot User OAuth Token. Reinstalling reissues it, so the one in AgentSpot is now stale.
+. Update the Bot token in AgentSpot, save, then click *Verify* again.
+
+Bot is bound but never replies::
+
+When the bot is bound but never replies, it can be caused by any of the following:
+* The signing secret is incorrect.
+* Socket mode is enabled.
+* Event Subscriptions are not enabled.
+* The Slack API needs to be reinstalled.
+
+Recommended next steps:
+
+. Make sure the signing secret is correct. AgentSpot signature-verifies every inbound event, so a stale or mistyped signing secret means events arrive and are silently rejected. This produces exactly this symptom. For details, see <<part2, Part 2: Copy the credentials>>.
+. Make sure Socket Mode is disabled, see <<part1, Part 1: Create the Slack app from a manifest>>.
+. Make sure Event Subscriptions is enabled, the URL shows Verified, and `app_mention` is subscribed. If there is no Request URL field at all, Socket Mode is still on.
+. If the app was reinstalled after adding the event, Event subscriptions in Slack must be reinstalled.
+. The Slack email matches the AgentSpot email. That is what `users:read.email` is for. An unmatched sender is dropped.
+. The user has agent access. Slack does not widen access. Only users who already have the agent in AgentSpot can trigger it.
+
+In AgentSpot use *Admin Settings > Audit log* to split the problem. If nothing is logged it means Slack is not sending, so check causes 1 and 2. Logged but no run means AgentSpot is rejecting, so check causes 3 through 5.
+
+Binding overwrites an existing one::
+Channel to agent mapping is 1:1. Binding a channel that is already bound replaces the previous agent. This is why
+binding is admin-only.
+--
 
 [#usage]
 === Monitoring usage
@@ -205,7 +506,7 @@ It provides the following information:
 
 You can download a .csv file containing a complete list of AgentSpot users, including User ID, Name, Email, and Role by clicking image:download-agent-spot.svg[10,Admin Settings] *Export*.
 
-TIP: To add or remove AgentSpot users, you must go to the *Admin Settings* > *Users* tab in your ThoughtSpot instance.
+TIP: To add or remove Age   ntSpot users, you must go to the *Admin Settings* > *Users* tab in your ThoughtSpot instance.
 
 [#audit-log]
 === Audit log
