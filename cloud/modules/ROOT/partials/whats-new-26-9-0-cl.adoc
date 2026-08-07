@@ -19,6 +19,7 @@ endif::[]
 
 // Business User
 
+////
 [#26-9-0-cl-refresh]
 [discrete]
 === Spotter 3 visual redesign
@@ -29,12 +30,13 @@ We have redesigned the experience in Spotter 3 to look more streamlined and conv
 
 [.bordered]
 image::spotter-visual-refresh.png[Search bar redesign]
+////
 
 [#26-9-0-cl-multiple]
 [discrete]
 === Multiple Model selection in Spotter
 // Naomi. jira: SCAL-283614. docs jira: SCAL-283615
-// PM: Aaghran. add gif.
+// PM: Aaghran. add mp4. add a so what/use case.
 
 You can now select multiple Models to search on in a single Spotter conversation.
 
@@ -44,9 +46,9 @@ You can now select multiple Models to search on in a single Spotter conversation
 [discrete]
 === Spreadsheet view in Search data
 // Naomi. jira: SCAL-309059. docs jira: SCAL-309060
-// PM: Peeyush. confirm if EA. modify first sentence-- show how to create a spreadsheet from spreadsheet view. add a gif, adding columns, adding a formula.
+// PM: Peeyush. confirm if EA. modify first sentence-- show how to create a spreadsheet from spreadsheet view. add a gif, adding a formula. make more of a splash.
 
-You can now view the Answers you create in Search data as spreadsheets, showing only the fields and formulas you included in your search. The top bar of the spreadsheet contains configuration options like changing text alignments, adding formulas, or changing the number format, to further tailor your Answer to your needs.
+Spreadsheet gives you a familiar, grid-based way to work with your data model, table, and datasets without leaving the platform. A familiar toolbar at the top lets you fine-tune your view on the fly: adjust text alignment, add formulas, or change number formats — so your Answer always looks and reads exactly the way you need it to.
 
 ++++
 <br>
@@ -55,16 +57,25 @@ You can now view the Answers you create in Search data as spreadsheets, showing 
 </div>
 ++++
 
-[#26-9-0-cl-dark]
-[discrete]
-=== Dark and light mode
+// [#26-9-0-cl-dark]
+// [discrete]
+// === Dark and light mode
 // Mark. jira: SCAL-308357. docs jira: SCAL-308358
 // PM: Arpit. ask for gif from Tarun B.
 
+// ThoughtSpot now supports dark, light, and system-matched display themes — applied consistently across the entire product including Liveboards, charts, search, and admin pages. Users can set their preference in their profile settings. System mode automatically follows the user's OS setting. In addition, a ThoughtSpot administrator can define a brand color which is compatible with dark and light modes.
+////
+++++
+<br>
+<div class="border">
+<script src="https://fast.wistia.com/player.js" async></script><script src="https://fast.wistia.com/embed/157xkr35gy.js" async type="module"></script><style>wistia-player[media-id='157xkr35gy']:not(:defined) { background: center / contain no-repeat url('https://fast.wistia.com/embed/medias/157xkr35gy/swatch'); display: block; filter: blur(5px); padding-top:46.88%; }</style> <wistia-player media-id="157xkr35gy" aspect="2.1333333333333333"></wistia-player>
+</div>
+++++
+////
 [#26-9-0-cl-cancellation]
 [discrete]
 === Search data query cancellation
-ThoughtSpot query cancellation is now generally available (GA). You can now stop in-progress queries on your cloud data warehouse (CDW) when you change or abandon a search. This reduces unnecessary CDW spend and lets you iterate faster.
+ThoughtSpot query cancellation for Search data is now generally available (GA). You can now stop in-progress queries on your cloud data warehouse (CDW) when you change or abandon a search. This reduces unnecessary CDW spend and lets you iterate faster.
 
 Previously, queries made using Search data continued running until timeout or completion even after you modified the search, navigated away, or edited an Answer. This release introduces two cancellation mechanisms:
 
@@ -75,42 +86,86 @@ ThoughtSpot automatically sends a cancel signal to the CDW when your action clea
 +
 A Cancel button is available on the *Search data* page for queries you want to stop manually.
 
-//This release covers the Search Data page, loading and editing of Answers, and sessions that arrive on *Search Data* via the edit option from Liveboards and Spotter.
-//To enable this feature, contact your administrator.
-
+image::query-cancellation.png[]
 // Mary. jira: SCAL-293396. docs jira: SCAL-293397
-// PM: Abhijit. clarify that this is Search data query cancellation. add image highlighting cancel button.
+// PM: Abhijit.
 
+////
 [#26-9-0-cl-grab]
 [discrete]
-=== Core charting grab bag
+=== Chart improvements
 // Mark. jira: SCAL-322051. docs jira: SCAL-322052
-// PM: ?
+// PM: Kallol
 
+// no information from Kallol yet. move to release notes only.
+
+In this release, we introduce the following improvements to charts:
+
+- Charts with totals or subtotals enabled now load faster, as data is fetched in a single request instead of twice.
+- If a chart cannot be rendered due to an invalid configuration, ThoughtSpot now displays a clear error state instead of silently failing.
+- The field order in the column settings panel now matches the chart layout panel for consistency, and configuration fields like bar width no longer trigger unnecessary data refreshes on every keystroke.
+- Tooltip values now display correctly without truncation or overflow.
+- In the Admin settings, the chart visualization font section has been renamed to Classic chart visualization fonts, and the new chart fonts section appears above the table fonts section.
+////
+////
 [#26-9-0-cl-muze]
 [discrete]
-=== Support custom and Muze charts
+=== Custom and new charts library performance improvements
 // Mark. jira: SCAL-309554. docs jira: SCAL-309555
-// PM: Arpit
+// PM: Kallol
+
+// no information from Kallol yet. (Marked as no doc needed) release notes only.
+
+In this release, we improve load times for custom and charts in the new charts library. Previously, these chart types were only partially cached. ThoughtSpot now fully caches data for custom and Muze charts alongside other chart types, delivering faster and more consistent performance across all visualizations.
+////
 
 [#26-9-0-cl-gradient]
 [discrete]
-=== Add gradient legend for valkyrie charts
+=== Gradient legends for charts
 // Mark. jira: SCAL-313050. docs jira: SCAL-313051
 // PM: Anshul
 
+// No information from Anshul yet.
+
+You can now encode a continuous measure, like profit margin or revenue, as a color gradient directly on bar, scatter, heatmap, line, and pivot table charts. Instead of building a separate chart or data table to surface a second variable, you can enable a gradient legend on any measure column and optionally set a "Vary by" measure to drive the color scale independently of the displayed value. This makes it faster to spot outliers, patterns, and directional trends at a glance. Hovering over a data point shows the exact value of the Vary by measure in the tooltip.
+
+[.bordered]
+image::gradient.png[]
+
+[#26-9-0-cl-encoding]
+[discrete]
+=== Outline encoding support
+You can now use data to drive the outline (border) color of chart marks such as bars, arcs, and points. Bind a field to the outline color encoding to automatically generate an ordinal color palette or a continuous gradient, complete with legend and tooltip support. Outline width and dash style remain configurable per data point. Existing outline configurations are fully backward compatible.
+// Rani. jira: SCAL-317550. docs jira: SCAL-317551
+// PM: Anshul. add image. what's the status? Is this GA?
+
 [#26-9-0-cl-freeze]
 [discrete]
-=== Auto freeze and unfreeze new pivot tables and charts facet vectors
+=== Unified horizontal scrollbar for charts and pivot tables
+ThoughtSpot now renders a horizontal scrollbar across all chart types. For pivot tables, this removes the previous row-header column width cap, so attribute labels render at their full natural width instead of being truncated. The scrollbar behavior is consistent across chart types and viewport sizes.
 
+//NOTE: This feature requires New Charts to be enabled and applies to both embedded and non-embedded ThoughtSpot instances.
 // Mary. jira: SCAL-312449. docs jira: SCAL-?
 // PM: Anshul
-// Pivot table mobile app enhancement. Waiting for confirmation of doc req from PM.
+// This is direct to GA in 26.9.0.cl but behind a flag. Waiting for clarification on this rollout/enablement. Do we support cartesian charts? request image.
 
+////
+[#26-9-0-cl-pivot]
+[discrete]
+=== Enhancements to Pivot tables
+Pivot tables now calculate Measure Names and Measure Values on the client side, resulting in faster rendering and a more responsive experience for multi-measure pivot layouts — with no changes to existing functionality.
+// Rani. jira: SCAL-SCAL-317111. docs jira: SCAL-?
+// PM: Anshul. release notes only.
+////
 
 // Analyst
 
-
+[#26-9-0-cl-collection]
+[discrete]
+=== Collections enhancements
+Collections now support favorites and filters. You can mark a collection as a favorite directly from the Collections page — a dedicated favorites column lets you see starred status at a glance. You can also filter collection contents by type or author using the column headers, consistent with the filtering experience on the Answers and Liveboards pages.
+// Rani. jira: SCAL-314461. docs jira: SCAL-314462
+// PM: Shreyash
 
 
 
@@ -124,23 +179,33 @@ A Cancel button is available on the *Search data* page for queries you want to s
 [#26-9-0-cl-memory]
 [discrete]
 === Memory GA
-// Naomi. jira: SCAL-306173. docs jira: SCAL-306174
+// Naomi. jira: SCAL-306173. docs jira: SCAL-306174, SCAL-320715, SCAL-315909
 // PM: Anant. add image of regenerate button.
 
-Spotter memory from Liveboards and conversations is now generally available (GA). Additionally, we have added a regenerate button to refresh your memory in order to stay in line with changes to underlying Liveboards.
+Spotter memory from Liveboards and conversations is now generally available (GA). Additionally, we have added a regenerate option to refresh your memory in the Memory sources page in order to stay in line with changes to underlying Liveboards.
+
 
 [.bordered]
 image::memory-from-liveboard.png[Memory sources page]
 
+[#26-9-0-cl-remember]
+[discrete]
+=== Remember this
+// Naomi. jira: SCAL-326331. docs jira: SCAL-326332
+// PM: Anant
+
+We have replaced the previous *+ Add to Coaching* button with a *Remember this* button. If you click *Remember this* below a Spotter answer, it triggers a command for Spotter to add the answer's specifications directly to memory. You see a preview of the exact definitions it adds to conversational memory.
+
+NOTE: Remember this is only supported for Spotter 3.
 
 
 [#26-9-0-cl-ai]
 [discrete]
 === AI context redesign
-// Naomi. jira: SCAL-277656, SCAL-273103. docs jira: SCAL-273104
+// Naomi. jira: SCAL-277656, SCAL-273103. docs jira: SCAL-273104, SCAL-326606
 // PM: Anant
 
-You can now prompt the creation of AI context from the Spotter optimization tab on a Model. Note that you must have edit access to a Model to create AI context.
+You can now prompt the creation of AI context from the Spotter optimization tab on a Model. Note that you must have edit access to a Model to create AI context. If you enable Spotter on a Model, it triggers AI context generation automatically.
 
 [.bordered]
 image::ai-context.png[AI context]
@@ -160,81 +225,54 @@ The Command Palette (⌘K / Spotlight) has also been extended so every admin scr
 
 [#26-9-0-cl-ea]
 [discrete]
-=== Access to EA flags that are not Org-aware
+==== Early Access flag management for cluster admins
+
+Cluster admins can now view and manage Early Access flags that are not Org-aware directly from *Admin* > *Feature Management* > *Early Access*. Previously, these flags were only accessible via CLI and did not appear in the *Feature Management* UI.
+
+Early Access flags that are not Org-aware appear as On/Off toggles. Toggling a flag applies the change cluster-wide, with no per-Org assignment required. Org-aware Early Access flags are unaffected and retain the existing per-Org assignment experience.
+
+This feature is visible only to cluster admins. Org Admins do not see non-Org-aware flags in *Feature Management*.
 
 // Mary. jira: SCAL-319110. docs jira: SCAL-319128
-// PM: Sidharth
+// PM: Sidharth - Waiting for confirmation about if any specific non-org-aware EA flags ship with 26.9.0.cl or if this is infrastructure for future flags. Also need to confirm enablement as this is marked as EA. simplify the blurb.
 
 [#26-9-0-cl-scheduled]
 [discrete]
-=== Scheduled Liveboards: include other process types for connection configuration
-You can now create a dedicated connection configuration for *Scheduled Liveboards*, allowing scheduled Liveboard queries to use a separate warehouse, credentials, or non-OAuth authentication method, instead of the parent connection's default configuration.
+=== Scheduled Liveboards: dedicated connection configuration
 
-A new *Scheduled Liveboard* checkbox has been added to the *Processes* policy type in connection configuration, alongside the existing *Row count stats* option.
+You can now add a *Scheduled Liveboards* process type to a connection configuration, so scheduled Liveboard queries can use a separate warehouse, credentials, or non-OAuth authentication method instead of the parent connection's defaults.
 
-// Mary. possibly combine these blurbs. add value prop/use case.
+Look for the new *Scheduled Liveboard* checkbox under the *Processes* policy type in Connection Configuration, alongside the existing *Row count stats* option.
 
-[#26-9-0-cl-config]
-[discrete]
-=== Connection configuration: scheduled Liveboards process type
-
-You can now create a dedicated connection configuration for *Scheduled Liveboards*, allowing scheduled Liveboard queries to use a separate warehouse, credentials, or non-OAuth authentication method—instead of the parent connection's default configuration.
-
-A new *Scheduled Liveboard* checkbox has been added to the *Processes* policy type in Connection Configuration, alongside the existing *Row count stats* option.
-
-==== Key details
-
-[cols="1,3", options="header"]
+[cols="1,3"]
 |===
-| Detail | Description
-
-| *Supported connectors*
-| Snowflake, Databricks, Google BigQuery
-
-| *One config per process type*
-| Only one configuration per process type; multiple processes can be selected under a single configuration
-
-| *Authentication*
-| Non-OAuth only; OAuth configurations display an error
-
-| *Shared metadata*
-| All configurations share the same metadata and data; only authentication type, credentials, and warehouse may differ
-
-| *Query routing*
-| Scheduled Liveboard tasks automatically use the Scheduled Liveboard configuration instead of the parent connection
-
-| *Lifecycle*
-| Configurations can be edited, enabled, or disabled after creation
+| Supported connectors | Snowflake, Databricks, Google BigQuery
+| Authentication | Non-OAuth only
+| Query routing | Scheduled Liveboard tasks automatically route to this configuration
+| Limits | One configuration per process type; multiple processes can share a single configuration
 |===
-
+image::LBsched-connection-config.png[]
 // Mary. jira: SCAL-312738. docs jira: SCAL-312739
-// PM: Prayansh - waiting on info, JIRA marked as pre-GA, feature enablement marked as GA (on by default). remove table.
+// PM: Prayansh - waiting on info, JIRA marked as pre-GA, feature enablement marked as GA (on by default). crop image and put red box around Scheduled Liveboards
 
-[#26-9-0-cl-encoding]
-[discrete]
-=== Change chart mark style
-//Outline encoding support
-You can now use data to drive the outline (border) color of chart marks such as bars, arcs, and points. Bind a field to the outline color encoding to automatically generate an ordinal color palette or a continuous gradient, complete with legend and tooltip support. Outline width and dash style remain configurable per data point. Existing outline configurations are fully backward compatible. This setting is currently applicable to *bar*, *point* (scatter/bubble), and *arc* (donut) chart types.
-// Rani. jira: SCAL-317550. docs jira: SCAL-317551
-// PM: Anshul
+
 
 [#26-9-0-cl-metadata]
 [discrete]
-=== Unparameterize metadata
+=== Manage and remove parameterization from the UI
 // Mark. jira: SCAL-292420. docs jira: SCAL-292421
-// PM: Sejal
+// PM: Sejal. add image. write more simplified.
 
-[#26-9-0-cl-collection]
-[discrete]
-=== Collections enhancements
-Collections now support starring and filtering. You can mark a collection as a favorite directly from the Collections page — a dedicated favorites column lets you see starred status at a glance. You can also filter collection contents by type or author using the column headers, consistent with the filtering experience on the Answers and Liveboards pages.
-// Rani. jira: SCAL-314461. docs jira: SCAL-314462
-// PM: Shreyash
+// No information from Sejal yet.
+
+Administrators can now manage and remove parameterization on tables and connections directly from the ThoughtSpot UI. From the Data objects or Connections page, administrators can remove variable bindings from one or more objects or use the new _Manage Parameters_ option to view, edit, add, or remove individual field-to-variable mappings without starting over.
+
+
 
 [#26-9-0-cl-aggregate-aware]
 [discrete]
 === Aggregate-aware query execution
-Aggregate-aware query execution is now generally available (GA). This is a transparent query optimization feature where *Search data* automatically switches from detailed Models to associated aggregate Models. This provides a mechanism to manage and reduce cloud costs and improve query latency while maintaining insight accuracy. For more information, see
+Aggregate-aware query execution is now generally available (GA). Search data automatically switches from detailed Models to associated aggregate Models based on query granularity, reducing cloud costs and improving query latency without affecting insight accuracy. For more information, see
 ifndef::pendo-links[]
 xref:model-aggregate-aware.adoc[Aggregate-aware Model switching].
 endif::[]
@@ -244,36 +282,48 @@ endif::[]
 // Mary. jira: SCAL-296396. docs jira: SCAL-296397
 // PM: Damian
 
-////
+
 [#26-9-0-cl-aggregate]
 [discrete]
-=== Table summaries - table aggregate
-Summary rows and headline cells in tables now use table aggregates to compute measures at the table's aggregate grain, eliminating the double- and triple-counting caused by many-to-many joins. Data rows remain correct; only the rollups were affected.
+=== Table summaries: table aggregate for all measure types
+ThoughtSpot now supports table aggregate (TABLE_AGGR) as a selectable headline aggregation option for all measure types in tables and pivot tables, including composable measures such as sum, min, max, and count.
 
+Previously, table aggregate was available only for non-composable measures (for example, average and unique count). This caused incorrect headline and summary values in data models with many-to-many joins, where join fan-out inflated rollup totals. With this change, you can select TABLE_AGGR for any measure to compute a true grand total across the result set.
+
+[cols="1,3"]
+|===
+| Default aggregation | Unchanged for composable measures — TABLE_AGGR becomes a selectable option only, not the new default
+
+| Incompatible measures | Constant and variable expressions do not qualify for TABLE_AGGR even when the flag is enabled
+
+| Incompatible formulas | Summary cells for measures incompatible with table aggregate semantics render blank rather than returning an error; row-level values are unaffected
+
+| Scope | Headline cells and summary/subtotal rows in tables and pivot tables
+|===
+
+To enable this feature, contact your administrator.
 // Mary. jira: SCAL-318874. docs jira: SCAL-318875
-// PM: Anshul - waiting on info. potentially release notes only.
-////
+// PM: Anshul - waiting on info - confirm EA?. potentially release notes only. shorten and simplify.
+//This feature is controlled by the `headlineTableAggrForAllMeasuresEnabled` flag, which is disabled by default. Contact your ThoughtSpot administrator to enable it.
 
+////
 [#26-9-0-cl-databricks]
 [discrete]
 === Databricks driver upgrade
 // Naomi. jira: SCAL-313897. docs jira: SCAL-313898
-// PM: Prayansh
+// PM: Prayansh. release notes only?
 We have upgraded the Databricks OSS driver to version 3.4.1.
 
 [#26-9-0-cl-x509]
 [discrete]
-=== Support for x509 authentication for Databricks and Snowflake
+=== x509 authentication for Databricks and Snowflake
 // Naomi. jira: SCAL-268367. docs jira: SCAL-268368
 // PM: Prayansh. waiting on info.
 
+We now support x509 authentication for Databricks and Snowflake.
+////
 
-[#26-9-0-cl-pivot]
-[discrete]
-=== Enhancements to Pivot tables
-Pivot tables now calculate Measure Names and Measure Values on the client side, resulting in faster rendering and a more responsive experience for multi-measure pivot layouts — with no changes to existing functionality.
-// Rani. jira: SCAL-SCAL-317111. docs jira: SCAL-?
-// PM: Anshul
+
 
 ////
 [#26-9-0-cl-answer]
