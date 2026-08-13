@@ -1,0 +1,124 @@
+= Change chart mark style
+:page-last_updated: Aug 6, 2026
+:author: Rani
+:linkattrs:
+:experimental:
+:description: Use the Mark Style setting to control whether chart marks render as solid fills, hollow outlines, or filled marks with an outline border.
+:jira: SCAL-317551
+
+You can control how chart marks (bars, points, and arcs) appear by setting their _mark style_ to *Solid*, *Hollow*, or *Outline*.
+This lets you distinguish data series visually through shape treatment rather than color alone.
+
+.Mark style settings apply to bar, point (scatter/bubble), and arc (donut) charts.
+NOTE: Mark style is not available for line or area charts.
+
+== Mark style modes
+
+[cols="<20%,<80%", grid=rows, frame=sides]
+|===
+| Mode | Description
+
+| *Solid* (default)
+| The mark renders as a solid fill. No outline is applied.
+
+| *Hollow*
+| The fill is removed. Only the outline border is rendered, giving marks a ring or hollow appearance.
+
+| *Outline*
+| The fill is rendered, and an outline border is layered on top of the fill.
+|===
+
+== Outline style sub-settings
+
+When you select *Hollow* or *Outline*, additional sub-settings appear:
+
+[cols="<25%,<75%", grid=rows, frame=sides]
+|===
+| Setting | Description
+
+| *Outline width*
+| Controls the thickness of the outline stroke in pixels.
+
+| *Outline color*
+| Sets the color of the outline. Available when no *Slice by Color* is applied.
+When a color encoding is active, the outline automatically inherits the same color as the mark fill, darkened for contrast.
+
+| *Outline style*
+| Sets the outline appearance: *Solid*, *Dashed*, or *Dotted*.
+|===
+
+== Outline color behavior
+
+The behavior of the outline color depends on whether a *Slice by Color* is applied to the chart:
+
+=== No Slice by Color
+
+[cols="<25%,<25%,<50%", grid=rows, frame=sides]
+|===
+| Mode | Fill | Outline color
+
+| *Solid*
+| Measure color
+| Not applicable — no outline.
+
+| *Hollow*
+| None (fill disabled)
+| Set to the measure color. Editable.
+
+| *Outline*
+| Measure color
+| Set to the measure color. Editable.
+|===
+
+You can change the outline color freely using the color picker when no Slice by Color is active.
+
+=== With Slice by Color
+
+When a *Slice by Color* encoding is active, the manually set outline color is ignored.
+The outline automatically inherits the same attribute as the color encoding:
+
+[cols="<25%,<25%,<50%", grid=rows, frame=sides]
+|===
+| Mode | Fill | Outline color
+
+| *Solid*
+| Color encoding attribute
+| Not applicable — no outline.
+
+| *Hollow*
+| None (fill disabled)
+| Inherits the color encoding attribute.
+
+| *Outline*
+| Color encoding attribute
+| Inherits the color encoding attribute, darkened for contrast against the fill.
+|===
+
+NOTE: Conditional formatting takes the highest precedence and overrides both the outline color and the color encoding.
+
+== Switching between modes
+
+* If you switch from *Hollow* or *Outline* to *Solid*, outline sub-settings collapse and are hidden.
+* If you add a *Slice by Color* while *Hollow* or *Outline* is active, the outline color field becomes hidden or disabled, and the outline inherits the color encoding automatically.
+* If you remove a *Slice by Color* while *Hollow* or *Outline* is active, the outline color field becomes editable again, and reverts to the measure color.
+
+== Set the mark style for a chart column
+
+Mark style is a per-measure setting.
+To configure it, follow these steps:
+
+. Open your chart in ThoughtSpot, then click the *Column* icon image:column-icon-chart.png[Column settings icon] on the right side panel to open the Column settings.
+. Select the measure column you want to style.
+. Under *Advanced*, expand the *Mark Style* section.
+. Select the style you want: *Solid*, *Hollow*, or *Outline*.
+. If you selected *Hollow* or *Outline*, configure the sub-settings:
+.. Set *Outline width* (in pixels).
+.. Set *Outline color* using the color picker (when no *Slice by Color* is active).
+.. Set *Outline style*: *Solid*, *Dashed*, or *Dotted*.
+. Your changes apply immediately to the chart.
+
+== Limitations
+
+* Mark Style applies only to *bar*, *point* (scatter/bubble), and *arc* (donut) chart types. It is not available for line or area marks.
+* Outline color encoding does not appear in the chart legend in this release.
+* Outline width and outline style do not have data-driven (field-based) encoding in this release — they are applied uniformly per measure.
