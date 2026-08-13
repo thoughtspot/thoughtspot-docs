@@ -1,11 +1,11 @@
 = Spotter instructions
 :author: Naomi
-:page-last_updated: 05/11/2026
+:page-last_updated: Aug 13, 2026
 :linkattrs:
 :page-aliases: spotter-agent-instructions.adoc
 :experimental:
 :description: Spotter instructions let an administrator shape how Spotter behaves across an Org — its tone, persona, output format, scope, and guardrails.
-:jira: SCAL-293536, SCAL-303390, SCAL-320863
+:jira: SCAL-293536, SCAL-303390, SCAL-320863, SCAL-331175
 
 Spotter instructions shape how the agent communicates — its tone, persona, format, and what topics it will or won't answer. They are separate from memory: memory is what Spotter knows about your business; instructions are how it behaves. Set your instructions before building memory — they take priority over everything memory generates.
 
@@ -58,7 +58,7 @@ You can use them to:
 * Require disclaimers or AI safety statements on every response.
 * Declare topics the agent should decline or redirect.
 * Enforce proactive behavior — for example, "always flag pipeline coverage below 3x".
-* Control which data models or tools the agent reaches for in Auto mode.
+* Control which data models or tools the agent reaches for in cross data model search.
 
 Who can configure them?:: Any user with the *Can manage Spotter* privilege. This is typically held by Org admins or ThoughtSpot Analytics admins, but the privilege can be granted to other roles as well.
 
@@ -84,7 +84,7 @@ Add Spotter instructions when any of the following are true:
 * *You embed Spotter in your own product (ThoughtSpot Embedded).* You will almost always want to rename the agent, restyle its tone, and constrain its scope to match your product.
 * *There are response patterns you find yourself correcting repeatedly.* "Don't show absolute numbers." "Always include a sparkline." "Lead with the recommendation, not the data." Codify these once at the Org level instead of every user fighting the default.
 * *You want the agent to be proactive about a known business signal.* For example, always surface stockouts before any other supply chain question.
-* *xref:spotter-auto-mode.adoc[Auto mode] is reaching for the wrong data model or tool.* Use instructions to declare which models or tools to prefer in which contexts.
+* *xref:spotter-cross-model.adoc[Cross data model search] is reaching for the wrong data model or tool.* Use instructions to declare which models or tools to prefer in which contexts.
 
 If none of these apply yet, you do not need to set Spotter instructions. The default Spotter behavior is a generic, balanced data analyst that works well out of the box.
 
@@ -110,7 +110,7 @@ Example;; "Whenever the user asks about pipeline, flag any segment with coverage
 Guardrails on sensitive data:: What to show, what to hide, and what to summarize.
 Example;; "Never display individual quota numbers. Always express performance as attainment %. If asked for an absolute quota, decline and explain."
 
-Tool and data model preferences in Auto mode:: Which sources should the agent reach for first?
+Tool and data model preferences in cross data model search:: Which sources should the agent reach for first?
 Example;; "For revenue questions, prefer the Salesforce Pipeline model. For product usage, prefer the Product Analytics model. Do not query the Finance General Ledger model unless explicitly named."
 
 Mandatory disclaimers or closings:: Statements required on every response.
@@ -311,7 +311,7 @@ Skip any that don't apply.
 4. Scope enforcement and deflection — topics to decline, deflection script
 5. Proactive signals — things to flag even when not asked
 6. Guardrails on sensitive data — what to show, hide, or summarize
-7. Tool and data model preferences in Auto mode
+7. Tool and data model preferences in cross data model search
 8. Mandatory disclaimers or closings
 
 Use clear section headings. Keep each rule short and enforceable.
