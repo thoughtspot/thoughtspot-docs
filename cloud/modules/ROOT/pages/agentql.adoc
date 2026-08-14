@@ -1,277 +1,180 @@
-= Understanding SpotQL
-:page-last_updated: 6/25/2026
+= AgentQL
+:page-last_updated: Aug 7, 2026
 :linkattrs:
 :experimental:
-:page-layout: default-cloud-beta
-:description: Learn how SpotQL works.
-:jira: SCAL-306545
-
-== What is SpotQL?
-
-**SpotQL** is ThoughtSpot's purpose-built semantic query language for interacting with your data models. It looks and reads like SQL — familiar enough for analysts and developers — but it fundamentally behaves differently from standard SQL.
+:description: Learn how AgentQL enables Spotter to answer complex analytical questions faster.
 
 [.lead]
-SpotQL expresses _intent_. It never executes directly against your database.
+Learn how AgentQL enables Spotter to answer complex analytical questions faster.
 
-When you or an AI agent (like Spotter) writes a SpotQL query, it is submitted to the ThoughtSpot semantic layer, which then translates it into the appropriate, governed database SQL. The result is an answer that is **accurate, consistent, and trustworthy** — every single time.
+AgentQL is ThoughtSpot's proprietary semantic query dialect that enables Spotter to answer complex analytical questions faster and more accurately by generating structured queries directly on top of your data model, instead of relying on Python-based code execution.
 
-== Why was SpotQL built?
+== Overview
 
-Traditional _natural language to SQL_ (NL-to-SQL) approaches have a critical weakness: the large language model (LLM) **directly generates the database SQL** that gets executed. This means:
+// SOURCE: https://docs.google.com/document/d/1XOcmLeJB39kp8QchiPoRIMgo9f8cM94xgQNqRB9rJL4/edit
 
-* The LLM decides which joins to use — and may choose incorrectly.
-* Row-level security and other access controls may be bypassed or ignored.
-* The output varies between runs; the same question may yield a different answer tomorrow.
-* Custom business logic (e.g., semi-additive metrics, custom calendars, level-of-detail calculations) may be misunderstood or missed entirely.
+When you ask Spotter a complex analytical question, Spotter must decide the best way to generate an answer. Previously, Spotter relied on two primary execution paths: TML search tokens for simpler queries, and Python-based code execution for complex multi-step analysis. AgentQL introduces a third, smarter path.
 
-SpotQL is introduced to solve this problem. By inserting the ThoughtSpot semantic layer between the AI agent and the database, **the governed, deterministic SQL is always what runs** — not what an LLM guessed.
+Instead of writing and executing Python code, Spotter generates a structured semantic query — an AgentQL query — that is processed by ThoughtSpot's Query Generation layer (QGen) and converted into governed SQL executed against your cloud data warehouse (CDW). The result is a significantly faster answer that inherits the full semantic context of your data model, including joins, row-level security (RLS), column-level security (CLS), custom calendars, and column definitions.
 
-== How SpotQL works
+[NOTE]
+====
+AgentQL is not raw SQL. It operates on top of worksheet columns within the TML data model, not directly on database tables.
+====
 
-SpotQL works through a two-step API process.
+== How it works
 
-=== Step 1 — Generate SQL API
+// SOURCE: https://docs.google.com/document/d/1XOcmLeJB39kp8QchiPoRIMgo9f8cM94xgQNqRB9rJL4/edit
 
-You submit a SpotQL query along with a model identifier (GUID). ThoughtSpot translates the SpotQL into optimised, governed database SQL and returns it. At this stage you can inspect what SQL would run *before* any data is fetched.
+When you submit a question to Spotter, Spotter's agent autonomously evaluates the question and selects the most appropriate execution path:
 
-=== Step 2 — FetchData API
+* *AgentQL* — for complex analytical queries requiring multi-step computation, ranking, running totals, or cross-entity measures
+* *TML search tokens* — for simpler questions that map directly to standard search constructs
+* *Python-based code execution* — retained for statistical analysis such as forecasting and regression, and for answers that must be stitched from multiple data models
 
-You submit the same SpotQL query and model identifier again. ThoughtSpot executes the governed SQL against your database and returns the actual data results.
+For questions routed through AgentQL, Spotter generates a semantic query during its reasoning step. You can inspect this query in the *Show work* panel, where a `creating_answer_using_AgentQL` event is displayed. The query structure is written in readable, analyst-friendly language — you do not need to understand raw database SQL to verify what Spotter has done.
 
-Both APIs accept:
+The AgentQL query is then passed to QGen, which translates it into a final, governed SQL statement and executes it on your CDW. The answer is returned as a summary and visualization directly in the Spotter response card.
 
-* The **SpotQL query** — written in SQL-like syntax against _business-friendly column names_
-* A **Model GUID** — the unique identifier of the ThoughtSpot data model you want to query
+[TIP]
+====
+You can explicitly invoke AgentQL by mentioning Semantic Query in your Spotter prompt. For example: "Use Semantic Query to find the top 10 customers by revenue last quarter." You can also an instructions to use Semantic Query in your Spotter instructions.
+====
 
-Behind the scenes, ThoughtSpot handles everything else: physical column name mapping, join resolution, RLS enforcement, and complex metric calculations.
+=== Verifying AgentQL answers
 
-== The role of the semantic layer
+Because AgentQL generates a human-readable semantic query rather than opaque Python code, analysts can verify answers without needing to inspect raw SQL. The query structure is visible in the agent's reasoning block within the *Show work* panel.
 
-The semantic layer is what makes SpotQL safe and consistent. When your SpotQL query is processed, ThoughtSpot's engine — **the same engine that powers Liveboards and Search** — enforces all the rules defined in your data model.
+// SOURCE: Demo transcript — AgentQL demo video
+You can copy the AgentQL query directly from the reasoning block and review it in a text editor to understand exactly what data path Spotter took to arrive at the answer.
 
-[cols="1,1", options="header"]
+[NOTE]
+====
+// SOURCE: https://docs.google.com/document/d/1XOcmLeJB39kp8QchiPoRIMgo9f8cM94xgQNqRB9rJL4/edit
+Because AgentQL is deterministically translated to final SQL by QGen, there is no need to separately verify the generated SQL — the semantic query is the verifiable artifact.
+====
+
+== Key benefits
+
+// SOURCE: https://docs.google.com/document/d/1XOcmLeJB39kp8QchiPoRIMgo9f8cM94xgQNqRB9rJL4/edit
+
+=== Answers complex questions that tokens could not
+
+TML search tokens struggle with multi-step and nested analytical patterns. AgentQL fills this gap by supporting:
+
+* Multi-step CTE-based queries (for example, "which publishers have the highest proportion of elite heroes among those with at least 10 good-aligned heroes?")
+* Per-group ranking (Top N per category)
+* Running totals and period-over-period comparisons using `LAG`, `RANK`, and `DENSE_RANK`
+* Cross-entity measures spanning multiple entities in a single data model
+
+=== Faster answer generation
+
+// SOURCE: Demo transcript — AgentQL demo video
+// SOURCE: https://docs.google.com/document/d/1XOcmLeJB39kp8QchiPoRIMgo9f8cM94xgQNqRB9rJL4/edit
+
+AgentQL eliminates the overhead of writing Python, executing it in a runtime environment, and retrieving the results. Answers for complex questions that previously took several minutes can now complete in under 60 seconds.
+
+An internal analysis of production Spotter conversations found that approximately 20% of all Spotter conversations include at least one Python code execution step — and approximately 95% of those steps could be replaced by AgentQL.
+
+=== No row-limit ceiling
+
+Python-based code execution is constrained by a row-count limit on the data Spotter can process. AgentQL pushes computation directly to your CDW, removing this ceiling entirely. You can ask analytical questions across datasets of any size.
+
+=== Full data governance
+
+AgentQL answers are governed by design. Every AgentQL query respects:
+
+* Row-Level Security (RLS) and Column-Level Security (CLS)
+* Custom and fiscal calendar configurations using UDFs (for example, `YEAR_NUMBER`, `MONTH_NUMBER`)
+* Column aliases, dependencies, and model definitions from the TML worksheet
+
+The same semantic layer that governs all ThoughtSpot answers governs AgentQL answers.
+
+=== Follow-up questions
+
+Follow-up questions work with AgentQL answers. You can continue a conversation naturally after receiving an AgentQL-generated response.
+
+// SOURCE: Demo transcript — AgentQL demo video
+
+== Answer card and visualization
+
+// SOURCE: Demo transcript — AgentQL demo video
+
+When AgentQL generates an answer, the Spotter response card includes:
+
+* A *reasoning block* showing the semantic query and a table view of intermediate results
+* A *summary* of the answer in natural language
+* A *chart visualization* of the result
+
+[IMPORTANT]
+====
+// TODO: verify with engineering — confirm exact chart types supported in Phase 1
+// SOURCE: Demo transcript — AgentQL demo video
+The chart visualization in the AgentQL answer card is not available in the initial release. This capability is planned for release within the next two to three months after general availability.
+====
+
+== Availability
+
+// SOURCE: https://docs.google.com/document/d/1XOcmLeJB39kp8QchiPoRIMgo9f8cM94xgQNqRB9rJL4/edit
+// SOURCE: Demo transcript — AgentQL demo video
+
+[cols="1,3", options="header"]
 |===
-| What you write in SpotQL
-| What ThoughtSpot enforces
+|Phase |Details
 
-| Business column names (e.g., `Total Sales`)
-| Mapped to physical database column names
+|Phase 1 — Beta
+|Available from ThoughtSpot Cloud 26.5 for select customers.
 
-| No join conditions needed
-| Join paths defined in the model are applied automatically
+|Phase 1 — GA
+|Targeted for ThoughtSpot Cloud 26.7, contingent on Phase 1 results.
 
-| No RLS filters needed
-| Row-level security rules are applied automatically
-
-| Relative dates (e.g., `last 3 years`)
-| Custom calendars and date logic are respected
-
-| Metric names (e.g., `Inventory Balance`)
-| Semi-additive, LOD, and ratio definitions are applied correctly
-
-| Multi-table questions
-| Chasm traps and fan traps are resolved correctly
-|===
-
-This means a business analyst can write simple, readable SpotQL queries — and trust that the database query will be complex, correct, and secure.
-
-== SpotQL vs. natural language to SQL — what's the difference?
-
-This is the most important distinction to understand.
-
-=== Natural language to SQL (NL-to-SQL)
-
-----
-User question  →  LLM generates database SQL  →  SQL executes directly
-----
-
-The LLM's output _is_ the query. There is no guarantee of:
-
-* Correct join logic
-* Row-level security being applied
-* Consistent, deterministic results
-
-=== SpotQL
-
-----
-User question  →  LLM generates SpotQL  →  ThoughtSpot translates to governed SQL  →  Governed SQL executes
-----
-
-The LLM only generates the _intent_ (SpotQL). ThoughtSpot's governed engine produces the actual database query. This ensures:
-
-image:checkmark_black.svg[] Joins are always correct (defined in the model)
-
-image:checkmark_black.svg[] Row-level security is always applied (cannot be bypassed)
-
-image:checkmark_black.svg[] Metrics are always calculated the right way
-
-image:checkmark_black.svg[] Results are deterministic and traceable
-
-image:checkmark_black.svg[] Hallucinated or ungoverned SQL never touches your database
-
-
-
-== Handling complex and advanced queries
-
-SpotQL is not limited to simple queries. It supports sophisticated multi-step analytical patterns.
-
-=== Common table expressions (CTEs)
-
-For complex questions — such as _"What are the top 10 products sold in the last 3 years, and what were their sales last month vs. two months ago?"_ — SpotQL can generate multi-CTE queries that chain sub-results together cleanly.
-
-=== Advanced data modelling support
-
-SpotQL supports the same advanced modelling patterns as ThoughtSpot's token-based answers:
-
-* **Semi-additive metrics** (e.g., Inventory Balance using a Last Value function)
-* **Level-of-Detail (LOD) calculations** (e.g., Category Quantity)
-* **Ratio metrics**
-* **Chasm trap and fan trap resolution** for multi-fact models
-* **Custom calendars** for non-standard fiscal periods
-
-Despite this power, the SpotQL you write remains **simple and readable** — the complexity lives in the governed translation layer, not in your query.
-
-== Who uses SpotQL and how?
-
-SpotQL is used in three primary ways.
-
-=== 1. Spotter (ThoughtSpot's AI agent)
-
-Spotter uses SpotQL internally every time it answers a question. When you ask Spotter a question in ThoughtSpot Cloud, it generates SpotQL behind the scenes and submits it through the governed APIs. You can see this in the *Show Work* view on any Spotter answer — the SpotQL input and output are both visible.
-
-=== 2. External AI agents and applications
-
-Developers can call the SpotQL APIs directly from any application or AI tool (e.g., Claude, custom chatbots, data pipelines). A _skills-based integration_ approach allows tools like Claude to interact with the APIs without writing code directly — by connecting a profile and specifying a model GUID, they can query any ThoughtSpot model.
-
-=== 3. Administrators and analysts
-
-Administrators can inspect the SpotQL generated for any query to understand exactly what is being asked, verify that the semantic rules are working correctly, and troubleshoot data discrepancies. The ability to see both the SpotQL _and_ the resulting database SQL provides full traceability.
-
-== Getting started with SpotQL APIs
-
-To use the SpotQL APIs, you will need:
-
-. A **ThoughtSpot Cloud instance** with the SpotQL feature enabled
-. An **authorisation token** — a bearer token for your ThoughtSpot session (used in the API request header)
-. A **Model GUID** — the unique identifier of the ThoughtSpot data model (worksheet or table) you want to query
-
-=== API endpoints
-
-[cols="1,2", options="header"]
-|===
-| API
-| Purpose
-
-| `Generate SQL`
-| Submit SpotQL → receive the governed database SQL that _would_ run
-
-| `FetchData`
-| Submit SpotQL → receive the actual data results
+|Phase 2
+|Visual enhancements to the answer card, pinning AgentQL answers to Liveboards, and parameter support. Targeted for a future release.
+// TODO: verify with engineering — confirm Phase 2 GA target date and scope
 |===
 
-=== Example workflow
+[NOTE]
+====
+// SOURCE: Demo transcript — AgentQL demo video
+AgentQL is enabled via a LaunchDarkly feature flag and will be progressively rolled out starting from ThoughtSpot Cloud 26.8. Contact your ThoughtSpot administrator if you do not see AgentQL on your instance.
+// TODO: verify with engineering — reconcile 26.7 GA target (design doc) with 26.8 rollout reference in demo transcript
+====
 
-[source,json]
-----
-POST /api/v1/agentql/generate-sql
-Headers: Authorization: Bearer <token>
-Body:
-{
-  "agentql": "SELECT [Product Category], SUM([Total Sales])",
-  "model_id": "<model-guid>"
-}
+== Limitations and constraints
 
-Response:
-{
-  "sql": "SELECT p.category_name, SUM(f.sales_amount)
-          FROM fact_sales f
-          JOIN dim_product p ON f.product_id = p.product_id
-          WHERE <RLS filter>
-          GROUP BY 1"
-}
-----
+// SOURCE: https://docs.google.com/document/d/1XOcmLeJB39kp8QchiPoRIMgo9f8cM94xgQNqRB9rJL4/edit
+// SOURCE: Demo transcript — AgentQL demo video
 
-Notice that in the SpotQL, business-friendly names are used with no joins specified. The response contains fully formed, governed database SQL with correct physical column names, join logic, and security filters applied.
+* *Chart visualization is not yet available.* The answer card currently shows a summary and table. The chart experience is planned for a future update.
+* *Pinning to Liveboards is not available in Phase 1.* This is targeted for Phase 2.
+* *Parameter support is not available in Phase 1.* Spotter cannot use or modify parameters via AgentQL until Phase 2 (targeted for a future release).
+* *Python code execution is not fully replaced.* Code execution is still used for statistical analysis (forecasting, regression) and for answers that must be stitched from multiple data models.
+* *AgentQL answers cannot be pinned to a Liveboard in Phase 1.* Pinning is scoped to Phase 2.
 
-== Administrator notes
-
-=== Row-level security (RLS)
-
-RLS rules defined on your ThoughtSpot model are automatically applied to every SpotQL query. There is no way for an API caller to bypass these rules through SpotQL — security is enforced at the semantic layer, not at the caller's discretion.
-
-=== Model governance
-
-The quality of SpotQL answers depends on the quality of your ThoughtSpot data model. Well-defined join paths, clear metric definitions, and properly configured custom calendars will all be reflected in the governed SQL output.
-
-=== Transparency and audit
-
-Because every SpotQL query translates to a traceable, deterministic SQL query, administrators have full visibility into what is being executed against the database. This is especially useful for compliance, auditing, and troubleshooting.
-
-=== Coexistence with token-based answers
-
-SpotQL answers and ThoughtSpot's traditional token-based search answers coexist on the same platform and use the same underlying semantic engine. Administrators do not need to choose one approach over the other — both are valid and governed.
-
-// == What's coming next
-
-// SpotQL is an active and rapidly evolving capability within ThoughtSpot Cloud. Planned and upcoming enhancements include:
-
-// * **Charting and visualisation** — SpotQL-powered answers will support richer chart types and visualisation options
-// * **Answer verification** — tooling to validate and confirm the correctness of SpotQL-generated answers
-// * **Tighter coexistence** with token-based answers, so users experience a seamless, unified analytics surface regardless of which engine answers the question
-//* **Deeper agentic integrations** — more AI agents and external tools will be able to leverage SpotQL as a governed query interface
+[NOTE]
+====
+AgentQL triggers automatically for complex questions. Spotter autonomously decides when to use AgentQL, TML search tokens, or code execution based on the nature of your question.
+====
 
 == Frequently asked questions
+[.faq]
+--
+*How does Spotter decide when to use AgentQL?*::
+Spotter's agent autonomously selects the best execution path based on the complexity of your question. You can also explicitly request AgentQL by mentioning it in your prompt. When AgentQL is active, the *Show work* panel displays a `creating_answer_using_AgentQL` event.
 
-=== What is it?
+*Is data governance maintained with AgentQL?*::
+Yes. AgentQL routes through the QGen semantic layer and fully respects RLS, CLS, column dependencies, custom calendar configurations, and all data governance controls defined in the TML model.
 
-A SQL-like semantic query language that expresses intent without executing directly
+*Will AgentQL replace Python code execution entirely?*::
+No. Python code execution is still required for statistical analysis such as forecasting and regression, and for answers that stitch together results from multiple data models.
 
-=== What executes against the database?
+*Can I pin AgentQL answers to a Liveboard?*::
+Not in Phase 1. Pinning is targeted for Phase 2.
+--
 
-Governed SQL produced by ThoughtSpot’s semantic engine
+== Additional resources
 
-=== Is it the same as NL-to-SQL?
+* xref:spotter.adoc[Spotter]
+* xref:spotter-agents.adoc[Spotter Agents]
+* xref:spotter-getting-started.adoc[Ggetting started with Spotter]
 
-No — the LLM never generates raw database SQL; ThoughtSpot’s engine does
-
-=== Is RLS enforced?
-
-Yes — always, at the semantic layer
-
-=== Do I need to specify joins?
-
-No — join paths are defined in the model and applied automatically
-
-=== Can it handle complex metrics?
-
-Yes — semi-additive, LOD, ratios, CTEs, chasm/fan traps
-
-=== Who can call the APIs?
-
-Spotter, Claude, any application with a bearer token and model GUID
-
-=== Do I need to know SQL to use SpotQL?
-
-No. If you are using SpotQL through Spotter or an AI agent, the SpotQL query is generated automatically for you. If you are a developer integrating the APIs, a basic understanding of SQL structure is helpful, but you do not need to know the physical database schema — only the business field names from the semantic model.
-
-=== Does SpotQL replace ThoughtSpot Search?
-
-No. SpotQL is a complementary capability, designed for AI-agent-driven and programmatic use cases. ThoughtSpot's existing token-based search remains available and is powered by the same underlying semantic engine.
-
-=== Can SpotQL access data I'm not authorized to see?
-
-No. Because SpotQL is always resolved through ThoughtSpot's governed engine, your row-level security rules are always enforced. An AI agent using SpotQL on your behalf can only access the data you are authorized to see.
-
-=== Which advanced modeling features does SpotQL support?
-
-SpotQL supports the full range of ThoughtSpot's advanced data modeling capabilities, including semi-additive metrics, Levels of Detail (LODs), ratios, custom fiscal calendars, chasm trap resolution, and fan trap handling.
-
-=== How does SpotQL handle complex, multi-step questions?
-
-SpotQL supports Common Table Expressions (CTEs), which allow complex multi-step analytical questions to be expressed cleanly. For example, identifying a top-N set of entities in one step and then performing a time-comparison analysis on those entities in a second step — all within a single, readable SpotQL query.
-
-=== Is it production-ready?
-
-Yes, and actively expanding with new features
-
-SpotQL represents a meaningful architectural advance: it lets AI agents and applications ask data questions in a readable, SQL-like language, while guaranteeing that the answer comes from a governed, secure, and deterministic execution path.
