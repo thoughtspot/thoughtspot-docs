@@ -139,6 +139,9 @@ ____
 
 When your prompt is intentionally brief or open-ended, AgentSpot performs a deeper analysis of the connected data source to determine the most relevant metrics and the best structure before generating the App.
 
+// auto-draft PR#1461 — REVIEW
+TIP: You can collapse the agent chat panel in the App builder to give the preview more room while you review the App, then expand it again to keep refining by conversation.
+// TODO image: capture the collapsed agent-chat panel in the App builder
 
 NOTE: Generation may take a few minutes for complex prompts or large datasets. A visible work timeline shows you what AgentSpot is doing as it builds the App. You do not need to wait on a static loading screen.
 
@@ -198,6 +201,16 @@ AgentSpot updates the App based on your request. For significant changes — suc
 If you close without publishing, the App reverts to the previously published version. Your unpublished changes are discarded.
 ====
 
+=== Copying an existing App
+
+// auto-draft PR#1852 — REVIEW
+Instead of starting from scratch, you can spin off a new App as a copy of one you already have and use it as a starting point. Open the App you want to base the new one on and choose the copy option; AgentSpot creates an independent copy that you can then describe changes to and publish separately.
+// TODO image: capture the copy / "spin off a copy" dialog opened from an App
+
+// auto-draft PR#1884 — REVIEW
+The copy opens in the App builder with the original App's data sources already wired, and the builder keeps a steady layout as it loads rather than reshuffling. Because the copy starts as an unsaved draft, AgentSpot warns you before you leave the builder without saving or publishing it — a confirmation prompt lets you keep editing or discard the copy, so you don't lose the work by navigating away. Anything you have already published stays safe.
+// REVIEW: confirm exact copy-flow wording and the leave-confirmation labels with engineering; the draft-loss warning applies to unsaved builder sessions generally, not only to copies.
+
 == Summary
 
 [cols="1,2", options="header"]
@@ -232,6 +245,7 @@ If you close without publishing, the App reverts to the previously published ver
 == Known limitations
 
 * *Planning without Spotter*: The App builder does not yet use Spotter for planning. It plans queries against your ThoughtSpot Models based on the context you provide. We’ll add this soon to improve accuracy for TS model data. Until then, extra context in the prompt matters: fiscal year rules (e.g., "our year runs August to July"), measure grain, entity aliases and so on.
+// auto-draft PR#1474 — REVIEW: the builder gained a Spotter model-scoping step during planning, a step toward using Spotter to plan against ThoughtSpot models. Confirm with engineering whether this limitation should be softened or removed before publishing; do not assume it is fully resolved from the diff alone.
 * *Data accuracy is a work in progress*: The agent occasionally builds against the wrong data shape, or ThoughtSpot returns 0s where you expect numbers. If you see it, tell the agent inline: "why is X blank? diagnose and fix it." It recovers within minutes. Please report cases so we can review and improve.
 * *Interactivity is frontend-only*: Filters, sorting, tabs, and drill-downs work at the browser level on already-fetched data. Filters that require re-querying the backend are not yet supported. The agent knows this and builds Apps accordingly.
 * *No actions from the app*: We don’t support external API calls yet, so we cannot use the App to perform actions like writing back to sources or sending messages on Slack.
