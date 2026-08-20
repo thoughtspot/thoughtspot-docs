@@ -1,0 +1,136 @@
+= Bring Your Own Key (BYOK) for ThoughtSpot on AWS VPT
+:author: Mary
+:page-last_updated: 16/4/26
+:experimental:
+:linkattrs:
+:description:
+:jira: SCAL-306004
+
+== Overview
+Bring Your Own Key (BYOK) is a method of key management that allows an organization to use their own encryption keys in cloud-based services instead of relying on the keys provided by the SaaS application or cloud service provider.
+The main purpose of BYOK is to give organizations more control over their data security in the cloud. By using their own encryption keys, organizations can ensure that only authorized services and users have access to their data and can also revoke access to the data by simply revoking the encryption key.
+Additionally, BYOK can help organizations meet compliance requirements by providing them with greater visibility and control over the encryption process.
+
+BYOK is available to ThoughtSpot customers with our AWS Virtual Private ThoughtSpot (VPT) offering. To enable BYOK, contact {support-url}. AWS-VPT architecture allows for greater security and meets stringent compliance requirements by hosting a dedicated and isolated infrastructure and services. BYOK offers an additional level of security and compliance for ThoughtSpot customers to manage access to their data. BYOK allows our AWS-VPT customers to encrypt their data on ThoughtSpot with a customer managed key that is provisioned and managed by the customer on AWS KMS in the organization’s AWS account.
+
+== ThoughtSpot data categories
+
+All of the data that ThoughtSpot deals with can be broadly classified into the following two categories:
+
+=== Customer data
+* Customer Data Warehouse (CDW) data connected to a ThoughtSpot instance
+* CDW configuration and credentials
+* Customer metadata - that defines ThoughtSpot objects such as table definitions, models, liveboards, answers
+* ThoughtSpot maintained data index (Sage index)
+* Customer auth configuration: Local users, credentials/passwords and SAML/OIDC configuration
+* Customer data backups that can be used to recreate the TS instance
+
+=== Serviceability data
+This data includes logs and performance metrics which allows ThoughtSpot operations to monitor your SaaS instance.
+
+
+== ThoughtSpot data encryption
+ThoughtSpot encrypts all data at rest using encryption keys from AWS Key Management Service.
+
+
+== Bring Your Own Key (BYOK) or Customer Managed Encryption key (CMEK)
+With BYOK, all of the customer data described above  is encrypted or decrypted using a Key Management Service (KMS) key provisioned by the customer in their AWS Key Management.
+
+=== CMEK Provisioning and enable encryption
+CMEK is specified per VPT account and has to be enabled at the time of provisioning of the VPT.
+The access to this key is provided by the customer to ThoughtSpot via fine-grained key policies. This should be the least privilege access to allow permissions to ThoughtSpot AWS IAM principals and service accounts only. This gives full control of the key to the customer, including its lifecycle and access control to all customer data on ThoughtSpot.
+
+NOTE: CMEK are not stored or saved by ThoughtSpot.
+
+=== CMEK rotation and lifecycle management
+Customers can rotate or revoke the encryption key via AWS Cloud Key Management Service (KMS) configurations. Key rotation is configurable in AWS KMS. The customer can see detailed usage logs of the CMEK in their own AWS account.
+
+=== CMEK revocation or deletion
+In the event of the customer revoking access to or deleting the CMEK:
+
+* ThoughtSpot loses the ability to decrypt all of the above elements encrypted with CMEK.
+* All access to the ThoughtSpot instance is removed, including web app, API, and mobile app. There is no access to existing user sessions.
+* Cluster access to the customer's CDW is blocked since the cluster no longer has access to CMEK. All scheduled reports, indexing requisitions, and Connections functions will fail.
+* All services such as ThoughtSpot VMs and PostgreSQL stop.
+* Access to S3 buckets with the backups is removed and there is no way to restore from the backups.
+* Access to all of the data in the S3 buckets is lost, including customer data, logs etc.
+
+=== CMEK restored from disabled
+In the event that the CMEK revocation is temporary and the customer provides access to the same key back to ThoughtSpot within the restore window that is defined by ThoughSpot, ThoughtSpot can restore cluster access back to the customer.
+
+=== CMEK restored from pending deletion
+In the event that the CMEK enters the *Pending Deletion* state which AWS holds for 30 days, ThoughtSpot can restore operations before the 30 day period ends. Once the 30 day period ends, AWS deletes the key, after which recovery is not possible.
+
+NOTE: The RDS databases must be restored from backups if the CMEK remains disabled or pending deletion for more than seven days. Prior to seven days, a simple restart of the RDS instances  restores operations.
+
+
+== Setting up AWS-KMS Customer Managed encryption keys
+
+NOTE: This must be done before any ThoughtSpot instances of  AWS-VPT are deployed.
+
+Get the following information from your customer account manager:
+
+* The region in which ThoughtSpot VPT is deployed. For example, `us-west-2` which is used as <REGION> in the remaining document.
+
+* The numeric account ID of the account where ThoughtSpot VPT is deployed, which is used as <ACCOUNT_ID> in the document.
+
+
+=== Create an AWS KMS Key
+
+. Create a KMS key by following the steps here: https://docs.aws.amazon.com/kms/latest/developerguide/create-symmetric-cmk.html[Create a symmetric key].
++
+Use the following settings for the key:
+
+* Key type: Symmetric
+* Key usage: Encrypt and Decrypt
+* Advanced options:
+** Key material origin: KMS
+** Regionality: Single-region key
+
+=== Add necessary IAM policies to the key
+. Add the IAM policies to the key as follows:
+
+    {
+        "Version": "2012-10-17",
+        "Id": "cmek-policy",
+        "Statement": [
+            {
+                "Sid": "Allow use of the key",
+                "Effect": "Allow",
+                "Principal": {
+                "AWS": "arn:aws:iam::<ACCOUNT_ID>:root"
+                },
+                "Action": [
+                    "kms:Encrypt",
+                    "kms:Decrypt",
+                    "kms:GenerateDataKey*",
+                    "kms:DescribeKey"
+                ],
+                "Resource": "*"
+            },
+            {
+                "Sid": "Allow attachment of persistent resources",
+                "Effect": "Allow",
+                "Principal": {
+                    "AWS": "arn:aws:iam::<ACCOUNT_ID>:root"
+                },
+                "Action": [
+                    "kms:CreateGrant",
+                    "kms:RevokeGrant"
+                ],
+                "Resource": "*",
+                "Condition": {
+                    "Bool": {
+                        "kms:GrantIsForAWSResource": "true"
+                    }
+                }
+            }
+        ]
+    }
+
+
+
+. After this is done, share the KMS key ID with ThoughtSpot. Ask your TS account manager to verify KMS permissions on their end.
++
+Once that is verified, we’re set to create the infrastructure for a fresh VPT environment which uses the Customer Managed Encryption Key (CMEK) as the choice of encryption key to manage encryption of the organization's data.
+

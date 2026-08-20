@@ -1,0 +1,89 @@
+[#search-data-error-22001]
+
+=== 22001
+
+Description:: Multiple query paths detected. The selected path is the first table based upon alphabetical sorting of the table names.
+
+
+
+Details::
+
+Simple example::: The following image represents a chasm trap data model. Refer to link:https://community.thoughtspot.com/customers/s/article/What-is-Attribution-and-Chasm-Traps[this article] for further details on chasm traps and attribution.
++
+Scenario 1: A user has selected a column (or columns) from the *group dim* table and the *datetime dim* table. This results in two possible root tables and resulting paths to join these columns:
++
+Option 1: Join through the *membership fact* table.
++
+Option 2: Join through the *group tag* fact table.
++
+These root tables are considered equal as both paths have the same number of children nodes. That is, both paths join to *group dim* and *datetime dim*. In this scenario, ThoughtSpot will select the path based upon the alphabetical sorting of the root tables. As *G* is sorted before *M*, the *group tag fact* table is selected.
++
+[.bordered]
+image::chasm-trap-example-image.png[A chasm trap example where the membership fact table is joined to entity dim, group dim, and datetime dim, and the group tag fact table is joined to the group dim and datetime dim tables.]
++
+Scenario 2:  A user has selected a column (or columns) from the *group dim* table, *datetime dim* table, and the *entity dim* table. In this scenario, the path via membership fact results in three children nodes: *entity dim*, *group dim*, and *datetime dim*. Whereas group tag fact has only two children: *group dim* and *datetime dim*. Therefore, the resulting query joins through the *membership fact* table.
+
+Extended example::: The following image represents an extended chasm trap data model. Note that F indicates a fact table and D indicates a dimensional table. Joins are many-to-one from the fact tables to the dimensional tables.
++
+image::extended-chasm-trap-example.png[A complicated chasm trap which shows fact table one joined to dim tables zero, one, two, three, four, and five. Fact table two is joined to dim tables three, four, six, seven, and eight. Fact table three is joined to dim tables three, seven, eight, and nine.]
++
+*Scenario Query 1: D0 D1 D2 D3 D4 D5*
++
+This query *will NOT display a warning message*. F1 provides coverage for all selected columns.
++
+*Scenario Query 2: D0 D1 D2 D3 D4 D5 D6 D7 D8 D9*
++
+This query *will NOT display a warning message* where the following rules have been applied:
++
+--
+* F1 is the first maximal root. That is, this fact table has the most related dimensional tables that meet the columns selected.
+
+** In this case, F1: D0 D1, D2, D3, D4, D5 *(six children nodes)*.
+
+** Note that these columns are not removed from the context for future evaluation.
+
+* F2 and F3 have a tie as both have three related dimensional tables, when those columns from the first maximal root are removed.  A tie breaker is required to determine *which fact table to join D7 through*. That is, this is available for both F2 and F3.
+
+** F2: D6, D7, D8  (*three children nodes*)
+
+** F3: D7, D8, D9 (*three children nodes*)
+
+* F2 and F3 have an equal number of related dimensional tables. Therefore, the original context is considered as the first tie breaker.
+
+** F2: *D3*, *D4*, D6, D7, D8 (*five children nodes*)
+
+** F3: *D3*, D7, D8, D9 (*four children nodes*)
+
+** F2 is considered as the second maximal root and F3 the third.
+
+** *Therefore D7 is joined through F2* rather than F3.
+--
++
+*Scenario Query 3: D0 D1 D2 D3 D5 D6 D7 D8 D9*
++
+This query *will display a warning message* where the following rules have been applied. Specifically, the warning is in relation to which table D7 and D8 are joined through.
++
+--
+* F1 is the first maximal root. That is, this fact table has the most related dimensional tables that meet the columns selected.
+
+** In this case, F1: D0, D1, D2, D3, D5 (*five children nodes*)
+
+** Note that these columns are not removed from the context for future evaluation.
+
+* F2 and F3 have an equal number of related dimensional tables.
+
+** F2: D6, D7, D8 (*three children nodes*)
+
+** F3: D7, D8, D9 (*three children nodes*)
+
+** The original context does not break the tie between F2 and F3. This is because both are joined to D3 and neither are joined to D5.
+
+** Therefore, alphabetical sorting of the table name is required to break the tie. F2 is considered as the second root as this is sorted first. *Therefore, D7 and D8 are joined through F2* rather than F3.
+--
+
+
+Resolution:: Consider the following options where the desired behaviour is to join via the *membership fact*:
+
+Option 1::: Rename the tables so that membership fact sorts first. That is, add a prefix to membership fact such as *a_membership_fact*.
+
+Option 2::: For TABLE queries, a column can be selected from the entity dim table. This can be marked as hidden. Hidden columns are included in the query plan. Note that for CHART queries, not visualised columns are not included in the query plan.

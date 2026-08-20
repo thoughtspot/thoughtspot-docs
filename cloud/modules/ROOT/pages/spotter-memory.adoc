@@ -1,0 +1,62 @@
+= Spotter memory
+:page-last_updated: Apr 14, 2026
+:author: Naomi
+:page-layout: default-cloud-early-access-spotter-3
+:linkattrs:
+:experimental:
+:jira: SCAL-300551, SCAL-308946
+:description: Memory is the new AI-generated context that Spotter uses when answering questions.
+
+== What is memory?
+
+Every agent-- whether it's helping you analyze sales data, answer a business question, or plan a workflow-- needs context to do its job well.
+
+The human brain works this way naturally. Over time, it accumulates knowledge from experience, remembers what has worked before, and builds intuition about how to approach familiar problems. The more context it holds, the better its judgment becomes.
+
+Memory gives any agent this same ability. It is the context you build into an agent through your interactions and the knowledge you add to it. The agent accumulates what it learns, applies it the next time it is relevant, and keeps improving as you continue to use it.
+
+== What is Spotter memory?
+
+Think of a skilled analyst joining your team. On day one, they are capable but general. Over time, they learn how your business defines revenue, which metrics your leadership tracks, and the steps your team follows to answer recurring questions reliably. They remember what worked, build on it, and stop re-deriving answers they have already reached.
+
+Spotter memory works the same way. It is the context Spotter builds about your data and your business — so it can give accurate, consistent answers without you having to re-explain your data model every session.
+
+IMPORTANT: In the future, all coaching workflows will move to the memory format. For now, memory is additive; your existing reference questions, business terms, and instructions are not affected and continue to work exactly as before.
+
+== How to add memory to Spotter
+
+There are two ways to add memory to Spotter:
+
+xref:spotter-liveboard-learn.adoc[Learning from Liveboards]:: Add a trusted Liveboard as a memory source. Spotter analyzes the charts to learn how to work with your data model -- the correct columns, values, and formulas needed to answer similar questions.
+
+xref:spotter-conversation-learn.adoc[Learning from conversation]:: When you define or correct something during a Spotter conversation, that context is saved as memory and applied to future questions on the same data model.
+
+Users with *Can manage Spotter* privileges can manage memory across the data models they can read, including memory from Liveboards that span multiple data models. Models they cannot read remain inaccessible.
+
+
+
+[#rule-recipe]
+== Types of memory
+
+Learnings are stored as memory in two formats:
+
+Rules:: Business concepts, definitions, and constraints specific to your data model. Similar to instructions.
+Example;; "Revenue always excludes returns" or "active user = logged in within 30 days". Rules are generated from both Liveboard learning and conversation learning.
+How it helps Spotter;; Spotter applies the right definition automatically whenever a relevant question comes in — no guessing, no inconsistency across users.
+Recipes:: Step-by-step workflows for questions your team answers repeatedly: which columns to filter on, which formula to apply, which computation steps to follow.
+Example;; "MTTR of critical bugs per track — filter incidents to P0 and P1, compute resolution time as resolved_date minus created_date in days, group by engineering track, restrict to last quarter."
+How it helps Spotter;; Guides Spotter toward the correct path and helps it improvise for similar questions. If Spotter knows to check the #customer-feedback channel when asked "What is Client A's feedback?", it applies the same approach when asked "What is Client B's feedback?" — without needing to be told again.
+
+== Key capabilities
+
+Column-level security:: Like instructions, memory context participates in Spotter's reasoning and may reference column names. Column-level access controls are enforced at query execution — column values from restricted columns are never returned in results.
+
+Multilingual:: Memory works across languages. A memory entry written in one language applies when questions are asked in another.
+
+== Limitations
+
+Spotter 3:: Memory is only generated and applied when Spotter 3 is enabled for your Org.
+
+Migration:: Memory cannot be migrated between Orgs and instances.
+
+Syncing:: Memory does not automatically sync with data model changes.

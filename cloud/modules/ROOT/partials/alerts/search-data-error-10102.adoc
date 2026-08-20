@@ -1,0 +1,19 @@
+[#search-data-error-10102]
+
+=== 10102
+
+Description:: Custom calendars store months as strings. As a month relates to a date, there is a natural numerical sorting order. This numerical order is based upon the configuration of the custom calendar. That is, the month of January is the first month in a Gregorian calendar. Assuming that the fiscal year starts in July, then January would be the 7th month. In the scenario where a user enters a search such as the following, Order Date >= May 2025, ThoughtSpot will need to generate the underlying SQL based upon the numerical month number of May. This would be a value of 11.
+
+Resolution:: This error is displayed when this month number index is not defined.  To resolve this error, the custom calendar must be updated via the ThoughtSpot custom calendar utility in the Data Management application.
++
+To update the custom calendar, navigate to the calendar list in Data utilities, and select the more option menu image:icon-more-10px.png[ellipsis icon]. Select *Update*.
++
+[.bordered]
+image::custom-calendar-update.png[Select Update]
++
+Next, select the method of replacing a custom calendar as *Existing table* and select the table used for the calendar.
++
+[.bordered]
+image::cc-existing-table.png[Select Existing table]
++
+As part of this update, the month number index is set. Note that if the underlying database table is updated without also updating the ThoughtSpot custom calendar, then this sequence may be incorrect. Any updates to the underlying table must also involve a manual update to the custom calendar via the ThoughtSpot UI.

@@ -1,0 +1,77 @@
+= Org-scoped IdP connections and login page rendering
+:page-last_updated: 06/30/2026
+:linkattrs:
+:experimental:
+:page-layout: default-cloud-beta
+:description: Learn how Org-ccoped IdP connections and login page rendering works.
+
+NOTE: This feature is currently in Beta. Some behaviors and UI controls may change before general availability. To enable this feature, contact {support-url}.
+
+
+Org-scoped IdP connections give each Org in your ThoughtSpot cluster its own isolated authentication configuration. The login page renders only the IdP connections that belong to that Org. Connections from other Orgs have no effect.
+
+Previously, IdP connections were evaluated cluster-wide at login time. If any Org in the cluster had an IdP connection configured, ThoughtSpot's login page would automatically trigger an IdP discovery redirect, regardless of which Org the user was trying to reach.
+
+This caused two significant problems:
+
+* *First-time login failures* +
+Okta and similar IdPs only allow SSO login after a user has previously completed an IdP-initiated flow.
+New users were redirected into a flow they couldn't complete, effectively blocking access.
+
+* *Cross-Org interference* +
+Adding an IdP connection in one Org could unintentionally change the login experience for another Org, even though the two Orgs are independent.
+
+Org-scoped IdP connections eliminate both issues.
+
+== How it works
+
+With this feature enabled, the login page is rendered based exclusively on the IdP connections configured for that Org.
+
+[cols="1,2",options="header"]
+|===
+|IdP connections in the Org |Login page behavior
+
+|None
+|Standard username/password login
+
+|One
+|That IdP connection is displayed directly
+
+|More than one
+|Controlled by admin configuration
+|===
+
+NOTE: IdP connections from other Orgs are never evaluated or rendered, regardless of cluster configuration.
+
+The automatic IdP discovery redirect is disabled as part of this change.
+ThoughtSpot no longer auto-redirects users based on cluster-wide IdP detection.
+
+=== Configuring Org-scoped IdP connections
+
+To enable this feature, contact {support-url}.
+
+. Navigate to *Admin settings*.
+. Click *Security* and select *SSO configuration* for the Org.
++
+Two controls are available:
+
+* *Show all IdP connections*
++
+Toggle on to display all IdP connections configured for the org on the login page. Toggle off to show only the default connection.
+* *Default IdP connection*
++
+Select which connection is treated as the default. This is the connection shown when *Show all* is off.
+
+== Limitations
+
+* UX for multi-connection selection on the login page is subject to refinement before general availability.
+* Validation tooling for detecting misconfigured Org IdP setups is not yet available.
+//* Telemetry for measuring login success/failure rates by connection is planned for a future release.
+
+== Related topics
+
+* xref:oidc-configure.adoc[OIDC group and org mapping overview]
+* xref:saml-okta.adoc[Configuring SSO with SAML]
+* xref:orgs-overview.adoc[Managing orgs in ThoughtSpot]
+//* xref:tscli-iam-flags.adoc[`tscli` reference: IAM configuration flags]
+

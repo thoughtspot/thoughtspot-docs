@@ -1,0 +1,48 @@
+= Data value casing
+:page-last_updated: 9/16/25
+:page-layout: default-cloud-beta
+:author: Naomi
+:linkattrs:
+:experimental:
+:description: You can now specify the case of a column to be default, mixed, upper, or lowercase, which can improve query performance.
+:jira: SCAL-90928, SCAL-202092, SCAL-268185
+
+You can now define the case of columns at table level. By default, ThoughtSpot uses the LOWER function for string comparisons. In cases where this function impacts performance, you may want to use the data value casing feature to change the column’s case.
+
+Note that if you want to change the column case for a Model, you must change it at table level.
+
+NOTE: This feature is not the same as case-sensitive search.
+
+== Data value case behavior
+
+The existing behavior defines the column’s case as DEFAULT (where ThoughtSpot uses the LOWER function). If defined as MIXED, then the LOWER function will be included by default.
+
+You can also define a column as ALL_LOWERCASE, where the SQL serialization will not include the LOWER function during string comparison. If defined as ALL_UPPERCASE, then the LOWER function will not be included.
+
+Note that ThoughtSpot does not sample the data for these columns.
+
+== Example use case
+
+Navigate to the table containing the column whose values you want to modify.
+
+Scroll to the data value casing column and select the value as ALL_LOWERCASE.
+
+
+
+When you use this column in a search where you do comparisons, the query SQL does not use the LOWER function to do case-insensitive comparison.
+
+[.bordered]
+image::query-sql-case.png[SQL view of the query's SQL where there is not LOWER function for the ORDERACCOUNT column.]
+
+
+
+In the above example, the Query SQL uses `where ta_1.ORDERACCOUNT = ‘testme’`, instead of using `lower(ta_1.ORDERACCOUNT) = ‘testme’`.
+
+For any other column comparison, the SQL continues to use lowercasing. In the example below, we use ORDERACCOUNT along with INVOICEACCOUNT, and you can see that LOWER is used for comparison of INVOICEACCOUNT.
+
+[.bordered]
+image::sql-mixed-case.png[SQL view where the query does not use the LOWER function for ORDERACCOUNT, but does use it for INVOICEACCOUNT.]
+
+
+
+NOTE: If you incorrectly configure a column’s data casing to be ALL_LOWERCASE, but the data is not actually lower case, you may get an incorrect result.

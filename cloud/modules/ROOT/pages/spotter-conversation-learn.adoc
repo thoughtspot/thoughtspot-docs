@@ -1,0 +1,271 @@
+= Add memory from conversations
+:page-last_updated: Apr 14, 2026
+:author: Naomi
+:linkattrs:
+:experimental:
+:page-layout: default-cloud-early-access-spotter-3
+:description: Learning from conversation lets coaching users teach Spotter directly during a conversation.
+:jira: SCAL-300551, SCAL-303800, SCAL-306618, SCAL-307520, SCAL-304168, SCAL-320863
+
+Conversational learning is how Spotter builds and refines its understanding through use. As analysts work — asking questions, correcting answers, clarifying definitions — Spotter listens for explicit teaching signals and saves them as memory. The next time a related question comes in, Spotter applies what it learned rather than starting from scratch or waiting for the user to re-explain.
+
+This is different from Liveboard-based learning, which generates memory in bulk from a trusted answer set upfront. Conversation learning is iterative and corrective: it captures knowledge that surfaces naturally when Spotter gets something wrong, or when a user wants to establish a definition mid-flow. Over time, it is how shared memory stays current with how your business actually talks about its data — and how individual users build a Spotter that knows their specific context.
+
+What gets saved — and who can save it — depends on which track applies to you.
+
+- **Shared memory** — when a user with Manage Memory access corrects or defines a business concept, Spotter saves it as a xref:spotter-memory.adoc#rule-recipe[rule] scoped to that data model. Applies to all users querying that data model.
+- **Personal memory** — when any user explicitly states personal context (role, preferences, accounts, region), Spotter saves it as xref:spotter-personal-memory.adoc[personal memory]. Applies to that user's sessions only.
+
+> **Users with Manage Memory access participate in both tracks.** When they teach Spotter something personal, it goes to personal memory. When they correct a data model definition, it goes to shared memory. Both can happen in a single conversation.
+
+== Requirements
+
+[options="header"]
+|===
+| Requirement | Details
+| Spotter version | Spotter 3 only
+| Admin flag | "Memory from Liveboards and conversations" must be enabled
+| Personal memory (26.7) | Additional flag: "Enable personal memory learning for all users"
+| Shared memory access | Manage Memory permission, data model edit access, or admin
+| Personal memory access | Any user, once the personal memory admin flag is on
+|===
+
+== Enable learning from conversations
+
+Personal memory and shared memory are enabled by the same flag, which is disabled by default.
+
+To enable:
+
+. Navigate to the Admin tab and select *All Orgs*.
+
+. Select *AI settings* under *Application settings*.
+
+. Click *Edit* for the *Spotter 3 capabilities* section and set *Memory from Liveboards and conversations* to Enabled.
+
+. Click *Save*.
+
+For personal memory, enable the additional flag, *Enable personal memory learning for all users*.
+
+When memory from Liveboards and conversations is not enabled:
+
+* No new memory can be written from conversation for either shared or personal memory.
+* Spotter stops fetching and applying any previously generated memory.
+* Existing memory is not deleted; if the feature is re-enabled, all previously written memory becomes active again immediately.
+* Reference questions, business terms, and instructions are not affected.
+
+== Shared memory
+
+This feature is available to all users with Manage memory permission, data model edit access, or admin access.
+
+=== What triggers a save
+
+Spotter listens for explicit corrections and definitions scoped to the data model being queried:
+
+- *"Remember this: [definition]"*
+- *"Always [do X]"* / *"Never [do Y]"*
+- Corrective statements after an incorrect answer — *"No, Sets usage = cohort-save event."*
+- *"Correct. Save this."*
+
+Vague dissatisfaction — *"this looks off"* — does not trigger a write.
+
+
+=== What gets stored
+
+Shared memory from conversation is scoped to the data model being queried and applies to all users on that Model.
+
+What does NOT get stored:
+- Instructions, data model AI context, reference questions, or business terms — these must be managed manually
+- Charting preferences or visualization types
+- Personal preferences — these go to personal memory, not shared memory
+
+=== What Spotter confirms
+
+> **User:** "Same-store sales only includes stores open for more than 12 months — filter by `store_age_months > 12`, not total store count."
+> **Spotter:** "Got it — I've saved this to shared memory: same-store sales filters to stores open more than 12 months using `store_age_months > 12`."
+
+== Personal memory
+
+This feature is available to all users when the personal memory flag is enabled.
+
+=== What triggers a save
+
+Spotter listens for explicit statements about the user themselves:
+
+- *"Remember I'm Head of CS for EMEA focused on renewals."*
+- *"Always show me tables, not charts."*
+- *"My renewal target is 95%, not the team's 85%."*
+- *"When I say 'my accounts', I mean my 30 EMEA enterprise accounts."*
+
+Vague statements do not trigger a save. *"I'd prefer better answers"* or *"that didn't look right"* are not saved — explicit, personal intent is required.
+
+=== What gets stored
+
+Personal memory stores context about the individual user across four categories:
+
+[options="header"]
+|===
+| Category | Examples
+| **Role and goals** | Job title, team, focus areas, expertise level
+| **Preferences** | Output format, verbosity, time granularity, language
+| **Personal context** | Accounts, region, team, personal targets
+| **Recent work context** | Current project, last analysis run
+|===
+
+Personal memory is scoped to the user. It is not visible to other users and does not affect how Spotter answers questions for anyone else.
+
+=== What Spotter confirms
+
+Spotter confirms inline when personal memory is saved.
+
+> **User:** "Always show me results in a table. And remember my region is EMEA."
+> **Spotter:** "Got it — I've updated your personal memory: output format set to table, and your region set to EMEA."
+
+**When a user with Manage Memory access triggers both tracks in one conversation:**
+
+> **User:** "Always show me results in a table. Also, Spotter adoption is measured by the `spotter-ai-answer-loaded` event."
+> **Spotter:** "Updating memory with the following. Personal memory — output format set to table. Shared memory — Spotter adoption is tracked by `spotter-ai-answer-loaded`."
+
+
+== Scope and limitations
+
+**Shared memory:**
+- Data model layer only — memory is scoped to the data model being queried in the current conversation.
+- Single data model per session — if a conversation spans multiple data models, memory is not written across them.
+
+**Personal memory:**
+- Active learning only — Spotter saves context when explicitly told. It does not passively infer preferences from query patterns.
+- No memory management UI currently — corrections and deletions happen through conversation.
+
+== Learn from other sources
+
+Your team has likely already documented business definitions, KPI logic, and operational rules somewhere — a metric glossary, a Confluence wiki, a SharePoint handbook. This tab covers how to load that existing knowledge directly into Spotter's memory, rather than re-entering it through conversation one correction at a time.
+
+Two source types are supported: structured files (CSV) and connected knowledge bases (Confluence, SharePoint, Notion, and other connectors).
+
+=== Source type 1 — CSV or structured file
+
+A CSV is the fastest way to bulk-load definitions into memory when you already have a structured list — metric definitions, a business glossary, KPI calculation rules, or column-level business logic.
+
+**What works well as a CSV source:**
+
+- Metric definitions table (metric name → formula → business rules)
+- Business glossary (term → definition → scope/exceptions)
+- Column-level annotations (column name → how to interpret → what to exclude)
+- Filter rules (dimension → valid values → exclusion logic)
+
+**How to do it:**
+
+**Step 1 — Prepare the file**
+
+Structure the CSV with clear column headers. Two-column format (Term, Definition) works well for glossaries. Three-column format (Term, Definition, Scope) works for anything with model-specific rules.
+
+
+**Step 2 — Provide the file to Spotter and ask it to extract**
+
+> *"Here is our metrics glossary [paste CSV content]. Review it and identify all definitions and calculation rules that are relevant to the [data model name] data model."*
+
+> *"Read this table of metric definitions and tell me which ones you can directly apply as memory for this data model, and which ones you'd need clarification on."*
+
+**Step 3 — Verify before saving**
+
+Ask Spotter to repeat back what it intends to save before confirming. A misread definition in memory is harder to fix than a blank slate.
+
+> *"Before saving anything, summarize in plain language the definitions you're about to write to memory. I'll confirm."*
+
+**Step 4 — Confirm the saves**
+
+> *"Those look correct — save all of them to memory for the [data model name] data model."*
+
+> *"Save the first three. Hold off on the fourth — the definition of 'active account' needs checking."*
+
+**Step 5 — Test that it stuck**
+
+Start a new conversation and ask a question that requires one of the definitions you just loaded. If Spotter answers correctly without you restating the context, the memory was saved successfully.
+
+> *"What is our definition of ARR? Walk me through how you would calculate it for this data model."*
+
+If it gets it wrong or hesitates, correct it in conversation and ask it to update its memory.
+
+=== Source type 2 — Connected knowledge bases
+
+If your team documents business context in Confluence, SharePoint, Notion, or another connected tool, you can point Spotter directly at those pages and ask it to extract and save what's relevant — without copying anything manually.
+
+**Supported connectors:**
+
+[options="header"]
+|===
+| Source | Good for
+| Confluence | Team wikis, metric definitions, runbooks, release notes
+| SharePoint | Company docs, operational procedures, business glossaries
+| Notion | Product specs, team handbooks, definitions databases
+| Other connectors | Any source connected via the ThoughtSpot connector framework
+|===
+
+=== Admin setup
+
+Connected sources require a one-time admin setup before any user can reference them in Spotter conversations.
+
+1. Go to **Admin Panel > Integrations > Connectors**.
+2. Add your source (Confluence, SharePoint, Notion, etc.).
+3. Authenticate and configure access scope.
+
+Once set up, every user on the org can reference those sources in Spotter conversations. Connectors respect source-level permissions — Spotter can only read pages the authenticated user has access to.
+
+=== How to learn from a connected source
+
+**Step 1 — Reference the page in conversation**
+
+You can reference a connected page by name, by URL, or by topic — Spotter will locate and retrieve it.
+
+> *"Read our Confluence page called 'Revenue Metric Definitions' and tell me what it says about ARR."*
+
+> *"Search Confluence for our definition of 'active accounts' and summarize how we calculate it."*
+
+> *"Read this page: [paste URL]. Extract any definitions or rules relevant to how we measure pipeline health."*
+
+**Step 2 — Ask Spotter to identify what's relevant**
+
+> *"Read our 'Sales Metrics Handbook' in Confluence. Identify any definitions or calculation rules relevant to the [data model name] data model. Tell me what you found before saving anything."*
+
+**Step 3 — Verify before saving**
+
+> *"Before you save, repeat back the definitions you're about to write to memory. Confirm the extracted definition matches what the source page says."*
+
+> **Verify before saving.** Ask Spotter to summarize what it's about to write before confirming. External docs sometimes contain outdated language, edge-case caveats, or team-specific shorthand that reads differently in isolation. A quick review here prevents bad definitions from getting into memory.
+
+**Step 4 — Confirm the saves**
+
+> *"Save the definition of ARR, the denominator logic for Spotter adoption, and the active account filter to memory for this data model."*
+
+**Step 5 — Test that it stuck**
+
+Start a new conversation and ask a question that requires the definition it just learned.
+
+> *"What is our definition of ARR? Walk me through how you would calculate it."*
+
+=== What to expect from Spotter
+
+[options="header"]
+|===
+| Scenario | What Spotter does | What you should do
+| Page or file is long with lots of content | Reads the full source but surfaces only sections it considers relevant to your question | Be specific in your prompt — name the section or metric you want it to focus on
+| Content is ambiguous or conflicts with existing memory | Surfaces the conflict and asks for clarification before saving | Give it the authoritative version and ask it to overwrite the conflicting memory
+| Page not found or access denied | Tells you it cannot access the page | Check the connector is set up, the page name is correct, and you have access in the source system
+| Content is outdated relative to actual practice | Saves what the source says — it cannot know what's stale | Review extracted content before saving; correct outdated definitions in the same conversation
+| CSV has ambiguous or conflicting rows | Flags the ambiguity and asks which definition to use | Clarify in conversation, then confirm the save
+|===
+
+> **Combine with Liveboard learning:** Use external sources to load your *definitions* — ARR formula, active account filter, revenue exclusions. Then use a Liveboard to teach Spotter how those definitions map to actual query patterns and chart structures in ThoughtSpot. The two approaches complement each other: sources give Spotter the business logic, Liveboards show it how that logic appears in your data.
+
+== Permissions
+
+[options="header"]
+|===
+| Action | Who can do it
+| Enable / disable the Memory admin flag | Admins only
+| Enable personal memory for all users | Admins only
+| Write shared memory from conversation | Users with Manage Memory permission, data model edit access, or admin access
+| Write personal memory from conversation | Any user (when personal memory admin flag is on)
+| View shared memory written from conversation | Any user with access to that data model
+| View own personal memory | Any user — ask Spotter: *"What do you know about me?"*
+|===

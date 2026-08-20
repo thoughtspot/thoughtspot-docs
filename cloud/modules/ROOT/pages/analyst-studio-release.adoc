@@ -1,0 +1,195 @@
+= Release notes for Analyst Studio
+:page-last_updated: Dec 15, 2025
+:author: Naomi
+:linkattrs:
+:experimental:
+:product: Analyst Studio
+:description: Learn about new features in Analyst Studio.
+:jira: SCAL-283825, SCAL-301105, SCAL-290511
+
+== July 17, 2026
+Improved publish flow::
+Query results, Datasets, and Spreadsheet output can now be published directly to the Data workspace, where they can be consumed by Liveboards and Spotter.
+
+* *Direct Publish*: A Publish CTA replaces the previous Create a Dataset from this Query/Promote flow - create and publish in a single step.
+
+* *Draft mode*: Changes made after publishing are not applied automatically. Edits are held as a draft - indicated by a dot next to the query - until you republish. Query history shows past runs and the last published version.
+
+* *Publish/Republish flow*: Changes to the source dataset or to its Spreadsheet layer surface a Republish option, which updates the previously published table in place.
+
+* *Intelligent schema-change detection*: Schema changes are detected on republish to ensure the least disruption to dependent content in ThoughtSpot.
+
+Data mashup for cross-source joins::
+You can now join datasets across different Cloud data warehouses and flat files in a single SQL query - removing the single-connection restriction, with no ETL process needed to centralize data first.
+
+* *Cross-source joins*: By leveraging SpotCache, Analyst Studio treats independent datasets as local tables - combine production warehouse data with tactical data like CSVs, Excel workbooks, or Google Sheets into one unified dataset.
+
+* *Standard SQL*: All ISO SQL joins are supported. Reference any loaded dataset as a table using its quoted name (for example, "f1_drivers").
+
+* *Supported sources*: SQL-based datasets and flat file datasets (Google Sheets, Excel, CSV).
+
+* *Ready for consumption*: Publish the combined dataset to the Data workspace for use in Liveboards and Spotter. See xref:analyst-studio-query-datasets[Query datasets], and also link:https://training.thoughtspot.com/dataset-extracts-with-analyst-studio?next=%2Fdataset-extracts-with-analyst-studio%2F2529234[Datasets with Analyst Studio^] in ThoughtSpot University.
+
+Spreadsheet view::
+A native, governed spreadsheet environment for high-stakes data transformation inside Analyst Studio.
+
+* *Start from anywhere*: Land directly in the Spreadsheet from a flat file upload (.csv, .tsv, .xlsx, Gsheets), from any successful SQL or Python query result (Edit in spreadsheet), or from an existing dataset.
+
+* *Formatting and styling*: Conditional formatting with color scales, currency/percentage/decimal precision controls, text formatting and hyperlinks, alternating row colors, and column management.
+
+* *Type-aware filtering*: Numerical (range, individual values, Top/Bottom N), categorical (multi-select, search-to-filter), and date/time (relative ranges, custom pickers) filters.
+
+* *Calculated fields*: Create derived columns with arithmetic, comparison, and logical operators, IF/THEN/ELSE logic, and a full library of numeric, date, string, null-handling, aggregate, and cumulative functions.
+
+* *Governed output*: Publish your transformed dataset to the Data workspace - and Republish to keep it in sync as your model evolves.
+
+== May 7, 2026
+
+ThoughtSpot Analyst Studio user and group sync::
+ThoughtSpot has enhanced how users and groups are synced between ThoughtSpot and Analyst Studio. The following improvements are included to help you to administer and secure Analyst Studio:
+
+* When a new Analyst Studio Workspace is created, users and groups in the linked ThoughtSpot Org are created in Analyst Studio.
+* Users and groups created in ThoughtSpot are also created in Analyst Studio.
+* Analyst Studio privileges are determined based on the privileges available to the user in ThoughtSpot.
+* User group membership in ThoughtSpot is accurately reflected in Analyst Studio as well.
+* If a group is deleted from ThoughtSpot, the group is also deleted from the Analyst Studio Workspace.
+* If a user is deleted from ThoughtSpot or loses access to Analyst Studio, the corresponding Analyst Studio user also loses access to the Analyst Studio Workspace.
++
+For more information, see
+xref:analyst-studio-permissions.adoc#dependencies[Access control and permissions].
+
+== March 10, 2026
+
+Local file upload:: Not every piece of data lives in a cloud drive. Sometimes, the insight you need is sitting in a one-off export on your desktop. We’ve removed the friction of moving files to the cloud just to see them in ThoughtSpot. Now, you can upload local files directly, with a smart new processing engine that helps you clean as you go. Simply drag and drop .csv, .tsv, and .xlsx files directly from your computer to start analyzing instantly.
++
+What's new;;
++
+--
+* Smart header detection: Tell us if your file has headers or not; if it doesn't, we’ll generate them and identify data types from the very first row.
+* Precision data profiling: Review a 5-row sample and toggle off columns you don't need before the dataset is even created.
+* Flexible typecasting: Manually override detected data types (like changing a String to a Date) using our new type-logic validator.
+--
+
+== February 26, 2026
+
+Data mashup for cross-source joins [.badge.badge-early-access]#Early Access#::
+Data Mashup is a high-performance interface for performing SQL transformations across disparate data sources within a single Report. It removes the "single connection" restriction, enabling joins between different warehouses and flat files without requiring an ETL process to centralize data first.
++
+Key Features:
++
+--
+* Cross-Source Joins: Perform standard SQL joins across independent datasets.
+
+* Fast operations: Uses a cached layer to treat external datasets as local tables for high-performance search.
+
+* Sources: Supports SQL and flat file datasets; Notebook outputs and CSV/Excel support are coming soon.
+--
++
+For more information, see xref:analyst-studio-query-datasets.adoc[].
+
+== February 12, 2026
+
+New and improved SQL Editor::
+We have overhauled the SQL Editor to make writing queries smoother, faster, and more customisable - from "mind-reading" autocomplete to a high-performance editor interface.
+
+Enhanced autocomplete;;
+* Advanced parsing: Full support for CTEs, quoted/case-sensitive table names, and non-aliased JOINS.
++
+* Flexible syntax: Recognises tables separated by commas and multiple queries separated by semicolons.
+
+Better customisation and UX;;
+* Visuals: New High-Contrast theme, font sizes (10–24px), and Minimap toggle.
+
+* Organization: Use `-- #region` / `-- #endregion` for code folding.
+
+* Editing tools: Added Mouse-wheel zoom, and dedicated Undo/Redo buttons.
+
+Performance boost;;
+* Instant suggestions: We now fetch table and column metadata in parallel to eliminate wait times.
+
+* Lag-free typing: Optimised rendering ensures the UI stays snappy even when handling massive queries.
+
+== February 9, 2026
+
+Local file uploads:: Analyst Studio's local file integration allows you to upload data directly from your computer into Analyst Studio Datasets. This is the fastest way to perform ad-hoc analysis on .csv, .tsv, and .xlsx files without requiring a cloud-based connection. For more information, see xref:analyst-studio-local-file-upload.adoc[].
+
+== December 15, 2025
+
+Microsoft Excel Connection:: Connect directly to Excel Workbooks in OneDrive and SharePoint for live, self-service data analysis.
+
+Now, analysts and business users can connect Analyst Studio directly to Excel workbooks stored in Microsoft OneDrive and SharePoint Online. This integration enables self-service data ingestion, allowing you to quickly onboard ad hoc or external data without IT bottlenecks, and support data mashups within Analyst Studio.
+The connection is read-only (your original Excel file is never modified) and uses the Microsoft Graph API for secure, scheduled refreshes.
+
+Crucial steps and best practices:
+
+* Admin setup required: Before analysts can use this feature, an Analyst Studio Admin must enable the Microsoft Excel Integration and grant necessary consent in Azure AD.
+* Data location matters: Use files stored in SharePoint Online for shared, production reports, as access is tied to the team/site. Use OneDrive only for personal, draft analysis.
+* Prepare your data: Ensure your Excel workbook uses the first row for headers and avoids merged cells. The system imports the final calculated value of any formula, not the formula itself.
+* Supported format: Only files in the .xlsx format are supported.
+
+To learn more, see xref:analyst-studio-excel-workbook-integration.adoc[Excel integration].
+
+
+== November 19, 2025
+
+We released quality-of-life improvements designed to give you better visibility into your data flow and safeguards against accidental data loss.
+
+Enhanced publish notifications:: You will now receive immediate notifications if a publish fails, along with specific details on the issue.
+
+Workspace monitoring:: The system will now alert you instantly if your workspace exceeds its data size limits, ensuring you are aware of capacity constraints before attempting further operations.
+
+Safer deletions:: To prevent breaking changes, datasets in {product} can no longer be deleted if they have active dependents in ThoughtSpot. The system now provides a list of these dependents so you can manage them safely.
++
+NOTE: This feature requires a ThoughtSpot release version of 10.13.0.cl or later, and applies only to newly-created datasets.
+
+== November 12, 2025
+
+Data retention policy:: The new Data Retention Policy empowers Workspace admins to manage how long Report result data is stored in Analyst Studio. Admins can now set workspace-level retention periods (7–365 days), after which an automated daily purge deletes older report PDFs, query results, notebook outputs, and dataset data. Query and run histories are preserved, but their underlying results are cleared. For more information, see xref:analyst-studio-data-retention.adoc[]
+
+== November 12, 2025
+
+Data retention policy:: The new Data Retention Policy empowers Workspace admins to manage how long Report result data is stored in Analyst Studio. Admins can now set workspace-level retention periods (7–365 days), after which an automated daily purge deletes older report PDFs, query results, notebook outputs, and dataset data. Query and run histories are preserved, but their underlying results are cleared. For more information, see xref:analyst-studio-data-retention.adoc[]
+
+== October 2, 2025
+
+Import Notebook files directly:: You can now instantly import an existing Notebook for analysis. The new *Import Notebook* option allows you to upload any `.ipynb` file to start working immediately. Learn more xref:analyst-studio-notebook.adoc#using-the-notebook[here].
+
+== September 19, 2025
+
+Instantly create reusable Datasets from your Reports:: You can now effortlessly create reusable Datasets directly from any successful SQL query within a Report. This feature captures a snapshot of your query, allowing you to instantly save and share the results as a new Dataset, eliminating the need to recreate queries from scratch. Learn more xref:analyst-studio-datasets.adoc#create_a_dataset_from_a_query[here].
+
+== July 28, 2025
+
+Python notebooks now support Snowpark and PySpark:: Both libraries unlock powerful data engineering and analytics workflows directly within your notebooks.
++
+Snowpark empowers you to build scalable data pipelines and run advanced data transformations using Snowflake’s engine.
++
+PySpark provides distributed data processing and machine learning capabilities via Apache Spark, enabling efficient analysis of large datasets.
++
+Learn more about our full set of supported libraries xref:analyst-studio-notebook.adoc#supported-libraries[here].
+
+Python CleanSlate:: The Python CleanSlate environment is a new execution option in Analyst Studio, available alongside Python 3 and Python Edge. It starts without any pre-installed third-party packages, giving you full control over your environment setup. This is ideal for analysts who want a minimal, dependency-free starting point for custom workflows. Learn more xref:analyst-studio-notebook.adoc#python_cleanslate_environment[here].
+
+Customize Report and Dataset refresh with admin-managed schedules:: Admin-managed schedules allow organization administrators to set maximum schedule frequencies for Report and Dataset refreshes, ensuring that scheduling aligns with system performance, cost-efficiency, and data governance objectives. This feature gives administrators greater oversight and control over how often users can schedule updates. Learn more xref:analyst-studio-admin-managed-schedules.adoc[here].
+
+== July 11, 2025
+
+Export Notebook outputs to ThoughtSpot:: Now you can export Python output (Pandas DataFrames) from Notebooks to ThoughtSpot Data Workspace, making your insights reusable and shareable as live Datasets. Power Liveboards and SpotIQ with Python-generated data and collaborate seamlessly with non-coders. Learn more about Python Dataset xref:analyst-studio-notebook.adoc#python_datasets[here].
+
+== May 8, 2025
+
+Python upgrade:: We’re upgrading our Python environment from version 3.9 to 3.11. This update brings:
++
+–
+Performance boost: Faster execution thanks to core optimizations.
+Better error messages: Clearer tracebacks to speed up debugging.
+New language features: Includes match statements (structural pattern matching), precise error locations, and improved typing.
+Deprecations: Some older libraries or syntax may no longer be supported—please review your code for compatibility.
+
+–
++
+For most users, no changes are required. If you maintain custom Python code, we recommend testing it in the Python 3.11 environment (Python Edge). Learn more about supported library versions xref:analyst-studio-notebook.adoc#supported-libraries[here].
+
+== February 14, 2025
+
+Python libraries:: We’re excited to announce updates to a range of out-of-the-box Python libraries. Learn more about supported library versions xref:analyst-studio-notebook.adoc#supported-libraries[here].
