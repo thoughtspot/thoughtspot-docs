@@ -1,21 +1,66 @@
 = Suggestion settings
-:page-last_updated: Jan 29, 2026
+:page-last_updated: Aug 24, 2026
+:author: Rani
 :linkattrs:
 :experimental:
 :page-aliases:
 :description: Hide restricted data from typeahead suggestions and knowledge cards.
-:jira: SCAL-264775
+:jira: SCAL-264775, SCAL-330658
 
 We have added the Suggestion Settings column to Models to allow you to control data that shows in typeahead suggestions and column knowledge cards, and data that is leveraged as part of Spotter accuracy. Previously, on Models with row-level security defined, you may see suggested names of data that you could not access in typeahead suggestions or in column knowledge cards. This occurs only when you define the RLS rule on a different table than the one that contains the column you want to restrict.
 
 For example, if you only had access to data in California, you could see that data for Texas existed, although you could not access the data. Now, you can restrict suggested data for Models with row-level security, ensuring that your security is complete.
 
 
+[NOTE]
+====
+#All metadata queries for a column set to *Secure suggestions* run against your primary warehouse or cloud data warehouse (CDW). ThoughtSpot cannot route these queries to a secondary warehouse configured for background indexing workloads. For more information, see <<secondary-warehouse,Secondary warehouse and secure suggestions>>#.
+====
+
+== #How secure suggestions works#
+
+When a column is configured with *Secure suggestions*, ThoughtSpot cannot pre-index its values because each user may be entitled to see a different subset of values under row-level security. Instead, ThoughtSpot fetches a small sample of values live from the warehouse the first time a user's search or Spotter session needs them, then caches the result for 24 hours.
+
+These on-demand queries appear in your warehouse query history tagged as `SECURE_SAMPLING` (for sample values) and `SECURE_MATCH_VALUES` (for Spotter suggestion matching).
+
+
+=== #Query volume and caching#
+
+ThoughtSpot fetches values from the warehouse only when a search or Spotter session needs them, then caches the result for 24 hours. Because the fetch happens on demand rather than during scheduled indexing, enabling *Secure suggestions* on more columns increases the number of queries your primary warehouse receives.
+
+A `SECURE_SAMPLING` query typically takes around 60 seconds to execute, so the first search that needs values for a column may see a short delay before suggestions appear.
+
+If the query fails, ThoughtSpot temporarily suppresses that column's suggestions and retries after a backoff period. Suggestions recover automatically once the warehouse responds successfully.
+
+=== #When to use secure suggestions#
+
+Enable *Secure suggestions* for a column when any of the following apply:
+
+* Row-level security is applied to the underlying tables and you need typeahead suggestions or sample values to honor that security.
+* RLS rules use constructs that the standard search index cannot enforce, such as `and`, `ts_var`, or `!=`.
+* Spotter accuracy matters on RLS-protected Models and suggestions must be strictly RLS-compliant.
+* The underlying table column has no index but you still want sample values or suggestions in knowledge cards.
+* ThoughtSpot displays a potential data-leak warning when the Model has RLS defined but columns are set to *Inherit table settings*.
+
+=== #When not to use secure suggestions#
+
+Do not enable *Secure suggestions* when:
+
+* No row-level security is applied to the underlying tables.
+* You plan to enable it on every column of a Model without evaluating each column's security requirements. Blanket enabling generates unnecessary warehouse queries.
+* Suggestions are not needed for the column at all. Use *Don't show suggestions* instead.
+
+[IMPORTANT]
+====
+Enabling *Secure suggestions* on columns that do not require it increases query load on your primary warehouse. Set this option only on columns where row-level security compliance for suggestions is required.
+====
+
 == Set secure suggestions
 
 You can set the suggestion settings on any column, and specify to not show suggestions, inherit table settings, or use secure suggestions.
 
-
+[.bordered]
+image::secure-suggestions.png[Suggestion settings column options.]
 
 When you set a column to *Inherit table settings*, the column data will only be secure in typeahead suggestions and column knowledge cards if the row-level security rule is defined on the same table containing the referenced column.
 
@@ -23,16 +68,16 @@ We recommend setting columns with sensitive data to *Secure suggestions*. This r
 
 === Prerequisites
 
-In order for secure suggestions to be supported, there are the following prerequisites:
+For secure suggestions to work, the following conditions must be met:
 
 * Strict row-level security must be enabled for the instance.
 * Secure suggestions must be enabled for the instance.
 * Row-level security must be applied to the Model.
-* The table column's index type must be set to *Default*. (Requirement for restricting data in Spotter. Sample values in knowledge cards do not require table columns to be indexed.)
-* The column in the Model must be set to *Secure suggestions* (rather than *Inherit table settings* or *Don't show suggestions*).
+* The column in the Model must be set to *Secure suggestions* in the Suggestion settings column.
 
-[.bordered]
-image::secure-suggestions.png[Suggestion settings column options.]
+#For Spotter suggestion matching (secure match), the following additional condition applies:#
+
+* #The underlying table column's index type must be set to *Default*. Sample values in knowledge cards do not require the underlying table column to be indexed.#
 
 === Suggestion settings
 
@@ -46,6 +91,16 @@ To change the suggestion settings for a column, follow these steps:
 
 . Click *Save changes*.
 
+[#secondary-warehouse]
+== #Secondary warehouse and secure suggestions#
+
+ThoughtSpot supports routing background indexing queries (`SAGE_INDEXING`, `ROW_COUNT_STATS`) to a secondary warehouse using connection configurations. Secure suggestions queries (`SECURE_SAMPLING`, `SECURE_MATCH_VALUES`) are *not* eligible for this routing.
+
+Secure suggestions queries need to return quickly, and a secondary warehouse cannot guarantee that latency. Secondary warehouses are typically sized and scheduled to run background work during specific windows to reduce warehouse cost, so routing secure suggestions queries there would make suggestion latency unpredictable. For this reason, the secondary warehouse configuration does not apply to `SECURE_SAMPLING` or `SECURE_MATCH_VALUES`.
+
+Because these queries always run on your primary warehouse, they consume compute on that warehouse rather than on a smaller, lower-cost one. On Models where many columns are set to *Secure suggestions*, this can be a noticeable share of warehouse usage.
+
+If `SECURE_SAMPLING` query volume is a concern, review your Model configuration: columns that do not require RLS-compliant suggestions should use *Inherit table settings* or *Don't show suggestions* instead of *Secure suggestions*.
 
 '''
 > **Related information**
