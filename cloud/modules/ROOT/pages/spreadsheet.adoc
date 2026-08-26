@@ -1,0 +1,552 @@
+= Spreadsheet
+:page-last_updated: Aug 25, 2026
+:author: Naomi
+:description: Spreadsheet gives you a familiar, grid-based way to work with your data model, table and datasets without leaving the platform.
+:linkattrs:
+:experimental:
+:jira: SCAL-309060
+
+Spreadsheet gives you a familiar, grid-based way to work with your data model, table and datasets without leaving the platform.
+
+You open a data model as a spreadsheet, add calculated columns with ThoughtSpot formulas, sort, filter, add conditional formatting and format the grid, then save your work as an Answer.
+
+Because Spreadsheet opens a ThoughtSpot Model, it inherits that Model's row-level security, column-level security, joins, and formula logic. You get spreadsheet flexibility on live, governed data, with no export step and no loss of security.
+
+This page is a reference for the actions available in Spreadsheet. For step-by-step workflows, see the related how-to pages linked at the end.
+
+== Before you begin
+
+* You need access to at least one Model in ThoughtSpot.
+* Spreadsheet works on aggregated data from the Model. Every action you take runs a live query against the Model.
+* Row-level and column-level security defined on the Model are always enforced. You only see data you are permitted to see.
+
+== Entry points
+
+You can open spreadsheet from several places in ThoughtSpot
+
+[options="header"]
+|===
+| Entry point | Where to find it | What happens
+
+| Search Data toolbar
+| In Search Data, select a Model and click on Spreadsheet mode in the visualization toolbar.
+| The current result opens in spreadsheet mode. Columns you selected in Search Data carry over.
+
+| Answers list
+| Open a saved Answer tagged Spreadsheet.
+| The Answer reopens directly in spreadsheet mode.
+
+| Shared Answers
+| Open a shared Answer in a spreadsheet mode.
+| The Answer opens in spreadsheet mode for users with access.
+|===
+
+== Toolbar reference
+
+The toolbar keeps the most common actions one click away while maximizing grid space.
+
+[options="header"]
+|===
+| Control | Description
+
+| Undo / Redo
+| Step backward or forward through your recent actions.
+
+| Sort
+| Open the advanced sort dialog to sort by one or more columns.
+
+| Filter
+| Open the filter flow to narrow the rows shown in the grid.
+
+| Conditional formatting
+| Apply color rules that highlight cells based on their values.
+
+| Text alignment
+| Choose whether column contents are left-aligned, center-aligned, or right-aligned.
+
+| Wrap text
+| Choose if text in columns should wrap to the next line.
+
+| Format as currency
+| Format the numbers as currency.
+
+| Format as percent
+| Format the numbers as percentages.
+
+| Decrease decimal places
+| Round numbers up to an earlier decimal place.
+
+| Increase decimal places
+| Include an additional decimal place.
+
+| More formats
+| Choose to format as automatic, number, currency, or percent.
+
+| Grid style
+| Choose styles such as alternating colors, change row height, choose to show column gridlines, row gridlines, or row numbers.
+
+| Filter
+| Filter by a column.
+
+| Formula (fx)
+| Add a calculated column using a ThoughtSpot formula. See xref:formulas.adoc[Formulas].
+
+| Download
+| Download the spreadsheet in XLSX or CSV format.
+
+
+| Full screen
+| Expand the grid to fill the screen. Also available with the kbd:[F] key.
+|===
+
+Save as Answer:: Save the current spreadsheet as an Answer. Also available with kbd:[Cmd]/kbd:[Ctrl] + kbd:[S].
+
+Formula bar:: The formula bar shows the address of the selected cell. When you select a cell in a formula column, it shows the formula that produced the column.
+
+== Columns
+
+[options="header"]
+|===
+| Action | How to do it | Notes
+
+//| Hide a column | Open the column header dropdown and select *Hide*. | Source and formula columns can both be hidden.
+
+//| Show hidden columns | Open the hide/unhide panel and toggle columns back on | Shows exact panel name.
+
+| Add new calculated field | Click the down arrow in a column header and select *New calculated field*. Then enter the formula in the formula bar. | You can rename the column after creating the formula.
+
+| Filter | Click the down arrow in a column header and select *Filter*. Then add the filter condition in the pop-up. | You can create a filter for values that are equal to, not equal to, greater than, greater than or equal to, less than, less than or equal to, or between your selected value(s).
+
+| Sort | Click the down arrow in a column header and select *Sort*. | You can sort ascending or descending.
+
+| Clear sort | Click the down arrow in a column header and select *Clear sort*. | The values in the column return to their previous configuration.
+
+| Duplicate column | Click the down arrow in a column header and select *Duplicate column*. | The duplicate column appears next to the original column.
+
+| Remove column | Click the down arrow in a column header and select *Remove column*. | Removes the column entirely from your spreadsheet.
+
+| Conditional formatting | Click the down arrow in a column header and select *Conditional formatting*. | In the pop-up that appears, choose to add conditional formatting, whether value-based or column-based, and choose its styling.
+
+| Format | Click the down arrow in a column header and select *Format*. | You can only select format for columns with numerical values. You can choose to format as number, currency, or percentage, decide the units (Auto, None, Thousands (K), Million (M), Billion (B), or Trillion (T)), choose how many decimal places, and choose how to format negative numbers. You can also choose whether to display the thousands separator.
+
+| Rename | Click the down arrow in a column header and select *Rename*. | Enter the new name in the columns header.
+
+| Text wrapping | Click the down arrow in a column header and select *Text wrapping*. | You can decide to wrap text, or clip it at the border of the column.
+
+//| View a column profile | Open the column header dropdown and select *Show column profile*. | Runs a query against the full dataset. See Column profiling.
+|===
+
+Reorder columns:: Drag a column to a new position. Column order is saved with the Answer.
+
+
+Source vs. formula columns:: Columns that come from the Model are read-only. Formula columns you create are editable and are shown with a distinct visual style so you can tell them apart.
+
+== Formulas
+
+Formula columns let you derive new values from existing Model columns. You can compute metrics, apply business rules, transform text, work with dates, and handle missing values, all in ThoughtSpot-native formula syntax.
+
+Add a formula column from the *fx* button in the toolbar, or from the *+* icon in the column header row. As you type, autocomplete suggests column names, and a preview shows the result before you commit. If a formula is invalid, an inline error explains the problem in plain language.
+
+Formula syntax is ThoughtSpot-native, not Excel. Functions use lowercase names and reference columns in square brackets, for example `sum([Revenue])`. Excel-style syntax (such as `SUM(A:A)`) is not supported in this release.
+
+=== Referencing columns and values
+
+* Column references use square brackets: `[Revenue]`, `[Customer Name]`, `[Order Date]`. Bracket syntax preserves column names that contain spaces.
+* Text literals use single quotes: `'West'`, `'Closed Won'`.
+* Numbers and operators are written directly: `[Revenue] - [Supply Cost]`, `[Price] * [Quantity]`.
+
+=== Operators
+
+[options="header"]
+|===
+| Type | Operators | Example
+
+| Arithmetic
+| `+` `-` `*` `/`
+| `[Revenue] - [Supply Cost]`
+
+| Comparison
+| `=` `!=` `>` `<` `>=` `\<=`
+| `[Revenue] > 10000`
+
+| Logical
+| `and` `or` `not` `in`
+| `[Revenue] > 1000 and [Cost] < 500`
+|===
+
+=== Conditional logic
+
+Use `if ... then ... else` to encode decision rules. You can nest conditions for banding.
+
+[source]
+----
+if ([Revenue] > 1000) then 'High' else 'Low'
+
+if ([Discount] >= 7) then 'High'
+else if ([Discount] >= 3) then 'Mid'
+else 'Low'
+
+----
+
+=== Aggregation functions
+
+[options="header"]
+|===
+| Function | Description | Example
+
+| `sum`
+| Sum of a measure
+| `sum([Revenue])`
+
+| `average`
+| Average of a measure
+| `average([Order Value])`
+
+| `count`
+| Count of non-null values
+| `count([Order ID])`
+
+| `unique_count`
+| Count of distinct values
+| `unique_count([Customer ID])`
+
+| `max`
+| Largest value
+| `max([Revenue])`
+
+| `min`
+| Smallest value
+| `min([Revenue])`
+
+| `stddev`
+| Standard deviation
+| `stddev([Order Value])`
+
+| `sum_if`
+| Conditional sum
+| `sum_if([Region] = 'West', [Revenue])`
+
+| `count_if`
+| Conditional count
+| `count_if([Status] = 'Closed Won', [Opp ID])`
+
+| `average_if`
+| Conditional average
+| `average_if([Segment] = 'Enterprise', [ACV])`
+
+| `group_sum`
+| Sum at a specified grouping level
+| `group_sum([Revenue], [Region])`
+
+| `cumulative_sum`
+| Running sum over an ordered attribute
+| `cumulative_sum([Revenue], [Order Date])`
+|===
+
+=== Window functions
+
+[options="header"]
+|===
+| Function | Description | Example
+
+| `moving_average` | Moving average over a window | `moving_average([Revenue], 6, 0, [Month])`
+
+| `moving_sum`
+| Moving sum over a window
+| `moving_sum([Revenue], 11, 0, [Month])`
+|===
+
+=== Math functions
+
+[options="header"]
+|===
+| Function | Description | Example
+
+| `abs`
+| Absolute value
+| `abs([Forecast] - [Actual])`
+
+| `round`
+| Round to a number of decimals
+| `round([Revenue], 2)`
+
+| `ceil`
+| Round up
+| `ceil([Headcount Needed])`
+
+| `floor`
+| Round down
+| `floor([Hours] / 8)`
+
+| `mod`
+| Remainder
+| `mod([Day Number], 7)`
+
+| `pow`
+| Raise to a power
+| `pow(1 + [Growth Rate], [Years])`
+
+| `sqrt`
+| Square root
+| `sqrt([Variance])`
+
+| `safe_divide`
+| Divide, returning 0 instead of an error when the denominator is 0
+| `safe_divide([Profit], [Revenue])`
+|===
+
+=== Conditional and null-handling functions
+
+[options="header"]
+|===
+| Function | Description | Example
+
+| `isnull`
+| Tests whether a value is null
+| `isnull([Close Date])`
+
+| `ifnull`
+| Returns a replacement when a value is null
+| `ifnull([Region], 'Unknown')`
+|===
+
+=== String functions
+
+[options="header"]
+|===
+| Function | Description | Example
+
+| `concat`
+| Join strings
+| `concat([First Name], ' ', [Last Name])`
+
+| `contains`
+| Tests whether a string contains a substring
+| `contains([Product Name], 'Pro')`
+
+| `substr`
+| Extract part of a string (position is 0-based)
+| `substr([Product Code], 0, 3)`
+
+| `left`
+| Leftmost characters
+| `left([Country Code], 2)`
+
+| `right`
+| Rightmost characters
+| `right([Order ID], 4)`
+
+| `upper`
+| Convert to uppercase
+| `upper([Region])`
+
+| `lower`
+| Convert to lowercase
+| `lower([Email])`
+
+| `trim`
+| Remove leading/trailing whitespace
+| `trim([Customer Name])`
+
+| `strlen`
+| Length of a string
+| `strlen([Product Code])`
+
+| `replace`
+| Replace a substring
+| `replace([Phone], '-', '')`
+|===
+
+=== Date functions
+
+[options="header"]
+|===
+| Function | Description | Example
+
+| today
+| Current date
+| today()
+
+| now
+| Current timestamp
+| now()
+
+| year
+| Year from a date
+| year([Order Date])
+
+| month_number
+| Month number (1–12) from a date
+| month_number([Order Date])
+
+| day_of_week
+| Day of week from a date
+| day_of_week([Order Date])
+
+| quarter_number
+| Quarter number from a date
+| quarter_number([Close Date])
+
+| add_days
+| Add days to a date
+| add_days([Order Date], 30)
+
+| diff_days
+| Days between two dates
+| diff_days([Order Date], today())
+
+| start_of_month
+| First day of the month for a date
+| start_of_month([Order Date])
+
+| to_date
+| Convert a string to a date using a format mask
+| to_date(Date String, [yyyy-MM-dd])
+|===
+
+Lookups:: There is no lookup function. To bring in values from another table, add that table as a joined dimension in the data model. The join is then available to every spreadsheet built on the Model.
+
+
+NOTE: This release inherits the ThoughtSpot formula engine (approximately 70+ functions). The tables above list the most common functions for spreadsheet work; for the complete function list and exact signatures, see the xref:formula-reference.adoc[ThoughtSpot formula reference].
+
+== Sorting
+
+Sort applies to the full result set, not just the visible page.
+
+[options="header"]
+|===
+| Action | How to do it
+
+| Sort a single column | Open the column header dropdown and select ascending or descending.
+
+| Sort by multiple columns | Select Sort in the toolbar to open the advanced sort dialog and add levels (for example, Region ascending, then Revenue descending).
+
+| Sort by a formula column
+| Sort formula columns the same way as source columns.
+|===
+
+Sort is session-only. Sorting is not saved with the Answer. When you save, the save dialog notes that sort order will not be retained.
+
+
+== Filtering
+
+Filters narrow the rows shown in the grid and run against the full result set. You can apply filters to more than one column at a time.
+
+[options="header"]
+|===
+| Action | How to do it
+
+| Filter a column | Open the column header dropdown and set filter conditions, or select Filter in the toolbar.
+
+| Remove a filter | Select the X on the filter chip in the filter bar.
+|===
+
+Filter options adapt to the column's data type:
+
+* Numeric columns: range conditions (between, greater than, less than).
+* Text columns: multi-select of specific values, with search to find values quickly.
+* Date columns: date-range selection.
+
+
+Filters are session-only. Filters are not saved with the Answer. The save dialog notes that filters will not be retained.
+
+=== Conditional formatting
+
+Conditional formatting highlights cells based on their values, so you can spot outliers and priorities without reading every row. Apply it from the toolbar. You can add more than one rule to the same column, and clear all rules to remove the formatting.
+
+[options="header"]
+|===
+| Rule type | Description
+
+| Threshold | Fill or highlight cells that meet a condition (for example, red if value is below 1,000,000).
+
+| Color scale | Apply a gradient across a column's range (for example, green-yellow-red).
+|===
+
+Conditional formatting is applied in your browser only; it does not change the underlying data.
+
+Conditional formatting is session-only. It is not saved with the Answer. The save dialog notes that formatting rules will not be retained.
+
+////
+== Column profiling
+
+A column profile shows summary statistics for a column. Profiling is off by default so that opening a spreadsheet does not run extra queries.
+
+* To see a profile, open the column header dropdown (or right-click the header) and select Show column profile. This runs a query against the full dataset and displays the statistics.
+* There is no "show all summaries" option. Profiles are generated per column, on request. [VERIFY: exact menu label "Show column profile"]
+* Profiling is available for numeric columns. [VERIFY: behavior for non-numeric columns]
+////
+
+== Saving and what persists
+
+Select *Save as Answer* in the toolbar (or press kbd:[Cmd]/kbd:[Ctrl] + kbd:[S]) to save your work. Saving creates a self-contained Answer tagged spreadsheet. It does not modify the underlying data model.
+
+Some of your work is saved with the Answer, and some applies only to your current session. The save dialog lists the formula columns being saved and reminds you that sort, filter, and conditional formatting are session-only.
+
+[options="header"]
+|===
+| Item | Saved with the Answer?
+
+| Formula columns
+| Yes
+
+| Column order
+| Yes
+
+| Column visibility (hidden/shown)
+| Yes
+
+| Sort order
+| No — session only
+
+| Filters
+| No — session only
+
+| Conditional formatting
+| No — session only
+|===
+
+A saved spreadsheet Answer always reopens in spreadsheet mode. Its formula columns are also visible when the Answer is viewed as a standard table.
+
+== Governance and security
+
+* Row-level security (RLS) and column-level security (CLS) from the Model are enforced in Spreadsheet. You see only the rows and columns you are permitted to see.
+* Formula columns are stored in the Answer, not in the Model. They do not change the shared Model and are not visible to other users unless you share the Answer with them.
+* CSV download respects the active row-level security and filters.
+
+== Keyboard shortcuts
+
+[options="header"]
+|===
+| Shortcut | Action
+
+| kbd:[F]
+| Toggle full-screen mode
+
+| kbd:[Cmd]/kbd:[Ctrl] + kbd:[S]
+| Open the Save dialog
+
+| kbd:[Cmd]/kbd:[Ctrl] + kbd:[Z]
+| Undo
+
+| kbd:[Cmd]/kbd:[Ctrl] + kbd:[Shift] + kbd:[Z]
+| Redo
+
+| kbd:[Cmd]/kbd:[Ctrl] + kbd:[F]
+| Find in the visible data
+|===
+
+//Shortcut hints are shown in toolbar tooltips.
+
+////
+== Right-click menu
+
+Right-clicking a column header or cell opens a context menu with the most relevant actions.
+
+* Column header: sort, filter, hide the column, show the column profile. Formula column headers add edit and delete options.
+* Cell: context actions for the selected value, including Show underlying data, which opens the standard ThoughtSpot underlying-data view.
+
+The menu closes when you click outside it or press *Escape*.
+////
+
+
