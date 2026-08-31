@@ -1,12 +1,12 @@
 = SpotterViz
-:page-last_updated: Apr 13, 2026
+:page-last_updated: Aug 31, 2026
 :author: Naomi
 :experimental:
 :linkattrs:
-:page-layout: default-cloud-early-access
+:page-layout: default-cloud
 :page-aliases: spotterviz-limitations.adoc
 :description: ThoughtSpot can now autonomously create Liveboards based on your prompts, populating them with relevant visualizations and KPIs.
-:jira: SCAL-297930, SCAL-310091
+:jira: SCAL-297930, SCAL-310091, SCAL-335509
 
 ThoughtSpot can now autonomously create Liveboards based on your prompts, populating them with relevant visualizations and KPIs. In response to your query, ThoughtSpot evaluates available data sources, creates analysis, and lays out the information for you. After creating a Liveboard, you can enter more prompts in SpotterViz at any time to revise and refine it. To enable this feature, contact your administrator.
 
@@ -19,13 +19,14 @@ ThoughtSpot can now autonomously create Liveboards based on your prompts, popula
 == Prerequisites
 
 * SpotterViz is only accessible in Edit mode. To begin using this feature on a new Liveboard, click the More menu image:icon-more-10px.png[more icon] and select *Edit*.
-* Spotter must be enabled on the underlying Model for SpotterViz to create an answer on that Model.
+* Spotter must be enabled on the underlying Models which are used in the Liveboard for SpotterViz to create an answer on those Models.
 * You must have TML edit permission for SpotterViz to work.
-* Once SpotterViz is enabled for an instance, it is accessible by everyone who has Liveboard edit access. Currently, there are no user-level privileges for SpotterViz.
+* Once SpotterViz is enabled for an instance, it is accessible by everyone who has Liveboard edit access. Currently, there are no user-level privileges for SpotterViz. SpotterViz can be selectively rolled out to specific Orgs instead.
+
 
 === SpotterViz LLM configuration
 
-SpotterViz uses Spotter APIs to create answers, and you cannot configure the Spotter version associated with SpotterViz. SpotterViz uses the LLM(s) set at the LLM gateway, and functions best with Claude Opus 4.5. Using other models affects SpotterViz’s accuracy.
+SpotterViz uses Spotter APIs to create answers. Whichever Spotter version is configured, SpotterViz will also use the same. SpotterViz uses the LLM(s) set at the LLM gateway, and functions best with Claude Opus 4.8. Using other models affects SpotterViz’s accuracy.
 
 == Create a Liveboard using SpotterViz
 
@@ -36,7 +37,7 @@ Let’s say you want to create a Liveboard to analyze your Airbnb business.
 
 . Enter a name and description.
 
-. The Liveboard you created appears. The SpotterViz panel appears, with suggested Liveboard prompts and a chat box. Note that you can hover over the sidebar's edge and drag to resize it.
+. The Liveboard you created appears. The default experience of editing an empty Liveboard will open the SpotterViz landing state, with suggested Liveboard prompts and a chat box.
 
 . Begin with a more detailed prompt to see better initial results. For example, you could enter, “ Create this Liveboard for my host manager to view the performance of listings on the basis of reviews and ratings to analyze which properties are performing better. Analyze this by factors like location, room type, and host qualities.” Hit the blue arrow to send your prompt to SpotterViz.
 
@@ -52,7 +53,7 @@ Let’s say you want to create a Liveboard to analyze your Airbnb business.
 
 . SpotterViz analyzes the data and your prompt, and reviews its answers. It creates a new answer, incorporating your request for latitude and longitude analysis. The Liveboard reloads, with a new answer added to the location analysis group.
 
-. You can also prompt SpotterViz to edit the styling of the Liveboard, such as suggesting a color theme, or asking for certain visualizations to be highlighted.
+. You can also prompt SpotterViz to edit the styling of the Liveboard and the charts, such as suggesting a color theme, or asking for certain visualizations to be highlighted, showing or hiding labels or changing properties in a specific chart, or applying conditional formatting.
 
 . When you are satisfied, click *Save*.
 
@@ -67,11 +68,14 @@ Insight tiles display AI-generated text analysis on a Liveboard. You configure t
 </div>
 ++++
 
+NOTE: SpotterViz must be enabled to create insight tiles.
+
 To create an insight tile in your SpotterViz Liveboard:
 
 . Navigate to the Liveboard, click the *More* menu, and select *Edit*. The SpotterViz sidebar appears.
 
-. Request an insight tile or a summary tile. SpotterViz asks to confirm which content or tabs you want the focus of the analysis to be.
+. Request an insight tile or a summary tile. SpotterViz asks to confirm which content or tabs you want the focus of the analysis to be. You can also select the chart or the group on which you want to generate insights and in the toolbar, you will see an “Add Insight tile” button which triggers SpotterViz to create insight tiles.
+
 
 . SpotterViz creates the insight tile, which updates with the Liveboard any time it’s opened. Viewers of the Liveboard see insight tiles tailored to their data access level– all security (RLS, CLS) is respected.
 
