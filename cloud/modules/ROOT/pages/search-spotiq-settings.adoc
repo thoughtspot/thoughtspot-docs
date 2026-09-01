@@ -1,21 +1,21 @@
 = Managing search and SpotIQ settings
-:page-last_updated: 1/27/2026
+:page-last_updated: 9/1/2026
 :linkattrs:
 :experimental:
 :page-aliases: /admin/ts-cloud/search-spotiq-settings.adoc, admin-portal-search-spotiq-settings.adoc
 :description: Manage indexing and SpotIQ settings for your organization from the Admin Console.
-:jira: SCAL-202496, SCAL-276012, SCAL-287267
+:jira: SCAL-202496, SCAL-276012, SCAL-287267, SCAL-293152
 
 
 You can manage certain advanced settings for your organization from the Admin Console.
 This includes enabling, disabling, and configuring the following features: SpotIQ, column indexing, summaries, and the footer for downloaded Answers and Liveboards.
 
-NOTE: If your organization uses xref:orgs-overview.adoc[multi-tenancy with Orgs], you must be a cluster administrator to manage these settings, not an Org administrator. You manage these settings for the whole cluster. You cannot set them separately for each Org.
+NOTE: If your organization uses xref:orgs-overview.adoc[multi-tenancy with Orgs], you must be an instance administrator to manage these settings, not an Org administrator. You manage these settings for the whole instance. You cannot set them separately for each Org.
 
 Navigate to the Admin Console by selecting the *Admin settings* tab.
 Select *Search & SpotIQ* from the side navigation bar that appears.
 
-If your organization uses xref:orgs-overview.adoc[multi-tenancy with Orgs], ensure that you are in the Primary Org, in the *All orgs* section of the Admin Console. You manage Search and SpotIQ settings for the whole cluster. You cannot set them separately for each Org.
+If your organization uses xref:orgs-overview.adoc[multi-tenancy with Orgs], ensure that you are in the Primary Org, in the *All orgs* section of the Admin Console. You manage Search and SpotIQ settings for the whole instance. You cannot set them separately for each Org.
 
 image::admin-portal-search-settings.png[Admin Console - Search & SpotIQ settings]
 
@@ -31,26 +31,77 @@ Under *Index settings*, you can configure ThoughtSpot's indexing behavior.
 
 To learn more about ThoughtSpot's default indexing behavior, refer to xref:data-modeling-index.adoc[Manage suggestion indexing].
 
-To manage search settings, follow these steps:
+== Supported Indexing Frequencies
 
-. Select the *Edit* button in the *Search Settings* section.
+ThoughtSpot supports the following frequency schedules for instance-level indexing:
+
+[cols="1,3",options="header"]
+|===
+| Frequency Type | Description and Execution Pattern
+
+| *Hourly*
+| Runs indexing jobs periodically at fixed hour intervals (for example, every 2, 4, 8, or 12 hours).
+
+| *Daily*
+| Runs indexing jobs once per day at a specified local time (for example, every day at 02:00 AM).
+
+| *Weekly*
+| Runs indexing jobs on designated days of the week at a specified time (for example, every Sunday at 04:00 AM).
+
+| *Monthly*
+| Runs indexing jobs on specific days of the month at a designated time (for example, on the 1st and 15th of every month at 03:00 AM).
+
+| *Only once*
+| Schedules a single, non-recurring indexing execution for a specific date and time.
+|===
+
+== Configure an Indexing Schedule
+
+Follow these steps to set or update the indexing schedule for your instance:
+
+. Log in to ThoughtSpot as an administrator.
+. Select *Admin* from the top navigation bar.
+. Select *All Orgs*.
+. In the left navigation panel, select *Search & SpotIQ*.
+. In the *Index Settings* section, click *Edit*.
 . *Index columns (effective for new tables/columns only)*: Select the toggle to enable or disable ThoughtSpot's indexing of columns in new connections.
 If you disable this feature, all columns from new connections are set to `DONT_INDEX`.
 Note that this change only applies to columns from _new_ connections.
 You must manually set columns that already exist to `INDEX` or `DONT_INDEX`.
-. *Indexing frequency*: Select a frequency for column indexing from the dropdown list.
-The options are _8 hours_, _16 hours_, _24 hours_, or _7 days_. The default indexing frequency is 7 days. To further customize your indexing frequency and the index start time, contact {support-url}.
 . *Indexing scope*: Select which columns you want to index. The options are _Index only columns used in Models_ (default), or _Index all columns_.
 +
 TIP: Indexing only columns used in your Models significantly reduces the number of queries sent to your cloud data warehouse and reduces memory usage. This option does not apply to SQL views, CSV tables, or datasets, which are always indexed.
 . *Large table indexing control*: You can choose to *Index all tables*, *Disable indexing for tables with ≥ 100M rows*, *Disable indexing for tables with ≥ 250M rows*, or *Disable indexing for tables it ≥ 1B rows*.
 +
-[.bordered]
-image::disable-indexing.png[Disable indexing options.]
-. Select *Save*.
+. Use the *Indexing Frequency* dropdown menu to select the desired schedule type (*Hourly*, *Daily*, *Weekly*, *Monthly*, or *Only once*).
+. In the *Frequency settings* section, configure the schedule parameters according to your requirements:
+* For *Hourly*, select the hour interval (for example, `8 hours`).
+* For *Daily*, select the run time and time zone (for example, `02:00 AM` `America/Los_Angeles`). You can exclude weekends if you want.
+* For *Weekly*, select the run time, day(s) of the week, and time zone (for example, `Sunday` at `04:00 AM`, `America/Los_Angeles`).
+* For *Monthly*, select the calendar day(s) and the run time (for example, `1st` of the month at `03:00 AM`).
+* For *Only once*, the tables will be indexed only once, when they are brought into ThoughtSpot.
+. Confirm the target *Time zone* for schedule execution. By default, the interface uses your local browser timezone.
+. Click *Save*.
 
-Alternatively, you can select *Reset configuration* to reset to the default.
-By default, ThoughtSpot indexes new columns at a frequency of 24 hours, and enables summaries.
+== Reset an Indexing Schedule to Default
+
+To revert instance indexing to the default system schedule (Weekly on Sunday at 04:00 AM local time):
+
+. Select *Admin* from the top navigation bar.
+. Select *All Orgs*.
+. In the left navigation panel, select *Search & SpotIQ*.
+. In the *Index Settings* section, click *Edit*.
+. Click *Reset configuration*.
+. Verify that the displayed schedule updates to the system default configuration of weekly at 4:00 on Sunday.
+
+== Important Considerations and Best Practices
+
+[IMPORTANT]
+====
+* *Cloud Data Warehouse Resource Consumption*: Indexing jobs execute queries against connected data warehouses to pull distinct values and column metadata. Scheduling high-frequency indexing (such as Hourly or short Daily intervals) on large datasets increases query load and warehouse compute usage.
+* *Extremely Large Tables*: ThoughtSpot automatically disables indexing on tables exceeding 1 billion rows by default to prevent unexpected compute expenses and performance degradation.
+* *Daylight Saving Time (DST)*: Scheduled execution times are evaluated in the specified local timezone. For timezones observing Daylight Saving Time, execution times adjust automatically according to local standard and daylight savings offsets.
+====
 
 [#formula]
 == Formula Settings
