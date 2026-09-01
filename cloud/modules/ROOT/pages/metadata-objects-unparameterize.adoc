@@ -1,0 +1,200 @@
+= Unparameterize metadata objects
+:page-last_updated: 8/31/2026
+:author: Mark
+:linkattrs:
+:experimental:
+:page-aliases:
+:description: Learn how to remove parameterization variables from tables and connections and restore them to static configurations.
+:jira: SCAL-292421
+
+// TODO: verify with engineering — Confirm exact release version for this feature
+// This feature is available in ThoughtSpot Cloud __26.3.0.cl or later__.
+// ThoughtSpot Software: Not available.
+[.lead]
+Learn how to remove parameterization variables from tables and connections and restore them to a single, static configuration.
+
+== Overview
+
+In multi-tenant ThoughtSpot deployments, you can use *metadata parameterization* to define variables for metadata objects. This allows different Orgs to use different physical tables or connection properties at runtime.
+
+For example, you might parameterize a connection so that each Org connects to a different database host, or parameterize a table so that different Orgs query different physical tables with the same schema.
+
+When you no longer need this per-Org variation, you can *unparameterize* the metadata object. Unparameterization removes the variables and restores the object to use a single, static configuration shared across all Orgs.
+
+// SOURCE: Jira SCAL-292420, Confluence Template Variables page
+
+== Why unparameterize metadata
+
+You might want to unparameterize a table or connection in the following scenarios:
+
+* You no longer need different physical tables or connection properties per Org. For example, all Orgs are now consolidated into a single shared database.
+* You want to simplify your metadata management by removing variables that are no longer needed.
+* You are migrating a parameterized object to a new environment where per-Org variation is not required.
+* You need to restore an object to its primary-org configuration after testing parameterization.
+
+// SOURCE: Jira SCAL-292420 description
+
+[IMPORTANT]
+====
+Unparameterization removes all per-Org variable assignments and restores the primary-org values. Any content that relies on the parameterized configuration may be affected. Review the xref:#_impact_on_dependent_objects[Impact on dependent objects] section before proceeding.
+====
+
+// TODO: verify with engineering — Confirm whether unparameterization is reversible (can the object be re-parameterized after unparameterization?)
+
+== Prerequisites
+
+Before you can unparameterize a table or connection, ensure that you meet the following requirements:
+
+* You have the *Can manage data* privilege or equivalent role.
+* You are the owner of the object, or you have been granted *Can edit* permission on the object.
+* The object is currently parameterized. Only objects that have parameterization variables can be unparameterized.
+
+// TODO: verify with engineering — Confirm exact permissions required
+
+[IMPORTANT]
+====
+Unparameterization restores primary-org values for all selected objects, including sensitive fields such as passwords and secret keys. Ensure you have the correct primary-org values configured before proceeding.
+====
+
+== Unparameterize a table
+
+Follow these steps to remove parameterization variables from one or more tables:
+
+. Navigate to the *Data workspace* tab.
+. Select the checkbox for the table(s) you want to unparameterize.
+// TODO: verify with engineering — Confirm exact navigation path and UI menu items
+. Click *Manage parameters*.
+. In the *Unparameterize* window, review the fields that are currently parameterized. By default, all fields are selected.
++
+The window shows the table mapping fields that are parameterized, such as:
++
+* *Database name* — mapped to a variable
+* *Schema name* — mapped to a variable
+* *Table name* — mapped to a variable
+
+. (Optional) Clear the checkbox for any fields you do not want to unparameterize.
+. Click *Unparameterize*.
+
+After a table is unparameterized, the selected table mapping fields are restored to their primary-org values, and all Orgs will use the same physical table.
+
+// SOURCE: scaligent blink-v2 unparameterise-modal.container.tsx, commit SCAL-330038
+
+== Unparameterize a connection
+
+Follow these steps to remove parameterization variables from one or more connections:
+
+. Navigate to the *Data workspace* tab.
+. Click *Connections* in the left-hand navigation.
+. Select the checkbox for the connection(s) you want to unparameterize.
+. Click *Manage parameters*.
+. In the *Manage parameters* window, review the connection properties that are currently parameterized.
++
+The window shows the connection properties that are mapped to variables, such as:
++
+* *Host*
+* *Port*
+* *Database*
+* *Username*
+
+. Click the *x* for each property you want to unparameterize, or select *Remove all* to remove all parameterization properties from the connection.
+. Click *Save*.
+
+After a connection is unparameterized, the connection properties are restored to their primary-org values, and all Orgs will use the same connection configuration.
+////
+== Bulk unparameterization
+
+You can unparameterize multiple objects at once using the bulk unparameterization workflow.
+
+. Navigate to the *Data workspace* tab.
+. Select the tables or connections you want to unparameterize.
+. Click the *Bulk actions* menu and select *Unparameterize*.
+. In the *Unparameterize* modal, review the fields that are parameterized across the selected objects.
+. Select the fields you want to unparameterize for each object.
+. Click *Unparameterize*.
+. Review the confirmation message, then click *Confirm* to proceed.
+
+// SOURCE: commit SCAL-318486 (Bulk unparameterize multiple objects)
+
+// SOURCE: commit SCAL-330038 (Restore Primary-org values in bulk unparameterize, including sensitive secret fields)
+////
+== Impact on dependent objects
+
+When you unparameterize a table or connection, the following dependent objects may be affected:
+
+[cols="2,3"]
+|===
+| Object type | Impact
+
+| Models
+| Models that reference the unparameterized table may need to be updated if the table mapping changes.
+
+| Answers
+| Answers built on the unparameterized table or connection may return different results if the underlying data source changes.
+
+| Liveboards
+| Liveboards that use Answers or Models based on the unparameterized object may be affected.
+
+| Scheduled jobs
+| Scheduled jobs that rely on the parameterized configuration may fail or return different results after unparameterization.
+
+| Spotter queries
+| Spotter queries that reference the unparameterized table may return different results if the underlying data changes.
+|===
+
+// TODO: verify with engineering — Confirm exact impact on each dependent object type
+
+[WARNING]
+====
+Before unparameterizing a table or connection, review all dependent objects and notify content owners of the change. Consider testing the unparameterization in a development environment first.
+====
+
+// TODO: verify with engineering — Confirm whether dependent objects need to be updated manually or if the system handles the transition automatically
+
+== Unparameterize using the REST API
+
+You can also unparameterize metadata objects programmatically using the REST API v2.0.
+
+For more information, see the following API endpoint:
+
+* `POST /api/rest/2.0/metadata/unparameterize` — Unparameterize a metadata object
+
+// SOURCE: thoughtspot/developer-docs rest-api-v2-reference.adoc
+
+== Troubleshooting
+
+[.faq]
+--
+Cannot see the unparameterize option::
+If you cannot see the *Unparameterize* option in the UI, check the following:
+
+* Ensure the object is parameterized. Only parameterized objects can be unparameterized.
+* Verify that you have the required permissions (Can manage data or Can edit on the object).
+* If the object is shared with you, the owner may need to grant you Can edit permission.
+
+Unparameterization fails::
+If the unparameterization fails, check the following:
+
+* Ensure the primary-org values are valid. If the primary-org values for the table mapping or connection properties are invalid, the unparameterization may fail.
+* Check for dependent objects that may be blocking the unparameterization.
+* Review the error message for specific details about the failure.
+
+Dependent objects show errors after unparameterization::
+If dependent objects show errors after unparameterization:
+
+. Verify that the underlying table or connection is accessible with the primary-org values.
+. Check that the dependent objects (Worksheets, Answers, Liveboards) are still valid.
+. Rebuild or refresh any affected content as needed.
+--
+
+== Related information
+
+* xref:publishing.adoc[Publishing objects between Orgs]
+* xref:orgs-overview.adoc[Multi-tenancy with Orgs]
+* xref:connections.adoc[Add and edit connections]
+
+== Limitations
+
+* Unparameterization is currently supported for cables and connections only. Other metadata objects (such as Models, Views, and SQL views) cannot be unparameterized using this feature.
+* Unparameterization removes all per-Org variable assignments. You cannot selectively unparameterize variables for specific Orgs.
+* After unparameterization, all Orgs will use the same primary-org configuration.
+
