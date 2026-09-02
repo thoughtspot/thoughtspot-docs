@@ -11,7 +11,7 @@ NOTE: This feature is currently in Beta. Some behaviors and UI controls may chan
 
 Org-scoped IdP connections give each Org in your ThoughtSpot cluster its own isolated authentication configuration. The login page renders only the IdP connections that belong to that Org. Connections from other Orgs have no effect.
 
-NOTE: #See <<Prerequisites>> for details on per-org subdomain and how it affects login page behavior.#
+//NOTE: #See <<Prerequisites>> for details on per-org subdomain and how it affects login page behavior.#
 
 Previously, IdP connections were evaluated cluster-wide at login time. If any Org in the cluster had an IdP connection configured, ThoughtSpot's login page would automatically trigger an IdP discovery redirect, regardless of which Org the user was trying to reach.
 
@@ -26,6 +26,8 @@ Adding an IdP connection in one Org could unintentionally change the login exper
 
 Org-scoped IdP connections eliminate both issues.
 
+
+////
 == #Prerequisites#
 
 Before enabling org-scoped IdP connections, note the following requirements:
@@ -41,6 +43,8 @@ The org-scoped IdP feature works in two modes depending on whether per-org subdo
 ** *Per-org subdomain enabled:* Each org's subdomain URL (for example, `\https://<org-name>.<cluster-name>.thoughtspot.cloud`) renders only that org's IdP connections. The shared cluster URL continues to render the Primary org's IdP connections.
 
 To enable Per-org subdomain, open a Salesforce support ticket requesting *Per Org Subdomain* or contact {support-url}. For details, see xref:multi-idp-behavior.adoc#_multiple_idps_with_the_per_org_subdomain_configured[Multiple IdPs with the per Org subdomain configured].
+////
+
 
 == How it works
 
@@ -60,7 +64,9 @@ With this feature enabled, the login page is rendered based exclusively on the I
 |Controlled by admin configuration
 |===
 
-NOTE: #When per-org subdomain is enabled, IdP connections from other orgs are never evaluated or rendered on an org's subdomain login page. When per-org subdomain is disabled, the cluster login page always renders the Primary org's IdP connections, regardless of which org the user intends to reach.#
+NOTE: IdP connections from other Orgs are never evaluated or rendered, regardless of cluster configuration.
+
+//NOTE: #When per-org subdomain is enabled, IdP connections from other orgs are never evaluated or rendered on an org's subdomain login page. When per-org subdomain is disabled, the cluster login page always renders the Primary org's IdP connections, regardless of which org the user intends to reach.#
 
 The automatic IdP discovery redirect is disabled as part of this change.
 ThoughtSpot no longer auto-redirects users based on cluster-wide IdP detection.

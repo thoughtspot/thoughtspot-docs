@@ -12,10 +12,16 @@ We have added the Suggestion Settings column to Models to allow you to control d
 For example, if you only had access to data in California, you could see that data for Texas existed, although you could not access the data. Now, you can restrict suggested data for Models with row-level security, ensuring that your security is complete.
 
 
+
+
+////
+
 [NOTE]
 ====
 #All metadata queries for a column set to *Secure suggestions* run against your primary warehouse or cloud data warehouse (CDW). ThoughtSpot cannot route these queries to a secondary warehouse configured for background indexing workloads. For more information, see <<secondary-warehouse,Secondary warehouse and secure suggestions>>#.
 ====
+
+
 
 == #How secure suggestions works#
 
@@ -54,6 +60,8 @@ Do not enable *Secure suggestions* when:
 ====
 Enabling *Secure suggestions* on columns that do not require it increases query load on your primary warehouse. Set this option only on columns where row-level security compliance for suggestions is required.
 ====
+////
+
 
 == Set secure suggestions
 
@@ -73,11 +81,17 @@ For secure suggestions to work, the following conditions must be met:
 * Strict row-level security must be enabled for the instance.
 * Secure suggestions must be enabled for the instance.
 * Row-level security must be applied to the Model.
+* The table column’s index type must be set to Default. (Requirement for restricting data in Spotter. Sample values in knowledge cards do not require table columns to be indexed.)
+* The column in the Model must be set to Secure suggestions (rather than Inherit table settings or Don’t show suggestions).
+
+////
 * The column in the Model must be set to *Secure suggestions* in the Suggestion settings column.
 
 #For Spotter suggestion matching (secure match), the following additional condition applies:#
 
 * #The underlying table column's index type must be set to *Default*. Sample values in knowledge cards do not require the underlying table column to be indexed.#
+////
+
 
 === Suggestion settings
 
@@ -91,6 +105,8 @@ To change the suggestion settings for a column, follow these steps:
 
 . Click *Save changes*.
 
+
+////
 [#secondary-warehouse]
 == #Secondary warehouse and secure suggestions#
 
@@ -101,6 +117,8 @@ Secure suggestions queries need to return quickly, and a secondary warehouse can
 Because these queries always run on your primary warehouse, they consume compute on that warehouse rather than on a smaller, lower-cost one. On Models where many columns are set to *Secure suggestions*, this can be a noticeable share of warehouse usage.
 
 If `SECURE_SAMPLING` query volume is a concern, review your Model configuration: columns that do not require RLS-compliant suggestions should use *Inherit table settings* or *Don't show suggestions* instead of *Secure suggestions*.
+////
+
 
 '''
 > **Related information**
