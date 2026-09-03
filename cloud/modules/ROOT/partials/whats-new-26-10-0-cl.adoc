@@ -99,13 +99,30 @@ ifdef::pendo-links[]
 === Liveboard observability foundation [.badge.badge-beta-whats-new]#Beta#
 endif::[]
 // Mary. jira: SCAL-307905. docs jira: SCAL-307906
-// PM: ?
+// PM: Rabi - suspect no doc needed, waiting for confirmation from PM.
 
 endif::free-trial-feature[]
 
 [#26-10-0-cl-dependency]
 [discrete]
-=== Dependency management: Liveboard work items [.badge.badge-ga-relnotes]#GA#
+=== Liveboard error management [.badge.badge-ga-relnotes]#GA#
+When a data model column that a Liveboard depends on is deleted, ThoughtSpot now detects the impact and shows you exactly what's broken instead of displaying a generic error or silently failing.
+////
+* *Liveboard-level banner* — A warning banner at the top of the Liveboard
+  indicates that one or more vizzes are affected by a deleted source column.
+  The banner is hidden in present mode to avoid disrupting presentations.
+
+* *Broken tile indicator* — Each affected viz displays a clear broken state
+  instead of the previous generic "Error in loading data" message, so you can
+  immediately identify which tiles are impacted.
+
+* *Restricted actions* — To prevent further data quality issues, the following
+  actions are disabled on a Liveboard with broken vizzes:
+  ** *Make a copy*
+  ** *Download*
+  ** *TML Export*
+  ** *TML Edit*
+////
 // Mary. jira: SCAL-307049. docs jira: SCAL-307050
 // PM: Dilip/Siddhant
 
@@ -118,6 +135,33 @@ endif::free-trial-feature[]
 [#26-10-0-cl-unpublish]
 [discrete]
 === Publish/unpublish in list view
+You can now publish, unpublish, and manage the publishing state of Answers, Liveboards, and Models directly from the list-page view — without having to open each object individually.
+
+The *Publish*, *Unpublish*, and *Manage publishing* options are available in the row-level action menu on the Answers, Liveboards, and Data Workspace list pages. The same publish and unpublish modals used in the in-object flow appear, allowing you to select target orgs, handle dependents, and confirm the action.
+
+NOTE: Publishing is a multi-org feature. These actions are only visible on multi-org clusters where object publishing is enabled. You must be in the primary Org and have cluster administrator privileges to see the publish and unpublish actions.
+////
+*Single-object actions (row menu):*
+
+* *Publish* — available on unpublished objects
+* *Unpublish* — available on published objects
+* *Manage publishing* — available on objects that are already published,
+allowing you to add or remove orgs
+
+*Bulk actions (action bar):*
+
+When you select multiple objects of the same publish state, the action bar
+displays the relevant action. For example, selecting multiple unpublished
+objects shows *Publish* in the action bar. The bulk action is hidden if
+the selection contains a mix of published and unpublished objects, or more
+than one already-published object.
+
+NOTE: For Models specifically, the publish action is not available for
+objects authored by a superuser or system user.
+
+For information on publishing objects across orgs, see
+xref:publish-objects.adoc[Publishing objects].
+////
 // Mary. jira: SCAL-321926. docs jira: SCAL-333386
 // PM: Sejal
 
