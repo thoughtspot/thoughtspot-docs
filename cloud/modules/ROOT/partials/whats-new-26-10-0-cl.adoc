@@ -106,7 +106,7 @@ endif::free-trial-feature[]
 [#26-10-0-cl-dependency]
 [discrete]
 === Liveboard error management [.badge.badge-ga-relnotes]#GA#
-When a data model column that a Liveboard depends on is deleted, ThoughtSpot now detects the impact and shows you exactly what's broken instead of displaying a generic error or silently failing.
+Liveboard error management is now generally available (GA). When a data model column that a Liveboard depends on is deleted, ThoughtSpot now detects the impact and shows you exactly what's broken instead of displaying a generic error or silently failing.
 ////
 * *Liveboard-level banner* — A warning banner at the top of the Liveboard
   indicates that one or more vizzes are affected by a deleted source column.
@@ -134,12 +134,16 @@ When a data model column that a Liveboard depends on is deleted, ThoughtSpot now
 
 [#26-10-0-cl-unpublish]
 [discrete]
-=== Publish/unpublish in list view
-You can now publish, unpublish, and manage the publishing state of Answers, Liveboards, and Models directly from the list-page view — without having to open each object individually.
+=== Publish/unpublish in list view [.badge.badge-ga-relnotes]#GA#
+Publishing in list views is now generally available (GA). You can now publish, unpublish, and manage the publishing state of Answers, Liveboards, and Models directly from the list page view without having to open each object individually.
 
-The *Publish*, *Unpublish*, and *Manage publishing* options are available in the row-level action menu on the Answers, Liveboards, and Data Workspace list pages. The same publish and unpublish modals used in the in-object flow appear, allowing you to select target orgs, handle dependents, and confirm the action.
+The *Publish*, *Unpublish*, and *Manage publishing* options are available in the row-level action menu on the Answers, Liveboards, and Data Workspace list pages. The publish and unpublish options allow you to select target Orgs, handle dependents, and confirm the action.
 
-NOTE: Publishing is a multi-org feature. These actions are only visible on multi-org clusters where object publishing is enabled. You must be in the primary Org and have cluster administrator privileges to see the publish and unpublish actions.
+NOTE: Publishing is a multi-Org feature. These actions are only visible in multi-Org environments where object publishing is enabled. You must be in the primary Org and be a cluster administrator to see the publish and unpublish actions.
+
+NOTE: For Models specifically, the publish action is not available for objects authored by a superuser or system user.
+
+For more information about publishing objects across Orgs, see xref:publish-objects.adoc[Publishing objects].
 ////
 *Single-object actions (row menu):*
 
@@ -155,22 +159,16 @@ displays the relevant action. For example, selecting multiple unpublished
 objects shows *Publish* in the action bar. The bulk action is hidden if
 the selection contains a mix of published and unpublished objects, or more
 than one already-published object.
-
-NOTE: For Models specifically, the publish action is not available for
-objects authored by a superuser or system user.
-
-For information on publishing objects across orgs, see
-xref:publish-objects.adoc[Publishing objects].
 ////
 // Mary. jira: SCAL-321926. docs jira: SCAL-333386
-// PM: Sejal
+// PM: Sejal - request image
 
 
 // Analyst
 
 [#26-10-0-cl-filter-ux]
 [discrete]
-=== Centralized filter window
+=== Centralized filter window [.badge.badge-ga-relnotes]#GA#
 The centralized filter window is now generally available (GA). This feature introduces a single, unified interface for managing all Liveboard filters. Users can use this to view, update, and apply multiple filters at once, rather than interacting with each filter individually. This feature supports bulk filter changes, clear and reset actions, and provides a streamlined workflow for complex analyses. This improves efficiency, especially when working with Liveboards containing many filters or when users need to adjust several dimensions simultaneously. For more information, see
 ifndef::pendo-links[]
 xref:liveboard-filters.adoc[Centralized filter window].
@@ -194,6 +192,55 @@ ifdef::pendo-links[]
 [discrete]
 === Liveboard contextual filtering [.badge.badge-early-access-whats-new]#Early Access#
 endif::[]
+Liveboard creators can now scope filters and parameters to a specific tab or group, instead of applying them globally across the entire Liveboard. This makes it easier to build focused, information-dense Liveboards where consumers can analyze a specific area without inadvertently affecting unrelated visualization. To enable this feature, contact your administrator.
+
+NOTE: When a Liveboard with tab or group filters is imported into a cluster where this feature is disabled, the scoped filters are removed on import.
+
+For more information, see xref:liveboard-filters.adoc[Liveboard filters].
+////
+*Filter hierarchy*
+Filters in a Liveboard now have three levels of scope:
+
+* *Liveboard filters* — The default. Apply across all tabs and
+visualizations in the Liveboard, just as before.
+* *Tab filters* — Apply only to the visualizations within a specific tab.
+The same filter column can be added independently to multiple tabs;
+each instance has its own default values, display name, and chip ordering.
+* *Group filters* — Apply only to the visualizations within a specific
+group inside a tab. Group filters appear contextually within the group,
+not in the top-level filter bar.
+
+NOTE: A filter scoped to a tab or group is not visible in tabs or groups
+where it does not apply.
+
+*For Liveboard creators*
+When adding a filter, a new *Scope* selector lets you choose whether the
+filter applies at the Liveboard, tab, or group level. The worksheet
+selection is automatically constrained to columns used by visualizations
+within the selected scope.
+
+You can also convert an existing filter between scopes using the *Convert
+to Liveboard filter* or *Convert to tab filter* option in the filter menu.
+
+Deleting a tab removes all filters scoped to that tab. Deleting a group
+removes all filters scoped to that group.
+
+*For Liveboard consumers*
+Filters and parameters appear in the context where they are relevant.
+Changing a group filter affects only the visualizations in that group;
+all other tabs and groups are unaffected.
+
+*For embed developers*
+The Visual Embed SDK has been updated to support scoped filtering:
+
+* `FilterChanged` and `ParameterChanged` embed events now include scope
+information (Liveboard, tab, or group level) in the event payload.
+* `UpdateFilters` and `UpdateParameters` host events accept an optional
+`applicability` property per filter or parameter to target a specific
+tab or group. Omitting `applicability` defaults to the Liveboard level
+and is backward compatible.
+* `GetFilters` and `GetParameters` responses now include scope information.
+////
 // Mary. jira: SCAL-298005. docs jira: SCAL-298006
 // PM: Dilip
 
@@ -202,6 +249,9 @@ endif::free-trial-feature[]
 [#26-10-0-cl-csr]
 [discrete]
 === Liveboards with column-security rules
+The enhanced the behavior of Liveboards built with column security rules is now generally available (GA). If users restricted by column security access the Liveboard, they can see and interact with the Liveboard filters and visualizations, but cannot edit the Liveboard as a whole. If such inaccessible columns are used as filters in the Liveboard, the Liveboard will no longer be blocked. Schedules now honor column security rules, and each recipient receives their own report based on their column security rule assignments.
+
+For more information, see xref:security-data-object.adoc#csr-liveboard[Column security rules on Liveboards].
 // Mary. jira: SCAL-284082. docs jira: SCAL-284083
 // PM: Siddhant
 
@@ -242,8 +292,14 @@ ifdef::pendo-links[]
 [discrete]
 === Admin controls for Spotter X [.badge.badge-early-access-whats-new]#Early Access#
 endif::[]
+A new *Spotter X* option is now available in *Admin Settings > All Orgs > AI Settings > Choose Spotter version*. Selecting *Spotter X* switches the cluster to the new Spotter X
+experience. Existing Spotter 3 settings, coaching content (reference questions, business terms, data model instructions, Spotter instructions), user privileges, and connectors carry over automatically, no additional configuration is required. Switching to Spotter X affects all Orgs on the cluster by default. The setting can also be applied at the Org level through *Feature Management*, allowing individual Orgs to opt in independently.
+
+The AI Settings section in the Admin Portal now shows only the configuration options that apply to the currently active Spotter version. When Spotter X is selected, Spotter 3-specific settings are hidden. When Spotter 3 is selected, Spotter X-specific settings (such as *Spotter X availability*) are not shown.
+
+NOTE: AI sample questions, which previously appeared in the admin panel for Spotter 3, are no longer shown when Spotter 3 is active. AI sample questions were not functional in Spotter 3; they continue to work in Spotter 1 and 2.
 // Mary. jira: SCAL-327182. docs jira: SCAL-327183
-// PM: Mayur
+// PM: Mayur - confirm enablement - request image
 
 endif::free-trial-feature[]
 
@@ -289,7 +345,7 @@ We've added more granular controls for sharing of Spotter connectors in ThoughtS
 [#26-10-0-cl-writeback]
 [discrete]
 === Writeback for Snowflake [.badge.badge-ga-relnotes]#GA#
-ThoughtSpot introduces writeback tables. Writeback with input tables allows you to create and edit tables directly in ThoughtSpot, where you can add new columns and update values. Data is saved back to your cloud data warehouse so you can use these tables across Answers and Liveboards. Currently, we support Snowflake cloud data warehouses. This feature supports planning, and operational workflows, removing the need for spreadsheets or manual uploads. Only users with edit permissions can make changes, and all edits are tracked for governance. For more information, see
+ThoughtSpot writeback tables are now generally avaialable (GA). Writeback with input tables allows you to create and edit tables directly in ThoughtSpot, where you can add new columns and update values. Data is saved back to your cloud data warehouse so you can use these tables across Answers and Liveboards. Currently, we support Snowflake cloud data warehouses. This feature supports planning, and operational workflows, removing the need for spreadsheets or manual uploads. Only users with edit permissions can make changes, and all edits are tracked for governance. For more information, see
 ifndef::pendo-links[]
 xref:writeback.adoc[Writeback].
 endif::[]
@@ -334,6 +390,32 @@ ifdef::pendo-links[]
 [discrete]
 === LLM-driven semantic integrations for formula generation [.badge.badge-beta-whats-new]#Beta#
 endif::[]
+ThoughtSpot now uses AI to translate external semantic definitions into ThoughtSpot formulas and Models during import, delivering higher accuracy than the previous rule-based translator, especially for complex SQL expressions that the deterministic parser could not handle. This feature is supported for Snowflake Semantic Views, Databricks Metric Views, and dbt MetricFlow imports. To enable this feature, contact {support-url}.
+
+NOTE: For Databricks Metric Views, you can provide the Metric View definition either by uploading a YAML file or by connecting directly to Databricks to retrieve the definition at import time.
+////
+* *Snowflake Semantic View import* — When importing a Snowflake
+  Semantic View, ThoughtSpot now uses AI to translate Snowflake
+  measure and dimension expressions into ThoughtSpot formulas.
+  Previously, a deterministic ANTLR-based parser handled this
+  translation; complex or non-standard SQL expressions often produced
+  passthrough formulas that could not be searched. The AI translator
+  resolves a significantly higher proportion of these expressions.
+
+* *Databricks Metric Views import* — ThoughtSpot can now ingest a
+  Databricks Metric View — an object that defines dimensions, measures
+  (SQL expressions), filters, and joins over one or more source tables
+  — and produce a complete ThoughtSpot Model with the underlying
+  logical tables. The AI translates the Metric View YAML definition
+  directly into ThoughtSpot Model TML, so users can search and analyze
+  Databricks semantics without hand-building a data model.
+
+* *dbt MetricFlow import* — When importing a dbt MetricFlow semantic
+  model from Snowflake or Databricks, ThoughtSpot now uses AI to
+  translate metric measures and dimension expressions into ThoughtSpot
+  formulas. If the AI translator is disabled, the previous ANTLR-based
+  translator is used as a fallback.
+////
 // Mary. jira: SCAL-309862. docs jira: SCAL-332012
 // PM: Prayansh
 
@@ -351,6 +433,16 @@ ifdef::pendo-links[]
 [discrete]
 === dbt MetricFlow for using LLM for formula conversion [.badge.badge-beta-whats-new]#Beta#
 endif::[]
+When importing a dbt MetricFlow semantic model from Snowflake or Databricks, ThoughtSpot now uses AI to translate metric measures and dimension expressions into ThoughtSpot formulas.
+
+Previously, dbt MetricFlow expressions were translated by a deterministic ANTLR-based parser. Complex SQL expressions, particularly those using advanced Snowflake or Databricks syntax, often produced pass through formulas
+that could not be used for ThoughtSpot search. The AI translator, powered by LLM Gateway v2, resolves a significantly higher proportion of these expressions into native ThoughtSpot formulas, resulting in richer, more searchable models after import. If the AI translator encounters an expression it cannot resolve, it falls back to the ANTLR translator automatically. To enable this features, contact {support-url}.
+
+NOTE: A service restart of the `dbt_tml` service is required when enabling or disabling this feature. Expected downtime is 1-2 minutes.
+
+For more information, see xref:dbt-metricflow.adoc[Import a dbt MetricFlow
+model].
+
 // Mary. jira: SCAL-324142. docs jira: SCAL-324143
 // PM: Prayansh
 
@@ -377,9 +469,51 @@ endif::free-trial-feature[]
 
 [#26-10-0-cl-workspace]
 [discrete]
-=== Data workspace home [.badge.badge-ga-relnotes]#GA#
+=== Data workspace page [.badge.badge-ga-relnotes]#GA#
+The new Data Workspace page is now generally available (GA). It now uses a modernised object table, making it easier to find, filter, and manage your data objects in one place.
+////
+*Search and filter*
+
+* *Inline search* — type to filter the object list by name in
+near-real time.
+* *Type filter* — filter by object type (Worksheet, Table, View,
+Model) using a filter modal with multi-select support. Selected
+filters appear as dismissible filter chips above the table.
+* *Author filter* — filter by one or more authors simultaneously.
+Previously, only a single author could be selected at a time.
+* *All / Yours tabs* — switch between all objects you have access to
+and only those you created.
+
+*Sorting and navigation*
+
+* Column-level sorting with visual sort indicators on column headers.
+* Server-side pagination — the page resets automatically when you
+change a search term, filter, sort order, or tab.
+
+*Row-level actions*
+
+Each object row now has a *3-dot action menu* that exposes per-object
+actions without requiring you to select the row's checkbox first:
+
+** Add to Collection
+** Share
+** Delete
+** Edit tags
+** Export TML
+** Edit TML
+
+*Bulk actions*
+
+Select multiple rows using the row checkboxes to apply bulk actions
+— Export TML, Edit TML, Apply/Edit Tags, Share, and Delete — from
+the action bar.
+
+NOTE: This update replaces the previous Data Workspace list view.
+The underlying data is unchanged; only the presentation and
+interaction model have been updated.
+////
 // Mary. jira: SCAL-309506, docs jira: SCAL-309507
-// PM: Prayansh
+// PM: Prayansh - request .gif to show the details.
 
 ifndef::free-trial-feature[]
 ifndef::pendo-links[]
@@ -392,8 +526,63 @@ ifdef::pendo-links[]
 [discrete]
 === Row-level security - secure suggestions saved filter values [.badge.badge-beta-whats-new]#Beta#
 endif::[]
+ThoughtSpot now enforces Row Level Security (RLS) on saved filter values in Answers and Liveboards. When a filter chip displays values from a column marked as *Secure Suggestions* in the data model, ThoughtSpot checks whether the current user has RLS access to those values before displaying them.
+
+NOTE: When filter values are cleared due to RLS enforcement, the user still sees data, but only the rows their RLS policy permits. An empty
+filter chip on a secured column does not mean *no data*; it means the saved filter values were not applicable to this user and the RLS policy
+is the active constraint.
+
+To enable this feature, contact {support-url}. For more information on Secure Suggestions and RLS, see xref:rls-secure-suggestions.adoc[Row Level Security: Secure Suggestions].
+
+////
+Previously, saved filter values were displayed as saved — even if the
+user opening the Answer or Liveboard did not have RLS access to all of
+those values. This could expose restricted column values in the filter
+chip and search bar UI, even though the underlying query results were
+already protected by RLS.
+
+With this feature enabled, ThoughtSpot performs an RLS check on the saved
+filter values when the Answer or Liveboard is opened:
+
+* If the user has access to *all* saved filter values, the filter chip
+displays normally — no change in behavior.
+* If the user does *not* have access to one or more saved filter values,
+the inaccessible values are removed from the filter chip and search bar.
+The filter is applied using only the values the user can access. If none
+of the saved values are accessible, the filter chip is cleared and only
+the RLS policy on the underlying data governs what the user sees.
+
+
+*Restricted actions*
+
+To prevent data leakage through exports or object copies, the following
+actions are blocked when a user does not have access to all filter values
+on a secured column:
+
+* *TML View* and *TML Download* — on the Answer and in the Data
+Workspace
+* *Extract Data* / *Download* — the filter set is included in the
+download; this is blocked to prevent exposing inaccessible values
+* *Liveboard Schedule* — scheduled delivery is blocked if the recipient
+does not have access to all filter values
+
+*Applies to*
+
+This behavior applies to columns with the *Secure Suggestions* suggestion
+setting in the data model. Columns using the default suggestion setting
+are not affected.
+
+NOTE: This feature is in Beta and is disabled by default. It must be
+enabled by a ThoughtSpot administrator using the following tscli command:
+
+tscli --adv service add-javaopt tomcat.tomcat D \
+orion.enableSecureFilterValueCheck True --restartless
+No service restart is required. To disable, run the same command with
+`False`.
+////
+
 // Mary. jira: SCAL-316409. docs jira: SCAL-316410
-// PM: Abhijit
+// PM: Abhijit - image?
 
 endif::free-trial-feature[]
 
