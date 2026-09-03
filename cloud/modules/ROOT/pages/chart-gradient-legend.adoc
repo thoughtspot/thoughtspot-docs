@@ -1,0 +1,85 @@
+= Gradient legends in charts
+:author: Mark
+:page-last_updated: Sep 3, 2026
+:experimental:
+:linkattrs:
+:description:  Learn how to configure continuous gradient color scales on charts to visualize numerical intensity and cross-measure relationships.
+:jira: SCAL-313051
+
+[.lead]
+Configure continuous gradient color scales on charts to visualize numerical intensity and cross-measure relationships.
+
+By default, charts in ThoughtSpot assign discrete, categorical colors to slices, categories, or measure names. When analyzing continuous data—such as profit margin, sales volume, or temperature—categorical color assignments can obscure relative variance across data points.
+
+Gradient legends solve this by mapping a continuous numerical measure to a smooth color spectrum across chart marks. This continuous color encoding allows report builders and dashboard viewers to rapidly spot clusters, performance outliers, and multi-variable correlations without adding extra chart objects or complex data tables.
+
+NOTE: This configuration option applies to the new charts library only.
+
+toc::[]
+
+== Supported chart types
+
+Gradient color encoding is available in the following chart types in the new charts library:
+
+* xref:chart-column-new.adoc#new[Column (non-stacked)]
+* xref:chart-bar-new.adoc#new[Bar (non-stacked)]
+* xref:chart-line-column-new.adoc#new[Line-column (non-stacked)]
+* xref:chart-scatter-new.adoc#new[Scatter]
+* xref:chart-bubble-new.adoc#new[Bubble]
+* xref:chart-donut-new.adoc#new[Donut] (Arc marks, where the gradient applies to the slice fill)
+
+NOTE: Gradient legends are disabled and hidden for stacked chart variants (Stacked Column, Stacked Bar, Stacked Area), Line charts, Area charts, and charts configured with grouped or shared axes.
+
+== Enable and configure a gradient legend
+
+To apply a continuous color gradient to a chart, configure the gradient settings within the chart's column properties panel.
+
+. Open an Answer or Liveboard visualization.
+. Click the *Chart type* tab on the right side of the chart canvas.
+. Select one of the supported chart types (in not already selected).
+. Select the *Column* tab to open its properties panel.
+. Select *Enable gradient legend* and select a measure.
++
+Upon enabling, the chart canvas updates dynamically to reflect the continuous color scale, and a gradient legend bar appears adjacent to the chart.
+
+=== Customize color stops and value domain
+
+You can customize the color spectrum and value range to align with organizational brand palettes or specific analytical baselines.
+
+. In the *Gradient* section of the Column tab, click the color picker swatch.
+. Choose a predefined gradient template or configure custom color stops for:
+* *Min*: Represents the lower bound of the numeric range.
+* *Mid*: Represents the midpoint baseline or neutral threshold.
+* *High*: Represents the upper bound of the numeric range.
+. Define the boundaries that determine how numeric values map to the color scale:
+* *Auto-scale with data*: Automatically calculates the minimum, midpoint, and maximum bounds from the retrieved result set.
+* *Manual settings*: Clear the auto-scale checkbox and enter explicit numeric thresholds for *Min*, *Mid*, and *Max*. Values falling below the minimum threshold receive the low-end color stop, while values exceeding the maximum threshold receive the high-end color stop.
+
+== Manage legend display and summaries
+
+You can refine how the gradient scale is communicated to dashboard consumers and how total rows affect color distribution.
+
+=== Show or hide the gradient legend
+
+. Navigate to the *Legend* tab in the chart settings panel.
+. Use the *Display on chart* checkbox to display or hide the continuous color bar on the chart canvas.
+
+=== Include or exclude summaries in the color domain
+
+When a chart includes grand totals or subtotals, these summary figures can be significantly larger than individual line items, potentially skewing the gradient domain and making regular data points visually indistinguishable.
+
+. Navigate to the the *Display* tab.
+. In the *Summary* section, locate the *Include summaries* checkbox.
+. Adjust the setting as required:
+* *Unchecked* (default): Excludes totals and subtotals from the min/max calculation. Chart marks for regular data points utilize the full color spectrum, while summary marks render with neutral fill formatting.
+* *Checked*: Includes total and subtotal values when determining the gradient range.
+
+IMPORTANT: If your dataset contains extreme summary outliers, leaving *Include summaries* unchecked ensures optimal color contrast across non-summary data points.
+
+== Known limitations
+
+When planning chart configurations with gradient legends, consider the following technical constraints:
+
+* *Trellis charts with dense datasets*: Applying a gradient color measure on charts with multiple Trellis facets may incur backend row-limit processing constraints. Ensure dataset queries stay within configured row cardinality limits.
+* *Categorical slice-by-color interaction*: Enabling a gradient legend on a measure overrides any existing categorical *Slice by color* assignments for that specific series.
+
