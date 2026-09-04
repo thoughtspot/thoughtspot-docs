@@ -1,9 +1,10 @@
 = AgentSpot Frequently Asked Questions
-:last_updated: August 28, 2026
+:last_updated: Sep 4, 2026
 :linkattrs:
 :experimental:
 :page-aliases:
 :description: Answers to the most common questions about AgentSpot
+:jira: SCAL-335241
 
 [.lead]
 Get answers to the most common questions about AgentSpot.
@@ -62,11 +63,11 @@ Yes: Slack integration is live for public channels. Here's how to install it:
 . Build your agent in AgentSpot as normal.
 . Invite AgentSpot to the public channel you’d like to interact with this agent in. You can do that by simply typing “@AgentSpot” in that Slack channel.
 . Ask an AgentSpot admin to bind your agent to that specific Slack public channel. This will ensure that questions addressed to @AgentSpot in that channel are answered by the agent of your choice.
-
++
 Users can then @AgentSpot in that channel to interact with your agent.
-
++
 NOTE: Access rules carry over: only users who already have access to the agent in AgentSpot can use it via Slack.
-
++
 Currently not supported: direct messages and private channels. Slash (/) command bridges (For example: /nda-review) are also not yet supported.
 
 How do I share an agent with my teammates?::
@@ -79,7 +80,7 @@ Open the agent → click Share → enter colleague email addresses. There are no
 --
 When should I use an agent, when should I use a workflow?::
 Use agents to have live conversations and iterate. Use workflows whenever you want to schedule tasks.
-
++
 You cannot invoke an existing agent in a workflow, but you can go to that agent and tell it you want to create a repeatable workflow out of what it's doing, and then paste its instructions in the workflow creator.
 
 I'm having trouble with workflows — scheduling, viewing step details, editing inputs, or the chat is greyed out.::
@@ -151,5 +152,70 @@ Not today. It is on the roadmap, but not near-term.
 --
 Can customers add automated tests before rolling agents out?::
 Not yet. Customer-facing evals are a future goal, discussed as roughly three months away.
+
+What can customers do today to test an agent?::
+Share it with a small group on prod, validate manually, then expand access. Customers with dev clusters can also recreate and test an agent there first.
+
+Can an agent be migrated automatically from dev to prod?::
+No. That migration is not supported today.
+
+Can customers prevent a platform promotion to prod?::
+No. The proposed model is for ThoughtSpot to decide whether to promote; customers would run their evals before a promotion but would not control the rollout.
+
+Are AgentSpot APIs available for automated testing?::
+There are browser-visible APIs, but they are not guaranteed or supported as stable public APIs and may change.
+--
+
+== Auditability and privacy
+
+[.faq]
+--
+What does the audit log show?::
+Tool-call events, such as Slack authorization or replies posted. It can be filtered by date and exported as CSV.
+
+Does the audit log include prompts, inputs, and outputs?::
+No, not today. Full replay and input/output visibility are not currently built.
+
+Does agent data go to the LLM?::
+Yes. The discussion indicated there is no masking or filtering layer in place before data is sent to the LLM.
+
+Is customer data used to train LLMs?::
+No, according to the discussion, enterprise-plan data is not used for LLM training.
+
+How long are conversations retained?::
+One year by default.
+
+Are chats shared when an agent is shared?::
+Not currently. Only the agent is shared. Conversation sharing is planned, with configurable read-only versus continue-conversation access.
+--
+
+== Billing & Credits
+
+[.faq]
+--
+Is billing per agent or per conversation?::
+Per conversation. One continuing chat within 24 hours uses one credit.
+
+If I have three independent chats with the same agent, how many credits are used?::
+Three credits.
+--
+
+== Spotter
+
+[.faq]
+--
+Can AgentSpot use ThoughtSpot data models if the customer has not enabled Spotter 3, and are still on Spotter 2?::
+For Agents and Workflows, Spotter 2 will function. Apps however spotter 3 for query resolution.
+
+Can AgentSpot send filtered Liveboard PDFs to 100 clients on a schedule?::
+Not directly today. AgentSpot does not have Liveboard-level understanding; it works with data models.
+
+Is there a workaround?::
+The Spotter Code connector may be able to help, but it was described as complex and not something to encourage broadly.
+
+Can ThoughtSpot handle the scheduled PDF use case?::
+This should be possible by saving the filter combination as a personalised view and referring to that personalised view while creating the schedule.
+--
+
 
 
