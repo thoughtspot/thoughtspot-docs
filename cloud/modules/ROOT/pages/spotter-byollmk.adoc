@@ -3,7 +3,7 @@
 :author: Naomi
 :linkattrs:
 :experimental:
-:jira: SCAL-276577, SCAL-321304
+:jira: SCAL-276577, SCAL-321304, SCAL-308243
 
 ThoughtSpot provides a fully managed "ThoughtSpot Enabled Auto Select" LLM configuration that gives you access to the latest, high-performance models with no setup required. We strongly recommend this option for the best performance and experience.
 
@@ -22,7 +22,9 @@ To enable a custom LLM connection, please contact {support-url}. Our team will w
 
 Before contacting {support-url}, gather the required credentials for your specific LLM provider. This will expedite the setup and compatibility check.
 
-We currently support connections to Azure OpenAI, Google Vertex AI, Amazon Bedrock and custom LLM gateways.
+Your LLM endpoint must be reachable over the public internet. ThoughtSpot does not support private connectivity to LLM providers, such as AWS PrivateLink or Azure Private Link. To restrict access, allowlist the ThoughtSpot LLM Gateway IP addresses in your provider's network policy. Contact {support-url} for the IP addresses.
+
+We currently support connections to Azure OpenAI, Google Vertex AI, Amazon Bedrock, Snowflake Cortex, and custom LLM gateways.
 
 === For Azure OpenAI
 
@@ -32,9 +34,9 @@ You need:
 * An API key.
 * The deployment names for your default models.
 
-For steps on how to create an Azure OpenAI resource, see link:https://learn.microsoft.com/en-us/azure/ai-foundry/openai/how-to/create-resource?pivots=web-portal[Create and deploy an Azure OpenAI in Microsoft Foundry Models resource] in Microsoft's Azure documentation.
+For steps on how to create an Azure OpenAI resource, see link:https://learn.microsoft.com/en-us/azure/ai-foundry/openai/how-to/create-resource?pivots=web-portal[Create and deploy an Azure OpenAI in Microsoft Foundry Models resource^] in Microsoft's Azure documentation.
 
-//For steps on setting up and configuring a GPT deployment using the Azure OpenAI service, see link:https://techcommunity.microsoft.com/blog/startupsatmicrosoftblog/how-to-set-up-and-configure-a-gpt-deployment-using-the-azure-openai-service/3849854[this article].
+//For steps on setting up and configuring a GPT deployment using the Azure OpenAI service, see link:https://techcommunity.microsoft.com/blog/startupsatmicrosoftblog/how-to-set-up-and-configure-a-gpt-deployment-using-the-azure-openai-service/3849854[this article^].
 
 ////
 [#azure]
@@ -68,7 +70,7 @@ You need:
 * The region for your models (for example, `us-central1`).
 * The model IDs for your models.
 
-For steps on how to create Service account keys, see link:https://docs.cloud.google.com/iam/docs/keys-create-delete[Create and delete service account keys] in Google Cloud's IAM documentation.
+For steps on how to create Service account keys, see link:https://docs.cloud.google.com/iam/docs/keys-create-delete[Create and delete service account keys^] in Google Cloud's IAM documentation.
 
 //You will need an administrator to create a service account and give it the correct permissions to access Vertex AI models. Once created, you must grant the service account IAM roles of either a  “Vertex AI user” (roles/aiplatform.user) or “Vertex AI Administrator” (roles/aiplatform.admin) so it has permission to make API calls.
 ////
@@ -100,7 +102,15 @@ You need:
 * An API key (long-term API keys required).
 * Inference profile ARN for the supported LLM.
 
-For steps on creating a long-term API key, see link:https://docs.aws.amazon.com/bedrock/latest/userguide/api-keys-generate.html[Generate an Amazon Bedrock API key] in the AWS documentation.
+For steps on creating a long-term API key, see link:https://docs.aws.amazon.com/bedrock/latest/userguide/api-keys-generate.html[Generate an Amazon Bedrock API key^] in the AWS documentation.
+
+=== For Snowflake Cortex
+
+You need:
+
+- Your Snowflake account URL.
+- A programmatic access token (PAT) for a user with access to Cortex.
+- The model names for your models.
 
 [#llm]
 === For a custom LLM gateway
@@ -149,7 +159,7 @@ Before you connect, check the following:
 [CAUTION]
 ====
 * Though the LLM configuration section in the *Admin > ThoughtSpot AI* page indicates manual model selection is not supported, BYOLLM configurations for Spotter 3 are supported but considered experimental. As a result, performance and stability may vary.
-* Spotter 3 requires you to provide both Claude and GPT LLMs in your BYOLLM configuration and has a dependency on GPT 5.1 using Microsoft Azure for code execution. Contact {support-url} for more information.
+* Spotter 3 requires you to provide both Claude and GPT LLMs in your BYOLLM configuration and has a dependency on GPT 5.4 using Microsoft Azure for code execution. Contact {support-url} for more information.
 * Manual presets for Microsoft Azure and Google Gemini are not supported in Spotter 3 at the moment.
 ====
 
@@ -196,7 +206,7 @@ ThoughtSpot AI leverages multiple sets of LLMs to provide users with the best ex
 
 | Spotter 1 | Claude Opus 4.6
 | Spotter 2 | Claude Opus 4.6
-| Spotter 3 | Claude Opus 4.5 + GPT-5.1 with code execution
+| Spotter 3 | Claude Opus 4.5 + GPT-5.4 with code execution
 | Other ThoughtSpot AI features (platform-wide) | Claude Sonnet 4.6 and Claude Haiku 4.5 (or equivalent)
 |===
 
