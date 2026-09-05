@@ -1,5 +1,50 @@
 # AgentSpot Changelog
 
+## 2026-08-27 — 819553c62bf7..24dea5c894cc
+
+### Product changes
+
+- Add clear_tool_inputs + clear_thinking context-management levers (SCAL-324972) · `24dea5c894cc` · SCAL-324972 · [#1567](https://github.com/thoughtspot/agentspot/pull/1567)
+- SCAL-324007 - Builder-prompt determinism rules for data & generated UI · `f1775e64bc1d` · SCAL-324007 · [#1530](https://github.com/thoughtspot/agentspot/pull/1530)
+- Fix dataapp code-step sandbox bugs: emoji crash, ADK import deadlock, and output marshaling (SCAL-324059) · `66ae8bfc62b2` · SCAL-324059 · [#1533](https://github.com/thoughtspot/agentspot/pull/1533)
+- Configurable max-agents-per-workflow limit, default 10 (SCAL-310974) · `faf2eb294ea1` · SCAL-310974 · [#1500](https://github.com/thoughtspot/agentspot/pull/1500)
+- feat(agent): add EU AI Act transparency notice below AI prompt inputs (SCAL-319449) · `c454ac831eea` · SCAL-319449 · [#1552](https://github.com/thoughtspot/agentspot/pull/1552)
+- 24-hour conversation cutoff: charge on resume after N hours (SCAL-310973) · `0ab055936ec6` · SCAL-310973, SCAL-310923 · [#1499](https://github.com/thoughtspot/agentspot/pull/1499)
+- Connector sharing: admin-only default via a visibility axis, with a share/make-private flow (SCAL-309998) · `53b5198e1458` · SCAL-309998, SCAL-309988 · [#1475](https://github.com/thoughtspot/agentspot/pull/1475)
+- Mid-cycle edition/bucket upgrade adjusts the current-week credit pool (SCAL-310923) · `fe370f4cb678` · SCAL-310923 · [#1496](https://github.com/thoughtspot/agentspot/pull/1496)
+- Refund Do Credits on run failure (SCAL-310931) · `027359c4b0ee` · SCAL-310931 · [#1439](https://github.com/thoughtspot/agentspot/pull/1439)
+- Add agent and data-app likes with most-liked shared-tab ranking (SCAL-323185) · `932efd7622c4` · SCAL-323185 · [#1539](https://github.com/thoughtspot/agentspot/pull/1539)
+- Per-conversation usage aggregation (SCAL-310930) · `2c1c657268c1` · SCAL-310930 · [#1437](https://github.com/thoughtspot/agentspot/pull/1437)
+- Enforce Free Edition agent/workflow cap (SCAL-310972) · `408f08f88b2b` · SCAL-310972 · [#1431](https://github.com/thoughtspot/agentspot/pull/1431)
+- Charge Do Credits on conversation start and workflow run (SCAL-310923) · `1e79f1b29614` · SCAL-310923 · [#1426](https://github.com/thoughtspot/agentspot/pull/1426)
+- Disable workflow reporting pagination by default (SCAL-321673) · `0bd871aaf784` · SCAL-321673 · [#1551](https://github.com/thoughtspot/agentspot/pull/1551)
+- Do Credit ledger engine (SCAL-310922) · `7b59189f51f6` · SCAL-310922 · [#1422](https://github.com/thoughtspot/agentspot/pull/1422)
+- AgentSpot editions and entitlement foundation (SCAL-309705) · `81b5ecce4819` · SCAL-309705 · [#1421](https://github.com/thoughtspot/agentspot/pull/1421)
+- SCAL-324002 Strip diagnostic keys from code-step output at load · `b5a6c94a8cd2` · SCAL-324002 · [#1523](https://github.com/thoughtspot/agentspot/pull/1523)
+- Add reporting-agent page artifacts for large workflow reports (SCAL-321673) · `760a0f8ca075` · SCAL-321673 · [#1459](https://github.com/thoughtspot/agentspot/pull/1459)
+- Fix skill deletion when the skill is attached to agents (SCAL-313873) · `dad86b0846e5` · SCAL-313873 · [#1544](https://github.com/thoughtspot/agentspot/pull/1544)
+- Viewer-scoped connector MCP session pool, bounded create retry, and a 5-minute dataapp load budget (SCAL-323636) · `d253eade5a00` · SCAL-323636 · [#1509](https://github.com/thoughtspot/agentspot/pull/1509)
+- feat(agents): server-side search across all org/team agents (SCAL-323098) · `3ba803e30df4` · SCAL-323098 · [#1538](https://github.com/thoughtspot/agentspot/pull/1538)
+- fix(agent): preserve typed text and support clipboard paste on file upload (SCAL-323430) · `ccc4d466893b` · SCAL-323430 · [#1505](https://github.com/thoughtspot/agentspot/pull/1505)
+- Fix Anthropic context-management delivery: deploy env allowlist + backend-pod client (SCAL-318539) · `3123ca25c225` · SCAL-318539 · [#1535](https://github.com/thoughtspot/agentspot/pull/1535)
+- Route SSO login through Okta session cleanup (SCAL-323821) · `4a9d36ff963d` · SCAL-323821 · [#1517](https://github.com/thoughtspot/agentspot/pull/1517)
+- App renaming fails in edit mode: make the draft the single source of truth for name/description (SCAL-322953) · `7140bb1d15de` · SCAL-322953 · [#1491](https://github.com/thoughtspot/agentspot/pull/1491)
+- Bound SRE bot tool output so aggregate/long-window questions stay within model context (SCAL-323832) · `38d03a5946f4` · SCAL-323832 · [#1520](https://github.com/thoughtspot/agentspot/pull/1520)
+- Fix skill upload: selectable .zip, multi-line SKILL.md descriptions, and Finder/Explorer zip tolerance (SCAL-322313) · `0af6289f6700` · SCAL-322313 · [#1493](https://github.com/thoughtspot/agentspot/pull/1493)
+- fix(memory): render markdown and update list cache SCAL-310108 · `65692baa288d` · SCAL-310108 · [#1512](https://github.com/thoughtspot/agentspot/pull/1512)
+- fix(agent): update subagent tooltip copy SCAL-323248 · `524af1b789ff` · SCAL-323248 · [#1513](https://github.com/thoughtspot/agentspot/pull/1513)
+
+### Internal / infra
+
+- SCAL-324008 - Add dataapp surfaces end-to-end smoke test · `e5f4a5c2dcc8` · SCAL-324008 · [#1525](https://github.com/thoughtspot/agentspot/pull/1525)
+- fix: SCAL-324595 Add get access to runner so that it can refresh token · `84ba48e75fed` · SCAL-324595 · [#1547](https://github.com/thoughtspot/agentspot/pull/1547)
+- SCAL-323312 add edge-env configmap and set shared runtime engine id for akshaylb-dev · `f9c4a932c4e6` · SCAL-323312 · [#1534](https://github.com/thoughtspot/agentspot/pull/1534)
+- chore(infra): enable dataapp feature on prod (SCAL-324039) · `0a3a0e068a53` · SCAL-324039 · [#1532](https://github.com/thoughtspot/agentspot/pull/1532)
+- Enable Anthropic context management in preprod and prod (SCAL-318539) · `a1bdc615a0cb` · SCAL-318539 · [#1531](https://github.com/thoughtspot/agentspot/pull/1531)
+- Enable Anthropic context management in all dev namespaces and staging (SCAL-318539) · `6ebaaa404d53` · SCAL-318539 · [#1317](https://github.com/thoughtspot/agentspot/pull/1317)
+- fix(k8s): add required runtime env to akshaylb-dev configmap (SCAL-323312) · `7f9e8bc8c7ec` · SCAL-323312 · [#1521](https://github.com/thoughtspot/agentspot/pull/1521)
+- Add shared environment promotion driver (SCAL-321917) · `1bd4638cc41f` · SCAL-321917 · [#1438](https://github.com/thoughtspot/agentspot/pull/1438)
+
 ## 2026-08-18 — 3f0f8c00e18a..819553c62bf7
 
 ### Product changes
