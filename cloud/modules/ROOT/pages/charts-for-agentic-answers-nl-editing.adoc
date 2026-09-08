@@ -1,0 +1,134 @@
+= Edit charts with natural language
+:page-last_updated: Sep 8, 2026
+:linkattrs:
+:author: Mark
+:experimental:
+:page-aliases: /end-user/search/about-charts.adoc
+:description: Refine the appearance, formatting, and type of an agentic chart using natural-language commands.
+:jira: SCAL-304279
+
+// Draft for SCAL-304278 / SCAL-304279
+// Target version: ThoughtSpot 26.8.0.cl+
+// Deployment: TS Cloud, On-Premises
+
+After an agentic chart is generated, you can refine its appearance, formatting, and type using natural-language commands.
+This feature lets you iterate on the chart visually without writing code or using manual configuration panels.
+
+== How natural-language chart editing works
+
+When you submit a follow-up request that targets only the chart configuration, the system:
+
+1. *Interprets your intent* — The LLM parses your natural-language request to identify chart changes (type, color, labels, axes, and so on).
+2. *Maps to chart parameters* — The request is translated into specific chart configuration changes.
+3. *Re-renders the chart* — The charting tool invokes the Muze charting service with the updated parameters and returns the new chart.
+
+[NOTE]
+====
+If your follow-up request only involves chart configuration changes (and does not require regenerating the underlying answer data), the system invokes the charting tool directly without re-running the analytical query.
+This means chart-only edits are typically faster than full answer regenerations.
+====
+
+== Supported natural-language commands
+
+The following table lists common natural-language commands that the charting engine understands.
+
+[cols="1,2", options="header"]
+|===
+| Command pattern | Result
+| "Change this to a [bar/line/pie/area] chart" | Switches the chart type
+| "Use a different color for each [bar/line/series]" | Assigns distinct colors to each data series
+| "Make it [color]" | Changes the overall color scheme (for example, "Make it blue")
+| "Add data labels" | Displays numeric values directly on chart elements
+| "Show all data labels" | Ensures every data point is labeled
+| "Remove data labels" | Hides numeric labels
+| "Change the Y-axis to show in [thousands/millions/billions]" | Reformats the axis scale and tick labels
+| "Format the Y-axis as [currency/percentage/scientific]" | Changes the axis number format
+| "Move the legend to the [top/bottom/left/right]" | Repositions the chart legend
+| "Hide the legend" | Removes the legend
+| "Show the legend" | Restores the legend
+| "Use a smooth curve" | Applies smooth curves to line charts
+| "Make it stacked" | Converts to a stacked chart format
+| "Sort by [ascending/descending]" | Sorts the data series
+| "Add a title: [text]" | Sets or updates the chart title
+| "Change the title to [text]" | Updates the chart title
+|===
+
+== Examples
+
+=== Example 1: Change chart type
+
+.User asks (after a chart is generated):
+"Change this to a bar chart"
+
+.Result:
+The charting engine re-renders the data as a bar chart.
+
+=== Example 2: Change colors
+
+.User asks:
+"Use a different color for each bar"
+
+.Result:
+Each bar in the chart is assigned a distinct color from the palette.
+
+=== Example 3: Add data labels
+
+.User asks:
+"Add data labels"
+
+.Result:
+Numeric values appear on each data point (for example, on top of each bar or at each line point).
+
+.User asks:
+"Show all data labels"
+
+.Result:
+The chart ensures all data points are labeled, even if some would normally be omitted for readability.
+
+=== Example 4: Format the Y-axis
+
+.User asks:
+"Change the Y-axis to show in thousands"
+
+.Result:
+The Y-axis tick labels are reformatted. For example, `1,000,000` becomes `1,000` with a "in thousands" suffix.
+
+.User asks:
+"Change the Y-axis to show in millions"
+
+.Result:
+The Y-axis tick labels are reformatted. For example, `1,000,000,000` becomes `1,000` with a "in millions" suffix.
+
+=== Example 5: Styling refinements
+
+.User asks:
+"Use a smooth curve"
+
+.Result:
+Line charts are rendered with smooth (curved) lines rather than straight line segments.
+
+.User asks:
+"Move the legend to the top"
+
+.Result:
+The legend is repositioned from its default location to the top of the chart.
+
+== Tips for effective commands
+
+* Be specific about what you want to change. For example, "Change the Y-axis to show in thousands" is more precise than "Fix the axis."
+* You can combine multiple changes in a single request, such as "Change to a bar chart and use blue colors."
+* The charting engine understands synonyms. "Make it a column chart" and "Change to a bar chart" may produce similar results depending on the data orientation.
+* If a command is ambiguous, the system will apply the most likely interpretation and render the chart.
+
+== Limitations
+
+* Natural-language editing applies to the chart configuration only. It does not modify the underlying data or query.
+* Some advanced chart features (for example, custom JavaScript, third-party chart libraries) are not supported through natural-language editing.
+* The system may not understand highly specialized or domain-specific chart terminology.
+
+== Related topics
+
+* xref:charts-for-agentic-answers.adoc[Charts for agentic answers overview]
+* xref:charts-for-agentic-answers-supported-sources.adoc[Supported data sources]
+* xref:charts-for-agentic-answers-progressive.adoc[Progressive charting]
+* xref:charts-for-agentic-answers-examples.adoc[Examples]
