@@ -1,0 +1,103 @@
+= Enabling an AWS PrivateLink between ThoughtSpot Cloud and your {connection} data warehouse
+:experimental:
+:page-last_updated: 7/1/25
+:linkattrs:
+:description: Learn how to deploy an AWS PrivateLink between your Databricks data warehouse and the ThoughtSpot Cloud tenant.
+:connection: Databricks
+:jira: SCAL-203358, SCAL-261824, SCAL-291470
+
+Learn how to deploy an AWS PrivateLink between your {connection} data warehouse and the ThoughtSpot Cloud tenant.
+
+NOTE: AWS PrivateLink is only available to Enterprise Edition users.
+
+
+include::partial$private-link-intro.adoc[]
+
+This article details how to enable a PrivateLink for *{connection}*;
+to enable it for other data warehouses, refer to:
+
+* xref:connections-redshift-private-link.adoc[Amazon Redshift PrivateLink]
+* xref:connections-clickhouse-private-link.adoc[ClickHouse PrivateLink]
+* xref:connections-denodo-private-link.adoc[Denodo PrivateLink]
+* xref:connections-dremio-private-link.adoc[Dremio PrivateLink]
+* xref:connections-adw-private-link.adoc[Oracle PrivateLink]
+* xref:connections-postgresql-private-link.adoc[PostgreSQL PrivateLink]
+* xref:connections-hana-private-link.adoc[SAP HANA PrivateLink]
+* xref:connections-snowflake-private-link.adoc[Snowflake PrivateLink]
+* xref:connections-sql-server-private-link.adoc[SQL Server PrivateLink]
+* xref:connections-starburst-private-link.adoc[Starburst PrivateLink]
+* xref:connections-teradata-private-link.adoc[Teradata PrivateLink]
+
+NOTE: You can enable a maximum of five PrivateLinks in your environment.
+
+To deploy an AWS PrivateLink, you must work with {support-url} and follow the procedure in this article.
+
+[#prerequisites]
+== Prerequisites
+
+* You must have a {connection} Enterprise account.
+* You must have a {connection} workspace URL.
+* Your {connection} workspace must be customer-managed, not Databricks-managed.
+* The ThoughtSpot instance must be in the same AWS region as your {connection} account.
+* You must have {connection} Account Admin credentials.
++
+NOTE: The {connection} Account admin is different from the Workspace Admin. The Account admin is able to sign in to https://accounts.cloud.databricks.com/[https://accounts.cloud.databricks.com/^].
+
+== Enable an AWS PrivateLink for {connection}
+
+To deploy an AWS PrivateLink between your {connection} data warehouse and the ThoughtSpot Cloud tenant, follow these steps.
+
+. <<vpc-endpoint,Contact {support-url} to create VPC endpoint>>
+. <<register,Register PrivateLink objects in {connection}>>
+. <<config,Update the {connection} workspace with PrivateLink configuration>>
+. <<embrace,Configure Connections>>
+
+[#vpc-endpoint]
+=== Step 1: Contact {support-url} to create VPC endpoint
+
+After completing the <<prerequisites,prerequisites>>, share the {connection} workspace URL with {support-url} and request PrivateLink configuration. The URL is in the format `\https://xxx.cloud.databricks.com/`. After {support-url} finishes the configuration, they will share the VPC endpoint with you.
+
+
+[#register]
+=== Step 2: Register PrivateLink objects in {connection}
+
+Follow these steps to register the VPC endpoint:
+
+. Obtain the VPC endpoint ID from the <<vpc-endpoint,previous step>>.
+. Complete the steps to link:https://docs.databricks.com/aws/en/security/network/classic/privatelink#step-3-register-privatelink-objects[register PrivateLInk objects] in the link:https://docs.databricks.com/aws/en/security/network/classic/privatelink[{connection} AWS PrivateLink documentation]. The documentation includes steps for:
+
+.. VPC endpoint registration.
+.. Network configurations.
+.. Private access configurations.
+
+
+[#config]
+=== Step 3: Update the {connection} workspace with PrivateLink configuration
+
+link:https://docs.databricks.com/aws/en/security/network/classic/privatelink#step-4-create-or-update-your-workspace-with-privatelink-objects[Update workspace with PrivateLink configurations] using the Account API, with further references in the link:https://docs.databricks.com/aws/en/security/network/classic/privatelink[{connection} AWS PrivateLink documentation].
+
+[#embrace]
+=== Step 4: Configure Connections
+
+Create a xref:connections-databricks.adoc[{connection} connection]. Note that Databricks connections use the same xref:connections-databricks-reference.adoc#databricks-reference-host[host name] regardless of whether they are created through PrivateLink. When PrivateLink is configured, ThoughtSpot switches the internal DNS resolution for the hostname to point to the PrivateLink endpoint IP. For example, if your customer Databricks account is `\https://myaccount.cloud.databricks.com`, you would use the same name when configuring a connection that uses PrivateLink.
+
+
+'''
+> **Related information**
+>
+> * xref:connections-databricks-add.adoc[Add a {connection} connection]
+> * xref:connections-databricks-edit.adoc[Edit a {connection} connection]
+> * xref:connections-databricks-csv-upload.adoc[]
+> * xref:connections-databricks-remap.adoc[Remap a {connection} connection]
+> * xref:connections-databricks-delete-table.adoc[Delete a table from a {connection} connection]
+> * xref:connections-databricks-delete-table-dependencies.adoc[Delete a table with dependent objects]
+> * xref:connections-databricks-delete.adoc[Delete a {connection} connection]
+> * xref:connections-databricks-deactivate.adoc[]
+> * xref:connections-databricks-oauth.adoc[Configure OAuth for a {connection} connection]
+> * xref:connections-databricks-oauth-aad.adoc[]
+> * xref:connections-databricks-oauth-service.adoc[]
+> * xref:connections-databricks-csv-upload-config.adoc[]
+> * xref:connections-databricks-unity-catalog.adoc[]
+> * xref:connections-databricks-reference.adoc[Connection reference for {connection}]
+> * xref:connections-databricks-passthrough.adoc[]
+> * xref:connections-databricks-best.adoc[]

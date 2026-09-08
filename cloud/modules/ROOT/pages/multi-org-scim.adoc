@@ -1,0 +1,255 @@
+= Configure SCIM for multi-Org deployments
+:page-title: Configuring SCIM for multi-Org deployments
+:page-pageid: scim-multi-org
+:page-description: Learn how to configure SCIM provisioning correctly when ThoughtSpot Orgs are enabled, and how to avoid common misconfiguration patterns.
+
+// SOURCE: SCAL-309838, https://docs.google.com/document/d/1FDzXfPwLkQOuUhyDfWAQr4v5Jz9WE0RqcbXzFn0zhDA/edit
+
+If your ThoughtSpot instance has Orgs enabled and you want to provision users to specific Orgs via SCIM, you must follow a specific setup pattern in your identity provider (IdP).
+Deviating from this pattern causes users to be provisioned to the wrong Org.
+
+== How it works
+
+// SOURCE: SCAL-309838, Google Doc
+ThoughtSpot uses per-Org SCIM tokens to identify which Org a provisioned user belongs to.
+When your IdP sends a provisioning request, ThoughtSpot reads the bearer token included in that request and routes the user to the corresponding Org.
+
+[IMPORTANT]
+====
+* SCIM tokens are Org-scoped.
+* The token configured on an IdP application determines the target Org — not the application's role in the SSO flow.
+* Configuring the wrong Org's token on any application silently provisions users into the wrong Org.
+====
+
+== Internal users — shared SSO app with per-Org SCIM apps
+
+// SOURCE: SCAL-309838, Google Doc
+Use this when your users are internal to your organization and may need access to multiple Orgs.
+
+* A single *base SSO app* handles SAML authentication for all users.
+* Separate *per-Org SCIM apps* handle provisioning. One app is required for the Primary Org and one for each secondary Org.
+
+=== App configuration
+
+// SOURCE: Google Doc — table section 2.1
+[cols="3,^1,^1,4", options="header"]
+|===
+|IdP application |SSO |SCIM |Purpose
+
+|Base / SSO app (your existing ThoughtSpot app)
+|Enabled
+|*Disabled*
+|SAML authentication only
+
+|Primary Org app (new, dedicated app)
+|Disabled
+|Enabled
+|Provisions users to the Primary Org
+
+|Org A app
+|Disabled
+|Enabled
+|Provisions users to Org A
+
+|Org B app
+|Disabled
+|Enabled
+|Provisions users to Org B
+|===
+
+=== Important requirements
+
+// SOURCE: Google Doc — section 2.2
+
+*Disable SCIM on the base SSO app.*
+The base app is for authentication only.
+Enabling provisioning on the base app is the most common misconfiguration in this scenario.
+When SCIM is enabled on the base app and that app is configured with the Primary Org's token, any user assigned to a secondary Org's SCIM app is also provisioned to the Primary Org.
+
+*Create a dedicated SCIM app for every Org, including the Primary Org.*
+Each Org requires:
+
+* Its own dedicated IdP application with SCIM enabled
+* Its own Org-specific SCIM token
+
+[NOTE]
+====
+Generate each Org's SCIM token from that Org's *Admin* > *Security settings* page in ThoughtSpot.
+// TODO: verify with engineering — confirm the exact navigation path for generating a per-Org SCIM token in the ThoughtSpot UI (Admin > Security or equivalent).
+====
+
+=== User assignment requirements
+
+// SOURCE: Google Doc — section 2.3
+Every internal user requires *two* IdP app assignments:
+
+. *Base SSO app* — required for login.
+All users must be assigned to the base SSO app so that SAML authentication succeeds.
+. *Per-Org SCIM app* — required for provisioning.
+Assign the user to the SCIM app for each Org they should be provisioned into.
+
+=== Order of operations
+
+// SOURCE: Google Doc — section 2.4
+[WARNING]
+====
+SCIM provisioning must complete *before* the user's first login.
+
+If a user logs in before SCIM provisioning is complete, ThoughtSpot creates the user account via Just-in-Time (JIT) provisioning, which defaults to the Primary Org.
+====
+
+Follow this sequence when onboarding a new user:
+
+. Assign the user to the *base SSO app* to enable future login.
+. Assign the user to the correct *per-Org SCIM app* to trigger provisioning.
+. Verify that SCIM provisioning completed successfully in your IdP's provisioning logs.
+. Allow the user to log in.
+
+== External users — per-Org app handling both SSO and SCIM
+
+// SOURCE: SCAL-309838, Google Doc
+Use this when your users are external to your organization — typically in embedded or multi-tenant deployments where each Org is a fully isolated tenant.
+
+* Each Org has its own dedicated IdP application that handles both SSO and SCIM provisioning.
+* There is no shared base SSO app.
+* Each user belongs to exactly one Org and has no visibility into any other Org.
+
+=== App configuration
+
+// SOURCE: Google Doc — table section 3.1
+[cols="3,^1,^1,4", options="header"]
+|===
+|IdP application |SSO |SCIM |Purpose
+
+|Primary Org app
+|Enabled
+|Enabled
+|Authenticates and provisions users for the Primary Org
+
+|Org A app
+|Enabled
+|Enabled
+|Authenticates and provisions users for Org A
+
+|Org B app
+|Enabled
+|Enabled
+|Authenticates and provisions users for Org B
+|===
+
+=== Important requirements
+
+// SOURCE: Google Doc — section 3.2
+
+*Configure each app with the correct Org token.*
+Each IdP application must use the SCIM token generated from its corresponding Org's settings page in ThoughtSpot.
+A wrong token causes silent cross-Org provisioning.
+
+*Assign each user to only one app.*
+Assigning a user to more than one IdP application provisions them into multiple Orgs.
+This violates the single-Org isolation expected in the external-user pattern.
+
+*Each app is self-contained.*
+When every application carries the correct Org-scoped token, there is no risk of cross-Org provisioning.
+
+=== Order of operations
+
+// SOURCE: Google Doc — section 3.3
+[WARNING]
+====
+As with the internal-user scenario, SCIM provisioning must complete *before* the user's first login.
+
+If the user logs in before provisioning completes, ThoughtSpot creates the account via JIT provisioning and defaults to the Primary Org.
+====
+
+== Example: what goes wrong without the correct setup
+
+// SOURCE: Google Doc — section 4
+The following example illustrates a commonly reported misconfiguration for the internal-user scenario.
+Use it to recognize and diagnose similar issues in your own environment.
+
+=== Scenario
+
+A company has ThoughtSpot with two Orgs: *Primary Org* and *Sales Org*.
+
+They configure their IdP with the following applications:
+
+[cols="2,^1,^1,3", options="header"]
+|===
+|IdP application |SSO |SCIM |Token configured
+
+|Base app
+|Enabled
+|*Enabled* ❌
+|Primary Org SCIM token
+
+|Sales Org app
+|Disabled
+|Enabled
+|Sales Org SCIM token
+|===
+
+A new analyst, *Employee 1*, should have access to the *Sales Org only*.
+The admin assigns Employee 1 to the Sales Org app only.
+
+=== What actually happens
+
+*Step 1:* The Sales Org app sends a provisioning request using the Sales Org token.
+Employee 1 is provisioned to Sales Org. ✓
+
+*Step 2:* The base app also sends a provisioning request using the Primary Org token.
+Employee 1 is also provisioned to the Primary Org. ✗
+
+*Result:* Employee 1 now exists in both Orgs.
+
+=== The correct setup
+
+[cols="2,^1,^1,3", options="header"]
+|===
+|IdP application |SSO |SCIM |Token configured
+
+|Base app
+|Enabled
+|*Disabled* ✓
+|None
+
+|Primary Org app
+|Disabled
+|Enabled
+|Primary Org SCIM token ✓
+
+|Sales Org app
+|Disabled
+|Enabled
+|Sales Org SCIM token ✓
+|===
+
+With this setup, Employee 1 is assigned only to the Sales Org app and is provisioned exclusively to the Sales Org.
+
+== Diagnosing existing misconfiguration
+
+// SOURCE: Google Doc — section 5
+If users are appearing in the wrong Org, work through the following checks.
+
+- *Is SCIM enabled on the base SSO app?*
++
+This is the most common cause of incorrect provisioning in the internal-user scenario.
+Disable SCIM on the base app and create a dedicated Primary Org app configured with the Primary Org's SCIM token.
+
+- *Did the user log in before SCIM provisioning complete?*
++
+Check your IdP's provisioning logs and ThoughtSpot audit logs for SSO login events versus SCIM provisioning events.
+If only SSO login events appear for a user with no preceding SCIM provisioning event, the account was created via JIT provisioning and the user was placed in the Primary Org by default.
+// TODO: verify with engineering — confirm what customers should check when diagnosing JIT vs. SCIM provisioning events. Clarify the recommended ThoughtSpot UI path or audit log location. The source draft references an internal log term that must not appear in customer-facing content.
+
+- *Is the correct Org-specific token configured in each IdP application?*
++
+Each application must carry the SCIM token for its target Org.
+An incorrect token causes silent provisioning to the wrong Org.
+This applies to both the internal-user and external-user scenarios.
+
+- *If it's an external-user, is the user assigned to more than one IdP application?*
++
+Assigning an external user to multiple applications provisions them into multiple Orgs, which violates the single-Org isolation expected for external users.
+Remove the extra assignment and deprovision the user from the unintended Org.
+// TODO: verify with engineering — confirm the steps for deprovisioning a user from an Org they were incorrectly provisioned to (UI path or API call).

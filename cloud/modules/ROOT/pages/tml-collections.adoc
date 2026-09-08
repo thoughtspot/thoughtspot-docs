@@ -1,0 +1,106 @@
+= TML for Collections
+:page-last_updated: April 14, 2026
+:author: Rani
+:linkattrs:
+:experimental:
+:description: Use TML to modify a ThoughtSpot Collections in a flat-file format. Then, migrate the object to a different cluster, or restore it to the same cluster.
+:object: collections
+:jira: SCAL-289618
+
+Use TML to modify a ThoughtSpot Collection in a flat-file format. You can edit the Collections TML in the *Collections* list page, or export the `collection.tml` file, along with its hierarchical structure, to edit separately. When exporting the Collection TML file, you can choose to export only the Collection TML file, or export the Collection TML file together with the TML files for its objects in a zip file.
+
+To work with TML files for Collection, you can download these objects to flat files in `.TML` format, modify the files, and subsequently upload the files either to the same cluster, or to a different cluster.
+To learn how to export, change, and update {object}, see xref:scriptability.adoc[Import and export TML files].
+
+== Import the Collection TML file
+
+You can use the import TML utility in the Data workspace to import a Collection TML file, either in .tml file format or in .zip file format. You can include metadata TML files in a .zip file to upload along with the Collection TML file.
+
+To import a TML file, navigate to the Data workspace, select *Utilities* from the left menu, and click *Import TML*. You can click the *Select .zip or .tml files to upload* box to upload your files, or drag and drop them to the selected area.
+
+Alternatively, you can navigate to the *Collections* page, and click *Import* on the top.
+
+If you are uploading a Collection TML file that maps to an existing Collection, you can either create a new Collection, or update the existing Collection. If you are uploading a new Collection TML file, you only see the *Create* option.
+
+== Export the Collection TML file
+
+To export a Collection TML file, you can navigate to the *Collections* page, and check the box next to the Collection(s) you want to export. Click *Export* to download the  `collection.tml` file. Note that you can export Collection TML files individually, or in bulk.
+
+[#syntax-collection]
+== Syntax of the Collection TML file
+
+The `TML` file for Collections has a specific syntax.
+
+See the <<collection-parameters,TML parameters for collections>> for details about the keywords used in this example.
+
+[subs=+macros]
+....
+
+<<guid,guid>>: <collection_guid>
+<<collection,collection>>:
+  <<name,name>>: <collection_name>
+  <<description,description>>:
+    This is a multi-line description of the collection.
+    Description line 2
+  <<content,content>>:
+  - <<name,name>>: <answer_name>
+    <<type,type>>: <ANSWER>
+    <<id,id>>: <answer_id>
+  - <<name,name>>: <liveboard_name>
+    <<type,type>>: <LIVEBOARD>
+    <<id,id>>: <liveboard_id>
+  - <<name,name>>: <collection_name>
+    <<type,type>>: <COLLECTION>
+    <<id,id>>: <collection_id>
+....
+
+
+
+[#collection-parameters]
+== TML parameters for {object}
+These parameters and their definitions are specific to {object}; this list doesn't contain every parameter in every TML file. Similarly, the parameter definitions may vary from object to object, since the parameters may have different roles in different objects.
+
+[width="100%",grid="none",options="header"]
+|===
+| a - e | f - k | n - v
+a|
+
+<<collection,collection>>
+
+<<content,content>>
+
+<<description,description>>
+
+
+a| <<guid,guid>>
+
+<<id,id>>
+
+
+
+a| <<name,name>>
+
+<<type,type>>
+
+
+|===
+
+
+[#collection]
+collection:: For the object type Collection.
+
+[#description]
+description:: The text that describes the Collection.
+
+[#guid]
+guid:: The GUID for the Collection. You can find this string of letters and numbers at the end of the URL for the object.
+
+[#id]
+id:: The GUID for the objects within the Collection.
+
+[#name]
+name:: Name of the Collection or the metadata object within the Collection.
+
+[#type]
+type:: Type of metadata object within the Collection.
+
