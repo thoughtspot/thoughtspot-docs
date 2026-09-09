@@ -1,3 +1,141 @@
+## 2026-09-09 — beb5bd4f1952..95f72bb57539
+
+Range: `beb5bd4f1952..95f72bb57539` · 2026-09-09
+
+Internal, humanized digest for the docs team. Not a published page. Every item from the
+release manifest is recorded here; the docs team decides what warrants a customer-facing page
+or known-issue note. AgentSpot is in Preview, so nothing here is published automatically.
+
+### Features
+
+- **Stop a running Workflow run** — the Workflow run details now show a *Stop* button in place of
+  *Run now* / *Run again* while a run is pending, queued, running, or already cancelling. Clicking it
+  asks for confirmation (in-progress work may be interrupted), requests the run to stop, and the run
+  moves to a cancelling and then cancelled state. Backend adds a
+  `POST /workflows/{id}/runs/{jobId}/cancel` route + `WorkflowRunCancelResponse` schema + audit
+  action + pipeline-graph/catalog service support; frontend adds `cancelWorkflowRun` and the Stop
+  control on `WorkflowDetailsPage`.
+  (SCAL-331494 · [#2082](https://github.com/thoughtspot/agentspot/pull/2082))
+  _Auto-drafted a "Stopping a running Workflow" section onto `agentspot-create-workflow.adoc`, marked
+  `REVIEW`. Flagged a screenshot of the Stop button for capture._
+- **Reuse AgentSpot conversations in Slack channel threads** — replies within the same Slack channel
+  thread now continue one AgentSpot conversation per participant instead of starting fresh each time,
+  using a per-thread reply cursor so follow-ups keep context. Backend Slack thread-conversation
+  DAO/service + event worker + runtime tool + web client; migration adds a reply cursor.
+  (SCAL-336530 · [#2050](https://github.com/thoughtspot/agentspot/pull/2050))
+  _Not auto-edited: no existing feature page documents the Slack integration surface. Left for the
+  docs team; note this crosses the tenant/participant boundary — review isolation._
+- **Reuse AgentSpot conversations in Slack direct-message threads** — the same conversation-reuse
+  behavior for Slack DM threads: a DM thread continues one AgentSpot conversation rather than
+  restarting per message, with a thread lock guarding concurrent replies. Backend Slack
+  thread-conversation DAO/service, thread lock, event worker, and web client; migration adds the
+  thread-conversation table; new metrics.
+  (SCAL-332731 · [#1956](https://github.com/thoughtspot/agentspot/pull/1956))
+  _Not auto-edited: no existing feature page documents the Slack integration surface. Left for the
+  docs team; note the tenant/participant isolation boundary on thread conversations._
+
+### Fixes & stability
+
+- **Drop PII tenant name from analytics; read cluster identity from mixpanelConfig** — product
+  analytics now reads the ThoughtSpot cluster identity from `mixpanelConfig` and stops sending the
+  PII-bearing `tenant_name`. Backend auth service/audit + tenant DAO + product-analytics; frontend
+  `AuthContext` + analytics util; migration adds a tenant ThoughtSpot cluster-name column.
+  (SCAL-336266, SCAL-324988 · [#2047](https://github.com/thoughtspot/agentspot/pull/2047))
+- **Standardize "DO credits" capitalization** — normalizes "DO credits" wording across product UI,
+  backend, and internal docs. Backend credits router/service; frontend credits components, headers,
+  and hints; admin tenant page.
+  (SCAL-335032 · [#2077](https://github.com/thoughtspot/agentspot/pull/2077))
+- **Trust resolved client addresses in audit logging** — the observability middleware now trusts the
+  resolved client address when recording audit events. Backend `observability/middleware`; runbook
+  added.
+  (SCAL-336357 · [#2063](https://github.com/thoughtspot/agentspot/pull/2063))
+- **Hide internal runtime resource details in public APIs** — agent and memory public API responses
+  no longer expose internal runtime resource identifiers. Backend public-resource-ids helper + agents
+  / memories routers + agent/memory schemas + user-facing errors.
+  (SCAL-334921 · [#2064](https://github.com/thoughtspot/agentspot/pull/2064))
+- **Omit public model author identities** — ThoughtSpot model responses no longer include author
+  identities on the public surface. Backend `thoughtspot_model` schema; frontend `agentApi`.
+  (SCAL-335533 · [#2062](https://github.com/thoughtspot/agentspot/pull/2062))
+- **Require bounded recipient searches in sharing dialogs** — recipient search in the agent, App, and
+  Workflow share dialogs now requires a bounded query rather than listing all users. Backend agents /
+  dataapps routers + agent/dataapp catalog services; frontend `AgentShareDialog`,
+  `DataappShareDialog`, and `WorkflowPromptShareDialog`.
+  (SCAL-334920 · [#2061](https://github.com/thoughtspot/agentspot/pull/2061))
+- **Keep memory creation non-destructive and fence recalled context** — memory creation is now
+  non-destructive and recalled memory context is fenced before it reaches the model. Backend memories
+  router + memory service + runtime save-to-memory tool + callbacks; runbook added.
+  (SCAL-335532 · [#2060](https://github.com/thoughtspot/agentspot/pull/2060))
+- **Bound and escape skill discovery metadata** — skill discovery metadata is now length-bounded and
+  escaped before it is surfaced. Backend skill schema/metadata utils + skill GCS service + runtime
+  callbacks/prompts/skill-loader; runbook added.
+  (SCAL-335531 · [#2059](https://github.com/thoughtspot/agentspot/pull/2059))
+- **Enforce public agent tool selection while preserving sandbox defaults** — the tool selection of a
+  public agent is enforced while sandbox defaults stay intact. Backend agents router + agent service +
+  new `agent_tool_policy`; security doc added.
+  (SCAL-335530 · [#2057](https://github.com/thoughtspot/agentspot/pull/2057))
+- **Reject unsafe skill ZIP paths before preview and upload** — skill ZIP uploads are validated for
+  unsafe paths before preview and upload. Backend `skill_zip_validator`.
+  (SCAL-334934 · [#2055](https://github.com/thoughtspot/agentspot/pull/2055))
+- **Remove the Test Now button from the workflow editor** — the *Test Now* button was removed from the
+  workflow editor (studio). Frontend `WorkflowStudioPage`.
+  (SCAL-336845 · [#2075](https://github.com/thoughtspot/agentspot/pull/2075))
+  _Not auto-edited: the create-workflow page documents a *Test run* control on the Workflow view
+  (separate from the editor); confirm with engineering whether the documented test step is affected
+  before changing that text._
+- **Fix the dead back button when deep-linking into an app** — the browser/back control now works when
+  a user deep-links straight into an App. Frontend `RootShell`, `useHasInAppHistory`, dataapp
+  view/studio pages and layout helpers.
+  (SCAL-336335 · [#2066](https://github.com/thoughtspot/agentspot/pull/2066))
+- **Send exact scope and topic filters to Vertex when listing memories** — memory listing now passes
+  exact scope and topic filters through to Vertex rather than filtering after the fact. Backend memory
+  service + runtime memory-bank config + save-to-memory tool.
+  (SCAL-336764 · [#2071](https://github.com/thoughtspot/agentspot/pull/2071))
+- **Raise the default max agents per workflow to 50** — the default cap on distinct managed agents in a
+  single Workflow rose from 10 to 50, so larger Workflows no longer fail to save with a
+  `workflow_agent_limit_exceeded` error; still overridable per environment via
+  `MAX_AGENTS_PER_WORKFLOW`. Backend `config`.
+  (SCAL-336750 · [#2067](https://github.com/thoughtspot/agentspot/pull/2067))
+- **Make workflow artifact fan-in durable across managed steps** — workflow run artifact hand-off /
+  fan-in is now durable across managed steps. Backend workflow-builder prompts + workflows/internal
+  runtime routers + managed-agent DAG pipeline + artifact hand-off / run-artifact services + runtime
+  artifact hand-off and workspace tools; refreshed workflow examples; executor image.
+  (SCAL-335405 · [#2065](https://github.com/thoughtspot/agentspot/pull/2065))
+- **Keep large workflow outputs artifact-backed (and guard Deepak-dev deploys)** — large Workflow
+  outputs stay artifact-backed rather than inlined; also hardens the Deepak-dev deploy path. Backend
+  workflow-builder prompt + managed-agent DAG pipeline + workflow agent-step service; executor image;
+  Deepak-dev overlay/deploy guards.
+  (SCAL-335405 · [#2048](https://github.com/thoughtspot/agentspot/pull/2048))
+- **Gated six-cell Snowpipe usage-analytics destinations + Deepakg E2E validation** — adds gated
+  six-cell Snowpipe destinations for usage-analytics export and Deepakg end-to-end validation. Backend
+  analytics-export keys/runtime-config/worker; infra + Snowflake render/SQL; Deepakg overlay/cronjobs.
+  (SCAL-334043 · [#1941](https://github.com/thoughtspot/agentspot/pull/1941))
+- **Full source usage-analytics and six-cell exporter** — expands usage-analytics source coverage and
+  adds the six-cell exporter. Backend analytics-export module (aggregate/batches/catalog/db/gcs/job/
+  queries/records/validation) + activity DAO + models; migrations add source views and activity
+  ledgers; k8s analytics-export-worker across cells.
+  (SCAL-334042 · [#1940](https://github.com/thoughtspot/agentspot/pull/1940))
+- **Dev usage-analytics aggregation export** — introduces the dev usage-analytics aggregation export
+  pipeline. Backend new `analytics_export` module + worker + config; migration adds source views; dev
+  analytics-export-worker overlay.
+  (SCAL-334040 · [#1937](https://github.com/thoughtspot/agentspot/pull/1937))
+
+### Internal / infra
+
+- New AgentSpot naming for edge/user-content ingress; old names keep serving until the cutover lands. ([#2089](https://github.com/thoughtspot/agentspot/pull/2089))
+- Add the `bharat-dev` personal dev namespace (overlay, infra tfvars, contract test). (SCAL-337116 · [#2080](https://github.com/thoughtspot/agentspot/pull/2080))
+- Pause Cloud Armor WAF enforcement and log edge requests. (SCAL-337303 · [#2090](https://github.com/thoughtspot/agentspot/pull/2090))
+- Fix the Cloud Armor method-enforcement regex that failed every edge Terraform apply. (SCAL-337183 · [#2085](https://github.com/thoughtspot/agentspot/pull/2085))
+- Docs: security assessment of public stock avatars. (SCAL-334935 · [#2056](https://github.com/thoughtspot/agentspot/pull/2056))
+- Enforce Cloud Armor WAF before rate limiting. (SCAL-334922 · [#2054](https://github.com/thoughtspot/agentspot/pull/2054))
+- Plan governed Cloud Deploy releases (design + implementation docs). (SCAL-334744 · [#1975](https://github.com/thoughtspot/agentspot/pull/1975))
+- Default the Anthropic prompt-cache TTL to 5 minutes. (SCAL-336765 · [#2069](https://github.com/thoughtspot/agentspot/pull/2069))
+- Re-apply preloaded org/agent/user memory on every model call. (SCAL-336761 · [#2068](https://github.com/thoughtspot/agentspot/pull/2068))
+- Add the dev analytics Snowpipe destination. (SCAL-334041 · [#1938](https://github.com/thoughtspot/agentspot/pull/1938))
+- Docs: deep-review playbook for large multi-layer PRs (review-pr skill). (SCAL-336068 · [#2040](https://github.com/thoughtspot/agentspot/pull/2040))
+- Add the skeptical AI code-review workflow and cross-surface parity guidance to AGENTS.md. (SCAL-336068 · [#2036](https://github.com/thoughtspot/agentspot/pull/2036))
+
+_2 additional trivial commits (ci/lockfile/test noise) were filtered from this range and are not itemized._
+
 ## 2026-09-07 — 24dea5c894cc..84ae399cacee
 
 Range: `24dea5c894cc..84ae399cacee` · 2026-09-07

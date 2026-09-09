@@ -1,5 +1,47 @@
 # AgentSpot Changelog
 
+## 2026-09-09 — beb5bd4f1952..95f72bb57539
+
+### Product changes
+
+- Add workflow run cancellation controls (SCAL-331494) · `4dc9b1eb7b73` · SCAL-331494 · [#2082](https://github.com/thoughtspot/agentspot/pull/2082)
+- Read the ThoughtSpot cluster identity from mixpanelConfig and drop the PII-bearing tenant_name (SCAL-336266) · `3fe261c4c5c5` · SCAL-336266, SCAL-324988 · [#2047](https://github.com/thoughtspot/agentspot/pull/2047)
+- Reuse AgentSpot conversations per participant in Slack channel threads (SCAL-336530) · `7773fb12b534` · SCAL-336530 · [#2050](https://github.com/thoughtspot/agentspot/pull/2050)
+- Standardize 'DO credits' capitalization across product and docs (SCAL-335032) · `02af40a1afc6` · SCAL-335032 · [#2077](https://github.com/thoughtspot/agentspot/pull/2077)
+- Reuse AgentSpot conversations in Slack direct-message threads (SCAL-332731) · `a7c067a3889a` · SCAL-332731 · [#1956](https://github.com/thoughtspot/agentspot/pull/1956)
+- fix(audit): trust resolved client addresses (SCAL-336357) · `fda3daf1352d` · SCAL-336357 · [#2063](https://github.com/thoughtspot/agentspot/pull/2063)
+- Hide internal runtime resource details in public APIs (SCAL-334921) · `1f3f21e02787` · SCAL-334921 · [#2064](https://github.com/thoughtspot/agentspot/pull/2064)
+- fix(thoughtspot): omit public model author identities SCAL-335533 · `ff3aba82184d` · SCAL-335533 · [#2062](https://github.com/thoughtspot/agentspot/pull/2062)
+- Require bounded recipient searches in sharing dialogs (SCAL-334920) · `4b1e5dae1a47` · SCAL-334920 · [#2061](https://github.com/thoughtspot/agentspot/pull/2061)
+- Keep memory creation non-destructive and fence recalled context (SCAL-335532) · `8387741895da` · SCAL-335532 · [#2060](https://github.com/thoughtspot/agentspot/pull/2060)
+- Bound and escape skill discovery metadata (SCAL-335531) · `d040f8a8b478` · SCAL-335531 · [#2059](https://github.com/thoughtspot/agentspot/pull/2059)
+- Enforce public agent tool selection while preserving sandbox defaults (SCAL-335530) · `bd5a13595b61` · SCAL-335530 · [#2057](https://github.com/thoughtspot/agentspot/pull/2057)
+- Reject unsafe skill ZIP paths before preview and upload (SCAL-334934) · `428a5192911e` · SCAL-334934 · [#2055](https://github.com/thoughtspot/agentspot/pull/2055)
+- chore(workflows): remove the Test Now button from the workflow editor (SCAL-336845) · `52b57bbb324b` · SCAL-336845 · [#2075](https://github.com/thoughtspot/agentspot/pull/2075)
+- Fix the dead back button when deep-linking into an app (SCAL-336335) · `6d155a4795b2` · SCAL-336335 · [#2066](https://github.com/thoughtspot/agentspot/pull/2066)
+- Send exact scope and topic filters to Vertex when listing memories (SCAL-336764) · `d1500b5cba5f` · SCAL-336764 · [#2071](https://github.com/thoughtspot/agentspot/pull/2071)
+- Raise default max agents per workflow to 50 (SCAL-336750) · `45fa99e15e79` · SCAL-336750 · [#2067](https://github.com/thoughtspot/agentspot/pull/2067)
+- Make workflow artifact fan-in durable across managed steps (SCAL-335405) · `1c25b80404e0` · SCAL-335405 · [#2065](https://github.com/thoughtspot/agentspot/pull/2065)
+- Add gated six-cell Snowpipe destinations and Deepakg E2E validation (SCAL-334043) · `65f4a4905dbd` · SCAL-334043, SCAL-9999999 · [#1941](https://github.com/thoughtspot/agentspot/pull/1941)
+- Add full source analytics and six-cell exporter (SCAL-334042) · `09b90d78c614` · SCAL-334042, SCAL-9999999 · [#1940](https://github.com/thoughtspot/agentspot/pull/1940)
+- Add dev usage analytics aggregation export (SCAL-334040) · `fb9b93cc7adf` · SCAL-334040, SCAL-9999999 · [#1937](https://github.com/thoughtspot/agentspot/pull/1937)
+- Keep large workflow outputs artifact-backed and guard Deepak-dev deploys (SCAL-335405) · `46eb965148d9` · SCAL-335405 · [#2048](https://github.com/thoughtspot/agentspot/pull/2048)
+
+### Internal / infra
+
+- feat:Add new naming for agentspot, old will keep serving unitl everything lands correctly · `95f72bb57539` · [#2089](https://github.com/thoughtspot/agentspot/pull/2089)
+- Add the bharat-dev personal dev namespace (SCAL-337116) · `d492cab7fdee` · SCAL-337116 · [#2080](https://github.com/thoughtspot/agentspot/pull/2080)
+- fix(edge): pause Cloud Armor WAF enforcement and log edge requests (SCAL-337303) · `770e96888ce9` · SCAL-337303 · [#2090](https://github.com/thoughtspot/agentspot/pull/2090)
+- Fix the Cloud Armor method-enforcement regex that fails every edge Terraform apply (SCAL-337183) · `4754e5ead9d0` · SCAL-337183 · [#2085](https://github.com/thoughtspot/agentspot/pull/2085)
+- docs(security): assess public stock avatars for SCAL-334935 · `82e28164d1dd` · SCAL-334935 · [#2056](https://github.com/thoughtspot/agentspot/pull/2056)
+- Enforce Cloud Armor WAF before rate limiting (SCAL-334922) · `8824588590a9` · SCAL-334922 · [#2054](https://github.com/thoughtspot/agentspot/pull/2054)
+- Plan governed Cloud Deploy releases (SCAL-334744) · `e811c19f9195` · SCAL-334744 · [#1975](https://github.com/thoughtspot/agentspot/pull/1975)
+- Default the Anthropic prompt-cache TTL to 5 minutes (SCAL-336765) · `ec5829f99fcd` · SCAL-336765 · [#2069](https://github.com/thoughtspot/agentspot/pull/2069)
+- Re-apply preloaded org/agent/user memory on every model call (SCAL-336761) · `dc69b069b3b7` · SCAL-336761 · [#2068](https://github.com/thoughtspot/agentspot/pull/2068)
+- Add dev analytics Snowpipe destination (SCAL-334041) · `97981237c080` · SCAL-334041, SCAL-9999999 · [#1938](https://github.com/thoughtspot/agentspot/pull/1938)
+- docs(review-pr): add deep-review playbook for large multi-layer PRs (SCAL-336068) · `39b66fee5ccd` · SCAL-336068 · [#2040](https://github.com/thoughtspot/agentspot/pull/2040)
+- Add skeptical AI code-review workflow and cross-surface parity guidance to AGENTS.md (SCAL-336068) · `ee6287835a01` · SCAL-336068 · [#2036](https://github.com/thoughtspot/agentspot/pull/2036)
+
 ## 2026-09-07 — 24dea5c894cc..84ae399cacee
 
 ### Product changes
