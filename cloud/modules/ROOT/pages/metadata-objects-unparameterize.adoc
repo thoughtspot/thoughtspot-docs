@@ -1,5 +1,5 @@
 = Unparameterize metadata objects
-:page-last_updated: 8/31/2026
+:page-last_updated: Sep, 10 2026
 :author: Mark
 :linkattrs:
 :experimental:
@@ -57,36 +57,56 @@ You have the *Can manage data* privilege or equivalent role.
 Unparameterization restores primary-org values for all selected objects, including sensitive fields such as passwords and secret keys. Ensure you have the correct primary-org values configured before proceeding.
 ====
 
-== Unparameterize a table
+== Unparameterizing tables
 
-Follow these steps to remove parameterization variables from one or more tables:
+You can unparameterize variables from single or multiple tables.
+
+=== Unparameterizing a single table
+
+To remove parameterization from a single table, do the following:
 
 . Navigate to the *Data workspace* tab.
-. Select the checkbox for the table(s) you want to unparameterize.
-// TODO: verify with engineering — Confirm exact navigation path and UI menu items
+. On the *Data objects* page, select the checkbox for the table you want to unparameterize.
 . Click *Manage parameters*.
-. In the *Unparameterize* window, review the fields that are currently parameterized. By default, all fields are selected. Only fields that are currently parameterized are shown.
 +
-The window shows the table mapping fields that are parameterized, such as:
+The *Manage parameters* window shows the mapping fields that are parameterized, such as:
 +
 * *Database name* — mapped to a variable
 * *Schema name* — mapped to a variable
 * *Table name* — mapped to a variable
 
-. (Optional) Clear the checkbox for any fields you do not want to unparameterize.
-. Click *Unparameterize*.
+. In the *Manage parameters* window, click *Edit*.
+. Click the *x* to the right of the fields you want to unparameterize.
+. Click *Save*.
 
-After a table is unparameterized, the selected table mapping fields are restored to their primary-org values, and all Orgs will use the same physical table.
+After a table is unparameterized, the selected fields are restored to their primary Org values, and all Orgs will use the same physical table.
 
 // SOURCE: scaligent blink-v2 unparameterise-modal.container.tsx, commit SCAL-330038
 
-== Unparameterize a connection
+=== Unparameterizing multiple tables
 
-Follow these steps to remove parameterization variables from one or more connections:
+To remove parameterization variables from multiple tables, do the following:
+
+. Navigate to the *Data workspace* tab.
+. On the *Data objects* page, select the checkbox for two or more tables you want to unparameterize.
+. Click *Unparameterize*.
+. In the *Unparameterize* window, review the table properties that are currently parameterized.
+. Select the checkbox for each field you want to unparameterize. (By default, all fields are selected.)
+. Click *Unparameterize*.
+
+After tables are unparameterized, their properties are restored to their primary Org values, and all Orgs will use the same physical tables.
+
+== Unparameterizing connections
+
+You can unparameterize variables from single or multiple connections.
+
+=== Unparameterizing a single connection
+
+To remove parameterization on a single connection, do the following:
 
 . Navigate to the *Data workspace* tab.
 . Click *Connections* in the left-hand navigation.
-. Select the checkbox for the connection(s) you want to unparameterize.
+. On the *Connections* page, select the checkbox for the connection you want to unparameterize.
 . Click *Manage parameters*.
 . In the *Manage parameters* window, review the connection properties that are currently parameterized.
 +
@@ -97,27 +117,24 @@ The window shows the connection properties that are mapped to variables, such as
 * *Database*
 * *Username*
 
-. Click the *x* for each property you want to unparameterize, or select *Remove all* to remove all parameterization properties from the connection.
+. Click the *x* to the right of the fields you want to unparameterize.
 . Click *Save*.
 
-After a connection is unparameterized, the connection properties are restored to their primary-org values, and all Orgs will use the same connection configuration.
-////
-== Bulk unparameterization
+After a connection is unparameterized, the connection properties are restored to their primary Org values, and all Orgs will use the same connection configuration.
 
-You can unparameterize multiple objects at once using the bulk unparameterization workflow.
+=== Unparameterizing multiple connections
+
+To remove parameterization variables from multiple connections, do the following:
 
 . Navigate to the *Data workspace* tab.
-. Select the tables or connections you want to unparameterize.
-. Click the *Bulk actions* menu and select *Unparameterize*.
-. In the *Unparameterize* modal, review the fields that are parameterized across the selected objects.
-. Select the fields you want to unparameterize for each object.
+. Click *Connections* in the left-hand navigation.
+. On the *Connections* page, select the checkbox for two or more connections you want to unparameterize.
 . Click *Unparameterize*.
-. Review the confirmation message, then click *Confirm* to proceed.
+. In the *Unparameterize* window, review the connection properties that are currently parameterized.
+. Select the checkbox for each field you want to unparameterize. (By default, all fields are selected.)
+. Click *Unparameterize*.
 
-// SOURCE: commit SCAL-318486 (Bulk unparameterize multiple objects)
-
-// SOURCE: commit SCAL-330038 (Restore Primary-org values in bulk unparameterize, including sensitive secret fields)
-////
+After connections are unparameterized, their properties are restored to their primary Org values, and all Orgs will use the same connection configurations.
 
 == Unparameterize using the REST API
 
@@ -143,7 +160,7 @@ If you cannot see the *Unparameterize* option in the UI, check the following:
 Unparameterization fails::
 If the unparameterization fails, check the following:
 
-* Ensure the primary-org values are valid. If the primary-org values for the table mapping or connection properties are invalid, the unparameterization may fail.
+* Ensure the primary Org values are valid. If the primary Org values for the table mapping or connection properties are invalid, the unparameterization may fail.
 * Check for dependent objects that may be blocking the unparameterization.
 * Review the error message for specific details about the failure.
 
