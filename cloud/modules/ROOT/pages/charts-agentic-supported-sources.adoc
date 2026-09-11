@@ -23,7 +23,6 @@ The charting engine reads the result data, classifies columns by semantic type, 
 |===
 | Source | Description | Typical use case
 | Code execution | Python-based code runs to analyze data | Forecasting, simulations, statistical modeling, custom calculations
-| SpotQL | SQL-based data queries executed by the agent | Direct SQL queries against connected data sources
 | MCP (Model Context Protocol) | Web search and external data retrieval | Comparing market data, retrieving public statistics, web-sourced analysis
 | AgentQL | Agent-generated data queries | Custom data analysis via agent-structured queries
 |===
@@ -63,68 +62,13 @@ The charting engine renders a line chart with:
 
 If the code execution produces only text output (for example, a textual summary or explanation without tabular data), no chart is generated.
 
-== SpotQL
-
-SpotQL is a SQL query interface that the agent can use to retrieve data directly from connected data sources.
-
-=== What data is produced
-
-SpotQL returns a standard tabular result set with typed columns.
-The charting engine classifies columns automatically:
-
-* Numeric columns → quantitative measures
-* Date/timestamp columns → time dimensions
-* Text columns → categories or dimensions
-
-=== Example
-
-.User asks:
-"Show me the top 10 products by revenue last quarter"
-
-.Result:
-SpotQL retrieves a table with:
-* `Product Name` (text)
-* `Revenue` (numeric)
-
-The charting engine renders a horizontal bar chart with products sorted by revenue.
-
-== MCP (Model Context Protocol)
-
-The MCP tool allows the agent to search the web and retrieve data from external sources.
-
-=== What data is produced
-
-MCP returns data from multiple web sources, often as a structured table.
-The charting engine can handle:
-
-* Single data series (one chart)
-* Multiple data series (multiple charts or a combined chart)
-
-=== Example
-
-.User asks:
-"Compare Nasdaq and Bitcoin prices"
-
-.Result:
-MCP retrieves data from multiple web sources.
-The charting engine renders two distinct charts:
-* A line chart for Nasdaq prices
-* A separate line chart for Bitcoin prices
-
-Each chart has its own appropriate axis and formatting.
-
-[NOTE]
-====
-When MCP returns data from multiple unrelated sources, the charting engine may render separate charts for clarity rather than combining them on a single axis.
-====
-
 == AgentQL
 
 AgentQL is the agent's structured query language for data retrieval.
 
 === What data is produced
 
-AgentQL produces tabular results similar to SpotQL.
+AgentQL produces tabular results.
 The charting engine processes these results using the same classification and rendering pipeline.
 
 === Example
