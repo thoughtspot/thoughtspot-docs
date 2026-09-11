@@ -106,6 +106,37 @@ To change the suggestion settings for a column, follow these steps:
 . Click *Save changes*.
 
 
+=== #When to use Secure suggestions#
+
+A model column requires *Secure suggestions* when **all** of the following are true:
+
+* The source table has an RLS rule applied to it, *or* the model column is sourced from a table joined to a table with an RLS rule.
+* The model column is indexed for type-ahead or Spotter value suggestions.
+* The column values must be filtered per user. A user must not see suggestion values from rows they are not permitted to query.
+
+If none of these conditions apply, enabling *Secure suggestions* on a model column adds `SECURE_SAMPLING` query load without any security benefit.
+
+.Example: When a JOIN makes Secure suggestions necessary
+[%collapsible]
+====
+Consider a model built from two Snowflake tables:
+
+* `ORDERS` - contains order details. An RLS rule restricts each user to their own region's orders.
+* `PRODUCTS` - a global lookup table of product names. No RLS rule is applied to `PRODUCTS`.
+
+The model joins `ORDERS` to `PRODUCTS`.
+
+*Scenario 1 - Secure suggestions needed:*
+A model column sourcing `PRODUCTS.product_name` is indexed for Spotter suggestions. Even though `PRODUCTS` itself has no RLS rule, the rows visible through the join are already scoped by the `ORDERS` RLS rule. Without *Secure suggestions*, Spotter could surface product names from orders the user cannot see. In this case, enable *Secure suggestions* on this model column.
+
+*Scenario 2 - Secure suggestions not needed:*
+A model column sourcing `PRODUCTS.product_category` is a global classification (for example, "Electronics", "Clothing"). Every user sees the same categories regardless of their RLS context. Enabling *Secure suggestions* here generates unnecessary `SECURE_SAMPLING` queries. Set this model column's Suggestion type to *Inherit table settings* or *Don't show suggestions* instead.
+
+NOTE: *Inherit table settings* inherits the suggestion security setting from the source table and applies it everywhere — not just in type-ahead or Knowledge cards.
+====
+
+If the volume of `SECURE_SAMPLING` queries is higher than expected, audit each model column configured with *Secure suggestions*. If the source table has no RLS rule and is not joined to a table with an RLS rule, set the model column's Suggestion type to *Inherit table settings* or *Don't show suggestions* to eliminate the unnecessary `SECURE_SAMPLING` load.
+
 ////
 [#secondary-warehouse]
 == #Secondary warehouse and secure suggestions#
