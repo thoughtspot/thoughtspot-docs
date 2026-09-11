@@ -1,0 +1,152 @@
+= Agentic charting examples
+:page-last_updated: Sep 8, 2026
+:linkattrs:
+:author: Mark
+:experimental:
+:page-aliases:
+:description: Examples of how agentic charting works with different data sources.
+:jira: SCAL-304279
+
+// Draft for SCAL-304278 / SCAL-304279
+// Target version: ThoughtSpot 26.8.0.cl+
+// Deployment: TS Cloud, On-Premises
+
+These end-to-end examples show how agentic charting works with different data sources, natural-language refinement, and interactive features.
+
+== Example 1: Forecasting with code execution
+
+=== Scenario
+
+You want to forecast sales for the next six months and visualize the forecast with confidence intervals.
+
+=== Steps
+
+. User asks:
++
+"Forecast sales for the next 6 months"
+
+. Spotter generates Python code to perform a time-series forecast.
+. The code executes and returns a table:
++
+[cols="1,1,1,1", options="header"]
+|===
+| Month | Forecasted Sales | Lower Bound | Upper Bound
+| 2024-07 | 1,250,000 | 1,100,000 | 1,400,000
+| 2024-08 | 1,320,000 | 1,150,000 | 1,490,000
+| 2024-09 | 1,410,000 | 1,220,000 | 1,600,000
+| 2024-10 | 1,380,000 | 1,180,000 | 1,580,000
+| 2024-11 | 1,450,000 | 1,250,000 | 1,650,000
+| 2024-12 | 1,520,000 | 1,300,000 | 1,740,000
+|===
+
+. The charting engine renders a line chart with:
+* A central line for the forecasted sales
+* A shaded confidence band between the lower and upper bounds
+* A time-series X-axis with monthly labels
+
+.Result:
+An interactive line chart showing the six-month forecast with a visual confidence interval.
+
+=== Key concepts demonstrated
+
+* xref:charts-agentic-supported-sources.adoc[Code execution] as a data source
+* Automatic detection of time-series data
+* Confidence interval visualization
+* xref:charts-agentic-progressive.adoc[Progressive charting] (base chart first, then styled)
+
+== Example 2: Web data with MCP
+
+=== Scenario
+
+You want to compare current Nasdaq and Bitcoin prices using web data.
+
+=== Steps
+
+. User asks:
++
+"Compare Nasdaq and Bitcoin prices"
+
+. Spotter uses the MCP tool to search the web and retrieve current market data.
+. Data is returned from multiple web sources.
+
+. The charting engine renders two distinct charts:
+* A line chart for Nasdaq prices with a financial-style Y-axis
+* A separate line chart for Bitcoin prices with a cryptocurrency-style Y-axis
+
+.Result:
+Two side-by-side interactive charts, each properly formatted for its data scale and type.
+
+=== Key concepts demonstrated
+
+* xref:charts-agentic-supported-sources.adoc[MCP] as a data source
+* Multiple unrelated data series rendered as separate charts
+* Automatic axis formatting appropriate to each data type
+
+== Example 3: Natural-language chart refinement
+
+=== Scenario
+
+You have a generated chart and want to refine its appearance using natural language.
+
+=== Steps
+
+. Initial request:
++
+"Show me last quarter's revenue by region"
+
+. Spotter generates a column chart.
+
+. User refines the chart:
++
+"Change this to a bar chart with different colors for each bar"
+
+. Result: The chart switches to a horizontal bar chart with a distinct color for each region.
+
+. User adds labels:
++
+"Add data labels"
+
+. Result: Numeric revenue values appear on each bar.
+
+. User adjusts the axis:
++
+"Change the Y-axis to show in thousands"
+
+. Result: The axis labels are reformatted (for example, `1,250,000` becomes `1,250`).
+
+=== Key concepts demonstrated
+
+* xref:charts-agentic-nl-editing.adoc[Natural-language chart editing]
+* Multiple sequential refinements
+* Chart type changes, color changes, data labels, and axis formatting
+
+== Example 4: Interactive features
+
+=== Scenario
+
+You want to explore a generated chart by toggling data series and inspecting values.
+
+=== Steps
+
+. User asks:
++
+"Show me monthly sales for the last year by product category"
+
+. A multi-series line chart is generated.
+
+. User interactions:
+* Hover over a data point in June to see exact values for all categories
+* Click the legend to toggle off the "Electronics" series and focus on "Apparel" and "Home Goods"
+* Zoom into the Q4 region to see details for October, November, and December
+
+=== Key concepts demonstrated
+
+* Hover tooltips with multi-series values
+* Legend toggle for filtering series
+* Pan and zoom for time-range exploration
+
+== Related topics
+
+* xref:charts-agentic.adoc[Charts for agentic answers overview]
+* xref:charts-agentic-supported-sources.adoc[Supported data sources]
+* xref:charts-agentic-nl-editing.adoc[Edit charts with natural language]

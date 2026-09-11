@@ -1,0 +1,101 @@
+= Agentic charts
+:page-last_updated: Sep 10, 2026
+:linkattrs:
+:author: Mark
+:experimental:
+:page-aliases:
+:description: Spotter automatically visualizes non-token answers with interactive charts.
+:jira: SCAL-304279
+
+// Draft for SCAL-304278 / SCAL-304279
+// Target version: ThoughtSpot 26.8.0.cl+
+// Deployment: TS Cloud, On-Premises
+// Design doc: https://docs.google.com/document/d/1ub5dP_cyt9rrH3-FqzSg89wuE0aNdK_sm3kHM5qdk5M/edit
+
+
+[.lead]
+Agentic charts are interactive visualizations that Spotter creates automatically for non-token answers.
+
+Spotter selects the chart type, encodings, and formatting based on the intent of your question and the structure of the result data, and you can refine the chart further using natural language.
+
+== What is a non-token answer?
+
+In Spotter, answers are produced through different tools:
+
+*Token-based answers (TML answers)*::
+Generated from ThoughtSpot's native data models, worksheets, and tables. These answers already support ThoughtSpot's standard charting.
+
+*Non-token answers*::
+Generated from analytical tools that run outside of ThoughtSpot's native data model. These include:
+* xref:charts-agentic-supported-sources.adoc[Code execution] (Python-based analysis)
+* xref:charts-agentic-supported-sources.adoc[MCP] (Model Context Protocol) tool output
+* xref:charts-agentic-supported-sources.adoc[AgentQL] and other agent-generated data
+
+Non-token answers previously returned data as plain tables or text. Agentic charting closes this gap by automatically rendering charts from the tabular output of these tools.
+
+[.bordered]
+image::non-token-answer.png[]
+
+== Key features
+
+=== Intent-aware chart generation
+
+The chart is composed from the *semantic meaning* of your question and the result data, not just raw column types.
+For example, when you ask for a *forecast for the next 6 months*, the charting engine understands this is a time-series forecast and renders an appropriate chart with forecasted values and confidence intervals.
+
+=== AI-powered chart recommendations and enrichment
+
+Charts are automatically enriched with:
+
+* Recommended chart types based on data structure
+* Appropriate encoding, formatting, and styling
+* Configured axes, legends, and color schemes
+* Data labels and annotations where relevant
+
+=== Natural-language chart editing
+
+After a chart is generated, you can refine it using natural-language follow-up commands.
+The system interprets your request and re-renders the chart accordingly.
+See xref:charts-agentic-nl-editing.adoc[Edit charts with natural language] for a full list of supported commands and examples.
+
+=== Progressive charting
+
+The charting system supports a progressive rendering experience.
+A base chart is rendered within 3–5 seconds, and enhancements (styling, annotations, formatting) are applied in the background and merged seamlessly once complete.
+See xref:charts-agentic-progressive.adoc[Progressive charting] for details.
+
+=== Interactive charts
+
+Generated charts are fully interactive:
+
+* Hover over data points to see detailed values and tooltips
+* Pan and zoom to explore data
+* Toggle data series on and off using the legend
+* Interact with annotations, data labels, and axis formatting
+
+== When to use agentic charts
+
+Use agentic charting when you want to:
+
+* Visualize data produced by Python code execution (for example, statistical forecasts, simulations, or custom calculations)
+* Chart results from external web data retrieved through MCP
+* Create charts from AgentQL or other agent-generated data
+
+Agentic charts are *not* used for standard token-based answers from ThoughtSpot worksheets and tables. Those continue to use ThoughtSpot's existing charting system.
+
+== Limitations and scope
+
+[IMPORTANT]
+====
+* Agentic charting applies to *non-token answers only*. Token-based answers (TML answers from ThoughtSpot data models) continue to use the existing charting system.
+* Available starting from *ThoughtSpot 26.8.0.cl*.
+* Supported deployment types: *TS Cloud*, *On-Premises*.
+====
+
+== Related topics
+
+* xref:charts-agentic-supported-sources.adoc[Supported data sources]
+* xref:charts-agentic-nl-editing.adoc[Edit agentic charts with natural language]
+* xref:charts-agentic-examples.adoc[Examples]
+* xref:chart-types.adoc[Chart types]
+* xref:spotter.adoc[Spotter]
