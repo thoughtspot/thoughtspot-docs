@@ -1,9 +1,9 @@
-= #IAMv2 migration guide#
+= Identity and Access Management V2
 :page-last_updated: September 15, 2026
 :author: Mary, Rani
 :linkattrs:
 :experimental:
-:description: Complete the pre-migration, migration, and post-migration steps to migrate your ThoughtSpot cluster to IAMv2.
+:description: Learn about IAMv2 and the pre-migration and post-migration steps required to migrate your ThoughtSpot cluster.
 :jira: SCAL-252573, SCAL-322500, SCAL-337900
 
 ThoughtSpot supports an industry-standard cloud authentication method through Okta. With this feature, ThoughtSpot powers its internal authentication with Okta, which is the industry-leading authentication platform. The change to Okta is internal and has no impact on customers. After ThoughtSpot enables this feature by default, all user authentication will automatically use the internal Okta service. This feature set involves several external improvements to authentication, including security enhancements.
@@ -33,95 +33,23 @@ Org and Group mapping per user from identity provider (IDP)|No|Yes|
 Multifactor authentication (MFA) support for local users |No|Yes
 |===
 
-#ThoughtSpot is migrating all customer clusters to IAMv2 in phases. This guide covers the steps you must complete before, during, and after the migration.#
+== Migrate to IAM V2
 
-== #Before migrating to IAMv2#
+To set up your ThoughtSpot environment for IAM V2, complete the following procedures.
 
-=== #Step 1: Allowlist required URLs#
+* xref:iamv2-pre-migration.adoc[Before migrating to IAM V2]: Audit your usernames and allowlist the required URLs before your cluster is migrated.
+* xref:iamv2-post-migration.adoc[After migrating to IAM V2]: Validate local and SAML account migration, and review the changes to expect after migration.
 
-#Users will be redirected to these URLs when they sign in. Complete this step only if you have IP or FQDN allowlisting configured for access to ThoughtSpot.#
+== Related information
 
-[NOTE]
-====
-#If these URLs are not allowlisted, users will be unable to access your ThoughtSpot instance after migration.#
-====
+Refer to the following articles for detailed information on new or changed ThoughtSpot functionality with IAMv2:
 
-. #Update your Network/Firewall approved URL settings allowlist to include the following URLs:#
-+
-* #Global: \https://identity.dataplane-public.thoughtspot.cloud#
-* #For US and Asia-Pacific (APAC): \https://identity.thoughtspotlogin.cloud and \https://identity.login-authenticate.cloud#
-* #For EU: \https://identity-eu.thoughtspotlogin.cloud and \https://identity-eu.login-authenticate.cloud#
+* xref:saml-okta.adoc[Managing authentication with SAML using IAMv2]: If the *SAML* section of the Admin Console is called *SAML integration*, your company is using IAMv2.
+* xref:oidc-iamv2.adoc[Managing authentication with OIDC using IAMv2]: If the *OIDC* section of the Admin Console is called *OIDC integration*, your company is using IAMv2.
+* xref:user-management-okta.adoc[Create, edit, or delete a user using IAMv2]: If the *Users* section of the Admin Console contains an *Account Activation* column, your company is using IAMv2.
+* xref:user-account-activation-okta.adoc[Account activation using IAMv2]: If your activation email subject line is "Activate your ThoughtSpot account," your company is using IAMv2.
 
-. #To verify accessibility, browse to the validation cluster: `validate-iamv2.thoughtspot.cloud`.#
-+
-#The ThoughtSpot Login page appears. Enter any credentials, which should result in a failure page. If you get this error, you have access to the necessary URLs.#
+Refer to the following articles for detailed information on ThoughtSpot functionality if you do *_NOT_* have IAM V2 enabled. Note that there is no account activation required for local users on clusters that do not have IAM V2 enabled.
 
-=== #Step 2: Notify local users of login changes#
-
-. #Notify your ThoughtSpot users that they will be prompted to re-enter their username and password after migration. Saved browser credentials cannot be used, as users are redirected to a different URL on sign-in.#
-+
-[NOTE]
-====
-#If users forget their username, they will not be able to use the link:https://docs.thoughtspot.com/cloud/latest/user-account-activation-okta#forgot-password[Forgot Password] workflow to reset their password.#
-====
-
-=== #Step 3: Validate SAML certificates#
-
-. #Ensure that your SAML certificates are valid and not expired. IAMv2 validates certificates as part of the secure authentication process.#
-
-== #Migration#
-
-#Migration is a seamless process with no disruption to user sign-ins. ThoughtSpot Support and SRE teams manage the migration during a planned maintenance window. A support ticket will be raised a few days before the migration window to notify you. SRE will monitor sign-ins and request your confirmation of successful migration via the support ticket.#
-
-== After migrating to IAMv2
-
-Depending on your configuration, complete the following steps after migrating to IAMv2.
-
-=== Customers with only local accounts
-
-After migration, local user accounts will be successfully migrated.
-
-. Notify your ThoughtSpot users that they will be prompted to enter their username and password after migration.
-+
-[NOTE]
-====
-If MFA is configured, users will be prompted to complete two-factor authentication.
-====
-+
-[NOTE]
-====
-If users forget their username that is required for the *Forgot Password* workflow, they will not be able to reset their password.
-====
-
-. To validate local account migration, create a user in ThoughtSpot and confirm that user creation is successful.
-
-=== Customers with SAML and local accounts
-
-After migration, authentication will continue as normal for customers with IAM configured. Complete the following steps to migrate to IAMv2.
-
-[NOTE]
-====
-Until you complete these steps, your SAML configuration is read-only, and you will be unable to edit this configuration.
-====
-
-. From the drop-down at the top right of the navigation bar, select the *Admin* tab.
-. Select *Authentication* > *SAML* from the left side navigation pane.
-+
-image::IAMv2-SAML.png[SAML IAMv2]
-. Request that your IdP administrator configure the following attributes for ThoughtSpot to the values displayed on this page:
-* Assertion Consumer Service URL (Single Sign-On URL on IdP)
-* Audience (EntityId on IdP)
-. Click *Submit* when the configuration on your IdP is complete.
-+
-This reloads the service. Your configured SAML URLs now appear on the page.
-. Optionally, add your ThoughtSpot cluster URL in your SAML application as the default relay URL.
-+
-[NOTE]
-====
-With IAMv2, the SAML response must include an email attribute. Ensure the email is sent via the SAML response and that the email attribute is mapped correctly in *Edit SAML connection* > *Map attributes*.
-====
-
-==== Validate your SAML account migration
-
-. Confirm that the SAML attributes mapped in ThoughtSpot after migration are identical to pre-migration attributes.
-. Sign in to ThoughtSpot as a SAML user and verify that authentication is successful.
+* xref:authentication-integration.adoc[]: If the *SAML* section of the Admin Console is called *Authentication: SAML*, your company is *_not_* using IAM V2.
+* xref:user-management.adoc[]: If the *Users* section of the Admin Console does *_not_* contain an *Account Activation* column, your company is *_not_* using IAM V2.

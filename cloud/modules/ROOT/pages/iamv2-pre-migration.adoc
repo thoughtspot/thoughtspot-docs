@@ -1,0 +1,65 @@
+= Before migrating to IAM V2
+:page-last_updated: September 15, 2026
+:author: Mary, Rani
+:linkattrs:
+:experimental:
+:description: Complete these pre-migration steps to prepare your ThoughtSpot cluster for migration to IAMv2.
+:jira: SCAL-252573, SCAL-322500, SCAL-337900
+
+To set up your ThoughtSpot environment for IAM V2, complete the following procedures before your cluster is migrated. For an overview of IAM V2, see xref:okta-iam.adoc[Identity and Access Management V2].
+
+NOTE: In keeping with IAM best practices, and due to user workflows for self-serve password resets, email addresses are mandatory for all users on TS cloud clusters for successful IAMv2 migration.
+
+== Usernames must not contain whitespace
+
+IAM V2 does not support SSO usernames that contain whitespace characters.
+When ThoughtSpot migrates your cluster to IAM V2, the internal Okta service validates all user identifiers.
+If a SSO `username` contains a space — for example, because the SAML identity provider (IdP) is configured to send a user's full name instead of their email address — IAM V2 rejects the login with the following error:
+
+----
+Transformed userId contained whitespace: '<username>'
+----
+
+This is a breaking change.
+SSO usernames that contain spaces work in the legacy IAM system but fail after migration to IAM V2.
+
+Audit all usernames in your ThoughtSpot environment and confirm that no username contains a space.
+Specifically, SAML SSO users whose IdP attribute mapping sends a display name or full name as the login identifier.
+
+To identify affected users, check the username values in *Admin* > *Users* and confirm that every username is in a valid format, such as an email address with no spaces. You can also modify user properties by sending a request to the `POST /api/rest/2.0/users/{user_identifier}/update` API.
+
+
+== Allowlist URLs
+
+Users will be redirected to these URLs when they sign in.
+
+NOTE: If these URLs are not allowlisted, users will be unable to access your ThoughtSpot instance after migration to IAM V2.
+
+. Update your Network/Firewall approved URL settings allowlist to include the following URLs:
+
+* For US and Asia-Pacific (APAC): https://identity.thoughtspotlogin.cloud
+* For EU: https://identity-eu.thoughtspotlogin.cloud
+* Global: https://identity.dataplane-public.thoughtspot.cloud
+
+. To verify accessibility to these URLs, browse to our validation cluster:  `validate-iamv2.thoughtspot.cloud`.
++
+The ThoughtSpot Login page appears.
+. Enter any credentials, which should result in a failure page. If you get this error, then you have access to the necessary URLs.
+
+////
+[NOTE]
+====
+We request that you update your Network/Firewall approved URL settings allowlist to include the following URLs:
+
+* For US: https://identity.thoughtspotlogin.cloud
+* For EU/APAC: https://identity-eu.thoughtspotlogin.cloud
+* Global: https://identity.dataplane-public.thoughtspot.cloud
+As a quick validation for accessibility to the global URL mentioned above, please try browsing our validate cluster:  `validate-iamv2.thoughtspot.cloud`. In the ThoughtSpot Login page that appears, please enter any credentials, which should result in a failure page. If you get this error, then you have access to the necessary URLs.
+====
+
+////
+
+== Related information
+
+* xref:okta-iam.adoc[Identity and Access Management V2]
+* xref:iamv2-post-migration.adoc[After migrating to IAM V2]
