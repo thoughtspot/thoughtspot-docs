@@ -293,10 +293,28 @@ NOTE: Because the copy is an unsaved draft, AgentSpot warns you before you navig
 | Re-enter the original conversation, make changes, and republish
 |===
 
+// auto-draft PR#1939 — REVIEW
+[#adding-actions-to-an-app]
+== Adding actions to an App
+
+Beyond reading and displaying data, an App can now include *actions* — viewer-triggered write-backs to a connected source, such as moving a Jira issue or posting an update to Slack. To add one, describe it in your prompt (for example, "add a button that marks this issue done in Jira").
+
+Actions behave differently from the rest of an App:
+
+* *Nothing runs on load* — an action stays dormant when the App opens. It runs only when a viewer triggers it from a control in the App, never automatically.
+* *The viewer confirms first* — each action is confirm-gated. The viewer is asked to confirm in a dialog before the write is sent.
+* *Affected tiles refresh* — after an action completes, the tiles whose data it changed reload automatically so the App reflects the new state.
+* *Reads stay read-only* — the queries that populate an App never write, send, or post; write-backs happen only through an action a viewer explicitly triggers.
+
+// TODO image: an action button in a published App and its confirmation dialog
+NOTE: The exact button label, placement, and confirmation wording are chosen when the App is built and vary by App. Confirm the action's target source and permissions before sharing the App widely.
+
 == Known limitations
 
 * *Planning with Spotter*: The App builder now uses Spotter to do model-scoping during planning, so it plans queries against your ThoughtSpot Models based on the context you provide. Extra context in the prompt still helps accuracy for ThoughtSpot model data: fiscal year rules (e.g., "our year runs August to July"), measure grain, entity aliases and so on.
 * *Data accuracy is a work in progress*: The agent occasionally builds against the wrong data shape, or ThoughtSpot returns 0s where you expect numbers. If you see it, tell the agent inline: "why is X blank? diagnose and fix it." It recovers within minutes. Please report cases so we can review and improve.
-* *Interactivity is frontend-only*: Filters, sorting, tabs, and drill-downs work at the browser level on already-fetched data. Filters that require re-querying the backend are not yet supported. The agent knows this and builds Apps accordingly.
-* *No actions from the app*: We don’t support external API calls yet, so we cannot use the App to perform actions like writing back to sources or sending messages on Slack.
+// auto-draft PR#1939 — REVIEW
+* *Interactivity favors the browser, with reactive re-fetch when needed*: Sorting, tabs, drill-downs, and local filters work at the browser level on already-fetched data. Controls that re-scope the server query — a filter on a large table, a period picker — are now supported as reactive re-fetches for a tile's filters, sort, and parameters. The agent prefers client-side interactivity and only re-queries the backend when a control genuinely needs fresh rows.
+// auto-draft PR#1939 — REVIEW
+* *Write-backs only through confirmed actions*: An App performs side effects only through a viewer-triggered, confirm-gated action (see <<adding-actions-to-an-app>>). There are no automatic or load-time writes, and the queries that display data stay read-only.
 
