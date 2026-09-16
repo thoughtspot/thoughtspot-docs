@@ -1,22 +1,78 @@
-answer_add_new_filter:: User adds a filter using the UI.
-answer_aggregated_worksheet_save:: User updates aggregated worksheet.
-answer_aggregated_worksheet:: User opens an existing saved aggregated worksheet, and makes changes to tokens in the search bar.
-answer_pinboard_context:: User opens an existing saved Liveboard, edits a context visualization, and makes a change to tokens in the search bar.
-answer_saved:: User opens an existing saved answer, and makes changes to tokens in the search bar.
-answer_unsaved:: User makes a change to tokens in the search bar.
-answer_upgrade:: Requests made for the purpose of upgrade.
-answer_view:: User opens an existing, saved answer.
-answer_viz_context_view:: User opens an existing saved Liveboard, and edits a context visualization.
-data_chart_config:: Request for new data after a chart configuration change.
-data_export:: Request to export data.
-data_show_underlying_row:: Request to show underlying data for one or more data rows.
-data_show_underlying_viz:: Request to show underlying data for one or more data rows.
-pinboard_ad_hoc:: User drills down in a Liveboard visualization.
-pinboard_admin_view:: User opens Admin Console while in Liveboards.
-pinboard_embed_view:: User opens an embedded Liveboard from a URL.
-pinboard_filter:: User adds, removes, or applies values to a Liveboard filter.
-pinboard_homepage_view:: On loading of the Homepage Liveboard.
-pinboard_insight_view:: User opens SpotIQ while in Liveboards.
-pinboard_tspublic_no_runtime_filter:: Request to TSPublic or Liveboard data, without runtime filters.
-pinboard_tspublic_runtime_filter:: Request to TSPublic on Liveboard data with runtime filters.
-pinboard_view:: User opens an existing saved Liveboard.
+[cols="50%,50%", options="noheader"]
+|===
+| `answer_add_new_filter` | User adds a filter using the UI.
+
+| `answer_aggregated_worksheet` | User opens an existing saved aggregated Model and makes changes to tokens in the search bar.
+
+| `answer_aggregated_worksheet_save` | User updates aggregated Model.
+
+| `answer_help_requested` | An Answer opened with help requested.
+
+| `answer_pinboard_context` | User opens an existing saved Liveboard, edits a context viz and makes a change to tokens in the search bar.
+
+| `answer_saved` | User opens an existing saved Answer and makes changes to tokens in the search bar.
+
+| `answer_unsaved` | User makes a change to tokens in the search bar.
+
+| `answer_upgrade` | Requests made for the sole purpose of upgrade.
+
+| `answer_view` | User opens an existing, saved Answer.
+
+| `answer_view_list` | A list of Views opened by the user.
+
+| `answer_view_save` | A View saved by the user.
+
+| `answer_viz_context_view` | User opens an existing saved Liveboard, edits a context viz.
+
+| `data_chart_config` | Request for new data being generated following a chart config change.
+
+| `data_export` | Request to export data. Recorded for Liveboard exports and Answer chart image (PNG) downloads. See xref:action-codes.adoc#tracking-answer-downloads[Tracking answer downloads].
+
+| `data_show_underlying_row` | Request to show underlying data for a data row(s).
+
+| `data_show_underlying_viz` | Request to show underlying data for a data viz.
+
+| `pinboard_ad_hoc` | User drills down in a Liveboard viz.
+
+| `pinboard_admin_view` | User opens admin tab Liveboards.
+
+| `pinboard_embed_view` | User opens embed Liveboard from a URL.
+
+| `pinboard_filter` | User adds, removes or applies values to a Liveboard filter.
+
+| `pinboard_homepage_view` | On loading of home page Liveboard.
+
+| `pinboard_insight_view` | User opens SpotIQ tab Liveboards.
+
+| `pinboard_learn_view` | On loading learn Liveboard.
+
+| `pinboard_print_filter` | The filter panel applied inside a print view.
+
+| `pinboard_print_view` | A Liveboard loaded by the PDF renderer. This action is recorded for a Liveboard PDF download or a scheduled PDF email. A Liveboard export therefore produces this row in addition to a `data_export` row.
+
+| `pinboard_tspublic_no_runtime_filter` | Request to TSPublic/pinboard data without runtime filters.
+
+| `pinboard_tspublic_runtime_filter` | Request to TSPublic/pinboarddata with runtime filters.
+
+| `pinboard_view` | User opens an existing saved Liveboard.
+
+| `tspublic_data_export` | Liveboard PDF export via the public REST API.
+
+| `view_answer_view` | A View opened by the user.
+|===
+
+[#tracking-answer-downloads]
+== Tracking Answer downloads
+
+The `data_export` user action is recorded for Liveboard exports and Answer chart image (PNG) downloads only.
+
+Table downloads from an Answer (CSV, XLSX, PDF) are not tagged with a `user_action` value and do not appear in the TS: BI Server worksheet when you filter by this action.
+
+To track Answer table downloads, filter the TS: BI Server worksheet on URL contains `data/answerbook/export`. Each row represents one Answer download and includes the user, timestamp, response size, and status.
+
+[NOTE]
+====
+The Answer name and GUID columns are empty for Answer download rows.
+====
+
+Security audit logs do not cover downloads or exports. They cover metadata, group, and role changes only.
