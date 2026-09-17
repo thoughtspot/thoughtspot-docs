@@ -1,5 +1,6 @@
 = Connect to Snowflake in Analyst Studio
 :product: Analyst Studio
+:connection: Snowflake
 :author: Naomi
 :page-last_updated: Sep 1, 2026
 :experimental:
@@ -47,6 +48,7 @@ Instead, convert all timestamps to one timezone for simplicity.
 +++<pre>+++SELECT current_timestamp() AS Date, + cast(convert_timezone('US/Eastern', Date) AS datetime) EST_date;+++</pre>+++
 |===
 
+
 === Connecting to {product} via password
 
 . Log in to {product} and follow the steps to xref:analyst-studio-connecting-analyst-studio-to-your-database.adoc#direct-connect[connect a database to {product}].
@@ -79,6 +81,98 @@ You will land on a page that displays your database schema.
 
 === Connecting to {product} via OAuth
 
+Choose this authentication version when you want to set a connection that requires a client secret. When you connect via OAuth, queries run as the signed-in user, so that user's Snowflake grants, masking policies, and row access policies apply.
+
+NOTE: OAuth is enforced at query execution time only - sharing stays the user's responsibility. If someone moves a Report out of their personal collection, or publishes a dataset to a Data Workspace, everyone with access sees it regardless of their own Snowflake grants.
+
+==== Before you begin
+
+To add a {connection} connection to ThoughtSpot using internal OAuth, you must set up the OAuth integration in {connection}.
+This requires a {connection} user account with ACCOUNTADMIN permission.
+
+IMPORTANT: Each ThoughtSpot instance requires a unique {connection} security integration.
+Each user in {connection} must have a default warehouse and default role.
+
+In your {connection} database, do the following:
+
+. In the Model view, enter the following commands, and select *Run*:
++
+----
+SHOW USERS;
+
+SHOW SECURITY INTEGRATIONS;
+
+CREATE OR REPLACE SECURITY INTEGRATION <enter a name for your security role>
+  TYPE = OAUTH
+  OAUTH_CLIENT = CUSTOM
+  OAUTH_CLIENT_TYPE = <enter a client type>
+  OAUTH_REDIRECT_URI = 'https://<public url of your ThoughtSpot instance>/callosum/v1/connection/generateTokens'
+  OAUTH_USE_SECONDARY_ROLES = IMPLICIT
+  ENABLED = TRUE
+  COMMENT = '<enter a description of your security profile>'
+----
+
+. At the bottom of what you entered in step 1, add an empty line, and then enter the following to describe your security integration:
++
+----
+DESCRIBE SECURITY INTEGRATION <enter description of your security integration>;
+
+SELECT SYSTEM$SHOW_OAUTH_CLIENT_SECRETS('<enter same description of your security integration as previous line');
+----
++
+Example of a full query:
++
+----
+SHOW USERS;
+
+SHOW SECURITY INTEGRATIONS;
+
+CREATE OR REPLACE SECURITY INTEGRATION OAUTH_CONFIG
+  TYPE = OAUTH
+  OAUTH_CLIENT = CUSTOM
+  OAUTH_CLIENT_TYPE = 'CONFIDENTIAL'
+  OAUTH_REDIRECT_URI = 'https://177.122.45.2/callosum/v1/connection/generateTokens'
+  OAUTH_USE_SECONDARY_ROLES = IMPLICIT
+  ENABLED = TRUE
+  COMMENT = 'Profile for passthrough'
+
+DESCRIBE SECURITY INTEGRATION OAUTH_CONFIG;
+
+SELECT SYSTEM$SHOW_OAUTH_CLIENT_SECRETS('OAUTH_CONFIG');
+----
+
+. Select the *Run* button to run the full query.
++
+The Details window appears displaying a JSON object.
+
+. Copy the JSON object and select *Done* to close the window.
+. Paste the contents into a text editor.
++
+Example:
++
+----
+{"OAUTH_CLIENT_SECRET_2":"KqKBu0xOxPtmk+RKvNP0+eIAMlFxMsu8rRh6s5q1qLY",
+"OAUTH_CLIENT_SECRET":"KdKBb0aOxPzml+RJvMP1/eIEMlFxM/su6rPh2wLZ",
+"OAUTH_CLIENT_ID":"aOxPzmlRJvCP5eIUMlFxMbu6rJh7mTO="}
+----
+
+. For OAUTH_CLIENT_ID, copy the information between quotes after the colon (:).
++
+Example: `aOxPzmlRJvCP5eIUMlFxMbu6rJh7mTO=`
++
+NOTE: Make sure you include the equals sign (=), if it exists.
+
+. In the {connection} connection details page in ThoughtSpot, paste the OAuth client ID in the *OAuth Client ID* field.
+. For OAUTH_CLIENT_SECRET, copy the information between quotes after the colon (:).
++
+Example: `KdKBb0aOxPzml+RJvMP1/eIEMlFxM/su6rPh2wLZ`
+
+. In the {connection} connection details page in ThoughtSpot, paste the OAuth client secret in the *OAuth Client Secret* field.
++
+NOTE: Once a connection is created the token associated with the user login credentials for the connection is stored in ThoughtSpot for 90 days.
+
+==== Connect
+
 . Log in to {product} and follow the steps to xref:analyst-studio-connecting-analyst-studio-to-your-database.adoc#direct-connect[connect a database to {product}].
 
 . Select *Snowflake* from the list of databases.
@@ -92,20 +186,22 @@ You will be redirected to Snowflake to authorize access.
 
 === Connecting to {product} via OAuth with PKCE
 
+Choose this authentication type when you want to use a public client.
+
 . Log in to {product} and follow the steps to xref:analyst-studio-connecting-analyst-studio-to-your-database.adoc#direct-connect[connect a database to {product}].
 
 . Select *Snowflake* from the list of databases.
 
 . Select Authentication method: *OAuth with PKCE* in the {product} connection form.
 
-. Enter the Display name, Description (optional), Account URL/Host, Warehouse, Database name, Role (optional), Snowflake Account Identifier, OAuth Client ID, OAuth Client Secret, and Preferred JDBC Driver. We recommend selecting Snowflake version 3.26.0 for JDBC Driver, but you can select any version from the dropdown.
+. Enter the Display name, Description (optional), Account URL/Host, Warehouse, Database name, Role (optional), Snowflake Account Identifier, OAuth Client ID, and Preferred JDBC Driver. We recommend selecting Snowflake version 3.26.0 for JDBC Driver, but you can select any version from the dropdown.
 
 . Click *Connect*.
 You will be redirected to Snowflake to authorize access.
 
 ==== Re-authentication
 
-You must periodically re-authenticate connections to Snowflake made via OAuth with PKCE. Analyst Studio surfaces an error when you try to access a connection that requires re-authentication.
+You must periodically re-authenticate connections to Snowflake made via OAuth with PKCE. Analyst Studio surfaces a prompt to authenticate when you try to access a connection that requires re-authentication.
 
 To re-authenticate a connection:
 
@@ -119,7 +215,7 @@ image::report-select-connection.png[Select a connection]
 [.bordered]
 image::connect-your-snowflake-account.png[Connect your Snowflake account]
 
-. You see a sign-in page for Snowflake. Enter your username and password, or select *Sign in using Okta SSO*.
+. You see a sign-in page for Snowflake. Enter your username and password, or select *Sign in using SSO*.
 +
 [.bordered]
 image::snowflake-reauth.png[Reauthentication page]
