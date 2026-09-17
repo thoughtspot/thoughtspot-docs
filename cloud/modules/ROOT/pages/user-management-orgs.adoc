@@ -38,6 +38,11 @@ Note that all users automatically belong to the group *All*.
 
 To create a new user and assign that user to groups or Orgs, follow these steps:
 
+[IMPORTANT]
+====
+#The *All Orgs > User management > Users* section of the Admin console shows all users across all Orgs on the cluster. A user appearing in this view does not mean they belong to a specific Org. To confirm whether a user belongs to a specific Org, navigate to that Org and check *Admin > User management > Users* from within that Org's context.#
+====
+
 . Ensure that you are in the correct Org. If you are a cluster administrator, you can manage all users in all Orgs from the Primary Org. If you are an Org administrator, you must navigate to the specific Org the users you must manage are in. Use the Org Switcher to the left of the help menu in the top navigation bar.
 
 . Navigate to the Admin Console by selecting the *Admin* tab from the top navigation bar.
@@ -115,7 +120,14 @@ As an administrator, you can edit a user account, and change the user's groups o
 You can also help users by resetting their password, and evaluating their onboarding experience to ensure they receive the best possible introduction to relevant information in ThoughtSpot.
 
 To edit an existing user, follow these steps:
+[IMPORTANT]
+====
+#If your cluster uses SSO with Org sync enabled ThoughtSpot re-derives each user's Org membership from the identity provider (IdP) on every login. Any manual Org assignment made in the Admin Console or through the REST API may be overwritten at the user's next SSO login if the IdP claim does not include that Org.#
 
+#If a user's Org assignment disappears after their next login, check the IdP claim configuration for that user rather than re-adding them manually in ThoughtSpot. For durable Org assignments with SSO org-sync active, the Org must be reflected in the IdP claim. Contact your IdP administrator to update the claim.#
+
+#For more information, see xref:saml-okta.adoc#per-org-saml-isolation[Org isolation for per-org SAML authentication].#
+====
 . Ensure that you are in the correct Org. If you are a cluster administrator, you can manage all users in all Orgs from the Primary Org. If you are an Org administrator, you must navigate to the specific Org the users you must manage are in. Use the Org Switcher to the left of the help menu in the top navigation bar.
 
 . Navigate to the Admin Console by selecting the *Admin* tab from the top navigation bar.
@@ -242,6 +254,43 @@ If you don't immediately see the username, try searching for it.
 . In the *Add to org* interface, open the dropdown menu.
 . Select an Org, or use the search bar to find an Org and select it.
 . Select *Save*.
+
+[#troubleshoot-user-orgs]
+== #Troubleshoot user visibility in Orgs#
+
+Use the following guidance if a user appears to be missing from an Org or is unexpectedly visible or hidden.
+
+User is not visible in a specific Org's Admin > Users page::
+
+If a user can log in successfully but does not appear in a specific Org's *Admin > Users* page, follow these steps:
+
+. *Check the Org context.* Make sure you are viewing the correct Org. Navigate to that Org using the Org switcher, then open *Admin > Users*. The *All orgs > Users* view shows all users across all Orgs and does not confirm Org membership.
+. *Check whether the user is assigned to the Org.* If the user is visible in *All orgs > Users* but not in the specific Org's *Admin > Users*, the user is not a member of that Org. Add the user to the Org using the steps in <<add-user,Create a user in ThoughtSpot>>.
+. *Check for SSO org-sync.* If the user was previously assigned to the Org but disappeared after a login, SSO org-sync may have overwritten the assignment. See <<edit-user,Edit an existing user>> for details on how SSO org-sync affects Org membership.
+
+Cluster admin account is not visible in a non-Primary Org::
+
+ThoughtSpot shows only the cluster admin account used to log in to the current session when switching between Orgs. Other cluster admin accounts are not shown in non-Primary Orgs.
+
+To see a specific cluster admin account in a non-Primary Org:
+
+. Log out of the current session.
+. Log in with the cluster admin account you want to view.
+. Switch to the relevant Org using the Org switcher.
+
+For more information, see xref:orgs-overview.adoc#admin-visibility-orgs[Cluster admin account visibility across Orgs].
+
+User disappears from an Org after logging in with SSO::
+
+If SSO org-sync is enabled, ThoughtSpot updates each user's Org membership from the IdP on every login. If an Org assignment is missing from the IdP claim, ThoughtSpot removes it on the next login.
+
+To resolve this:
+
+. Ask your IdP administrator to add the relevant Org to the user's IdP claim.
+. Verify the claim is correctly mapped in the ThoughtSpot SAML or OIDC configuration.
+. Once the IdP claim is updated, have the user log in again to trigger the sync.
+
+NOTE: Re-adding the user manually in ThoughtSpot without fixing the IdP claim is not a durable fix. The assignment will be overwritten again on the next SSO login.
 
 '''
 > **Related information**

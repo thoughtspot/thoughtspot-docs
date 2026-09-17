@@ -1,9 +1,10 @@
 = Identity and Access Management (IAMv2)
-:page-last_updated: September 15, 2026
+:page-last_updated: September 17, 2026
+:page-aliases: iamv2-pre-migration.adoc
 :author: Mary, Rani
 :linkattrs:
 :experimental:
-:description: Learn about IAMv2 and the pre-migration and post-migration steps required to migrate your ThoughtSpot cluster.
+:description: Learn about IAMv2 and complete the pre-migration steps required to prepare your ThoughtSpot cluster for migration.
 :jira: SCAL-252573, SCAL-322500, SCAL-337900
 
 ThoughtSpot supports an industry-standard cloud authentication method through Okta. With this feature, ThoughtSpot powers its internal authentication with Okta, which is the industry-leading authentication platform. The change to Okta is internal and has no impact on customers. After ThoughtSpot enables this feature by default, all user authentication will automatically use the internal Okta service. This feature set involves several external improvements to authentication, including security enhancements.
@@ -35,15 +36,63 @@ Multifactor authentication (MFA) support for local users |No|Yes
 
 == Migrate to IAMv2
 
-To set up your ThoughtSpot environment for IAMv2, complete the following procedures.
+To set up your ThoughtSpot environment for IAMv2, complete the following procedures:
 
-* xref:iamv2-pre-migration.adoc[Before migrating to IAMv2]: Audit your usernames and allowlist the required URLs before your cluster is migrated.
-* xref:iamv2-post-migration.adoc[After migrating to IAMv2]: Validate local and SAML account migration, and review the changes to expect after migration.
+. <<before-migrating,Before your cluster is migrated>>, audit your usernames and allowlist the required URLs.
+. xref:iamv2-post-migration.adoc[After your cluster is migrated], validate local and SAML account migration, and review the changes to expect after migration.
+
+[#before-migrating]
+== Before migrating to IAMv2
+
+Complete the following procedures before your cluster is migrated to IAMv2.
+
+NOTE: In keeping with IAM best practices, and due to user workflows for self-serve password resets, email addresses are mandatory for all users on TS cloud clusters for successful IAMv2 migration.
+
+=== Usernames must not contain whitespace
+
+IAMv2 does not support SSO usernames that contain whitespace characters.
+When ThoughtSpot migrates your cluster to IAMv2, the internal Okta service validates all user identifiers.
+If a SSO `username` contains a space — for example, because the SAML identity provider (IdP) is configured to send a user's full name instead of their email address — IAMv2 rejects the login with the following error:
+
+----
+Transformed userId contained whitespace: '<username>'
+----
+
+This is a breaking change.
+SSO usernames that contain spaces work in the legacy IAM system but fail after migration to IAMv2.
+
+Audit all usernames in your ThoughtSpot environment and confirm that no username contains a space.
+Specifically, SAML SSO users whose IdP attribute mapping sends a display name or full name as the login identifier.
+
+To identify affected users, check the username values in *Admin* > *Users* and confirm that every username is in a valid format, such as an email address with no spaces. You can also modify user properties by sending a request to the `POST /api/rest/2.0/users/{user_identifier}/update` API.
+
+
+=== Allowlist URLs
+
+Users will be redirected to these URLs when they sign in.
+
+NOTE: If these URLs are not allowlisted, users will be unable to access your ThoughtSpot instance after migration to IAMv2.
+
+. Update your Network/Firewall approved URL settings allowlist to include the following URLs:
+
+* For US and Asia-Pacific (APAC): https://identity.thoughtspotlogin.cloud
+* For EU: https://identity-eu.thoughtspotlogin.cloud
+* Global: https://identity.dataplane-public.thoughtspot.cloud
+
+. To verify accessibility to these URLs, browse to our validation cluster:  `validate-iamv2.thoughtspot.cloud`.
++
+The ThoughtSpot Login page appears.
+. Enter any credentials, which should result in a failure page. If you get this error, then you have access to the necessary URLs.
+
+== After migrating to IAMv2
+
+After your cluster is migrated, validate your local and SAML account migration and review the changes to expect. For the full procedure, see xref:iamv2-post-migration.adoc[After migrating to IAMv2].
 
 == Related information
 
 Refer to the following articles for detailed information on new or changed ThoughtSpot functionality with IAMv2:
 
+* xref:iamv2-post-migration.adoc[After migrating to IAMv2]: Validate local and SAML account migration, and review the changes to expect after migration.
 * xref:saml-okta.adoc[Managing authentication with SAML using IAMv2]: If the *SAML* section of the Admin Console is called *SAML integration*, your company is using IAMv2.
 * xref:oidc-iamv2.adoc[Managing authentication with OIDC using IAMv2]: If the *OIDC* section of the Admin Console is called *OIDC integration*, your company is using IAMv2.
 * xref:user-management-okta.adoc[Create, edit, or delete a user using IAMv2]: If the *Users* section of the Admin Console contains an *Account Activation* column, your company is using IAMv2.
