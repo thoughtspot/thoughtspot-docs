@@ -77,10 +77,10 @@ Add the `aggregated_models` key to your primary Model's `.model.tml` file. Each 
 [source,yaml]
 ----
 aggregated_models:
-  - id: <model_id>
-    date_aggregation_info:
-      - column_id: <date_column_id>
-        bucket: <BUCKET_LEVEL>
+- id: <model_id>
+  date_aggregation_info:
+  - column_id: <date_column_id>
+    bucket: <BUCKET_LEVEL>
 ----
 
 ==== Properties:
@@ -112,16 +112,107 @@ The following TML snippet defines three aggregate Models. One optimised for mont
 
 [source,yaml]
 ----
-aggregated_models:
-  - id: Sales Monthly Aggregate
+guid: 27c467f8-8442-4fb4-b11d-257d17ba3004
+obj_id: DemoWriteback-27c467f8
+model:
+  name: Demo Writeback
+  model_tables:
+  - name: SALES_DEMO
+    obj_id: SALES_DEMO-5c29b1e4
+  formulas:
+  - id: formula_Total Cost
+    name: Total Cost
+    expr: sum ( [SALES_DEMO::COST] )
+  columns:
+  - name: Cost
+    column_id: SALES_DEMO::COST
+    properties:
+      column_type: MEASURE
+      aggregation: SUM
+      index_type: DONT_INDEX
+  - name: Total Cost
+    formula_id: formula_Total Cost
+    properties:
+      column_type: MEASURE
+      aggregation: SUM
+      index_type: DONT_INDEX
+  - name: Customer Name
+    column_id: SALES_DEMO::CUSTOMER_NAME
+    properties:
+      column_type: ATTRIBUTE
+      index_type: DONT_INDEX
+  - name: Discount Amount
+    column_id: SALES_DEMO::DISCOUNT_AMOUNT
+    properties:
+      column_type: MEASURE
+      aggregation: SUM
+      index_type: DONT_INDEX
+  - name: Industry
+    column_id: SALES_DEMO::INDUSTRY
+    properties:
+      column_type: ATTRIBUTE
+      index_type: DONT_INDEX
+  - name: Order Date
+    column_id: SALES_DEMO::ORDER_DATE
+    properties:
+      column_type: ATTRIBUTE
+      index_type: DONT_INDEX
+  - name: Product Category
+    column_id: SALES_DEMO::PRODUCT_CATEGORY
+    properties:
+      column_type: ATTRIBUTE
+      index_type: DONT_INDEX
+  - name: Profit
+    column_id: SALES_DEMO::PROFIT
+    properties:
+      column_type: MEASURE
+      aggregation: SUM
+      index_type: DONT_INDEX
+  - name: Quantity Sold
+    column_id: SALES_DEMO::QUANTITY_SOLD
+    properties:
+      column_type: MEASURE
+      aggregation: SUM
+      index_type: DONT_INDEX
+  - name: Region
+    column_id: SALES_DEMO::REGION
+    properties:
+      column_type: ATTRIBUTE
+      index_type: DONT_INDEX
+  - name: Revenue
+    column_id: SALES_DEMO::REVENUE
+    properties:
+      column_type: MEASURE
+      aggregation: SUM
+      index_type: DONT_INDEX
+  - name: Sales Rep
+    column_id: SALES_DEMO::SALES_REP
+    properties:
+      column_type: ATTRIBUTE
+      index_type: DONT_INDEX
+  - name: Ship Date
+    column_id: SALES_DEMO::SHIP_DATE
+    properties:
+      column_type: ATTRIBUTE
+      index_type: DONT_INDEX
+  properties:
+    is_bypass_rls: false
+    join_progressive: true
+    spotter_config:
+      is_spotter_enabled: true
+  aggregated_models:
+  - id: SALES_DEMO_Yearly
     date_aggregation_info:
-      - column_id: order_date
-        bucket: MONTHLY
-  - id: Sales Yearly Aggregate
+    - column_id: Order Date
+      bucket: YEARLY
+  - id: SALES_DEMO_Monthly
     date_aggregation_info:
-      - column_id: order_date
-        bucket: YEARLY
-  - id: Sales Company Aggregate
+    - column_id: Order Date
+      bucket: MONTHLY
+  - id: SALES_DEMO_Weekly
+    date_aggregation_info:
+    - column_id: Order Date
+      bucket: WEEKLY
 ----
 
 *How ThoughtSpot selects the Model at query time:*
@@ -168,7 +259,7 @@ NOTE: Data latency must be considered when using the cache layer. Cached data sh
 *** Row-level security (RLS): Apply the same RLS rules to prevent unauthorised data access.
 *** Column-level security (CLS): Apply the same CLS rules to restrict sensitive column visibility.
 
-* This feature doesn't support *VS* keywords. For example, a search of “current year vs last year” will only resolve to the base model.
+//* This feature doesn't support *VS* keywords. For example, a search of “current year vs last year” will only resolve to the base model.
 
 
 == Related resources
