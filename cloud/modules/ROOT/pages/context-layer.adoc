@@ -1,0 +1,345 @@
+= Context Layer
+:page-last_updated: Sep 17, 2026
+:linkattrs:
+:experimental:
+:description: Learn about the ThoughtSpot context layer, which organizes everything an AI agent needs to know to deliver accurate, governed analytics answers.
+
+[.lead]
+The context layer is a shared knowledge system that sits between everything your organization knows and every answer a ThoughtSpot AI agent delivers.
+It collects, structures, and governs the institutional knowledge that makes the difference between a generic AI response and a precise, business-aware answer.
+
+[NOTE]
+====
+Spotter memory is part of the context layer. The context layer is the broader system that encompasses memory alongside learning, orchestration, lifecycle management, security, and governance.
+====
+
+== Overview
+
+A great data analyst doesn't just know SQL. They know the data model, understand the business, remember how metrics are defined, know how the audience wants to see results, and personalize their work for each stakeholder. The context layer codifies that same knowledge and makes it available to the AI agent on every question.
+
+The context layer works as a pipeline:
+
+. *Sources* feed knowledge into the system.
+. A *learning system* indexes, extracts, or distills context from each source.
+. *Context orchestration* structures and files every piece of knowledge so it can be found, ranked, and maintained.
+. The *context layer store* holds typed, scoped, and stamped knowledge.
+. *Lifecycle management* keeps the layer current as sources change and usage patterns evolve.
+. *RAG (retrieval-augmented generation)* fetches, ranks, and assembles the right context for each question.
+. *Security* filters what reaches the agent based on user permissions.
+. *Governance* provides transparency, audit trails, and human control.
+
+Every answer the agent gives carries a receipt of exactly what context went in, so you can trace, audit, and refine the system over time.
+
+== Sources
+
+The context layer learns from four categories of input. Each source flows through the same learning pipeline regardless of format or origin.
+
+=== Maintained context
+
+Maintained context comes from systems that someone in your organization already owns and curates.
+
+[width="100%", cols="1,2", options="header"]
+|===
+| Source | Description
+
+| Data catalogs
+| Business glossaries and catalogs from systems such as Atlan or Collibra. Definitions are adopted directly, not re-learned.
+
+| Semantic views
+| Semantic models defined in your data platform (for example, Snowflake, dbt, or Databricks) including metrics, entities, and join logic.
+
+| External context layers
+| Context graphs or ontologies your organization already maintains, such as Databricks Ontology. ThoughtSpot consumes these rather than replacing them.
+
+| User and profile systems
+| Identity and role information from your HRIS, CRM, or directory. These provide stable profile facts such as team, region, and territory.
+
+| Documents and artifacts
+| Documents that capture business definitions, processes, and institutional knowledge.
+|===
+
+=== Built artifacts
+
+Built artifacts are analytics objects that encode business decisions through their construction.
+
+[width="100%", cols="1,2", options="header"]
+|===
+| Source | Description
+
+| Liveboards and answers
+| Every saved formula and filter encodes a definition that someone stood behind.
+
+| Alerts and KPIs
+| Thresholds and monitors represent business rules: what matters, and when it matters.
+
+| Prior BI estate
+| Workbooks and dashboards from previous BI tools such as Tableau or Looker. These are rich in embedded definitions and can be migrated into ThoughtSpot to feed the context layer.
+|===
+
+=== Interactions
+
+Interactions are traces of how people use data in practice.
+
+[width="100%", cols="1,2", options="header"]
+|===
+| Source | Description
+
+| Conversations
+| What people ask the agents, how they rephrase questions, and what answers they accept.
+
+| Query logs
+| How data has actually been queried in the warehouse: the real joins, filters, and metric expressions in daily use.
+
+| Product interactions
+| Clicks, drill-downs, and other product usage patterns that reveal how people work with data.
+|===
+
+=== Ambient surfaces
+
+Ambient surfaces are unstructured, continuously growing sources of organizational knowledge.
+
+[width="100%", cols="1,2", options="header"]
+|===
+| Source | Description
+
+| Messaging
+| Discussions in Slack or Microsoft Teams about business processes, events, and decisions.
+
+| Wikis and docs
+| Living documentation in Confluence, SharePoint, or similar platforms.
+
+| File stores
+| Files in Google Drive or similar systems. These are indexed where they live and fetched through the source, never copied in bulk.
+
+| Work systems
+| Tickets, comments, and status updates from Jira, ServiceNow, or similar tools. Each source keeps its own permissions, honored at fetch time.
+|===
+
+[NOTE]
+====
+A transport protocol is not a source. For example, MCP is how Slack content arrives, not what it is. Every source flows through the same learning pipeline.
+====
+
+== Learning
+
+The learning system determines how the context layer absorbs knowledge from each source. It operates in three modes:
+
+Index::
+The system saves a pointer to the source and fetches the content at answer time. Nothing is copied.
++
+_Example: Point to a returns policy page in Confluence. The page is fetched when a question needs it._
+
+Extract::
+The system lifts definitions that are already explicit in a source.
++
+_Example: Business terms and their meanings, extracted from a glossary document._
+
+Distill::
+The system infers context from how artifacts are built and used.
++
+_Example: A Liveboard's formulas and filters are distilled into metric definitions and default analysis rules._
+
+The effectiveness of the learning system depends on two factors:
+
+* *Coverage*: How much of each source is examined. For a Liveboard, this might include titles, formulas, charts, filters, and drill paths.
+* *Efficiency*: How well patterns are recognized. Forty similar filters can become one organization-wide rule when the pattern is identified.
+
+
+== Context orchestration
+
+Context orchestration is the process that turns raw learnings into structured, findable context. When a new piece of knowledge arrives, the orchestrator makes four decisions:
+
+[cols="1,2,2", options="header"]
+|===
+| Step | Decision | Example
+
+| Allocate
+| Which part of the context layer the knowledge belongs in.
+| A revenue definition is filed as a metric definition.
+
+| Scope
+| The reach of the knowledge: organization, group, data model, or user.
+| The definition applies to the Sales data model.
+
+| Reconcile
+| Whether to create a new entry, merge with an existing one, or flag a conflict.
+| The new ARR definition is merged with the existing one.
+
+| Stamp
+| Attach the source, timestamp, and authority level.
+| Source: Liveboard `54be…8f`, learned on 2026-09-08, authority: medium (rises with usage).
+|===
+
+Structured context is what makes the rest of the system work. Typed, scoped, and stamped context entries are what the RAG layer can rank, the lifecycle system can maintain, and the governance system can audit.
+
+== What the context layer stores
+
+The context layer organizes knowledge into five pillars. Each pillar represents a domain of expertise that a knowledgeable analyst brings to their work.
+
+=== Data model understanding
+
+Represents what a data engineer knows about the data: tables, columns, join paths, grain, aggregation rules, units, freshness, synonyms, and lineage.
+
+_Example: "Revenue" maps to `amount_net` on `fct_orders`, one row per order line, in USD._
+
+=== Use case understanding
+
+Represents what a domain expert knows about the business context: what the company does, what industry it operates in, and what purpose this particular agent serves.
+
+_Example: Mid-market SaaS company. This agent serves the renewals team._
+
+=== Business logic and analysis
+
+Represents what a senior analyst knows about reaching correct answers: metric definitions, analysis rules, defaults, exclusions, analysis workflows, and routing to knowledge sources.
+
+_Example: ARR excludes services. Pipeline questions should use the Sales data model._
+
+=== Reporting preferences
+
+Represents how a presenter would format the output: chart types, axes, colors, output format (table or narrative), length, tone, and follow-up actions.
+
+_Example: Use bar charts over pie charts. Two-line summary. Post to `#revenue` as a PDF._
+
+=== User context
+
+Represents what a personal assistant knows about each individual: role, region, locale, goals, personal preferences, and conversation history.
+
+_Example: Priya is the EMEA Customer Success lead. Assume EMEA region. She prefers tables._
+
+Each pillar can hold context at the organization, group, or user scope. A metric definition can apply across the entire organization, a reporting preference can apply to a specific team, and a chart format preference can apply to an individual user.
+
+
+== Lifecycle management
+
+The context layer stays current through two types of maintenance.
+
+=== Source-triggered updates
+
+When an external source changes, the context layer responds automatically:
+
+* *Source added*: New knowledge is learned from the source.
+* *Source updated*: Everything derived from the source is updated to match.
+* *Source removed*: Derived knowledge is retired, never silently kept.
+
+_Example: Rename a metric in dbt, and the context layer's definition follows the change._
+
+=== Internal self-maintenance
+
+Even when nothing changes outside, the context layer continuously refines itself:
+
+* *Deduplication*: Copies of the same fact merge into one.
+* *Conflict resolution*: Contradictions are surfaced and settled, never silently picked.
+* *Promotion*: Repeated observations graduate into confirmed rules.
+* *Decay*: Knowledge that nobody uses fades out over time.
+* *Re-scoping*: A personal rule that proves right for everyone moves up to organization scope.
+
+This creates a natural progression: many raw observations are refined into confirmed rules, which mature into the governed model.
+
+
+== RAG: retrieval-augmented generation
+
+When a user asks a question, the RAG layer determines which context entries reach the agent. The process uses agentic RAG, where the agent actively steers retrieval rather than receiving a static set of results.
+
+=== Fetch
+
+The system retrieves context entries that the question can reach. Scope is the boundary. The context considered for each question can come from any combination of organization, data model, agent, analyst, and user levels.
+
+Out-of-scope context never enters the retrieval process.
+
+=== Rank
+
+A context ranking function scores every retrieved entry using the following signals:
+
+[cols="1,3", options="header"]
+|===
+| Signal | Description
+
+| Relevance
+| How well the context matches the question. Always applied.
+
+| Scope
+| The level at which the context was defined (data model, analyst, organization, or user).
+
+| Source
+| Where the context was learned from.
+
+| Recency
+| When the context was learned.
+
+| Usage
+| How often the context has helped produce good answers.
+
+| Policy
+| ThoughtSpot defaults or customer-defined preferences, such as preferring analyst-level context over user-level context.
+|===
+
+=== Deliver to the agent
+
+The ranking function produces an ordered list. The top-K entries are delivered to the agent. The rest are logged but not included. The agent uses what it needs and cites the context entries it relied on.
+
+Guardrails skip the ranking process and are always included. Live facts such as calendar dates and data freshness are read in real time, never stored.
+
+=== Example
+
+Consider a question from Priya: _"What was our churn last quarter?"_
+
+The system fetches context entries in scope for Priya, including:
+
+. *Churn = churned ARR + downgrades* (organization scope, from a Liveboard, March)
+. *Fiscal quarters start in February* (organization scope, analyst instruction, January)
+. *Churn = churned ARR only* (data model scope, stated by Priya, August)
+. *Priya prefers charts over tables* (user scope, Priya's preference, July)
+
+An entry from a different agent's scope is dropped at fetch and never enters ranking.
+
+After ranking:
+
+* _Churn = churned ARR only_ moves to rank 1: data model scope beats organization scope, and it was used 14 times.
+* _Fiscal quarters start in February_ stays at rank 2: it is an organization guardrail.
+* _Priya prefers charts over tables_ moves to rank 3: user scope, personal preference.
+* _Churn = churned ARR + downgrades_ drops below the cut: older, unused since June.
+
+The agent receives three entries, uses two (the churn definition and the fiscal calendar), and does not use the chart preference because the answer is a single number. The answer carries citations for the context entries it used.
+
+== Security
+
+Security filters what reaches the agent. The checks run on every question, for every context entry, against live permissions, before the prompt is built and before anything is ranked.
+
+=== Access boundaries
+
+Only context that the user can reach is considered. This includes organization, cluster, data model, agent, user, and group boundaries. Context from a different organization, a different cluster, or an agent or data model the user does not have access to is never retrieved.
+
+=== Structured data rules
+
+Context related to structured data honors the data model's own permissions, including column-level security (CLS) and row-level security (RLS), applied for the user who is asking.
+
+=== External content rules
+
+Unstructured content keeps its source's access controls: Slack channel membership, Jira project permissions, and file sharing settings. Permissions are checked at the source on every fetch, never cached or copied.
+
+What a user is not allowed to see never enters the agent's reasoning.
+
+== Governance
+
+Governance keeps you in control of what the context layer knows and how it evolves.
+
+Transparency and human in the loop::
+Review what the layer is about to learn before it takes effect. Important changes wait for a steward's approval.
+
+Manage::
+Update, delete, and link context entries manually. When two definitions disagree, the conflict is surfaced and settled by a person, never silently resolved.
+
+Audit trail::
+Track who added what, when, from which source, and exactly which knowledge went into any answer.
+
+Versioning and rollback::
+Every change is versioned. You can answer "What did ARR mean in Q1?" and roll back any change.
+
+Migration::
+Publish and manage context across agents, organizations, and clusters. Move context, reassign it, or take it with you to a new environment.
+
+== Related resources
+
+* xref:spotter.adoc[Spotter overview]
+* xref:spotter-memory.adoc[Spotter memory]
+
