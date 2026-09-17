@@ -1,0 +1,64 @@
+= Context layer security and governance
+:page-last_updated: Sep 17, 2026
+:linkattrs:
+:experimental:
+:description: Learn how the context layer enforces security boundaries and provides governance controls for ThoughtSpot AI agents.
+:jira: SCAL-337854
+
+[.lead]
+The xref:context-layer.adoc[context layer] enforces security on every question and provides governance controls so you stay in charge of what the AI agent knows.
+
+== Security
+
+Security filters what reaches the agent.
+The checks run on every question, for every context entry, against live permissions, before the prompt is built and before anything is ranked.
+
+=== Access boundaries
+
+Only context that the user can reach is considered.
+This includes organization, cluster, data model, agent, user, and group boundaries.
+Context from a different organization, a different cluster, or an agent or data model the user does not have access to is never retrieved.
+
+=== Structured data rules
+
+Context related to structured data honors the data model's own permissions, including column-level security (CLS) and row-level security (RLS), applied for the user who is asking.
+
+For more information about CLS and RLS, refer to xref:data-security.adoc[Data security].
+
+=== External content rules
+
+Unstructured content keeps its source's access controls: Slack channel membership, Jira project permissions, and file sharing settings.
+Permissions are checked at the source on every fetch, never cached or copied.
+
+What a user is not allowed to see never enters the agent's reasoning.
+
+== Governance
+
+Governance keeps you in control of what the context layer knows and how it evolves.
+
+Transparency and human in the loop::
+Review what the layer is about to learn before it takes effect.
+Important changes wait for a steward's approval.
+
+Manage::
+Update, delete, and link context entries manually.
+When two definitions disagree, the conflict is surfaced and settled by a person, never silently resolved.
+
+Audit trail::
+Track who added what, when, from which source, and exactly which knowledge went into any answer.
+
+Versioning and rollback::
+Every change is versioned.
+You can answer "What did ARR mean in Q1?" and roll back any change.
+
+Migration::
+Publish and manage context across agents, organizations, and clusters.
+Move context, reassign it, or take it with you to a new environment.
+
+== Related resources
+
+* xref:context-layer.adoc[The context layer]
+* xref:context-layer-sources.adoc[Context layer sources and learning]
+* xref:context-layer-rag.adoc[Context retrieval and ranking]
+* xref:spotter-security.adoc[Spotter security]
+* xref:spotter-memory-permissions.adoc[Memory permissions and governance]

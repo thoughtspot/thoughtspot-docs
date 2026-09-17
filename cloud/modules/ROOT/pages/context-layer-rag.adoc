@@ -1,0 +1,110 @@
+= Context retrieval and ranking
+:page-last_updated: Sep 17, 2026
+:linkattrs:
+:experimental:
+:description: Learn how the context layer retrieves, ranks, and delivers the right context to ThoughtSpot AI agents for each question.
+:jira: SCAL-337854
+
+[.lead]
+When a user asks a question, the xref:context-layer.adoc[context layer] determines which context entries reach the AI agent.
+The process uses agentic RAG (retrieval-augmented generation), where the agent actively steers retrieval rather than receiving a static set of results.
+
+== Fetch
+
+The system retrieves context entries that the question can reach.
+Scope is the boundary.
+The context considered for each question can come from any combination of organization, data model, agent, analyst, and user levels.
+
+Out-of-scope context never enters the retrieval process.
+
+== Rank
+
+A context ranking function scores every retrieved entry using the following signals:
+
+[cols="1,3", options="header"]
+|===
+| Signal | Description
+
+| Relevance
+| How well the context matches the question. Always applied.
+
+| Scope
+| The level at which the context was defined (data model, analyst, organization, or user).
+
+| Source
+| Where the context was learned from.
+
+| Recency
+| When the context was learned.
+
+| Usage
+| How often the context has helped produce good answers.
+
+| Policy
+| ThoughtSpot defaults or customer-defined preferences, such as preferring analyst-level context over user-level context.
+|===
+
+== Deliver to the agent
+
+The ranking function produces an ordered list.
+The top-K entries are delivered to the agent.
+The rest are logged but not included.
+The agent uses what it needs and cites the context entries it relied on.
+
+Guardrails skip the ranking process and are always included.
+Live facts such as calendar dates and data freshness are read in real time, never stored.
+
+== Example
+
+Consider a question from Priya: _"What was our churn last quarter?"_
+
+The system fetches context entries in scope for Priya, including:
+
+. *Churn = churned ARR + downgrades* (organization scope, from a Liveboard, March)
+. *Fiscal quarters start in February* (organization scope, analyst instruction, January)
+. *Churn = churned ARR only* (data model scope, stated by Priya, August)
+. *Priya prefers charts over tables* (user scope, Priya's preference, July)
+
+An entry from a different agent's scope is dropped at fetch and never enters ranking.
+
+After ranking:
+
+* _Churn = churned ARR only_ moves to rank 1: data model scope beats organization scope, and it was used 14 times.
+* _Fiscal quarters start in February_ stays at rank 2: it is an organization guardrail.
+* _Priya prefers charts over tables_ moves to rank 3: user scope, personal preference.
+* _Churn = churned ARR + downgrades_ drops below the cut: older, unused since June.
+
+The agent receives three entries, uses two (the churn definition and the fiscal calendar), and does not use the chart preference because the answer is a single number.
+The answer carries citations for the context entries it used.
+
+== Lifecycle management
+
+The context layer stays current through two types of maintenance.
+
+=== Source-triggered updates
+
+When an external source changes, the context layer responds automatically:
+
+* *Source added*: New knowledge is learned from the source.
+* *Source updated*: Everything derived from the source is updated to match.
+* *Source removed*: Derived knowledge is retired, never silently kept.
+
+_Example: Rename a metric in dbt, and the context layer's definition follows the change._
+
+=== Internal self-maintenance
+
+Even when nothing changes outside, the context layer continuously refines itself:
+
+* *Deduplication*: Copies of the same fact merge into one.
+* *Conflict resolution*: Contradictions are surfaced and settled, never silently picked.
+* *Promotion*: Repeated observations graduate into confirmed rules.
+* *Decay*: Knowledge that nobody uses fades out over time.
+* *Re-scoping*: A personal rule that proves right for everyone moves up to organization scope.
+
+This creates a natural progression: many raw observations are refined into confirmed rules, which mature into the governed model.
+
+== Related resources
+
+* xref:context-layer.adoc[The context layer]
+* xref:context-layer-sources.adoc[Context layer sources and learning]
+* xref:context-layer-security-governance.adoc[Context layer security and governance]

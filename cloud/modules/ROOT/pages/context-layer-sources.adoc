@@ -1,0 +1,156 @@
+= Context layer sources and learning
+:page-last_updated: Sep 17, 2026
+:linkattrs:
+:experimental:
+:description: Learn about the sources that feed the ThoughtSpot context layer and how the learning system absorbs knowledge from each source.
+:jira: SCAL-337854
+
+[.lead]
+The xref:context-layer.adoc[context layer] learns from four categories of input.
+Each source flows through the same learning pipeline regardless of format or origin.
+
+== Maintained context
+
+Maintained context comes from systems that someone in your organization already owns and curates.
+
+[width="100%", cols="1,2", options="header"]
+|===
+| Source | Description
+
+| Data catalogs
+| Business glossaries and catalogs from systems such as Atlan or Collibra. Definitions are adopted directly, not re-learned.
+
+| Semantic views
+| Semantic models defined in your data platform (for example, Snowflake, dbt, or Databricks) including metrics, entities, and join logic. Refer to xref:context-layer.adoc#_context_layer_and_the_semantic_layer[Context layer and the semantic layer] for how the semantic layer relates to the context layer.
+
+| External context layers
+| Context graphs or ontologies your organization already maintains, such as Databricks Ontology. ThoughtSpot consumes these rather than replacing them.
+
+| User and profile systems
+| Identity and role information from your HRIS, CRM, or directory. These provide stable profile facts such as team, region, and territory.
+
+| Documents and artifacts
+| Documents that capture business definitions, processes, and institutional knowledge.
+|===
+
+== Built artifacts
+
+Built artifacts are analytics objects that encode business decisions through their construction.
+
+[width="100%", cols="1,2", options="header"]
+|===
+| Source | Description
+
+| Liveboards and Answers
+| Every saved formula and filter encodes a definition that someone stood behind.
+
+| Alerts and KPIs
+| Thresholds and monitors represent business rules: what matters, and when it matters.
+
+| Prior BI estate
+| Workbooks and dashboards from previous BI tools such as Tableau or Looker. These are rich in embedded definitions and can be migrated into ThoughtSpot to feed the context layer.
+|===
+
+== Interactions
+
+Interactions are traces of how people use data in practice.
+
+[width="100%", cols="1,2", options="header"]
+|===
+| Source | Description
+
+| Conversations
+| What people ask the agents, how they rephrase questions, and what answers they accept.
+
+| Query logs
+| How data has actually been queried in the warehouse: the real joins, filters, and metric expressions in daily use.
+
+| Product interactions
+| Clicks, drill-downs, and other product usage patterns that reveal how people work with data.
+|===
+
+== Ambient surfaces
+
+Ambient surfaces are unstructured, continuously growing sources of organizational knowledge.
+
+[width="100%", cols="1,2", options="header"]
+|===
+| Source | Description
+
+| Messaging
+| Discussions in Slack or Microsoft Teams about business processes, events, and decisions.
+
+| Wikis and docs
+| Living documentation in Confluence, SharePoint, or similar platforms.
+
+| File stores
+| Files in Google Drive or similar systems. These are indexed where they live and fetched through the source, never copied in bulk.
+
+| Work systems
+| Tickets, comments, and status updates from Jira, ServiceNow, or similar tools. Each source keeps its own permissions, honored at fetch time.
+|===
+
+[NOTE]
+====
+A transport protocol is not a source. For example, MCP is how Slack content arrives, not what it is. Every source flows through the same learning pipeline.
+====
+
+== Learning
+
+The learning system determines how the context layer absorbs knowledge from each source.
+It operates in three modes:
+
+Index::
+The system saves a pointer to the source and fetches the content at answer time. Nothing is copied.
++
+_Example: Point to a returns policy page in Confluence. The page is fetched when a question needs it._
+
+Extract::
+The system lifts definitions that are already explicit in a source.
++
+_Example: Business terms and their meanings, extracted from a glossary document._
+
+Distill::
+The system infers context from how artifacts are built and used.
++
+_Example: A Liveboard's formulas and filters are distilled into metric definitions and default analysis rules._
+
+The effectiveness of the learning system depends on two factors:
+
+* *Coverage*: How much of each source is examined. For a Liveboard, this might include titles, formulas, charts, filters, and drill paths.
+* *Efficiency*: How well patterns are recognized. Forty similar filters can become one organization-wide rule when the pattern is identified.
+
+== Context orchestration
+
+Context orchestration is the process that turns raw learnings into structured, findable context.
+When a new piece of knowledge arrives, the orchestrator makes four decisions:
+
+[cols="1,2,2", options="header"]
+|===
+| Step | Decision | Example
+
+| Allocate
+| Which part of the context layer the knowledge belongs in.
+| A revenue definition is filed as a metric definition.
+
+| Scope
+| The reach of the knowledge: organization, group, data model, or user.
+| The definition applies to the Sales data model.
+
+| Reconcile
+| Whether to create a new entry, merge with an existing one, or flag a conflict.
+| The new ARR definition is merged with the existing one.
+
+| Stamp
+| Attach the source, timestamp, and authority level.
+| Source: Liveboard `54be…8f`, learned on 2026-09-08, authority: medium (rises with usage).
+|===
+
+Structured context is what makes the rest of the system work.
+Typed, scoped, and stamped context entries are what the RAG layer can rank, the lifecycle system can maintain, and the governance system can audit.
+
+== Related resources
+
+* xref:context-layer.adoc[The context layer]
+* xref:context-layer-rag.adoc[Context retrieval and ranking]
+* xref:context-layer-security-governance.adoc[Context layer security and governance]
