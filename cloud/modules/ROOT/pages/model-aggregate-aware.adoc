@@ -6,7 +6,7 @@
 :description:
 :jira: SCAL-284295, SCAL-284296
 
-Aggregate-aware query execution in ThoughtSpot is a transparent query optimisation feature where Search Data automatically switches from detailed Models to associated aggregate Models. This provides a mechanism to manage and reduce cloud spend and improve query latency whilst maintaining insight accuracy.
+Aggregate-aware query execution in ThoughtSpot is a transparent query optimization feature where Search Data automatically switches from detailed Models to associated aggregate Models. This provides a mechanism to manage and reduce cloud spend and improve query latency whilst maintaining insight accuracy.
 
 When a user queries the data, ThoughtSpot automatically switches between Models based on the granularity of the query — the user does not need to manually switch between Models or be aware that switching has occurred.
 
@@ -70,7 +70,7 @@ NOTE: Aggregate Models don't need to be defined in the same connection as the pr
 
 == TML definition
 
-Add the `aggregated_models` key to your primary Model's `.model.tml` file. Each entry specifies an aggregate Model by its `id` and, optionally, the date column and bucket it is optimised for.
+Add the `aggregated_models` key to your primary Model's `.model.tml` file. Each entry specifies an aggregate Model by its `id` and, optionally, the date column and bucket it is optimized for.
 
 === Syntax
 
@@ -95,7 +95,7 @@ aggregated_models:
 
 | `date_aggregation_info`
 | No
-| Declares which date column and bucket this Model is optimised for. Omit for dimension-only or company-level aggregates.
+| Declares which date column and bucket this Model is optimized for. Omit for dimension-only or company-level aggregates.
 
 | `column_id`
 | Yes (if `date_aggregation_info` present)
@@ -108,7 +108,7 @@ aggregated_models:
 
 === Example: Three aggregate Models on a Sales Model
 
-The following TML snippet defines three aggregate Models. One optimised for monthly queries, one for yearly queries, and one as a general company-level aggregate with no date bucketing:
+The following TML snippet defines three aggregate Models. One optimized for monthly queries, one for yearly queries, and one as a general company-level aggregate with no date bucketing:
 
 [source,yaml]
 ----
@@ -251,12 +251,12 @@ model:
 *** Independent sizing: The detailed Model may require large instances where aggregate Models may only need small instances, which reduce cost.
 *** ThoughtSpot cache layer: Aggregate Models can be stored in ThoughtSpot's caching layer, removing computation costs from the database layer entirely.
 +
-NOTE: Data latency must be considered when using the cache layer. Cached data should be synchronised with the underlying database on an appropriate schedule.
+NOTE: Data latency must be considered when using the cache layer. Cached data should be synchronized with the underlying database on an appropriate schedule.
 
 * Semantic rule parity
 ** The data analyst must ensure that all semantic rules applied to the detailed Model are also applied to the associated aggregate Models. This includes:
 *** Formula correctness: Formulas must be defined at the correct grain for the aggregate. An `AVG` that is additive at the line-item level may need to be treated differently at a pre-aggregated level.
-*** Row-level security (RLS): Apply the same RLS rules to prevent unauthorised data access.
+*** Row-level security (RLS): Apply the same RLS rules to prevent unauthorized data access.
 *** Column-level security (CLS): Apply the same CLS rules to restrict sensitive column visibility.
 
 //* This feature doesn't support *VS* keywords. For example, a search of “current year vs last year” will only resolve to the base model.
