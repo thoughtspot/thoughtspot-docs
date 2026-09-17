@@ -21,7 +21,7 @@ NOTE: If users forget their username that is required for the *Forgot Password* 
 create a user in ThoughtSpot and validate that user creation is successful.
 
 == Customers with SAML and local accounts
-After migration, authentication will continue as normal for customers with IAM configured.
+After migration, authentication will continue as normal for customers with IAMv1 configured.
 Complete the following steps to migrate to IAMv2.
 
 NOTE: Until you complete these steps, your SAML configuration is read-only, and you will be unable to edit this configuration.
@@ -31,16 +31,30 @@ NOTE: Until you complete these steps, your SAML configuration is read-only, and 
 +
 The following displays:
 +
+[.bordered]
 image::IAMv2-SAML.png[SAML IAMv2]
++
+If you have the new Admin portal settings enabled, select *User management* > *Authentication*. The Authentication UI will be like the following:
++
+[.bordered]
+image::admin-2.png[SAML IAMv2]
+
+. Check the expiry date of your IdP signing certificate.
++
+If the certificate has already expired, renew it before you update any of the values that follow. If it has not expired, continue to the next step.
 . Request that your IdP administrator configure the following attributes for ThoughtSpot to the values displayed.
 * Assertion Consumer Service URL (Single Sign On URL on IdP)
 * Audience (EntityId on IdP)
+. Re-upload the IdP certificate in your ThoughtSpot SSO configuration.
++
+Depending on your IdP settings, changes to the Assertion Consumer Service URL and Audience can affect the certificate. Re-uploading it ensures the certificate remains valid and aligned with the new configuration.
+. Verify that the SAML attribute mappings in ThoughtSpot are exactly as intended, then save the configuration.
++
+NOTE: With IAMv2, the SAML response must have an email attribute. Ensure the email is being sent via SAML response and the email attribute are mapped correctly in *Edit SAML connection* > *Map attributes*.
 . Click *Submit* when the configuration on your IdP is complete.
 +
 This reloads the service. Your configured SAML URLs will now appear on the page.
 . Optionally, you can add a cluster URL in your SAML application as default relay URL.
-+
-NOTE: With IAMv2, the SAML response must have an email attribute. Ensure the email is being sent via SAML response and the email attribute are mapped correctly in *Edit SAML connection* > *Map attributes*.
 
 === Validate your SAML account migration
 . Validate that the SAML attributes mapped in ThoughtSpot after migration are identical to pre-migration attributes.
@@ -56,7 +70,7 @@ Local users now create their own password during activation. Administrators do n
 
 Note that whenever you navigate to the login page for ThoughtSpot, you will temporarily see the following URL: `identity.thoughtspot.com`. This is an expected part of the IAMv2 login experience.
 
-NOTE: After migrating to IAMv2, usage of space and special characters will not be allowed while creating Orgs. This is to keep Org names DNS compliant. This restriction applies to only new Org names and does not impact existing Orgs.
+NOTE: After migrating to IAMv2, usage of space and special characters will not be allowed while creating Orgs. This is to keep Org names DNS compliant. This restriction applies to only new Org names where per Org subdomain is enabled, and does not impact existing Orgs.
 
 == Related information
 
