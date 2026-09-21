@@ -1,5 +1,5 @@
 = Context Layer
-:page-last_updated: Sep 17, 2026
+:page-last_updated: Sep 21, 2026
 :linkattrs:
 :experimental:
 :description: The context layer organizes everything a ThoughtSpot Spotter agent needs to know to deliver accurate, governed analytics answers.
@@ -39,7 +39,7 @@ The context layer works as a pipeline:
 . *Lifecycle management* keeps the layer current as sources change and usage patterns evolve.
 . *xref:context-layer-rag.adoc[RAG (retrieval-augmented generation)]* fetches, ranks, and assembles the right context for each question.
 . *xref:context-layer-security-governance.adoc#_security[Security]* filters what reaches the agent based on user permissions.
-. *xref:context-layer-security-governance.adoc#_governance[Governance]* provides transparency, audit trails, and human control.
+. *xref:context-layer-security-governance.adoc#_governance[Governance]* provides transparency, and human control.
 
 Every answer the Spotter agent gives carries a receipt of exactly what context went in, so you can trace, audit, and refine the system over time.
 
@@ -54,8 +54,8 @@ The context layer consumes the semantic layer as one of its inputs.
 Definitions from the semantic layer flow through the learning pipeline and are filed under the <<_data_model_understanding,Data model understanding>> pillar alongside knowledge learned from other sources.
 
 But the context layer is broader.
-It adds business logic, use case knowledge, reporting preferences, and per-user context on top of the data model.
-Where the semantic layer tells the Spotter agent _what the data is_, the context layer tells it _how to think about it, who is asking, and how to present the answer_.
+It adds business logic, use case knowledge, and per-user context on top of the data model.
+Where the semantic layer tells the Spotter agent _what the data is_, the context layer tells it _how to think about it, and who is asking.
 
 == What the context layer stores
 
@@ -68,23 +68,11 @@ Represents what a data engineer knows about the data: tables, columns, join path
 
 _Example: "Revenue" maps to `amount_net` on `fct_orders`, one row per order line, in USD._
 
-=== Use case understanding
-
-Represents what a domain expert knows about the business context: what the company does, what industry it operates in, and what purpose this particular agent serves.
-
-_Example: Mid-market SaaS company. This agent serves the renewals team._
-
 === Business logic and analysis
 
 Represents what a senior analyst knows about reaching correct answers: metric definitions, analysis rules, defaults, exclusions, analysis workflows, and routing to knowledge sources.
 
 _Example: ARR excludes services. Pipeline questions should use the Sales data model._
-
-=== Reporting preferences
-
-Represents how a presenter would format the output: chart types, axes, colors, output format (table or narrative), length, tone, and follow-up actions.
-
-_Example: Use bar charts over pie charts. Two-line summary. Post to `#revenue` as a PDF._
 
 === User context
 

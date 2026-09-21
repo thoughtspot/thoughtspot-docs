@@ -1,5 +1,5 @@
 = Context layer security and governance
-:page-last_updated: Sep 17, 2026
+:page-last_updated: Sep 21, 2026
 :linkattrs:
 :experimental:
 :description: Learn how the context layer enforces security boundaries and provides governance controls for Spotter agents.
@@ -28,16 +28,9 @@ Context from a different organization, a different cluster, or an agent or data 
 
 === Structured data rules
 
-Context related to structured data honors the data model's own permissions, including column-level security (CLS) and row-level security (RLS), applied for the user who is asking.
+When SQL queries are executed against structured data, the query honors the data model's permissions, including column-level security (CLS) and row-level security (RLS), for the user who is asking. However, when memory and context are fetched for reasoning, these data model permissions are not enforced. The reasoning output may reference columns and values that are restricted by CLS or RLS rules.
 
 For more information about CLS and RLS, refer to xref:data-security.adoc[Data security].
-
-=== External content rules
-
-Unstructured content keeps its source's access controls: Slack channel membership, Jira project permissions, and file sharing settings.
-Permissions are checked at the source on every fetch, never cached or copied.
-
-What a user is not allowed to see never enters the agent's reasoning.
 
 == Governance
 
@@ -49,14 +42,6 @@ Important changes wait for a steward's approval.
 
 Manage::
 Update, delete, and link context entries manually.
-When two definitions disagree, the conflict is surfaced and settled by a person, never silently resolved.
-
-Audit trail::
-Track who added what, when, from which source, and exactly which knowledge went into any answer.
-
-Versioning and rollback::
-Every change is versioned.
-You can answer "What did ARR mean in Q1?" and roll back any change.
 
 Migration::
 Publish and manage context across agents, organizations, and clusters.
