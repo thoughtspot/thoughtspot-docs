@@ -5,8 +5,13 @@
 :linkattrs:
 :experimental:
 :description: The Memory sources page is where you manage all memory and coaching context for Spotter in your cluster.
+:jira: SCAL-339595
 
-The Memory sources page is where you manage all memory and coaching context for Spotter in your cluster. It gives you a single view of what Spotter currently knows, both the coaching you have authored and the memory generated from Liveboards and conversations.
+The Memory sources page is where you manage shared memory for Spotter in your cluster. It gives you a single view of what Spotter currently knows: the reference questions and business terms you have authored, and the memory generated from Liveboards and conversations.
+
+Personal memory is not managed from this page. Users view and correct their own personal memory in conversation. See <<view-and-manage-personal-memory,Personal memory>> below.
+
+
 
 == Memory sources page
 
@@ -23,15 +28,19 @@ Business terms tab:: Shows the business terms defined on your data models. You c
 From the Liveboards tab you can:
 
 * Add a Liveboard. See xref:spotter-liveboard-learn.adoc[Learning from Liveboard] for the full flow.
-* View generation status — see whether generation is in progress, completed, or failed for each Liveboard source.
-* Download memory (per Liveboard) — use the More menu image:icon-more-10px.png[more icon] on a Liveboard row to download the Rules and Recipes generated from that specific Liveboard as a JSON file.
-* Delete a Liveboard source — use the More menu image:icon-more-10px.png[more icon] on a Liveboard row to remove the Liveboard as a source and delete all memory generated from it.
+* View generation status: see whether generation is in progress, completed, or failed for each Liveboard source.
+* Download memory (per Liveboard): use the More menu image:icon-more-10px.png[more icon] on a Liveboard row to download the Rules and Recipes generated from that specific Liveboard as a JSON file.
+* Delete a Liveboard source: use the More menu image:icon-more-10px.png[more icon] on a Liveboard row to remove the Liveboard as a source and delete all memory generated from it. Memory taught through conversation is not deleted.
 
-== Downloading memory
+== Viewing shared memory
 
-Select the *Download all memories* button on the top right of the Memory sources page. This is visible to all users when memory is enabled.
+There are three ways to see what Spotter currently knows about your data models.
 
-Clicking this button downloads a single JSON file containing all memory you have access to — this includes memory generated from Liveboards and memory written from conversations, grouped by data model.
+=== Download all memories
+
+Select the **Download all memories** button on the top right of the Memory sources page. This is visible to all users when memory is enabled.
+
+Clicking this button downloads a single JSON file containing all memory you have access to, including memory generated from Liveboards and memory written from conversations, grouped by data model.
 
 What gets included depends on your role and access:
 
@@ -40,21 +49,64 @@ What gets included depends on your role and access:
 | Role | What is downloaded
 | Admin | All memory across all data models in the Org
 | Data model owner | All memory for data models you own and all memory from Liveboards you can view
-| Coaching access | All memory for data models you have coaching access on and all memory from Liveboards you can view
+| Can manage Spotter or Manage Memory access | All memory for data models you have access to and all memory from Liveboards you can view
 | All other users | All memory from Liveboards you can view
 |===
 
 The download always reflects the current state of memory in your instance. Use it to inspect what Spotter is working with, share it with your team, or verify what was generated after a Liveboard learning run.
 
+**The JSON download is for inspection only and cannot be imported.** To move memory to another data model, Org, or cluster, use the memory migration API. See <<migrate-spotter-memory,Migrating Spotter memory>> below.
+
+=== Ask Spotter in conversation
+
+Ask Spotter directly about the topic you want to check, for example: *"What do you remember about how we calculate gross margin?"* Spotter fetches the memories relevant to your question. Ask by topic rather than broadly: Spotter returns up to 20 memories at a time, so a specific question gives more useful results.
+
+=== Export, edit, and update memory with a CSV
+
+If you have shared memory write access on a data model, you can review and update its memory in bulk from a conversation:
+
+1. Open a Spotter conversation on the data model.
+2. Ask Spotter to export its memory as a CSV, for example: *"Export all your memories for this data model as a CSV."* Spotter returns a CSV file with one row per memory entry.
+3. Edit the entries in the file: correct definitions, fix column names, or remove rows you no longer want.
+4. Upload the edited CSV in the same conversation and ask Spotter to apply it, for example: *"Here is the updated memory CSV. Update your memories to match this file."*
+5. Spotter confirms what it changed. Ask it to repeat back a few entries to verify.
+
+[#view-and-manage-personal-memory]
+== View and manage personal memory
+
+Personal memory is context Spotter saves about an individual user: their role, preferences, and personal scope such as accounts or region. It applies only to that user and is not shown on the Memory sources page. Users manage it in conversation.
+
+- **To see your personal memory:** Ask Spotter *"What do you know about me?"*
+- **To correct or delete an entry:** Tell Spotter in conversation, for example *"Forget that I said I'm an analyst. I'm a finance lead."* Spotter confirms the change immediately.
+- **To turn personal memory off for yourself:** Open Spotter, select the settings icon in the lower left, and toggle **Personal memory** off. Spotter stops saving new personal memories but keeps existing ones until you delete them.
+
+Admins cannot view the personal memories of individual users in this release. Personal memory cannot be downloaded, exported, or imported.
+
+
 == What memory persists
 
-Memory does not expire. There is no time-to-live on generated or written memory — it persists until explicitly deleted.
+Memory does not expire. There is no time-to-live on generated or written memory. It persists until explicitly deleted. This applies to both shared and personal memory.
 
-When the Memory from Liveboards and conversations option in the admin panel is turned off, memory is not deleted. Spotter stops consuming it, but it remains in the system. Re-enabling the feature makes all existing memory active again immediately.
+When the *Memory from Liveboards and conversations* option in the admin panel is turned off, memory is not deleted. Spotter stops consuming it, but it remains in the system. Re-enabling the feature makes all existing memory active again immediately.
+
+When the *Enable personal memory learning for all users* option is turned off, personal memories follow the same rule: they are preserved but not applied until the option is re-enabled.
 
 [#migrate-spotter-memory]
 == Migrating Spotter memory
 
-You can export Spotter memory, the rules and recipes accumulated for your data models, from one environment and import it into another. Use this to replicate memory across multiple Orgs, or to seed a new data model with rules and recipes from an existing one. ThoughtSpot currently supports memory migration via REST APIs only.
+Since 26.8.0.cl, you can export the shared memory of a data model, the Rules and Recipes Spotter has accumulated, and import it into another data model, Org, or cluster using the REST API v2:
 
-For more information, refer to the link:https://developers.thoughtspot.com/docs/spotter-memory-migration[Spotter memory migration API documentation, window=_blank].
+----
+POST /api/rest/2.0/ai/memory/export
+POST /api/rest/2.0/ai/memory/import
+----
+
+Export returns a YAML file. You update the data model identifiers in the file, run a dry-run import to validate it, then import. The import replaces the existing shared memory on the target data models. It is all or nothing: if any entry fails, the target is rolled back.
+
+Keep the following in mind:
+
+- ThoughtSpot supports memory migration via REST APIs only. There is no import option in the UI.
+- The JSON file from **Download all memories** is not an import format. Use the API export.
+- Personal memory is not included. It cannot be exported or imported.
+
+For the step-by-step workflow, privileges, limits, and error reference, see xref:spotter-migrate-memory.adoc[Migrate memory]. For request and response schemas, see the link:https://developers.thoughtspot.com/docs/spotter-memory-migration[Spotter memory migration API documentation].

@@ -1,4 +1,4 @@
-= Import and export legacy memory source TML
+= Migrate legacy memory sources
 :page-last_updated: Jul 28, 2026
 :author: Naomi
 :linkattrs:
@@ -6,19 +6,19 @@
 :description: You can now migrate memory sources between Models or Worksheets using the legacy memory source TML file.
 :jira: SCAL-226681, SCAL-253054, SCAL-254633, SCAL-250703, SCAL-265156, SCAL-320863, SCAL-331061
 :page-aliases: migrate-coaching.adoc
-
+:jira: SCAL-339595
 
 Reference questions and business terms are the original tools for adding context to Spotter. This page covers how to migrate them across Orgs, clusters, and data models using TML export and import.
 
 For more information about TML files, see xref:tml.adoc[].
 
-NOTE: **Data model instructions** use a separate migration path — see xref:spotter-migrate-instructions.adoc[Migrate instructions].
+NOTE: **Data model instructions** use a separate migration path — see xref:spotter-migrate-instructions.adoc[Migrate instructions].  Memory generated from Liveboards and conversations uses the memory migration API — see xref:spotter-migrate-memory.adoc[Migrate memory].
 
 
 == Migration target scenarios
 
 
-The three main factors to consider in migrating Spotter memory sources are:
+The three main factors to consider in migrating legacy memory sources are:
 
 
 * Target and source environments.
@@ -29,36 +29,36 @@ The three main factors to consider in migrating Spotter memory sources are:
 === Target and source environments
 
 
-Across different instances:: A common scenario where analysts test Spotter on a Model in a development environment and, once satisfied with the training, replicate this to the production environment for business users. This applies to both Cloud and Embedded customers.
-Within the same instance or environment:: Users often migrate training from one Model to another within the same instance.
+Across different instances:: A common scenario where analysts test Spotter on a Model in a development environment and, once satisfied with the results, replicate the memory sources to the production environment for business users. This applies to both Cloud and Embedded customers.
+Within the same instance or environment:: Users often migrate memory sources from one Model to another within the same instance.
 +
 Use Cases:
 +
 --
-* Embedded customers might have a primary Model and want to replicate training across Models dedicated to different end clients separated by user groups within the same environment.
+* Embedded customers might have a primary Model and want to replicate memory sources across Models dedicated to different end clients separated by user groups within the same environment.
 * Customers might be creating a reduced version of a Model to enable Spotter when the existing use case is too difficult to train in one session.
-* Customers might have identical Models in a cluster and want to train on all of them in one session.
+* Customers might have identical Models in a cluster and want to set up all of them in one session.
 --
 
 
-Across different Orgs:: Embedded customers often operate multiple Orgs within an instance and need to migrate training from one Model in a primary Org to Models in other Orgs.
+Across different Orgs:: Embedded customers often operate multiple Orgs within an instance and need to migrate memory sources from one Model in a primary Org to Models in other Orgs.
 
 
 === Number of targets
 
 
 From one source Model to a single target Model::
-Typically, customers migrate training from a development Model to production to ensure consistency for business users. This process is straightforward, focusing on one-to-one replication.
-From one source Model to multiple target Models:: Training across multiple Models in one cluster in one session:
+Typically, customers migrate memory sources from a development Model to production to ensure consistency for business users. This process is straightforward, focusing on one-to-one replication.
+From one source Model to multiple target Models:: Setting up multiple Models in one cluster in one session:
 +
 --
-* Users aim to avoid duplicating training efforts on similar Models.
-* For instance, one company wants to train on multiple identical Models (only differing by data rows). Another company also wanted to train on the table level since most of the Models were derived from one base table.
-* In the current scenario, this can only be addressed efficiently through migration, where training is performed on one Model and then migrated to others.
+* Users aim to avoid duplicating effort on similar Models.
+* For instance, one company wants to set up multiple identical Models (only differing by data rows). Another company wanted to set up memory sources at the table level since most of the Models were derived from one base table.
+* This can only be addressed efficiently through migration, where memory sources are defined on one Model and then migrated to others.
 
 
 Replicating experience for multiple customers:::
-Embedded customers often need to migrate training data to Models for each of their end clients to provide a consistent experience across their client base.
+Embedded customers often need to migrate memory sources to Models for each of their end clients to provide a consistent experience across their client base.
 --
 
 
@@ -82,7 +82,7 @@ Target Models may differ from the source Model in the following ways:
 --
 +
 While the underlying table joins might stay consistent, Embedded customers often adjust Models according to their clients' data.
-You need to adapt the data to maintain the relevance and effectiveness of training during migration.
+You need to adapt the memory source entries to keep them relevant and effective after migration.
 
 
 
@@ -132,17 +132,11 @@ image::export-feedback-tml.png[Export legacy memory source TML]
 
 NOTE: No memory source file is created if there are no memory source entries associated with the Model.
 
+== The Memory sources page download is not a TML export
 
-== Export memory source from Coach Spotter
+The **Download all memories** button on the Memory sources page downloads a JSON file of the memory Spotter has generated from Liveboards and conversations, grouped by data model. This file is for inspection only. It is not a TML file and cannot be imported through the TML import flow on this page, and it does not include reference questions or business terms.
 
-
-You can export memory source from the Reference questions and Business terms pages in the Data workspace. To export memory sources from the Reference questions and Business terms pages, follow these steps:
-
-
-. Navigate to the Data workspace and select *Memory sources* from the left menu.
-
-
-. Click *Download all memories*. The JSON file automatically downloads.
+To export reference questions and business terms as TML, use the Model view steps above or the API below. To migrate Liveboard and conversation memory, see xref:spotter-migrate-memory.adoc[Migrate memory].
 
 
 
@@ -164,7 +158,6 @@ We also support custom object IDs in legacy memory source TML files.
 
 NOTE: xref:tml.adoc#object-id[Object IDs] are in beta and off by default. To enable them, contact {support-url}.
 
-
 == Import memory sources into ThoughtSpot
 
 
@@ -174,7 +167,7 @@ NOTE: xref:tml.adoc#object-id[Object IDs] are in beta and off by default. To ena
 To import a legacy memory source TML file directly into a Model, follow these steps:
 
 
-. Navigate to the Data workspace and open the Model you want to import TML memory source into.
+. Navigate to the Data workspace and open the Model you want to import memory source TML into.
 
 
 . Select the *more options* icon image:icon-more-10px.png[more options icon] and hover over the *TML* section.
@@ -300,15 +293,13 @@ To avoid errors with legacy memory source TML files, check the following before 
 
 * Check that the GUID present at the top of the file is a valid Model already present in the system.
 +
-NOTE: We do not currently support importing a new Model and its coaching in the same zip file.
-* Check the sanity of the TML file, making sure you don’t have missing fields, invalid entries for fields like `type`, `access`, `chart_type`, or `display_mode`, invalid `search_tokens` for the Model, or invalid formula expressions for the Model that memory source entries are being targeted for.
+NOTE: We do not currently support importing a new Model and its memory sources in the same zip file.
 
+* Check the sanity of the TML file, making sure you don't have missing fields, invalid entries for fields like `type`, `access`, `chart_type`, or `display_mode`, invalid `search_tokens` for the Model, or invalid formula expressions for the Model that memory source entries are being targeted for.
 
-* Check for similar entries within the file: No two memory source entries can have the same 'feedback_phrase'. This can occur when uploading memory source entries on the user level, which can have the same memory source phrase. The system will throw an error when uploading multiple such entries. You have the option to edit the memory source TML to avoid such scenarios.
+* Check for similar entries within the file: No two memory source entries can have the same `feedback_phrase`. This can occur when uploading memory source entries on the user level, which can have the same phrase. The system will throw an error when uploading multiple such entries. You have the option to edit the memory source TML to avoid such scenarios.
 
-
-* Check for conflicts with existing entries: The memory source entry should not have the same 'feedback_phrase' as a memory source present already on the target Model. It will throw a warning and will override the existing memory source entry if import is still completed. You have the option to edit the legacy memory source TML or modify the existing entries to avoid the conflict.
-
+* Check for conflicts with existing entries: The memory source entry should not have the same `feedback_phrase` as a memory source present already on the target Model. It will throw a warning and will override the existing memory source entry if import is still completed. You have the option to edit the legacy memory source TML or modify the existing entries to avoid the conflict.
 
 * Do not modify the values for the following fields: `display_mode`, `chart_type`, and `axis_config`. Changes to these fields are not validated by the system during upload and may lead to unintended behavior.
 
@@ -318,5 +309,5 @@ NOTE: We do not currently support importing a new Model and its coaching in the 
 >
 > * xref:tml-coaching.adoc[]
 > **Migrating everything at once?** This page covers reference questions and business terms only.
-> - For Liveboard and conversation memory → xref:spotter-export-memory.adoc[Export memory]
+> - For Liveboard and conversation memory → xref:spotter-manage-memory.adoc[Migrate memory] REST API v2, available since 26.8.0.cl. Personal memory is not included.
 > - For Spotter instructions and data model instructions → xref:spotter-migrate-instructions.adoc[Migrate instructions]
