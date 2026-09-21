@@ -1,14 +1,65 @@
-= Manage and migrate memory
-:page-last_updated: Aug 10, 2026
+= Migrate memory
+:page-last_updated: Jul 28, 2025
 :author: Naomi
 :linkattrs:
 :experimental:
-:description: Learn how to migrate memory sources.
-:jira: SCAL-331062
+:description: Learn how to export shared memory.
+:jira: SCAL-320863, SCAL-339595
 
-This section contains everything you need to know to migrate memory in Spotter, including the following:
+Since 26.8.0.cl, you can export the shared memory Spotter has built for a data model and import it into another data model, Org, or cluster using the REST API v2. Use this to carry memory from development to production, replicate it across Orgs, or seed a new data model with Rules and Recipes from an existing one.
 
-* xref:spotter-memory-manage.adoc[]
-* xref:spotter-export-memory.adoc[]
-* xref:spotter-migrate-instructions.adoc[]
-* xref:spotter-migrate-legacy.adoc[Migrate legacy memory sources]
+There is no import option in the UI. Migration across environments is API only. To review and bulk-update memory without the API, use the conversation CSV flow described below.
+
+NOTE: Personal memory is not included. The export and import APIs work on Model-level shared memory only. Personal memory cannot be exported or imported, by API or otherwise. Users can view their own personal memory by asking Spotter *"What do you know about me?"*.
+
+== What can be migrated
+
+[options="header"]
+|===
+| Memory | Export | Import | Path
+
+| Shared memory: Rules and Recipes for a data model | Yes | Yes | REST API v2 (this page)
+| Shared memory: review and bulk-edit in place | Yes (CSV) | Yes (CSV) | Conversation with Spotter (this page)
+| Personal memory | No | No | Not supported
+| Reference questions and business terms | Yes | Yes | TML, see xref:spotter-migrate-legacy.adoc[Migrate legacy memory sources]
+| Spotter instructions and data model instructions | Yes | Yes | REST API v2, see xref:spotter-migrate-instructions.adoc[Migrate instructions]
+|===
+
+NOTE: The *Download all memories* button is not an export for migration. The JSON file downloaded from the Memory sources page is for inspection only and cannot be imported. To move memory between environments, use the API export below.
+
+== Before you start
+
+- **Privileges to export:** *Can manage Spotter* and at least view access to the source data model, or admin access.
+- **Privileges to import:** *Can use Spotter* and edit access to the target data model, or the Spotter coaching privilege, or admin access.
+- **Target data models must exist** before you import. The import resolves data model identifiers on the target. Unknown identifiers fail the import.
+- **Import replaces, it does not merge.** Importing overwrites all existing shared memory on every data model referenced in the file. Export the target first if you want to keep what is already there.
+- **Column names are not validated.** The import checks structure and limits, not whether column names exist on the target model. Fix column names in the file before importing.
+
+== Option 1: Migrate with the API (recommended)
+
+The REST API v2 exposes two endpoints:
+
+----
+POST /api/rest/2.0/ai/memory/export
+POST /api/rest/2.0/ai/memory/import
+----
+
+The workflow has three steps:
+
+1. **Export from the source.** Call the export endpoint with the GUIDs of one or more source data models. The response is a YAML file listing every memory item (Rules, Recipes, and always-apply rules) with the data model it belongs to.
+2. **Edit the file for the target.** Update each item's data model identifier (`guid` or `obj_id`) to point at the target model. If column names differ between environments, fix them in the file. Edit existing entries only; do not add new items by hand.
+3. **Dry run, then import.** Call the import endpoint with `dry_run: true` to validate the file and preview counts without writing anything. When it is clean, call again with `dry_run: false`. The import replaces the existing shared memory on the referenced data models. It is all or nothing: if any item fails, the target is rolled back.
+
+Personal memory is not part of the export or the import.
+
+For request and response schemas, the YAML field reference, size and character limits, and the validation error reference, see the link:https://developers.thoughtspot.com/docs/spotter-memory-migration[Spotter memory migration API documentation]. You can also try the calls in the link:https://developers.thoughtspot.com/docs/restV2-playground[REST API v2 playground].
+
+== Option 2: Review and update memory in conversation with a CSV
+
+To review or correct shared memory in bulk without the API, ask Spotter to export it as a CSV inside a conversation, edit the file, and upload it back in the same conversation.
+
+1. Open a Spotter conversation on the data model whose memory you want to update. You need shared memory write access on that Model.
+2. Ask Spotter to export its memory: *"Export all your memories for this data model as a CSV."* Spotter returns a CSV file with one row per memory entry.
+3. Open the CSV and update the entries: correct definitions, fix column names, or remove rows you no longer want.
+4. Upload the edited CSV in the same conversation and ask Spotter to apply it: *"Here is the updated memory CSV. Update your memories to match this file."*
+5. Spotter confirms what it changed. Ask it to repeat back a few entries to verify.
