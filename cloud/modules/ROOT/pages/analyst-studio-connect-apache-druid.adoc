@@ -1,0 +1,78 @@
+= Connect to Apache Druid in Analyst Studio
+:product: Analyst Studio
+:connection: Apache Druid
+:author: Naomi
+:page-last_updated: Sep 21, 2026
+:experimental:
+:linkattrs:
+:description: Connect to Apache Druid to start searching your data in Analyst Studio.
+:jira: SCAL-315450
+
+== Supported JDBC drivers and known issues
+
+|===
+| Driver                          | Driver Release Date     | Analyst Studio Removal Date
+| (Recommended) Apache Avatica 1.25.0    | 4/5/2024                |
+| Apache Avatica 1.23.0 | 1/19/2023       |
+| Apache Avatica 1.18.0| 5/18/2021       |
+| Apache Avatica 1.17.0| 6/21/2020       |
+|===
+
+The following are known issues with the current supported drivers.
+{product} continues to advocate on our customers' behalf for vendors and open-source communities to resolve these issues.
+
+|===
+| Driver | Known Issue | Further Details
+
+| Avatica 1.17.0
+| Druid fetch size limited to 100
+| Druid JDBC driver only returns 100 rows per batch, resulting in longer-than-expected query response times.
+There is a link:https://github.com/apache/druid/pull/10880[server-side fix,window=_blank] that can be applied.
+
+| Avatica 1.17.0
+| Druid Basic Authentication is unsupported
+| {product} currently requires Druid connections over Bridge.
+
+| Avatica 1.17.0
+| Connection context properties are unsupported
+| {product} currently does not support changing the Druid broker's link:https://druid.apache.org/docs/latest/querying/sql.html#connection-context[setting for the connection,window=_blank] via JDBC properties.
+
+| Avatica 1.17.0
+| Only Druid SQL support
+| When connecting to Druid via JDBC, link:https://druid.apache.org/docs/0.20.1/querying/sql.html[only Druid SQL syntax is supported,window=_blank]. Native (json-type) query syntax will result in errors.
+
+| Avatica 1.17.0
+| Druid SQL limitations
+| Not all Druid features are supported via Druid SQL and JDBC connectivity.
+Please see the link:https://druid.apache.org/docs/0.20.1/querying/sql.html#unsupported-features[Druid docs,window=_blank].
+
+| Avatica 1.17.0
+| Single Schema Support
+| {product}'s Schema Browser will surface only tables found in the default `druid` schema.
+
+| Avatica 1.17.0
+| Query cancellation is unsupported
+| Druid supports cancellation for native (json-type) queries, but not for Druid SQL queries.
+If users attempt to cancel a query in the {product} UI, the query run will not be interrupted.
+The driver does not return an error, so {product} is unable to surface anything to the user.
+|===
+
+=== Connecting to {product}
+
+When connecting Druid to {product}, fill out the connection form as follows:
+
+. *Display name:* the name of the connection used in the Schema Browser.
+. *Description:* optional additional context viewable in Connection Management.
+. *Host:* the route of the Druid cluster link:https://druid.apache.org/docs/latest/design/broker.html[Broker,window=_blank], as specified in the link:https://druid.apache.org/docs/latest/configuration/index.html#broker[broker/runtime.properties,window=_blank] file.
+. *Port:* the port of the link:https://druid.apache.org/docs/latest/design/broker.html[Broker,window=_blank].
+The default port is 8082.
+If your cluster is secured by SSL, the default port is 8182.
+. *Preferred JDBC Driver:* the Avatica 1.17.0 driver is the only current driver.
+. *Disable transport encryption:* {product} strongly recommends that transport encryption be enabled and that Druid be configured to use TLS v.1.2.
+If disabled, connections between the Bridge connector and your database will not be encrypted.
+
+*Please note the following link:https://druid.apache.org/docs/latest/querying/sql.html#connection-stickiness[limitation,window=_blank] of broker connection stickiness over JDBC:*
+
+"Druid's JDBC server does not share connection state between Brokers.
+This means that if you're using JDBC and have multiple Druid Brokers, you should either connect to a specific Broker, or use a load balancer with sticky sessions enabled.
+The Druid Router process provides connection stickiness when balancing JDBC requests, and can be used to achieve the necessary stickiness even with a normal non-sticky load balancer."
