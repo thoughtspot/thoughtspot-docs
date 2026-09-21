@@ -1,0 +1,66 @@
+= Connect to MySQL in Analyst Studio
+:product: Analyst Studio
+:connection: MySQL
+:author: Naomi
+:page-last_updated: Sep 21, 2026
+:experimental:
+:linkattrs:
+:description: Connect to MySQL to start searching your data in Analyst Studio.
+:jira: SCAL-315450
+
+*Additionally supports:* _Amazon Aurora MySQL, MariaDB, SingleStore, Google Cloud SQL for MySQL_
+
+== Supported JDBC drivers and known issues
+
+|===
+| Driver | Driver Release Date | {product} Removal Date
+
+| (Recommended) MySQL Connector/J 9.0.0  | 7/1/2024                |
+| MySQL Connector/J 8.0.33               | 4/18/2023               |
+
+| MySQL Connector/J 8.0.28
+| 1/18/2022
+|
+
+| MySQL Connector/J 8.0.26
+| 7/20/2021
+|
+
+| MySQL Connector/J 8.0.23
+| 1/18/2021
+|
+
+| MySQL Connector/J 8.0.20
+| 4/27/2020
+|
+|===
+
+The following are known issues with the current supported drivers.
+{product} continues to advocate on our customers' behalf for vendors and open-source communities to resolve these issues.
+
+|===
+| Driver | Known Issue | Further Details
+
+| MySQL Connector/J 8.0.28
+| Removal of TLS v1 and v1.1 support
+| Connections should be made using the TLSv1.2 and TLSv1.3 protocols, which are more secure.
+
+| MySQL Connector/J 8.0.20
+| Server Timezone Specification is required
+a| Customers without a specified Server Timezone for their databases will see queries fail if any of the time zones (application/database servers) are not in the format `UTC+xx` or `GMT+xx`. +
+Queries will fail with the following error: `java.sql.SQLException: The server time zone value 'PDT' is unrecognized or represents more than one time zone. You must configure either the server or JDBC driver (via the 'serverTimezone' configuration property) to use a more specific time zone value if you want to utilize time zone support.` +
+*Note that the error is directly from the JDBC driver*.
+At this time, {product} does not support customers setting additional configuration properties (such as the suggested 'serverTimezone' property) via the JDBC driver. +
+More details in link:https://stackoverflow.com/questions/26515700/mysql-jdbc-driver-5-1-33-time-zone-issue[this StackOverflow thread,window=_blank].
+|===
+
+== Connect to MySQL
+
+. Log in to {product} and follow the steps to xref:analyst-studio-connecting-analyst-studio-to-your-database.adoc#direct-connect[connect a database to {product}].
+. Select *MySQL*.
+. Enter the Display name, Description (optional), Host,  Port, Database name, Username, and Password.
+. Upload a file for the Custom Trusted SSL CA certificate.
+
+. Select the preferred JDBC driver.
+. Click *Connect*.
+You will land on a page that displays your database schema.

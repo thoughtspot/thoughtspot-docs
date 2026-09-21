@@ -1,0 +1,106 @@
+= Connect to Amazon Web Services in Analyst Studio
+:product: Analyst Studio
+:connection: Amazon Web Services
+:author: Naomi
+:page-last_updated: Sep 21, 2026
+:experimental:
+:linkattrs:
+:description: Connect to Amazon Web Services to start searching your data in Analyst Studio.
+:jira: SCAL-315450
+
+== Overview
+
+We have two ways of connecting to your RDS instance depending on your AWS settings.
+If your instance is publicly accessible, then {product} can connect directly to it.
+For databases that are not accessible, you can use the xref:analyst-studio-connecting-analyst-studio-to-your-database.adoc#bridge[Bridge connector].
+We'll start by determining if your database is accessible to us.
+
+=== Accessibility
+
+. Navigate to your link:https://console.aws.amazon.com/rds/home#dbinstances:[RDS Instance Console,window=_blank].
+. Click the arrow and then magnifying glass to view the details of the instance that you want to connect.
++
+[.bordered]
+image::rds-select-instance-201507.png[Amazon RDS Console]
+
+. Look under *Security and Network*.
+Your instance is in a VPC if there's an entry labeled VPC.
+It is typically found below _Availability Zone_ and above _Security Groups_.
+If you don't have an entry here, then your instance is not in a VPC, and you can jump to the *Security Groups* section below.
++
+[.bordered]
+image::rds-with-a-vpc-201507.png[RDS with a VPC]
+
+. Instances in VPCs can be public or private.
+We can find out by looking under *Security and Network* again.
+This time for an entry labeled _Publicly Accessible_.
+If it is followed by a _Yes_, then you can jump to the *Security Groups* section below.
++
+[.bordered]
+image::rds-with-a-public-vpc-201507.png[RDS on a public VPC]
+
+. To connect to instances in a private VPC, you'll need to install our xref:analyst-studio-connecting-analyst-studio-to-your-database.adoc#bridge[Bridge connector].
+
+=== Security groups
+
+All connections from {product} will come from one of the eight IP addresses below.
+In most cases, you'll need to add these addresses to your RDS instance's Security Group.
+We've broken the steps down into two sections: VPC and No VPC.
+Security Groups in a VPC are managed the same between EC2 and RDS.
+RDS instances outside of a VPC have a different process.
+
+* `54.68.30.98/32`
+* `54.68.45.3/32`
+* `34.209.23.118/32`
+* `54.188.241.100/32`
+* `52.43.195.103/32`
+* `3.224.146.111/32`
+* `54.221.238.89/32`
+* `52.20.173.236/32`
+* `18.219.18.49`
+* `3.20.219.67`
+* `3.130.46.196`
+* `18.190.82.112`
+* `18.219.27.193`
+* `18.224.75.176`
+* `3.143.83.15`
+* `3.22.39.190`
+* `52.15.221.243`
+
+=== VPC
+
+. Under *Security and Network*, click the security group name.
++
+[.bordered]
+image::rds-vpc-security-group-201507.png[Amazon RDS]
+
+. A new tab will be opened.
+Click on the *Inbound* tab and then *Edit*.
++
+[.bordered]
+image::rds-vpc-security-group-edit-201507.png[Amazon RDS]
+
+. Find the RDS type that matches your instance (for example, PostgreSQL), enter each of our addresses, and then click *Save*.
++
+[.bordered]
+image::rds-vpc-security-group-addresses-201507.png[Amazon RDS]
+
+=== No VPC
+
+. Under *Security and Network*, click the security group to which that database belongs.
++
+[.bordered]
+image::rds-security-group.png[Amazon RDS]
+
+. At the bottom of the page, highlight the *Connection Type* selector and choose *CIDR/IP*.
++
+[.bordered]
+image::rds-connection-type.png[Amazon RDS]
+
+. In the *CIDR/IP to Authorize* field, paste address: `54.68.30.98/32`.
++
+[.bordered]
+image::rds-cidr-ip.png[Amazon RDS]
+
+. Click the blue *Authorize* button.
+. Repeat steps 1-4 for each of the addresses listed above.
