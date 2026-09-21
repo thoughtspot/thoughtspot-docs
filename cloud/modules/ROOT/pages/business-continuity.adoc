@@ -1,5 +1,5 @@
 = Data protection and disaster recovery
-:last_updated: Sep 14, 2026
+:last_updated: Sep 21, 2026
 :linkattrs:
 :experimental:
 :description: Learn how ThoughtSpot protects your data and ensures business continuity. This article describes ThoughtSpot's disaster recovery strategy.
@@ -91,14 +91,13 @@ If an instance is not available, {support-url} receives an alert after 15 minute
 // SOURCE: Google Doc draft "Cross-Region Disaster Recovery"
 // https://docs.google.com/document/d/1wkUhvohAwKvcx3tKUrTpOozNPkKV74CLEfiNfKrKeJM
 [#disaster-recovery]
-== Cross-region disaster recovery
+== Cross-region disaster recovery [.badge.badge-aws]#AWS-only#
 Cross-region disaster recovery allows ThoughtSpot to recover your ThoughtSpot instance in a secondary cloud region in the case of a failure of the primary cloud region where the ThoughtSpot service is running. ThoughtSpot takes automated <<backups,backups>> of your instance once a day, and replicates those backups in a different cloud region from the region your ThoughtSpot primary instance is in. This ensures that if one cloud region fails, ThoughtSpot can start in another region, guaranteeing minimal downtime.
 
 === RPO and RTO for cross-region disaster recovery
 ThoughtSpot's RPO for Cross-Region Disaster Recovery is 24 hours. Every 24 hours, ThoughtSpot automatically takes a backup and replicates it in cloud object storage, in a different cloud region than the one your instance is in.
 
 ThoughtSpot's RTO for Cross-Region Disaster Recovery is a few hours.
-// TODO: verify with engineering — existing published article states 2 hours; confirm whether "a few hours" is the updated target
 
 === Enabling cross-region disaster recovery
 Enabling cross-region disaster recovery requires the purchase of a new SKU. Contact your ThoughtSpot sales representative for information on how to purchase the DR SKU. After you purchase the DR SKU, contact {support-url} to enable disaster recovery in your environment.
@@ -107,13 +106,9 @@ Enabling cross-region disaster recovery requires the purchase of a new SKU. Cont
 === Feature availability
 Cross-region disaster recovery is available for ThoughtSpot Cloud Enterprise SaaS.
 
-Cross-region disaster recovery is available in AWS starting November 2026. GCP support is expected by the end of 2026.
-
 You must be on ThoughtSpot Cloud version 26.8.0.cl or later to use cross-region disaster recovery.
 
 Virtual Private ThoughtSpot (VPT) and non-VPT deployments both support cross-region disaster recovery.
-
-Analyst Studio does not currently have a cross-region disaster recovery solution.
 
 [#dr-supported-regions]
 === Supported regions
@@ -124,86 +119,85 @@ ThoughtSpot determines the secondary region for cross-region disaster recovery b
 | Cloud type | Primary region | Secondary region
 
 | AWS
-| us-east-1
-| us-west-2
+| us-east-1 (Northern Virginia, USA)
+| us-west-2 (Oregon, USA)
 
 | AWS
-| us-west-2
-| us-east-1
+| us-west-2 (Oregon, USA)
+| us-east-1 (Northern Virginia, USA)
 
 | AWS
-| eu-central-1
-| eu-west-1
+| eu-central-1 (Frankfurt, Germany)
+| eu-west-1 (Ireland)
 
 | AWS
-| eu-west-1
-| eu-central-1
+| eu-west-1 (Ireland)
+| eu-central-1 (Frankfurt, Germany)
 
 | AWS
-| eu-west-2
-| eu-west-1
+| eu-west-2 (London, UK)
+| eu-west-1 (Ireland)
 
 | AWS
-| eu-west-1
-| eu-west-2
+| eu-west-1 (Ireland)
+| eu-west-2 (London, UK)
 
 | AWS
-| ap-southeast-1
-| ap-northeast-2
+| ap-southeast-1 (Singapore)
+| ap-northeast-2 (Seoul, South Korea)
 
 | AWS
-| ap-northeast-2
-| ap-southeast-1
+| ap-northeast-2 (Seoul, South Korea)
+| ap-southeast-1 (Singapore)
 
 | AWS
-| eu-west-1
-| eu-west-2
+| eu-west-1 (Ireland)
+| eu-west-2 (London, UK)
 
 | AWS
-| eu-west-2
-| eu-west-1
+| eu-west-2 (London, UK)
+| eu-west-1 (Ireland)
 
 | AWS
-| ap-southeast-2
-| ap-southeast-1
+| ap-southeast-2 (Sydney, Australia)
+| ap-southeast-1 (Singapore)
 
 | AWS
-| ap-southeast-1
-| ap-southeast-2
+| ap-southeast-1 (Singapore)
+| ap-southeast-2 (Sydney, Australia)
 
 | AWS
-| ap-northeast-1
-| ap-northeast-2
+| ap-northeast-1 (Tokyo, Japan)
+| ap-northeast-2 (Seoul, South Korea)
 
 | AWS
-| ap-northeast-2
-| ap-northeast-1
+| ap-northeast-2 (Seoul, South Korea)
+| ap-northeast-1 (Tokyo, Japan)
 
 | GCP
-| us-east4
-| us-central-1
+| us-east4 (Northern Virginia, USA)
+| us-central1 (Iowa, USA)
 
 | GCP
-| us-central-1
-| us-east4
+| us-central1 (Iowa, USA)
+| us-east4  (Northern Virginia, USA)
 
 | GCP
-| europe-west3
-| europe-west2
+| europe-west3 (Frankfurt, Germany)
+| europe-west2 (London, UK)
 
 | GCP
-| europe-west2
-| europe-west3
+| europe-west2 (London, UK)
+| europe-west3 (Frankfurt, Germany)
 
 | GCP
-| australia-southeast1
-| asia-southeast1
+| australia-southeast1 (Sydney, Australia)
+| asia-southeast1 (Singapore)
 
 | GCP
-| asia-southeast1
-| australia-southeast1
+| asia-southeast1 (Singapore)
+| australia-southeast1 (Sydney, Australia)
 |===
-// TODO: verify with engineering — GCP region "us-central-1" may be a typo for standard GCP naming "us-central1"; confirm region mapping table accuracy
 
 ThoughtSpot plans to expand region support over time.
 
@@ -211,8 +205,8 @@ For Virtual Private ThoughtSpot (VPT) deployments, you can select your primary a
 
 [#dr-limitations]
 === Limitations
-* Cross-region disaster recovery is available for ThoughtSpot Cloud SaaS only. On-premises Software deployments do not support this feature.
-* Analyst Studio does not currently have a cross-region disaster recovery solution.
+* Cross-region disaster recovery is available for ThoughtSpot Cloud SaaS only.
+* Analyst Studio does not currently have cross-region disaster recovery support.
 * ThoughtSpot determines the secondary region for all SaaS customers that are not on Virtual Private ThoughtSpot (VPT).
 
 [#dr-recovery-process]
