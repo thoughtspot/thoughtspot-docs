@@ -18,6 +18,11 @@ Use *Act as user* to:
 * Verify that row-level security, column-level security, and sharing rules apply correctly before rolling out changes.
 * Provide support by seeing and resolving issues in the user's exact context.
 
+== Prerequisites
+
+// SOURCE: SCAL-325379 epic (orion.impersonationConfig.enabled, off by default); 26.10.0.cl release notes
+*Act as user* is available for ThoughtSpot Analytics customers with the xref:admin-portal-2.adoc[new Admin Portal] enabled. A cluster administrator must turn on the feature from *Admin* > *Feature Management* > *Early Access*.
+
 == Who can use this feature
 
 === Administrators
@@ -27,19 +32,20 @@ Use *Act as user* to:
 | Cluster Admin | Regular users and Org Admins across all Orgs
 | Org Admin | Regular users in their own Org only
 |===
-
-// SOURCE: Design doc — Privilege ceiling matrix
 Neither Cluster Admins nor Org Admins can impersonate themselves or another Cluster Admin.
 
 === Target users (consent)
-// SOURCE: Design doc — USER_PREF_ALLOW_IMPERSONATION
-Each user controls whether administrators can impersonate their account. The consent toggle is off by default. A user must turn on *Act as setting* in their profile before an administrator can start a session as that user.
-[.bordered]
-image::impersonation-3.png[Enable Act as setting ]
+// SOURCE: SCAL-325379 epic — consent gate is a time-boxed grant (6h / 24h / 3 days), default "Don't allow"
+Each user controls whether administrators can impersonate their account. In *Act as setting* on the user's profile, the *Allow admins to act as you* preference is set to *Don't allow* by default. Before an administrator can start a session as that user, the user must grant access for one of the following periods:
 
-Click *Edit* to set the time window for which these settings will be active for impersonation. At the end of which they will be auto disabled.
+* *Allow for 6 hours*
+* *Allow for 24 hours*
+* *Allow for 3 days*
+
 [.bordered]
-image::impersonation-4.png[Enable Act as setting ]
+image::impersonation-3.png[Act as setting on the user profile]
+
+Access expires automatically at the end of the selected period, and the setting returns to *Don't allow*.
 
 The user receives an email at the start and end of an impersonation session. For more information, see xref:user-profile.adoc#impersonation-consent[Allow administrators to act as you].
 
@@ -60,6 +66,13 @@ During an impersonation session, the administrator has full access to the platfo
 | Delete the user account
 | Export large data sets or send data to external integrations
 |===
+
+[NOTE]
+====
+// SOURCE: SCAL-325379 epic — "Third-party/agentic capabilities (Spotter, AgentSpot, Analyst Studio)
+// removed by default; configurable via blockedPrivileges / allowedPrivileges keys"
+Third-party and agentic capabilities, such as Spotter, AgentSpot, and Analyst Studio, are unavailable during an impersonation session by default.
+====
 
 === Session limits and expiry
 // SOURCE: Design doc — Session Lifetime, Hard Cap
@@ -95,9 +108,9 @@ A persistent, non-dismissable banner appears around the perimeter of the screen 
 
 == Start an impersonation session
 
-Before you can act as a user, the user must enable the consent toggle in their profile.
+Before you can act as a user, the user must grant access in *Act as setting* on their profile.
 
-. Navigate to the *Admin settings* > *User management*.
+. Navigate to *Admin settings* > *User management*.
 . Locate the user you want to act as.
 . Click the *Act as user* option from the user's action menu.
 +
@@ -108,15 +121,16 @@ image::impersonation-1.png[Act as user]
 ====
 The *Act as user* option is visible only if the target user is an `Active` user.
 ====
-. A colored impersonation border appears around the perimeter of the screen. You are now viewing ThoughtSpot as the target user.
++
+A colored impersonation border appears around the perimeter of the screen. You are now viewing ThoughtSpot as the target user.
 +
 [.bordered]
-image::impersonation-5.png[Exit session]
+image::impersonation-5.png[Impersonation border around the ThoughtSpot interface]
 
 . To end the session before it expires, click *Exit session*.
 +
 [.bordered]
-image::impersonation-6.png[Exit session]
+image::impersonation-6.png[Exit session button in the impersonation banner]
 +
 ThoughtSpot ends the session and signs you out. On SSO clusters with auto-redirect, you are automatically re-authenticated as yourself.
 
