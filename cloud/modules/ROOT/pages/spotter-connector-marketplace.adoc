@@ -6,140 +6,204 @@
 :description:
 :jira: SCAL-326029
 
-// SOURCE: SCAL-326028, PDM-4465
+// SOURCE: SCAL-326028, PDM-4465, demo transcript
 
 The Spotter Connector Marketplace is a browsable catalog of third-party connectors that extend Spotter's capabilities by connecting it to external tools and services through the link:https://modelcontextprotocol.io/[Model Context Protocol (MCP), window=_blank].
 // SOURCE: PDM-4465
 
-Using the marketplace, all Spotter users can discover available connectors, view their descriptions and statuses, and search for specific tools — regardless of whether the connector is installed or whether the user has permission to install it. Installation and configuration remain permission-gated so that administrators retain full control over the organization's connected surface.
-// SOURCE: PDM-4465
+The marketplace replaces the previous connectors list on the Spotter page with two sections:
 
-== Overview
+* **My added connectors**: Connectors already configured on your ThoughtSpot instance.
+* **Available to add**: A catalog of over 100 pre-configured connector templates that you can browse and add.
+// SOURCE: demo transcript
 
-The Connector Marketplace provides a central location for discovering and managing integrations between Spotter and third-party services. With support for 100+ third-party connectors, the marketplace helps your organization:
-// SOURCE: SCAL-326028
+All Spotter users can browse the marketplace and see available connectors. Adding and configuring connectors requires administrator privileges or the *Can Manage Spotter* privilege, and must be done from the primary Org.
+// SOURCE: demo transcript
 
-* **Discover integrations**: Browse and search the full catalog of available connectors, even if they are not yet installed on your instance.
-* **Understand connector capabilities**: View what each connector does, its current status, and whether it is installed.
-* **Request or install connectors**: Depending on your role, install connectors directly or make informed requests to your administrator.
-* **Add custom MCP servers**: Permitted users can connect Spotter to any MCP-compatible server by providing its URL and credentials.
-// SOURCE: PDM-4465
+If a connector you need is not listed in the catalog, you can connect Spotter to any MCP-compatible server by providing its URL and credentials.
+// SOURCE: PDM-4465, demo transcript
+
+== Types of connectors
+
+The marketplace includes connectors with different setup requirements:
+// SOURCE: demo transcript
+
+[cols="1,2,2", options="header"]
+|====
+| Type | Description | Examples
+
+| One-click
+| No configuration needed. Click to add instantly. ThoughtSpot maintains tighter integrations with these connectors.
+| Slack, Web Search
+
+| Template
+| ThoughtSpot provides a pre-configured template with a link to the provider's documentation. You complete the setup on the provider's side, obtain the required credentials (such as a URL, client ID, and client secret), and then enter them in ThoughtSpot.
+| Microsoft Teams
+
+| Pre-filled URL
+| ThoughtSpot pre-fills the MCP server URL. You may need to provide additional credentials or configuration details.
+| // TODO: verify with engineering — confirm examples of pre-filled URL connectors
+
+|====
 
 [NOTE]
 ====
-The Connector Marketplace is available on ThoughtSpot Cloud instances running version 26.11.0.cl or later with the Spotter feature enabled.
-// TODO: verify with engineering — confirm exact version and any feature flag requirements
+The marketplace does not list every MCP server that Spotter can connect to. If the connector you need is not in the catalog, you can add any MCP-compatible server manually. See <<add-custom-mcp-server>>.
 ====
 
 == User roles and permissions
 
-The Connector Marketplace is visible to all Spotter users, but the actions available depend on your role:
+The Connector Marketplace is visible to all Spotter users, but the actions available depend on your role and your current Org.
+// SOURCE: demo transcript
+
+=== Primary Org
 
 [cols="1,3", options="header"]
 |====
 | Role | Available actions
 
-| All Spotter users
-| Browse the connector catalog, search for connectors, view connector descriptions and status.
+| Administrator
+| Browse the catalog, add and configure connectors, share connectors, manage permissions.
 
-| Administrators
-| All of the above, plus install, configure, and manage connectors. Add custom MCP servers by URL.
-// TODO: verify with engineering — confirm which specific ThoughtSpot privileges or roles are required for installation
+| Can Manage Spotter privilege
+| Browse the catalog, add and configure connectors, share connectors, manage permissions.
+
+| End user
+| Browse the catalog and view added connectors (view-only). Cannot add, configure, or manage connectors.
 
 |====
 
-// TODO: verify with engineering — can non-admin users with specific privileges also install connectors?
+=== Non-primary Orgs
+
+Connectors can only be added or removed from the *primary Org*. If you are in a non-primary Org:
+
+* **Administrators and users with Can Manage Spotter**: Can browse the catalog, share connectors, and manage permissions. The *Add* option is not available.
+* **End users**: Can browse the catalog and view connectors they have access to (view-only).
+// SOURCE: demo transcript
+
+For details, see <<_sharing_a_connector>> and <<_managing_connector_permissions>>.
+
+[NOTE]
+====
+The *Can Manage Spotter* privilege for connector management is available starting with the first patch of 26.10.0.cl.
+// SOURCE: demo transcript
+====
 
 == Accessing the Connector Marketplace
 
-// TODO: verify with engineering — confirm exact UI navigation path
+The Connector Marketplace is available on the *Spotter* page.
+// SOURCE: demo transcript
 
-To access the Connector Marketplace:
-
-. Navigate to the *Spotter* interface.
-. Click *Settings* and then select *Connectors*.
-// TODO: verify with engineering — confirm exact button/menu label and location
-. The marketplace displays the full catalog of available connectors.
+. Navigate to the *Spotter* page.
+. Click *Settings*, then click *Connectors*.
++
+The marketplace displays your added connectors and the full catalog of connectors available to add.
 
 [.bordered]
 image::connector-marketplace.png[]
 
-== Browsing and searching connectors
+== Adding a connector
 
-The marketplace allows you to browse all available connectors in one place.
+You must be an administrator or have the *Can Manage Spotter* privilege, and you must be in the *primary Org* to add a connector.
+// SOURCE: demo transcript
 
-=== Browsing the catalog
+=== Connectors that require setup
 
-The connector catalog displays all available connectors with the following information for each:
+Most connectors in the marketplace are pre-configured templates. To add one of these connectors:
+// SOURCE: demo transcript
 
-* **Connector name**: The name of the third-party service or tool.
-* **Description**: A summary of what the connector does and how it extends Spotter.
-* **Status**: Whether the connector is installed, available, or requires configuration.
-// TODO: verify with engineering — confirm exact status values and any additional metadata shown (e.g., category, icon, version)
+. In the Connector Marketplace, locate the connector in the *Available to add* section.
+. Click the connector to open its *Add connector* window.
+. Follow the link at the top of the window to the provider's documentation and complete any required setup on the provider's side. This typically involves registering an application and obtaining credentials such as a URL, client ID, and client secret.
+. Return to the *Add connector* window in ThoughtSpot and enter the required credentials.
+. Click *Add* to complete the setup.
+// TODO: verify with engineering — confirm the exact button labels and form fields in the setup flow.
 
-=== Searching for connectors
++
+Some connectors have a known MCP server URL. In these cases, ThoughtSpot pre-fills the URL for you, and you only need to provide authentication credentials.
+// SOURCE: demo transcript
 
-Use the search bar at the top of the marketplace to find a specific connector by name or keyword.
-// TODO: verify with engineering — confirm search behavior (name only, description, tags?)
+=== One-click connectors
 
-== Installing a connector
+Some connectors, such as Slack and Web Search, can be added with a single click and require no additional configuration.
+// SOURCE: demo transcript
 
-Administrators can install connectors directly from the marketplace.
+To add a one-click connector:
 
-To install a connector:
+. In the Connector Marketplace, locate the connector in the *Available to add* section.
+. Click *Add*.
++
+The connector is added immediately and appears in *My added connectors*.
 
-. In the Connector Marketplace, locate the connector you want to install.
-. Click *Install* or *Configure*.
-// TODO: verify with engineering — confirm the exact button label and installation flow
-. Follow the on-screen prompts to provide any required credentials or configuration details.
-. After installation, the connector status updates and Spotter can use the connector's capabilities.
-
-[NOTE]
-====
-Each connector may require different credentials or configuration parameters. Refer to the connector's description for specific setup requirements.
-====
-
+[[add-custom-mcp-server]]
 == Adding a custom MCP server
 
-Spotter works with any MCP-compatible server. If the tool or service you need is not listed in the marketplace catalog, you can add it as a custom connector by providing the MCP server's URL and credentials.
-// SOURCE: PDM-4465
+If the tool or service you need is not listed in the marketplace catalog, you can add it as a custom connector, provided it supports the MCP protocol.
+// SOURCE: PDM-4465, demo transcript
 
 To add a custom MCP server:
 
-. In the Connector Marketplace, click *Add custom connector* or *Add MCP server*.
-// TODO: verify with engineering — confirm exact button label and flow
+. In the Connector Marketplace, click *Add custom connector*.
+// TODO: verify with engineering — confirm exact button label for adding a custom MCP server.
 . Enter the MCP server URL.
-. Provide the required authentication credentials.
-. Click *Save* or *Connect*.
-. Spotter validates the connection and, if successful, the custom connector appears in your connector list.
+. Provide any required authentication credentials.
+. Click *Save*.
 
 [IMPORTANT]
 ====
-Adding a custom MCP server requires administrator privileges. Ensure that the MCP server you are connecting to is trusted and complies with your organization's security policies.
+Adding a custom MCP server requires administrator privileges or the *Can Manage Spotter* privilege, and must be done from the primary Org.
 ====
 
-== Managing installed connectors
+== Sharing a connector
 
-Administrators can manage connectors that are already installed on the instance.
+After a connector is added, administrators and users with the *Can Manage Spotter* privilege can share it with users and groups. Sharing controls which users see the connector in their *Added* connectors list and can use its capabilities in Spotter conversations.
+// SOURCE: demo transcript — sharing confirmed as an available action; end users "see the connectors that have been added for you, that you have access to"
 
-Available management actions include:
+Unlike adding connectors, sharing is available in both the primary Org and non-primary Orgs.
+// SOURCE: demo transcript
 
-* **View status**: Check whether an installed connector is active, inactive, or experiencing errors.
-* **Reconfigure**: Update credentials or configuration parameters for an installed connector.
-* **Remove**: Uninstall a connector that is no longer needed.
-// TODO: verify with engineering — confirm available management actions
+To share a connector:
 
-== Supported connectors
+. In the Connector Marketplace, locate the connector in *Added* connectors list.
+. Click the *More* menu icon image:icon-more-10px.png[More menu icon image] for the connector and select *Share*.
+// TODO: verify with engineering — confirm the exact UI control (options menu, button label) for the share action.
+. Select the users or groups you want to share the connector with.
+// TODO: verify with engineering — confirm whether sharing supports both users and groups, and whether there are distinct access levels (for example, view vs. use).
+. Select *Share*.
 
-The Spotter Connector Marketplace supports 100+ third-party connectors across a wide range of categories and services.
-// SOURCE: SCAL-326028
+The connector now appears in the *Added* connectors list for the selected users.
 
-// TODO: verify with engineering — determine whether a full list of connectors should be documented here or if the marketplace UI is the canonical source for the current catalog. If a list is needed, obtain the list from engineering.
+== Managing connector permissions
 
-For the most up-to-date list of available connectors, browse the Connector Marketplace directly in the Spotter interface.
+Administrators and users with the *Can Manage Spotter* privilege can manage the permissions of an added connector, in both the primary Org and non-primary Orgs.
+// SOURCE: demo transcript — "you kind of also have this share and manage permissions"
+
+To manage permissions for a connector:
+
+. In the Connector Marketplace, locate the connector in *Added* connectors.
+. Click the *More* menu icon image:icon-more-10px.png[More menu icon image] for the connector and select *Manage Permissions*.
+. Review and update the tool permissions for the connector.
+. Click *Save*.
+
+[NOTE]
+====
+In non-primary Orgs, *Share* and *Manage permissions* are the only connector management actions available. Connectors can only be added or removed from the primary Org.
+// SOURCE: demo transcript
+====
+
+== What end users see
+
+After the Connector Marketplace is enabled, all Spotter users can access the connectors page, regardless of their role. End users see:
+// SOURCE: demo transcript
+
+* **My added connectors**: The connectors that have been configured and shared with them.
+* **Available to add**: The full catalog of available connectors. End users can browse this list to see what connectors exist, but cannot add or configure them.
+
+This visibility helps end users understand what integrations are available and make informed requests to their administrators.
+// SOURCE: PDM-4465, demo transcript
 
 == Related information
 
-* xref:spotter.adoc[]
-// TODO: verify — confirm the correct URL path for the Spotter overview page
-* xref:spotter-versions.adoc[]
+* xref:spotter-connectors-use.adoc[Using Spotter connectors]
+* xref:spotter-connectors-slack.adoc[Slack connector for Spotter]
+// TODO: verify — confirm correct xref paths for these pages on the target branch.
