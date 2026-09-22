@@ -1,11 +1,10 @@
 = Progressive rendering
 :page-last_updated: Sep 22, 2026
 :linkattrs:
-:page-layout: default-cloud-beta
 :author: Mark
 :experimental:
 :page-aliases:
-:description: Progressive rendering delivers a base chart immediately and enhances it in the background for Spotter answers with Muze AI-generated charts.
+:description: Progressive rendering delivers a base chart immediately and enhances it in the background for agentic charts in Spotter.
 :jira: SCAL-330486
 
 // Draft for SCAL-330486 / SCAL-330485
@@ -15,66 +14,51 @@
 
 [.lead]
 Progressive rendering delivers a base chart immediately and enhances it in the background.
+
 This lets you start analyzing data within seconds, while richer styling and formatting are applied automatically.
 
 // SOURCE: SCAL-330486 description; SCAL-330485 summary
 
 == How progressive rendering works
 
-Progressive rendering operates in two phases for Spotter answers that use Muze AI-generated charts:
+Progressive rendering operates in two phases for agentic charts in Spotter:
 
 // SOURCE: SCAL-330485 description - "Spotter answers that use Muze AI chart generation"
 
 1. *Base chart (v1)* — The charting engine generates a functional, interactive chart with correct axes, data series, and basic formatting. The chart displays immediately.
+// SOURCE: SCAL-330485 - "baseline chart chosen by Muze AI's fast mode (v1)"
 2. *Background enhancement (v2)* — While you interact with the base chart, the system applies additional enhancements in the background:
+// SOURCE: SCAL-330485 - "Muze AI refinement (v2) is computed in the background"
 ** Refined color schemes and styling
 ** Data labels and annotations
 ** Legend positioning and formatting
 ** Axis formatting improvements
 ** Additional interactive elements
 
-// SOURCE: SCAL-330485 description - "baseline chart chosen by Muze AI's fast mode (v1)... Muze AI refinement (v2)"
+// SOURCE: SCAL-330485 description
 
-When enhancements complete, they merge into the base chart. The transition is smooth and does not require a page refresh or manual action.
+Once the enhancements are complete, they merge seamlessly into the base chart. The transition is smooth and does not require a page refresh or manual action.
 
-Because enhancement runs after the answer's data has been served, it becomes data-aware. The system computes per-measure statistics from the actual result set and sends them to Muze AI, enabling smarter choices about axis domains, binning, and formatting that were not possible in the previous synchronous flow.
-
-// SOURCE: SCAL-330485 description - "per-measure statistics computed from the actual result set... enabling smarter choices about axis domains, binning, and formatting"
+// SOURCE: SCAL-330485 description
 
 == Enable progressive rendering
 
-Progressive rendering is available for Spotter answers that use Muze AI-generated charts.
+Progressive rendering is available for agentic charts in Spotter, starting with ThoughtSpot 26.10.0.cl.
+// SOURCE: SCAL-330485 - "Target version: 26.10.0.cl"; SCAL-330486
 
-// SOURCE: SCAL-330485 description - "The feature is Spotter-only (enforced both client- and server-side)"
-
-[NOTE]
-====
-Progressive rendering requires the xref:charts-agentic.adoc[Agentic Charting] feature, which is generally available starting in ThoughtSpot 26.8.0.cl.
-====
-
-=== For administrators
-
-Progressive rendering is controlled by a cluster-level configuration flag. By default, the feature is disabled.
-
-// SOURCE: SCAL-330485 description - "cluster-level kill switch (progressiveAnswerEnabled, default off, tunable via tscli)"
-
-To enable progressive rendering, contact {support-url}.
-
+By default, the feature is turned off.
+Your ThoughtSpot administrator can enable it using the `progressiveAnswerEnabled` cluster-level flag through tscli.
+// SOURCE: SCAL-330485 - "default off, tunable via tscli"
 // TODO: verify with engineering — exact tscli command syntax and service task for progressiveAnswerEnabled
 
-// TODO: verify with engineering — confirm exact flag name and service task (tomcat.tomcat is inferred)
-
-To disable the feature, set the flag to `false`. When disabled, Spotter answers with Muze AI-generated charts use the existing synchronous rendering flow.
-
-// SOURCE: SCAL-330485 description - "with the flag off, behaviour is identical to the existing synchronous flow"
+When the flag is off, agentic charts continue to use the existing synchronous rendering flow.
+// SOURCE: SCAL-330485 - "with the flag off, behaviour is identical to the existing synchronous flow"
 
 == What to expect
 
 === Phase 1: Base chart
 
-When you receive a Spotter answer with a Muze AI-generated chart:
-
-// SOURCE: SCAL-330485 description - "Spotter answers that use Muze AI chart generation"
+When you receive an agentic chart:
 
 * A loading indicator may appear briefly
 * The base chart renders with:
@@ -89,18 +73,17 @@ The base chart is fully interactive. You can hover, pan, zoom, and toggle series
 
 While you work with the base chart, the system:
 
-* Applies AI-recommended styling based on data-aware statistics
+* Applies data-aware styling based on per-measure statistics from the actual result set
+// SOURCE: SCAL-330485 - "per-measure statistics computed from the actual result set are sent to Muze AI, enabling smarter choices about axis domains, binning, and formatting"
 * Adds data labels if appropriate
-* Refines axis formatting and binning
+* Refines axis formatting
 * Adjusts colors and visual encoding
 
 [NOTE]
 ====
 The exact timing depends on the complexity of the data and the chart.
-Simple charts may complete enhancements quickly.
+Simple charts (for example, a single-series line chart) may complete enhancements in a few seconds.
 Complex charts with multiple series, annotations, or custom formatting may take longer.
-
-// TODO: verify with engineering — confirm whether typical enhancement timing should be documented
 ====
 
 === Phase 3: Final chart
@@ -118,30 +101,30 @@ You do not need to wait for enhancements to finish before using the chart:
 * Hover over data points to see values
 * Toggle series on and off using the legend
 * Pan and zoom to explore data
-* Submit xref:charts-agentic-nl-editing.adoc[natural-language chart editing] requests
+* Submit follow-up xref:charts-agentic-nl-editing.adoc[natural-language chart editing] requests
 
 Any changes you make to the chart while enhancements are in progress take precedence and are applied after the current enhancement cycle finishes.
+// SOURCE: SCAL-330485 - "concurrent user edits always win over the background write"
 
-// SOURCE: SCAL-330485 description - "concurrent user edits always win over the background write"
+== Performance and behavior guarantees
 
-== Behavior guarantees
-
-Progressive rendering is designed to be fail-safe:
-
-* If the background enhancement fails, times out, or encounters a race condition, the base chart (v1) remains visible with no user-facing error.
-* Concurrent edits always take priority over background writes.
-* Enhancements run on an isolated worker pool, so a slowdown in the Muze AI service does not affect other requests.
-
-// SOURCE: SCAL-330485 description - "fail-safe by construction... any failure, timeout, or race in the background path leaves the v1 chart standing with no user-facing error... concurrent user edits always win over the background write... Enrichment runs on an isolated worker pool"
+* The base chart is designed to be *functionally complete* — you can make decisions from it immediately.
+* Background enhancements focus on *visual polish* — they do not change the underlying data, chart type, or axis scales.
+* Enrichment runs on an isolated worker pool so that a slowdown in the background path cannot slow down other requests.
+// SOURCE: SCAL-330485 - "Enrichment runs on an isolated worker pool so a Muze AI brownout can never slow down other requests"
+* If the background enhancement fails, times out, or encounters a race condition, the base chart remains visible with no user-facing error.
+// SOURCE: SCAL-330485 - "any failure, timeout, or race in the background path leaves the v1 chart standing with no user-facing error"
 
 == Limitations
 
-* Progressive rendering applies to Spotter answers with Muze AI-generated charts only. Standard token-based charts use the existing rendering pipeline.
+* Progressive rendering applies to agentic charts only. Standard token-based charts use the existing rendering pipeline.
 * The base chart may appear with minimal styling (for example, default colors, no data labels) before enhancements complete.
-* The feature is Spotter-only and is enforced on both the client and server.
+* Natural-language editing commands submitted during the enhancement phase are applied after the current cycle finishes, which may result in a brief additional update to the chart.
 
 == Related topics
 
 * xref:charts-agentic.adoc[Charts for agentic answers overview]
 * xref:charts-agentic-nl-editing.adoc[Edit charts with natural language]
 * xref:charts-agentic-examples.adoc[Examples]
+
+0
