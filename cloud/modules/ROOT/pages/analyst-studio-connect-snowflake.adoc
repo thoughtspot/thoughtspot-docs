@@ -101,7 +101,7 @@ CREATE OR REPLACE SECURITY INTEGRATION <enter a name for your security role>
   TYPE = OAUTH
   OAUTH_CLIENT = CUSTOM
   OAUTH_CLIENT_TYPE = <enter a client type>
-  OAUTH_REDIRECT_URI = 'https://<public url of your ThoughtSpot instance>/callosum/v1/connection/generateTokens'
+  OAUTH_REDIRECT_URI = 'https://<public url of your AS instance>/snowflake_oauth_v1/callback'
   OAUTH_USE_SECONDARY_ROLES = IMPLICIT
   ENABLED = TRUE
   COMMENT = '<enter a description of your security profile>'
@@ -126,7 +126,7 @@ CREATE OR REPLACE SECURITY INTEGRATION OAUTH_CONFIG
   TYPE = OAUTH
   OAUTH_CLIENT = CUSTOM
   OAUTH_CLIENT_TYPE = 'CONFIDENTIAL'
-  OAUTH_REDIRECT_URI = 'https://177.122.45.2/callosum/v1/connection/generateTokens'
+  OAUTH_REDIRECT_URI = 'https://app.as01.analyststudio.thoughtspot.cloud/snowflake_oauth_v1/callback'
   OAUTH_USE_SECONDARY_ROLES = IMPLICIT
   ENABLED = TRUE
   COMMENT = 'Profile for passthrough'
@@ -196,7 +196,8 @@ You will be redirected to Snowflake to authorize access.
 
 ==== Re-authentication
 
-You must periodically re-authenticate connections to Snowflake made via OAuth with PKCE. Analyst Studio surfaces a prompt to authenticate when you try to access a connection that requires re-authentication.
+Users see a prompt to authenticate a connection when using an Internal OAuth connection for the first time, or when the token expires.
+You must periodically re-authenticate connections to Snowflake made via OAuth with PKCE.
 
 To re-authenticate a connection:
 
@@ -211,9 +212,7 @@ image::report-select-connection.png[Select a connection]
 image::connect-your-snowflake-account.png[Connect your Snowflake account]
 
 . You see a sign-in page for Snowflake. Enter your username and password, or select *Sign in using SSO*.
-+
-[.bordered]
-image::snowflake-reauth.png[Reauthentication page]
+
 
 . You return to the Report view. Now, when you run a query, the connection functions as normal.
 +
