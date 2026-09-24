@@ -1,0 +1,273 @@
+= Configuring Microsoft Entra ID (OIDC) as an Identity Provider for ThoughtSpot
+:page-last_updated: 9/24/2026
+:linkattrs:
+:experimental:
+:page-layout: default-cloud
+:description: Configure Microsoft Entra ID as an OpenID Connect (OIDC) identity provider for ThoughtSpot single sign-on.
+
+Single sign-on (SSO) setup guide
+
+== Overview
+
+ThoughtSpot supports single sign-on (SSO) through OpenID Connect (OIDC). This guide walks through configuring Microsoft Entra ID (formerly Azure AD) as an OIDC identity provider (IdP) for ThoughtSpot.
+
+Configuration spans two consoles, and you move between them in the following order:
+
+* *Microsoft Entra admin center* — register an application, create a client secret, and (optionally) configure token claims.
+* *ThoughtSpot Admin settings* — create the OIDC connection using the values from Entra, then map claims to ThoughtSpot user attributes.
+* *Back in Microsoft Entra* — add the ThoughtSpot callback URL as a redirect URI and assign users/groups to the application.
+* *Back in ThoughtSpot* — enable the connection and test the sign-in.
+
+=== Before you begin
+
+* Access to the Microsoft Entra admin center with permission to create app registrations and assign users.
+* Administrator access to ThoughtSpot (*Admin > Single Sign On*).
+* Your ThoughtSpot instance URL.
+
+== Part 1 — Register the application in Microsoft Entra ID
+
+=== Step 1.1  Create the app registration
+
+In the Microsoft Entra admin center, go to *Entra ID > App registrations* and select *New registration*.
+
+[.bordered]
+image::entra-oidc-01-entra-admin-center-app-registrations.png["Entra admin center > App registrations > New registration"]
+
+Enter a *Name* (for example, `TS OIDC`), choose the *Supported account types* appropriate for your organization (*Single tenant* for a single directory), and leave *Redirect URI* blank for now — you will add it in Part 3. Select *Register*.
+
+[.bordered]
+image::entra-oidc-02-register-an-application-name-account.png["Register an application: name, account type, and (for now) no redirect URI"]
+
+=== Step 1.2  Record the application identifiers
+
+On the application *Overview* page, copy the *Application (client) ID* and the *Directory (tenant) ID*. You will need both when configuring ThoughtSpot.
+
+[.bordered]
+image::entra-oidc-03-application-overview-application-client-id.png["Application Overview — Application (client) ID and Directory (tenant) ID"]
+
+=== Step 1.3  Create a client secret
+
+Go to *Certificates & secrets > Client secrets* and select *New client secret*.
+
+[.bordered]
+image::entra-oidc-04-certificates-secrets-client-secrets-new.png["Certificates & secrets > Client secrets — New client secret"]
+
+Enter a *Description* and choose an *Expires* period, then select *Add*.
+
+[.bordered]
+image::entra-oidc-05-add-a-client-secret-set.png["Add a client secret — set a description and expiry"]
+
+Copy the secret *Value* immediately and store it securely.
+
+IMPORTANT: The client secret *Value* is displayed only once, at creation. Copy it now — you cannot retrieve it later. Record the expiry date and set a reminder to rotate the secret before it expires.
+
+[.bordered]
+image::entra-oidc-06-the-secret-value-is-shown.png["The secret Value is shown once, with its expiry date and Secret ID"]
+
+=== Step 1.4  Retrieve the OIDC endpoints
+
+On the application *Overview*, select *Endpoints*. You can also open the OpenID Connect metadata document directly to read every value.
+
+[.bordered]
+image::entra-oidc-07-endpoints-blade-authorization-token-issuer.png["Endpoints blade — authorization, token, issuer, and metadata URLs"]
+
+The OpenID Connect metadata document is at:  `https://login.microsoftonline.com/<tenant-id>/v2.0/.well-known/openid-configuration`
+
+From it, note the following values (used in Part 2):
+
+* `authorization_endpoint`
+* `token_endpoint`
+* `issuer`  (single-tenant form: `https://login.microsoftonline.com/<tenant-id>/v2.0`)
+* `jwks_uri`
+* `userinfo_endpoint`  (optional)
+
+[.bordered]
+image::entra-oidc-08-the-well-known-openid-configuration.png["The .well-known/openid-configuration document lists all OIDC endpoints"]
+
+=== Step 1.5  (Optional) Configure a groups claim
+
+OIDC includes default claims such as email and name automatically. To also pass group membership to ThoughtSpot, add a groups claim. In *Token configuration*, select *Add groups claim*.
+
+NOTE: *The claim name is `groups`.* `groups` is the default OIDC claim for group membership, so there is nothing custom to define — you simply map ThoughtSpot roles to the groups claim in Part 2.
+
+[.bordered]
+image::entra-oidc-09-token-configuration-add-groups-claim.png["Token configuration > Add groups claim"]
+
+In the *Edit groups claim* panel, choose which group types to include. For most deployments, select *Groups assigned to the application* — this emits only the groups assigned to this application (Part 3) and avoids exceeding the limit on the number of groups a token can emit.
+
+[.bordered]
+image::entra-oidc-10-edit-groups-claim-select-the.png["Edit groups claim — select the group types to include in the token"]
+
+Under *Customize token properties by type*, you can choose a format (for example, *sAMAccountName*) to emit the group name instead of the group Object ID.
+
+NOTE: *ID token is what matters for OIDC.* ThoughtSpot consumes the ID token, so configure the groups claim under the *ID* token type. The *Access* and *SAML* token settings on this panel do not apply to this OIDC flow.
+
+[.bordered]
+image::entra-oidc-11-groups-assigned-to-the-application.png["“Groups assigned to the application” selected, with the ID-token group format set (e.g. sAMAccountName)"]
+
+NOTE: *Group name vs. Object ID.* The name formats (sAMAccountName, NetBIOSDomain\sAMAccountName, DNSDomain\sAMAccountName, and On Premises Group Security Identifier) only return a group name for groups that are synced from on-premises Active Directory. For cloud-only Entra ID groups, none of these apply and Entra emits the group Object ID (GUID) regardless of the format selected. To get names for cloud groups, see Step 1.6.
+
+After you add it, the groups claim appears in the *Token configuration* list.
+
+[.bordered]
+image::entra-oidc-12-token-configuration-now-lists-the.png["Token configuration now lists the groups claim"]
+
+=== Step 1.6  (Optional) Get group names for cloud-only Entra groups
+
+As noted above, cloud-only Entra ID groups emit the group Object ID (GUID) rather than a name, so ThoughtSpot receives group IDs instead of group names. To receive group names for cloud groups, edit the application manifest and add `cloud_displayname` to the `groups` claim in the ID token section:
+
+* From the app registration *Overview*, open *Manifest*.
+* In the *Microsoft Graph App Manifest* tab, find the `groups` claim under the `idToken` section.
+* Add `cloud_displayname` to that claim’s `additionalProperties`, as shown below, then select *Save*.
+
+NOTE: *Edit the ID token entry.* For OIDC only the `idToken` section matters — the `accessToken` and `saml2Token` entries for the groups claim are not used by this flow.
+
+[.bordered]
+image::entra-oidc-13-manifest-clouddisplayname-added-to-the.png["Manifest — cloud_displayname added to the groups claim under idToken (the accessToken and saml2Token entries are not used by this flow)"]
+
+NOTE: *If group names already appear, skip this.* If you already receive group names in ThoughtSpot without this edit, you can ignore it — that typically means your groups are synced from an on-premises Active Directory, where the name formats already return a name, so choosing `sAMAccountName` should do the trick.
+
+== Part 2 — Create the OIDC connection in ThoughtSpot
+
+This part covers the values you enter for Microsoft Entra ID. For a description of every field in the ThoughtSpot OIDC configuration, see xref:oidc-iamv2.adoc#_enable_oidc_authentication[Enable OIDC authentication].
+
+=== Step 2.1  Start Add Identity Provider
+
+In ThoughtSpot, go to *Admin > Single Sign On* and select *Add Identity Provider*.
+
+[.bordered]
+image::entra-oidc-14-thoughtspot-admin-single-sign-on.png["ThoughtSpot Admin > Single Sign On > Add Identity Provider"]
+
+=== Step 2.2  Select OIDC IdP
+
+Choose *OIDC IdP* as the identity provider type.
+
+[.bordered]
+image::entra-oidc-15-select-the-oidc-idp-tile.png["Select the OIDC IdP tile"]
+
+=== Step 2.3  Enter the connection details
+
+Complete the *OIDC Identity Provider Connection Details* form using the values you collected from Entra:
+
+* *Connection Name* — a unique name for this connection.
+* *Client Secret* — the secret *Value* from Step 1.3.
+* *Client Id* — the *Application (client) ID* from Step 1.2.
+* *Scopes* — `profile email openid`.
+* *Authorisation Endpoint, Token Endpoint, Issuer, Jwks Endpoint* — from Step 1.4.
+* *User Info Endpoint* — optional.
+* *Auto create user (JIT)* — enable to create ThoughtSpot accounts automatically on first successful sign-in.
+
+[.bordered]
+image::entra-oidc-16-the-empty-oidc-connection-details.png["The empty OIDC connection details form"]
+
+[.bordered]
+image::entra-oidc-17-the-connection-details-form-completed.png["The connection details form completed with values from Entra"]
+
+=== Step 2.4  Map attributes
+
+Map the claims from the IdP token to ThoughtSpot user attributes. A typical mapping is *Username* → `email`, *Email* → `email`, and *Display name* → `name` (the `name` claim represents the user’s display-name property in OIDC). If you configured a groups claim in Step 1.5, map *roles* → `groups` (`groups` is the default OIDC claim name, so no custom claim is required). Optionally map *Orgs* and *Default Org*. Select *Save and continue*.
+
+[.bordered]
+image::entra-oidc-18-map-thoughtspot-user-attributes-to.png["Map ThoughtSpot user attributes to IdP claims, including roles → groups"]
+
+NOTE: *Username source.* You can map *Username* to `preferred_username` instead of `email` if you want the ThoughtSpot username to be the user’s UID rather than their email address.
+
+NOTE: *Group mapping requires activation by ThoughtSpot Support.* The *roles* → `groups` mapping does not take effect until Support enables group mapping from the backend. See <<group-mapping-scope>>.
+
+=== Step 2.5  Copy the ThoughtSpot callback URL
+
+On the final step, ThoughtSpot displays a *Callback URL* to register in your identity provider. Copy it — you will add it to the Entra app in Part 3. The callback URL has the form:
+
+`https://<your-thoughtspot-instance>/oauth2/v1/authorize/callback`
+
+NOTE: Choose *Later* at this point rather than *Enable* — enable the connection only after you have added the redirect URI and assigned users in Entra (Part 3), then return to enable it in Part 4.
+
+== Part 3 — Complete the application configuration in Microsoft Entra ID
+
+=== Step 3.1  Add the redirect (callback) URI
+
+Back in the Entra app registration, go to *Authentication* and select *Add a platform* or *Add Redirect URI*. Choose *Web* and paste the ThoughtSpot *Callback URL* from Step 2.5, then select *Save*.
+
+NOTE: *Both sides must match:* the redirect URI in Entra must be identical to the callback URL shown by ThoughtSpot, or sign-in will fail.
+
+[.bordered]
+image::entra-oidc-19-authentication-add-redirect-uri-web.png["Authentication > Add Redirect URI (Web) — paste the ThoughtSpot callback URL here"]
+
+=== Step 3.2  Assign users and groups
+
+In *Entra ID > Enterprise applications*, open the application, go to *Users and groups*, and select *Add user/group*. Select the users or groups that should be allowed to sign in to ThoughtSpot and assign them.
+
+[.bordered]
+image::entra-oidc-20-add-assignment-select-the-users.png["Add Assignment — select the users/groups and a role, then Assign"]
+
+The assigned group (or users) now appears in the *Users and groups* list for the application.
+
+[.bordered]
+image::entra-oidc-21-the-application-s-users-and.png["The application’s Users and groups list after assignment"]
+
+== Part 4 — Enable and test
+
+=== Step 4.1  Enable the connection in ThoughtSpot
+
+Return to ThoughtSpot, go to *Admin > Single Sign On*, and *Enable* the OIDC connection you created.
+
+=== Step 4.2  Test the sign-in
+
+Open the ThoughtSpot login page. Below the username/password fields, under *or*, select the OIDC sign-in button for your connection (for example, *Primary_TS OIDC*).
+
+[.bordered]
+image::entra-oidc-22-thoughtspot-login-page-the-oidc.png["ThoughtSpot login page — the OIDC sign-in button appears under 'or'"]
+
+You are redirected to Microsoft to authenticate. Enter your Entra credentials.
+
+[.bordered]
+image::entra-oidc-23-microsoft-sign-in-enter-the.png["Microsoft sign-in — enter the account email"]
+
+[.bordered]
+image::entra-oidc-24-microsoft-sign-in-enter-the.png["Microsoft sign-in — enter the password"]
+
+On successful authentication you are returned to ThoughtSpot and signed in. If *Auto create user (JIT)* is enabled and the account did not previously exist, it is created automatically.
+
+=== Step 4.3  Group synchronization
+
+When a user signs in, the groups carried in their ID token are synchronized to ThoughtSpot automatically and applied to the user. If a group in the token does not yet exist in ThoughtSpot, it is created automatically. The resulting group membership is visible on the user’s ThoughtSpot profile.
+
+NOTE: *Prerequisite:* this synchronization only takes effect once group mapping has been activated from the backend by {support-url}. See <<group-mapping-scope>>.
+
+[.bordered]
+image::entra-oidc-25-a-thoughtspot-user-with-a.png["_A ThoughtSpot user with a group (e.g. TS_DOC) synchronized from the IdP._"]
+
+[#group-mapping-scope]
+== Group mapping requirements and scope
+
+include::partial$entra-idp-group-mapping-scope.adoc[]
+
+== Field reference
+
+Use this table as a quick map from each ThoughtSpot connection field to its source in Microsoft Entra ID.
+
+[cols="1,2",options="header"]
+|===
+| *ThoughtSpot field* | *Value / source in Microsoft Entra ID*
+| Connection Name | Any unique name for this IdP connection (e.g. "TS OIDC").
+| Client Id | Application (client) ID — app registration Overview.
+| Client Secret | Secret Value — Certificates & secrets (shown only once at creation).
+| Scopes | `profile email openid`
+| Authorisation Endpoint | `authorization_endpoint` — Endpoints blade / discovery doc.
+| Token Endpoint | `token_endpoint` — Endpoints blade / discovery doc.
+| Issuer | `issuer` — e.g. `https://login.microsoftonline.com/<tenant-id>/v2.0`
+| User Info Endpoint | `userinfo_endpoint` (optional) — `https://graph.microsoft.com/oidc/userinfo`
+| Jwks Endpoint | `jwks_uri` — `.../discovery/v2.0/keys`
+| Callback URL (into Entra) | Shown on the final ThoughtSpot step; added as a Redirect URI (Web) in the Entra app.
+|===
+
+== Key points
+
+* *Client secret is shown once.* Copy the secret Value at creation and store it securely; note the expiry and plan to rotate it before it lapses.
+* *Default vs. group claims.* OIDC includes default claims (email, name) automatically. To pass group membership, add a groups claim explicitly in Token configuration. "groups" is the default OIDC claim name — map ThoughtSpot roles to groups; no custom claim is needed.
+* *ID token is what matters for OIDC.* ThoughtSpot reads the ID token, so configure the groups claim on the ID token type; the Access and SAML token settings do not apply to this flow.
+* *Group name vs. Object ID.* The sAMAccountName / NetBIOS / DNSDomain / on-prem SID formats return a group name only for groups synced from on-premises Active Directory. Cloud-only Entra ID groups always emit the group Object ID (GUID) — add `cloud_displayname` to the `groups` claim in the manifest’s `idToken` section to receive names instead.
+* *Groups sync on login.* Group membership is synchronized to ThoughtSpot at sign-in, and any group that does not already exist is created automatically.
+* *Group mapping needs a backend activation.* Group mapping must be enabled from the backend by ThoughtSpot Support; the roles → groups mapping alone will not take effect until this is done.
+* *The redirect/callback URL must match exactly* on both sides — the value in ThoughtSpot and the redirect URI in Entra.
+* *Single-tenant issuer format:* `https://login.microsoftonline.com/<tenant-id>/v2.0`.

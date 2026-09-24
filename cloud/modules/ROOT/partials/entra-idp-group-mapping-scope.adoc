@@ -1,0 +1,13 @@
+// Shared by saml-entra-id.adoc and oidc-entra-id.adoc
+IMPORTANT: Group mapping must be activated from the ThoughtSpot backend. After you complete the configuration in this article, contact {support-url} to finish the setup. Until Support enables group mapping, it does not take effect, even if the configuration in Entra and ThoughtSpot is correct.
+
+*The IdP is the source of truth.* ThoughtSpot only creates and honors what the identity provider sends in the SAML response or ID token. Anything that must exist in ThoughtSpot at sign-in, such as a user, an email, or a group membership, must be supplied by the IdP (Microsoft Entra ID). When the setup is correct, it is the IdP's responsibility to include these values. After a value is sent, ThoughtSpot honors and applies it. If a value is missing, ThoughtSpot has nothing to act on.
+
+*What is not provisioned from the IdP.* Single sign-on can create users and groups in ThoughtSpot at sign-in, but the privileges assigned to those groups and the creation of Orgs are not derived from the IdP. Set up group privileges and create Orgs beforehand, either manually in ThoughtSpot or through automation with the ThoughtSpot REST APIs.
+
+*Scope.* The group-mapping setup in this article applies to the following scenarios, in which each user belongs to a single Org:
+
+* *Primary Org group mapping*: the user belongs to the Primary Org only.
+* *Per-Org subdomain login*: the user belongs to a single Org and signs in through the Org-specific URL. ThoughtSpot identifies the Org from that URL as the authorized Org, and the user enters that Org with the relevant group memberships.
+
+NOTE: Users who must belong to more than one Org require a different approach, with additional guidelines that are not covered in this article.
