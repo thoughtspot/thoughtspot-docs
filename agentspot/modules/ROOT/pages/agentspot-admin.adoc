@@ -1,5 +1,5 @@
 = AgentSpot administration
-:last_updated: Sep 8, 2026
+:last_updated: Sep 24, 2026
 :linkattrs:
 :experimental:
 :page-layout: default-agentspot-no-index
@@ -41,8 +41,7 @@ There are two primary AgentSpot privileges you can assign to a role:
 | Privilege | Description
 
 | *Can manage AgentSpot* | Full administrative access to manage connectors, agents, and organization-wide settings
-| *Can use AgentSpot* | Access to AgentSpot to use shared agents
-// TODO: verify with engineering — confirm exact privilege label in UI: "Can use AgentSpot" or "Can access AgentSpot"
+| *Can access AgentSpot* | Access to AgentSpot to use shared agents
 |===
 
 IMPORTANT: Users can only access AgentSpot after they have been assigned a role containing one of these privileges.
@@ -141,6 +140,11 @@ To add a connector, do the following:
 .. (Optional) Enter a *Client Secret* (or leave it empty for PKCE flow)
 .. Click *Register Connector*.
 
+[NOTE]
+====
+Some connectors, such as *Google Workspace* and *Microsoft 365*, are platform-native and do not require an MCP server URL. These connectors may prompt for administrator consent or OAuth authorization instead of the registration form described above.
+====
+
 ==== Sharing a connector with your organization
 When you add a connector, it is private to administrators by default. It does not appear in the connector list for non-admin users until you share it. This lets you register and test a connector before rolling it out. Right after you add a connector, AgentSpot also prompts you to share it.
 
@@ -178,11 +182,11 @@ When an admin enables a connector (e.g., Jira), each user must log in with their
 === Slack bot
 
 The AgentSpot Slack bot lets users interact with their agents from Slack. Once an admin connects a Slack app
-and binds a channel to an agent, anyone in that channel can @mention the bot and receive agent responses in the
+and connects a channel to an agent, anyone in that channel can @mention the bot and receive agent responses in the
 same thread.
 
 Setup crosses back and forth between Slack and AgentSpot. The order matters, and AgentSpot states it directly
-on the page: use the event request URL in Slack, then verify the app before binding channels.
+on the page: use the event request URL in Slack, then verify the app before connecting channels.
 
 Here's what it supports:
 
@@ -195,10 +199,8 @@ Here's what it supports:
 - You need permission to create and install a Slack app in your workspace. Scope changes may require
 workspace-admin approval.
 - You need admin access to AgentSpot (Admin Settings)
-- At least one agent must already exist, and be ready to bind.
-// auto-draft PR#1390 — REVIEW
-- Binding supports both public and private channels. Binding a private channel requires acknowledging a private-channel disclosure, and the bot must be invited to the private channel first. Direct messages remain off by default.
-// REVIEW: confirm the exact private-channel disclosure wording and any additional prerequisites for private-channel binding before publishing.
+- At least one agent must already exist, and be ready to connect.
+- Channel connections support both public and private channels. The bot must be invited to a channel before it can be connected. A disclosure checkbox is required when connecting any channel; the text adapts to show whether the selected channel is public or private. Direct messages are off by default, but an admin can set a default agent for direct messages.
 
 [#part1]
 ==== Part 1: Create the Slack app from a manifest
@@ -389,20 +391,25 @@ If verification fails and the URL is definitely correct, then it is an endpoint 
 [.bordered]
 image::disable-socket-mode.png[]
 
-==== Part 6: Invite the bot, then bind it to a channel
+==== Part 6: Invite the bot, then connect a channel
 
 . In Slack, in the target channel run this command: `/invite @your-bot-name`
-. Back in AgentSpot reload the Admin Settings > Slack bot page.
-// auto-draft PR#1390 — REVIEW
-. In the channel bindings section, do the following:
-.. Select the Slack app, the Agent, and the channel. Channels are marked as public or private in the picker.
-.. Select the acknowledgement checkbox. For a private channel, this acknowledges the private-channel disclosure.
-.. Click *Bind*.
-// REVIEW: confirm the exact section heading and picker labels for public vs. private channel bindings before publishing.
+. Back in AgentSpot, reload the *Admin Settings > Slack bot* page.
+. In the left sidebar, select the Slack app you want to configure.
+. In the *Channel connections* section, click *Connect channel*.
+. In the dialog, do the following:
+.. Select the channel from the dropdown.
++
+Channels are marked as public (with `#` prefix) or private (with a lock icon). Channels where the bot is not a member are disabled — invite the bot first, then click *Refresh channels*.
+.. Select the agent from the dropdown.
+.. Select the disclosure checkbox.
++
+The disclosure text adapts to the selected channel type. For any channel, it confirms that thread context will be sent to AgentSpot for authorized users; for a private channel, it additionally discloses that private thread context may be sent.
+.. Click *Connect channel*.
 
 ==== Part 7: Test
 
-- Mention the bot in the bound channel. The agent replies in the same thread.
+- Mention the bot in the connected channel. The agent replies in the same thread.
 +
 TIP: Test at the top level of the channel first rather than inside an existing thread. It rules out a whole class of
 ambiguity if something is wrong.
@@ -426,27 +433,22 @@ reply
 |`app_mentions:read , chat:write`
 |Always.
 
-|Channel listing and
+|C|Channel listing and
 joining
 |`channels:read , channels:join , channels:history`
-|Always. `channels:read` populates the binding dropdown.
-
-|User identity
-|`users:read , users:read.email`
-|Always. Maps the Slack sender to an
-AgentSpot user.
+|Always. `channels:read` populates the connection dropdown.
 
 |Private channels
 |`groups:history , groups:read`
-|Binding a private channel to an agent. // auto-draft PR#1390 — REVIEW: private-channel binding now ships in this UI; confirm scope requirements with engineering.
+|Connecting a private channel to an agent.
 
 |Direct messages
 |`im:history , im:read`
-|Not usable using this UI today.
+|Setting a default agent for DMs. Off by default; admin can opt in per app.
 
 |Group DMs
 |`mpim:history`
-|Not usable using this UI today.
+|Group DM support is not available in this UI.
 
 |Slash command
 |`commands`
@@ -479,9 +481,9 @@ uses. Please reinstall your app for these changes to take effect."
 . Copy the new Bot User OAuth Token. Reinstalling reissues it, so the one in AgentSpot is now stale.
 . Update the Bot token in AgentSpot, save, then click *Verify* again.
 
-Bot is bound but never replies::
+Bot is connected but never replies::
 
-When the bot is bound but never replies, it can be caused by any of the following:
+When the bot is connected but never replies, it can be caused by any of the following:
 
 +
 ====
@@ -505,24 +507,23 @@ Recommended next steps:
 +
 In AgentSpot use *Admin Settings > Audit log* to split the problem. If nothing is logged it means Slack is not sending, so check causes 1 and 2. Logged but no run means AgentSpot is rejecting, so check causes 3 through 5.
 
-Binding overwrites an existing one::
-Channel to agent mapping is 1:1. Binding a channel that is already bound replaces the previous agent. This is why
-binding is admin-only.
+Connecting overwrites an existing one::
+Channel to agent mapping is 1:1. Connecting a channel that is already connected replaces the previous agent. This is why
+connecting channels is admin-only.
 --
 
 [#usage]
-=== Monitoring usage
-The _Usage_ page provides high-level analytics to help you track the ROI and adoption of AgentSpot.
-
-You can monitor the following:
+You can monitor high-level metrics including the following:
 
 * Total active users
 * Number of conversations
 * Connector usage frequency
 
+The page also shows top agents, workflows, and apps by usage, plus total and failed run counts over the selected time range.
+
 [#users]
 === Monitoring users
-The _Users_ page allows you to view detailed information about users and groups who use AgentSpot.
+The _Users_ page allows you to view detailed information about users in your AgentSpot organization.
 
 It provides the following information:
 
@@ -533,7 +534,7 @@ It provides the following information:
 
 You can download a .csv file containing a complete list of AgentSpot users, including User ID, Name, Email, and Role by clicking image:download-agent-spot.svg[10,Admin Settings] *Export*.
 
-TIP: To add or remove Age   ntSpot users, you must go to the *Admin Settings* > *Users* tab in your ThoughtSpot instance.
+TIP: To add or remove AgentSpot users, you must go to the *Admin Settings* > *Users* tab in your ThoughtSpot instance.
 
 [#audit-log]
 === Audit log
@@ -542,11 +543,10 @@ The audit log page displays a chronological list of logged events, most recent f
 
 Each entry shows:
 
-* Time: Month, day, year and time (based on user's timezone?)
+* Time: Month, day, year and time (based on user's timezone)
 * Actor: Firstname, lastname, and email address of the user
-* Action: Specific action performed (link to full reference to provide more detail)
-* Resource: Which resource was used (which tool call)
-* IP: IP address of user
+* Action: Specific action performed
+* Resource: Which resource was used (for example, a tool call or workflow)
 
 ==== Filtering the audit log
 
@@ -558,13 +558,13 @@ If you filter the audit log before downloading it, the downloaded file will only
 [#org-memory]
 == Org memory
 
-Org memory is the shared set of facts and behavioral rules that AgentSpot applies across all agents and workflows in your organization.
+Org memory is the shared set of facts and behavioral instructions that AgentSpot applies across all agents and workflows in your organization.
 Setting up org memory early in the setup process ensures that every agent your team builds or uses starts with accurate, consistent organizational context — without each agent needing to be individually configured with the same information.
 
 TIP: Seed org memory before creating agents or adding end users.
 Agents built on top of a well-configured org memory require less individual instruction and behave more consistently across your organization.
 
-=== Facts vs. rules
+=== Verified facts vs. instructions
 
 Org memory is organized into two types of entries:
 
@@ -572,24 +572,23 @@ Org memory is organized into two types of entries:
 |===
 | Type | Think of it as... | Description
 
-| *Facts*
+| *Verified facts*
 | Grounding truths
-| Static information about your organization that agents use as reliable context.
-Facts help agents reason correctly when they encounter numbers, names, or terms that should match known values.
+| Org-wide reference values every agent trusts and checks its own answers against before replying.
+Verified facts help agents reason correctly when they encounter numbers, names, or terms that should match known values.
 For example, if an agent retrieves a revenue figure that does not match the fact you provided, it will flag the discrepancy and ask for clarification.
 
-| *Rules*
+| *Instructions*
 | Behavioral recipes
-| Instructions that agents follow when generating responses.
-Rules define how agents should behave in specific situations — including boundaries, approval steps, and standard operating procedures.
-For example, a rule might specify that outbound customer emails require human approval before being sent, or define the steps your organization follows for competitive intelligence research.
+| Rules every agent in this org should follow on every reply — data to scope or skip, formatting, and defaults.
+Instructions define how agents should behave in specific situations — including boundaries, approval steps, and standard operating procedures.
+For example, an instruction might specify that outbound customer emails require human approval before being sent, or define the steps your organization follows for competitive intelligence research.
 |===
 
 === What to include in org memory
 
-The following table lists the categories of information that are most valuable to include.
-
-// TODO: verify with engineering — confirm whether these categories are prompted in the UI or free-form; confirm the exact section labels shown in the org memory interface
+The following table lists suggested categories of information that are most valuable to include.
+Org memory entries are free-form; these categories are guidance rather than UI-mandated fields.
 
 [cols="1,3", options="header"]
 |===
@@ -610,36 +609,44 @@ The following table lists the categories of information that are most valuable t
 | *Technology stack*
 | Names of key tools, platforms, and systems in use
 
-| *Rules and procedures*
+| *Instructions and procedures*
 | Standard operating procedures, approval requirements, and behavioral boundaries for agents
 (for example, "Exclude test accounts from all reports" or "Outbound customer emails require human approval before sending")
 |===
 
 === Adding org memory
 
-To add facts and rules to org memory, do the following:
+To add facts and instructions to org memory, do the following:
 
 . Sign in to AgentSpot.
 . Click the *Admin Settings* image:settings-agent-spot.svg[10,Admin Settings] icon in the upper-right corner.
 . Select the *Org memory* tab.
-. Click *Add fact* or *Add rule*, depending on the type of entry you are adding.
+. Click *Add fact* or *Add instruction*, depending on the type of entry you are adding.
 . Enter your content.
 +
 NOTE: Org memory entries support markdown formatting.
 You can use tables, lists, and headings to organize content within a single entry.
 . Click *Save*.
-. Repeat for each fact or rule you want to add.
+. Repeat for each fact or instruction you want to add.
 
-After saving, org memory is broken down into sections in the UI.
+After saving, org memory is broken down into *Verified facts* and *Instructions* sections in the UI.
 You can review, edit, and correct individual entries at any time by clicking directly into them.
+
+=== Auto-learning
+
+The Org memory page includes an *Auto-learning* toggle that, when enabled, automatically extracts reusable instructions from completed agent sessions.
+
+[NOTE]
+====
+Auto-learning is currently inactive. The UI shows a "Not ready for use" indicator, and tenant auto-learning controls are not yet connected.
+====
 
 === Updating org memory over time
 
 Org memory is not a one-time configuration.
-As your organization evolves, you can update facts and rules directly in the UI.
+As your organization evolves, you can update facts and instructions directly in the UI.
 
-In addition, as administrators use AgentSpot, memories can be extracted from agent conversations and added to org memory.
-// TODO: link to memory article when available — see [memory video reference at transcript 02:59]
+In addition, as your organization uses AgentSpot, the system can identify recurring facts and instructions from agent conversations and connected applications (such as Jira, Slack, and Confluence). These are surfaced as candidate entries for you to review and add to org memory. Only items you explicitly approve are added.
 
 === Managing agents
 
