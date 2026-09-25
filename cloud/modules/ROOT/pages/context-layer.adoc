@@ -1,0 +1,90 @@
+= Context Layer
+:page-last_updated: Sep 21, 2026
+:linkattrs:
+:experimental:
+:description: The context layer organizes everything a ThoughtSpot Spotter agent needs to know to deliver accurate, governed analytics answers.
+:jira: SCAL-337854
+
+[.lead]
+The context layer is a shared knowledge system that sits between everything your organization knows and every answer a Spotter agent delivers.
+
+It collects, structures, and governs the institutional knowledge that makes the difference between a generic AI response and a precise, business-aware answer.
+
+[NOTE]
+====
+Spotter memory is part of the context layer.
+The context layer is the broader system that encompasses memory alongside learning, orchestration, lifecycle management, security, and governance.
+For details on working with Spotter memory, refer to xref:spotter-memory.adoc[Spotter memory].
+====
+
+== Overview
+
+A great data analyst doesn't just know SQL.
+They know the data model, understand the business, remember how metrics are defined, know how the audience wants to see results, and personalize their work for each stakeholder.
+The context layer codifies that same knowledge and makes it available to the Spotter agent on every question.
+
+++++
+<br>
+<div class="border">
+<script src="https://fast.wistia.com/player.js" async></script><script src="https://fast.wistia.com/embed/c65us1h55w.js" async type="module"></script><style>wistia-player[media-id='c65us1h55w']:not(:defined) { background: center / contain no-repeat url('https://fast.wistia.com/embed/medias/c65us1h55w/swatch'); display: block; filter: blur(5px); padding-top:29.38%; }</style> <wistia-player media-id="c65us1h55w" aspect="3.404255319148936" quality-min="720"></wistia-player>
+</div>
+++++
+
+The context layer works as a pipeline:
+
+. *xref:context-layer-sources.adoc[Sources]* feed knowledge into the system.
+. A *xref:context-layer-sources.adoc#_learning[learning system]* indexes, extracts, or distills context from each source.
+. *Context orchestration* structures and files every piece of knowledge so it can be found, ranked, and maintained.
+. The *context layer store* holds typed, scoped, and stamped knowledge.
+. *Lifecycle management* keeps the layer current as sources change and usage patterns evolve.
+. *xref:context-layer-rag.adoc[RAG (retrieval-augmented generation)]* fetches, ranks, and assembles the right context for each question.
+. *xref:context-layer-security-governance.adoc#_security[Security]* filters what reaches the agent based on user permissions.
+. *xref:context-layer-security-governance.adoc#_governance[Governance]* provides transparency, and human control.
+
+Every answer the Spotter agent gives carries a receipt of exactly what context went in, so you can trace, audit, and refine the system over time.
+
+== Context layer and the semantic layer
+
+The xref:semantic-layer.adoc[semantic layer] defines your data model: tables, columns, joins, metrics, and aggregation rules.
+It is in your data platform or in ThoughtSpot's modeling layer, and you continue to maintain it there.
+
+The context layer consumes the semantic layer as one of its inputs.
+Definitions from the semantic layer flow through the learning pipeline and are filed under the <<_data_model_understanding,Data model understanding>> pillar alongside knowledge learned from other sources.
+
+But the context layer is broader.
+It adds business logic, use case knowledge, and per-user context on top of the data model.
+Where the semantic layer tells the Spotter agent _what the data is_, the context layer tells it _how to think about it_, and _who is asking_.
+
+== What the context layer stores
+
+The context layer organizes knowledge into three pillars.
+Each pillar represents a domain of expertise that a knowledgeable analyst brings to their work.
+
+=== Data model understanding
+
+Represents what a data engineer knows about the data: tables, columns, join paths, grain, aggregation rules, units, freshness, synonyms, and lineage.
+
+_Example: "Revenue" maps to `amount_net` on `fct_orders`, one row per order line, in USD._
+
+=== Business logic and analysis
+
+Represents what a senior analyst knows about reaching correct answers: metric definitions, analysis rules, defaults, exclusions, analysis workflows, and routing to knowledge sources.
+
+_Example: ARR excludes services. Pipeline questions should use the Sales data model._
+
+=== User context
+
+Represents what a personal assistant knows about each individual: role, region, locale, goals, personal preferences, and conversation history.
+
+_Example: Priya is the EMEA Customer Success lead. Assume EMEA region. She prefers tables._
+
+Each pillar can hold context at the organization, group, or user scope.
+A metric definition can apply across the entire organization, a reporting preference can apply to a specific team, and a chart format preference can apply to an individual user.
+
+== Related resources
+
+* xref:context-layer-sources.adoc[Context layer sources and learning]
+* xref:context-layer-rag.adoc[Context retrieval and ranking]
+* xref:context-layer-security-governance.adoc[Context layer security and governance]
+* xref:spotter-memory.adoc[Spotter memory]
+* xref:semantic-layer.adoc[Semantic layer]
