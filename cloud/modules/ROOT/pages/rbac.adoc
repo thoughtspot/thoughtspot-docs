@@ -168,7 +168,10 @@ a|Allows users to access the following features and workflows:
 
 * View and manage security settings for ThoughtSpot embedding
 
-|Can schedule for others|Allows users to schedule, edit, and delete Liveboard jobs.
+|Can schedule for others|Allows users to create scheduled Liveboard jobs for other users.
+
+NOTE: If your cluster has RBAC v2 object-control privileges enabled, the *Can administer schedules*
+privilege supersedes *Can schedule for others* and grants broader org-wide schedule management.
 
 |Can Manage Sync settings|Allows for set up of secure pipelines to external business apps and syncing of data using ThoughtSpot Sync.|
 
@@ -179,6 +182,40 @@ Can manage catalog|Allows users to create, edit, and manage a data connection to
 Can invoke Custom R Analysis|Allows invoking R scripts to explore search answers and share custom scripts.|
 
 Can verify Liveboard|Allows Liveboard users to verify Liveboard access requests and mark a Liveboard as verified.|
+
+Can create Liveboards [.privilege-badge]#Early Access#
+|Allows users to create, copy, edit, save, delete, and rename Liveboards;
+pin Answers to Liveboards; rename pinned Answers; request Liveboard verification;
+and export, edit, update, and import Liveboard TML.
+
+When this privilege is revoked, the *Create Liveboard* button is hidden and all
+Liveboard edit options in the Liveboard header are hidden.
+
+This privilege cannot be assigned to a role unless the role also includes
+*Can create Answers*.|
+
+Can create Answers [.privilege-badge]#Early Access#
+|Allows users to access Search Data; create, save, copy, and delete Answers;
+create formulas, parameters, query sets, and cohorts; save Answers as Views;
+use custom actions; and export, edit, update, and import Answer TML.
+
+When this privilege is revoked, Search Data is hidden from navigation, the search bar
+is disabled, and all Answer creation and editing options are hidden.|
+
+Can analyze data [.privilege-badge]#Early Access#
+|Allows users to use Explore, Drill Down, AI Highlights, Change Analysis,
+and Show Underlying Data (including editing columns within it).
+
+When this privilege is revoked, all analysis options are hidden from Answers and Liveboards.|
+
+Can administer schedules [.privilege-badge]#Early Access#
+|Grants CRUD access over all schedules in the Org, not just those the user created.
+Users with this privilege can also view all recipients, override download-format
+restrictions within schedule contexts, and supersede the "Can schedule for others" privilege.
+
+Self-service scheduling of a user's own schedules is not affected by this privilege —
+all users retain it by default regardless.|
+
 
 Can use Analyst Studio
 |Allows access to Analyst Studio features.|
@@ -233,6 +270,75 @@ NOTE: If a user without download privileges previously created a schedule, and t
 ** Spotter Answer if it is a table
 * XLSX and CSV schedules for Liveboard
 * Report and schedule public APIs.  For more information, see https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation^].
+
+[#object-control-privileges]
+.RBAC v2 object-control privileges [.badge.badge-early-access]#Early Access#
+****
+RBAC v2 introduces four object-control privileges that give administrators granular control over what users can create and analyze in ThoughtSpot.
+This feature is Early Access. To enable thisn feature, contact {support-url}.
+
+NOTE: RBAC v2 object-control privileges are only available on clusters where RBAC is already enabled.
+
+.*Privilege types*
+
+Object-control privileges are either restrictive or administrative:
+
+[cols="1,2",options="header"]
+|===
+|Type |Behavior
+
+|Restrictive
+|Default is ON for all users via the system-managed *Default object privileges* role.
+Administrators revoke them to limit access.
+The three restrictive privileges are: Can create Liveboards, Can create Answers, and Can analyze data.
+
+|Administrative
+|Default is OFF. Administrators assign them to grant elevated capabilities.
+Can administer schedules is the only administrative object-control privilege.
+|===
+
+.*Implicit baseline*
+
+Every user, regardless of which object-control privileges are revoked, retains the ability to:
+
+* View Liveboards and Answers shared with them.
+* Apply and clear filters.
+* Manage personal views on a Liveboard.
+* Present a Liveboard in full-screen mode.
+* Use Spotter on Liveboards.
+
+This baseline cannot be revoked through object-control privileges.
+
+[#object-control-coupling]
+.*Privilege coupling rules*
+
+*Can create Liveboards* requires *Can create Answers*.
+A role that includes *Can create Liveboards* but not *Can create Answers* is invalid.
+Attempting to create, update, or import such a role returns a 403 error.
+
+The reverse is permitted, a role can include *Can create Answers* without
+*Can create Liveboards*.
+
+.*Default object privileges role and BASIC_GROUP*
+
+When RBAC v2 object-control privileges are enabled on a cluster, ThoughtSpot runs a
+one-time migration that creates two system-managed objects:
+
+*Default object privileges role (R0)*::
+A system role containing the three restrictive privileges: Can create Liveboards,
+Can create Answers, and Can analyze data.
+This role is automatically assigned to every existing group and to any new group created
+after enablement.
+R0 cannot be deleted.
+
+*BASIC_GROUP*::
+A system-managed group for users who do not belong to any other group.
+R0 is permanently assigned to BASIC_GROUP and cannot be revoked from it.
+BASIC_GROUP cannot be deleted.
+
+Administrators can revoke R0 from other groups to create viewer-only experiences,
+without affecting BASIC_GROUP.
+****
 
 == Migrating to RBAC
 ThoughtSpot delivers roles corresponding to each privilege previously available as part of the existing groups. Existing groups are retained. When migrating, for each existing group privilege, a new role is created with the corresponding privileges assigned, and the existing groups are mapped to the corresponding new role.
