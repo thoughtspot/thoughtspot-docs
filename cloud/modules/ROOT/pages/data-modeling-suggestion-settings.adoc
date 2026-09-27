@@ -143,6 +143,37 @@ Secure suggestions queries are user-generated and must return quickly. ThoughtSp
 
 Because these queries always run on your primary warehouse, they consume compute on that warehouse rather than on a smaller, lower-cost one. On Models where many model columns are set to *Secure suggestions*, this can be a noticeable share of warehouse usage.
 
+.Secure suggestions in saved filter values [.badge.badge-beta]#Beta#
+****
+When an Answer or Liveboard is opened, ThoughtSpot checks whether any saved filter values on a secured column are accessible to the current user under the active row-level security rules. If the user does not have access to one or more of the saved values, those values are removed from the filter chip and the search bar. This prevents information leakage through saved filter state — not just through typeahead suggestions.
+
+[NOTE]
+====
+This behavior applies only when all of the following are true:
+
+* The Answer or Liveboard contains a column set to *Secure suggestions*.
+* One or more filter values have been saved against that column.
+* The current user's row-level security rules do not grant access to all of the saved values.
+====
+
+.*Answers*
+When you open an Answer that includes a secured column with saved filters, ThoughtSpot evaluates your access to each saved filter value. Any values you cannot access are removed from the filter chip and the search bar before the Answer renders.
+
+.*Liveboards*
+The same check runs when you open a Liveboard. Saved filter values on secured columns that you cannot access are removed from the filter chips and search bar for each affected tile.
+
+.*TML view and download*
+If a saved filter on a secured column includes values you cannot access, TML view and downloads are blocked for that Answer or Liveboard.
+This applies in two places:
+
+* The Answer page — the *TML* option is not available.
+* The Data Management app — TML download is blocked for the affected object.
+
+.*Data extract and download*
+Download of data is blocked when the saved filter set for a secured column includes values you cannot access. This ensures that the filter state — including the names of inaccessible values — is not exposed through a data export.
+
+****
+
 '''
 
 > **Related information**
