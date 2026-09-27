@@ -131,6 +131,40 @@ than one already-published object.
 == Publishing coaching to Orgs
 ThoughtSpot now supports publishing Spotter coaching to Orgs. In addition to Org admins, now non-admin users with Spotter coaching management access on published data models in secondary Orgs can provide coaching access permissions to other users. They can also export/import coaching TML and share the data model with other users. Previously, coaching was Org-specific. Coaching changes made in the primary Org are synced with the secondary Orgs where the Model is published.
 
+.Sharing tags when publishing objects [.badge.badge-beta]#Beta#
+****
+When you publish an object from the Primary Org to one or more target Orgs, ThoughtSpot can share the tags assigned to that object into each target Org automatically. Tags help users discover, filter, and organize objects. By sharing tags at publish time, target Org users see the same tags on published objects that administrators assigned in the Primary Org.
+
+NOTE: To enable tag sharing during publishing, contact {support-url}.
+
+.*How tag sharing works*
+When publishing is triggered with tag sharing enabled, ThoughtSpot performs the following for each target Org:
+
+* *Existing tag, same name* — If a tag with the same name already exists in the target Org, ThoughtSpot reuses it and assigns it to the published object.
+No duplicate tag is created.
+* *No matching tag* — If no tag with the same name exists in the target Org, ThoughtSpot creates a new tag that copies the color from the Primary Org tag, marks it as publish-managed, and assigns it to the published object.
+* *Re-publish* — On each re-publish, ThoughtSpot runs a full diff. New tags assigned in the Primary Org since the last publish are added to target Orgs; tags removed from the object in the Primary Org are removed from target Orgs.
+* *Unpublish* — When you unpublish an object, ThoughtSpot removes any publishing-applied tags from the target Orgs.
+Tags that were auto-created during publishing and have no other assignments are deleted.
+
+.*Tag rename and recolor propagation*
+
+When you rename or recolor a tag in the Primary Org, the change propagates to all target Orgs the next time the object is published or re-published.
+Target Org users always see the current name and color as set in the Primary Org.
+
+.*Tag management in target Orgs*
+
+Tags shared into a target Org via publishing are managed by the Primary Org.
+Users in the target Org can use shared tags to find and filter objects, but cannot rename, recolor, delete, or unassign them.
+These operations are reserved for the Primary Org administrator.
+
+.*Tag sharing limitations*
+
+* Tags are matched by name (case-insensitive). If a tag with the same name exists in a target Org, ThoughtSpot reuses it — it does not check whether the color or other properties match.
+* Target Org users cannot rename, recolor, delete, or unassign tags that were shared via publishing.
+* If the flag is turned off after tags have been shared, previously widened tags remain on published objects until those objects are unpublished.
+****
+
 == Limitations
 * Only ThoughtSpot administrators with access to all Orgs can publish objects.
 * Objects can only be published from the Primary Org to other Orgs.
