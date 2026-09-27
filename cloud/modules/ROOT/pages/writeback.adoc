@@ -5,6 +5,409 @@
 :page-layout: default-cloud-beta
 :description: You can create and manage input tables directly inside ThoughtSpot that are connected to your CDW.
 
+Writeback enables you to create and manage input tables directly inside ThoughtSpot.
+An input table is an editable, logical table that is created in your connected cloud data warehouse (CDW) and is available as a data object in ThoughtSpot.
+
+[NOTE]
+====
+Writeback is supported on Snowflake, Databricks, and Google BigQuery connections.
+====
+
+With input tables, you can:
+
+* Add input columns — editable columns where users enter or update values directly in the ThoughtSpot UI.
+* Enter values by typing, using a date picker, selecting from a drop-down of approved values, or pasting from a spreadsheet.
+* Save changes that write the data back to your connected CDW.
+* Use input tables across Answers, Liveboards, and Spotter, just like any other data source.
+* Manage input tables as first-class ThoughtSpot objects — share them, control them with privileges, and delete them when they are no longer needed.
+
+== Why use writeback?
+
+Traditionally, workflows requiring data edits follow a slow, fragile loop:
+
+. Export data to Excel.
+. Make changes manually.
+. Re-upload the file using an engineering ticket.
+
+You lose governance and audit trail in the process.
+
+This creates data inconsistency, engineering dependencies, spreadsheet sprawl, and delayed decisions.
+
+Writeback solves this by allowing business users to enter and update values directly in ThoughtSpot, with the data persisted back to the CDW automatically.
+
+=== Common use cases
+
+[cols="1,2",options="header"]
+|===
+|Use case |Description
+
+|Forecasting and planning
+|Adjust revenue targets, sales quotas, or headcount plans inline, at the time granularity you plan in.
+
+|Budget overrides
+|Enter revised budget figures against existing actuals.
+
+|Data enrichment and tagging
+|Tag accounts, label customers, or classify records using a controlled list of values.
+
+|Target and milestone dates
+|Capture planned dates, target dates, or expected completion dates.
+
+|Operational adjustments
+|Make small data corrections without raising engineering tickets.
+|===
+
+=== Who is this for?
+
+[cols="1,2",options="header"]
+|===
+|Persona |Role
+
+|Business users
+|Finance managers, Sales leaders, RevOps teams, and anyone who needs to adjust forecasts, targets, budgets, or tag data. Business users update values in existing input tables.
+
+|Analysts and admins
+|Create and structure input tables, define validation rules, and manage governance, permissions, and security.
+|===
+
+== Supported data warehouses
+
+Writeback is supported on the following cloud data warehouses:
+
+* Snowflake
+* Databricks
+* Google BigQuery
+
+Create, edit, save, refresh, and delete behave consistently across all supported warehouses.
+Warehouse-specific write errors are surfaced directly in the ThoughtSpot UI.
+
+== What's new in this release
+
+If you used writeback already during the beta, the following capabilities are new:
+
+* Databricks and Google BigQuery support, in addition to Snowflake.
+* Date support — use date columns from your source model at a chosen granularity, and create editable date input columns.
+* Add and remove input columns on an input table after it has been created.
+* Delete input tables you no longer need.
+* Data validation rules, including drop-down lists of approved values and numeric, text, and date constraints.
+* Filters at creation time, so an input table includes only the rows you care about.
+* Spreadsheet-style copy and paste.
+* Edit an input table directly from a Liveboard, without navigating back to Search Data.
+* Dedicated privileges for managing and editing input tables.
+//* Support in embedded ThoughtSpot, controlled by an SDK flag.
+
+== Key concepts
+
+=== Input table
+
+A logical table created in your CDW and registered as a data object in ThoughtSpot.
+It combines read-only attribute and date columns from your existing data model with one or more editable input columns.
+
+=== Input column
+
+An editable column added to an input table. Input columns can be of the following data types:
+
+* Integer
+* Double
+* Boolean
+* String
+* Date
+* Custom data
+
+Input columns are visually distinct from source columns in the UI, and are the only columns that can be edited inline.
+
+=== Primary key
+
+The combination of attribute and date columns selected when creating the input table defines the primary key, or grain.
+This key links the input table to the source model and cannot be changed after the table is created.
+
+=== Date granularity
+
+When you include a date column from your source model, you choose the granularity at which values are stored — for example, Order Date at Month rather than at Day.
+Input column values are stored against the selected grain.
+
+=== Validation rule
+
+An optional constraint you define on an input column that limits what users can enter.
+
+== Prerequisites
+
+=== Before creating an input table
+
+Before creating an input table, ensure:
+
+* Your organization is connected to a supported CDW.
+* You have the *Can manage data* privilege.
+* You have the *Can manage input table* privilege.
+* You have edit access on the source model.
+* You have write access to the target schema in your CDW.
+* You have *Configure Data Upload* enabled for the connection where the objects are located.
+
+If you don't have the required privileges, the *Input Table* option is disabled.
+
+=== Before editing an input table
+
+Before editing or updating an input table, ensure:
+
+* Your organization is connected to a supported CDW.
+* You have the *Can manage data* privilege.
+* You have the *Can edit input table* privilege.
+* You have edit access on the source model.
+* You have write access to the target schema in your CDW.
+* You have *Configure Data Upload* enabled for the connection where the objects are located.
+
+== Creating an input table
+
+=== Access the Input Table Builder
+
+. Navigate to the *Search data* page.
+. Click *Add*.
+. Select *Input Table* from the drop-down menu.
+
+An Input Table modal opens.
+
+=== Select base attributes and dates
+
+. In the left-hand data panel, browse or search for Attribute or Date columns.
+. Click a column to select it.
++
+The column appears in the center preview table.
+. If you select a date column, choose the granularity you want to work at: Day, Week, Month, Quarter, or Year.
++
+Selected source columns are read-only in the preview.
+. After selecting columns, click *Go* in the search bar to populate the values.
+
+The combination of selected columns automatically becomes the primary key.
+
+[NOTE]
+====
+The primary key cannot be modified after the input table is saved.
+====
+
+=== Add input columns
+
+. Click *Add Input Column*.
+. In the dialog, specify:
+** *Column Name*: A descriptive name for the editable column.
+** *Data Type*: Select from Integer, Double, Boolean, String, or Date.
++
+You can also use the *Custom* section to define a fixed set of string values for users to choose from when filling the column.
+. You can add multiple input columns to the same table.
+
+=== Enter values
+
+. Click any cell in an input column to make it editable.
+. Enter your value.
+
+Data validation, filtering, conditional formatting, and sorting are provided out of the box.
+
+=== Save the input table
+
+. Click *Next* when you are ready to save.
+. On the save screen, enter a *Table Name*.
+. Click *Create Table*.
+
+The input table is created in your CDW and a logical table definition is registered in ThoughtSpot.
+
+A success notification appears, and you are redirected to the Search Data page, where the input table is available immediately.
+
+[NOTE]
+====
+If you don't have write permissions to the selected schema, you will see the error: "Insufficient Write Permission, table cannot be saved."
+====
+
+== Working with input tables
+
+After creation, your input table appears in the left-hand data panel on the Search Data page under a dedicated *Input Tables* section.
+Each table entry can be expanded to reveal its columns, organized by Measure, Attribute, and Date hierarchy.
+
+You can:
+
+* Add the entire input table or selected individual columns to the canvas to create an Answer.
+* Add Answers to Liveboards.
+
+=== Editing input column values
+
+. Select your input table from the left-hand panel.
++
+The table loads in the main Search area.
+. Source columns are read-only. Input columns are editable inline.
+. Click a cell in an input column to edit it.
+. To save your changes, click *Save* on the creation modal.
+
+=== Copying, pasting, and filling values
+
+Input tables support spreadsheet-style bulk editing, which is useful when updating many rows at once:
+
+* Copy a single cell or a range of cells.
+* Paste from a spreadsheet or from your clipboard.
+
+=== Editing the input table structure
+
+. Click the more menu next to the input table name in the data panel.
+. Select *Edit*.
+
+The Input Table modal opens, where you can add or remove input columns, and update values.
+
+[NOTE]
+====
+If the input table is used in existing Answers or Liveboards, a validation warning appears when you save.
+====
+
+=== Editing an input table from a Liveboard
+
+If a Liveboard tile is built on an input table, you can open the Input Table modal directly from the Liveboard.
+Click *Edit Input Table* in the overflow menu of the tile, without navigating back to Search Data to find the source table.
+
+=== Adding and removing input columns
+
+* *To add an input column*: Open the input table in Edit mode and click *Add Input Column*.
+Provide the column name, data type, column hierarchy, and any validation rules.
+The new column is added immediately, and existing rows are populated with null values.
+
+* *To remove an input column*: Select it and choose *Delete*.
+ThoughtSpot checks for dependencies — Answers and Liveboards.
++
+** If no dependencies exist, you are asked to confirm. The column's metadata and data are removed and a success message appears.
+** If dependencies exist, the delete is blocked and you are shown the dependency details so you can remove them first.
+
+All column additions and deletions are recorded in audit logs.
+
+[NOTE]
+====
+The *Adding and removing input columns* option is visible only to users with the *Can manage input table* privilege on the input table.
+====
+
+=== Refreshing an input table
+
+When the underlying source model is updated with new rows, input tables are refreshed automatically to show the new rows in the creation modal.
+New rows appear with blank null values in input columns.
+
+=== Deleting an input table
+
+. Click the more menu next to the input table in the data panel.
+. Select *Delete Input Table*.
+
+A confirmation modal displays the input table name, a warning that deletion is permanent, and a list of dependent objects, if any.
+
+* If no dependent objects exist, confirm the deletion. The input table object and its metadata are deleted from ThoughtSpot, the table disappears from the data panel, and a success notification appears.
+* If dependent objects exist — Answers, Liveboards — the delete action is blocked and you are shown the dependency details so you can remove them first.
+
+[NOTE]
+====
+The *Delete Input Table* option is visible only to users with the *Can manage input table* privilege on the input table.
+====
+
+== Using input tables in Answers and Liveboards
+
+Input tables work like standard data objects in ThoughtSpot.
+
+* Select the input table or individual input columns to build an Answer.
+* Add measures, attributes, and dates from your source model.
+* Pin Answers to Liveboards.
+
+== Spotter and input tables
+
+Input tables are added to Spotter by default.
+Once an input table is indexed, Spotter can discover it and generate queries against source columns, input columns, and date input columns.
+Spotter supports search, follow-up questions, and explanations on input table data.
+
+== Permissions and sharing
+
+Input tables are first-class securable objects in ThoughtSpot and appear in the standard sharing dialogs.
+Access is governed by two dedicated privileges, which allow you to separate the analyst workflow of building tables from the business user workflow of updating values.
+
+[cols="1,2",options="header"]
+|===
+|Privilege |Grants
+
+|Can manage input table
+|Create, update, and delete input tables and input columns.
+
+|Can edit input table
+|Update values in an existing input table.
+|===
+
+The resulting behavior:
+
+[cols="2,2,2",options="header"]
+|===
+|Action |Required privilege |Sharing requirement
+
+|Create an input table
+|Can manage input table
+|Edit access on the underlying model
+
+|Add or delete input columns
+|Can manage input table
+|Edit access on the model and on the input table
+
+|Delete an input table
+|Can manage input table
+|Edit access on the input table
+
+|Update input column values
+|Can edit input table
+|Edit access on the model and on the input table
+
+|View an input table, and build Answers and Liveboards from it
+|Standard read access
+|View access on the model and on the input table
+|===
+
+Users who only have *Can edit input table* can modify existing values but cannot create or delete input tables or input columns — those options are not shown to them.
+If a user lacks the privileges required to create an input table, the *Input Table* option is disabled.
+
+[NOTE]
+====
+The model source column acts as the primary key. If the row values in source key columns are empty, the input table cannot be created because primary keys are mandatory.
+====
+
+== Limitations
+
+The following are known limitations:
+
+* Input tables cannot be created across two separate connections.
+* Input tables cannot be created on top of a table, SQL View, or View as a data source; a Model is required.
+* Functions like `avg(x)/avg(y)`, where `x` and `y` are columns on the model, are not supported.
+* Creating sets from input columns is not supported.
+* `group_aggregate` doesn't work with input columns.
+* The primary key — the combination of base source columns — cannot be changed after the table is created.
+* CSV upload to create an input table is not available.
+* Concurrent editing is not locked. If two users edit the same input table at the same time, the most recent saved value per key wins.
+* TML export and import is not supported.
+* Publishing is not supported.
+* Cohorts created on model columns don't work with input columns included in search.
+* For Databricks and Google BigQuery, column names must comply with the naming rules of the target CDW.
+For example, if you name a column `Is Holiday`, the CDW may rename it to `IsHoliday` or `Is_Holiday`.
+* Governance features — audit snapshots, approval flows, and version control for reverting to a previous version — are planned for a future release.
+* Writeback is not supported on the ThoughtSpot mobile app.
+* Creating, updating, or deleting tables using APIs programmatically is not supported.
+* Row-level security (RLS) and column-level security (CLS) are not supported.
+
+== Input tables in Orgs
+
+Input tables are not published to an Org automatically, even when the underlying base model is published to that Org.
+This gives Primary Admins explicit control over which Orgs can view and write back to input table data.
+
+* *Publishing is explicit.* A Primary Admin must publish an input table to an Org using the Publish API before users in that Org can see it.
+* *The base model must be published first.* Attempting to publish an input table to an Org where its base model isn't published fails with an error.
+* *Unpublishing revokes access.* Unpublishing an input table from an Org removes access for that Org. If the base model is later unpublished from an Org, the input table's publish state to that Org is revoked along with it.
+* *Publishing grants view access only.* Write-back access continues to be governed separately by row-level security and object permissions. Publishing alone does not grant edit rights.
+
+////
+== Managing input tables with the REST API
+
+For programmatic and embedded workflows, REST endpoints are available to create, update, and delete input tables.
+
+* *Create* — Supply a table name, the GUID of the source model, the reference columns that define the table's grain, and the new input columns to add, each with a name, data type, and type (Measure or Attribute). The response returns the new table's GUID along with a name-to-GUID mapping for every column, so you can reference columns in later calls.
+* *Update* — Supply the key column values that identify the target row, and the input column values to write to it. If the key values don't match an existing row, the call returns an error rather than silently succeeding.
+* *Delete* — Supply the input table's GUID. The caller must have write or delete permission on the table.
+
+For request and response details, see the REST API reference in your ThoughtSpot instance.
+////
+
+////
 Writeback enables you to create and manage input tables directly inside ThoughtSpot. An input table is an editable, logical table that is created in your connected Cloud Data Warehouse (CDW) and is available as a data object in ThoughtSpot.
 
 IMPORTANT: Writeback is currently only supported for Snowflake CDW.
@@ -249,4 +652,4 @@ The following are known limitations in this Beta release:
 * There is no REST API to create input tables programmatically. Creation must be done via the ThoughtSpot UI.
 * Input tables cannot be created using a Date column as a key for this version.
 * You cannot create input tables from View, SQL View, Tables and Imported Data as source. You can only create Input Tables from Models as Source.
-
+////
