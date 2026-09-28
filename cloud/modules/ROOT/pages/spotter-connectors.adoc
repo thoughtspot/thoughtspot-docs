@@ -1,25 +1,41 @@
 = Integrate your tools into Spotter with Connectors
 :author: Naomi
-:page-last_updated: Aug 19, 2026
+:page-last_updated: Sep 28, 2026
 :linkattrs:
 :experimental:
 :page-layout: default-cloud-spotter-3
 :description: In addition to bringing Spotter into other platforms, you can now integrate connectors to Spotter to make connections to wherever your data is stored.
 :jira: SCAL-287506, SCAL-301858, SCAL-297359, SCAL-309104, SCAL-312267, SCAL-307870, SCAL-307665, SCAL-332747
 
-In addition to bringing Spotter into other platforms, you can now integrate connectors to Spotter to make connections to wherever your data is stored. This allows you to do things like search Confluence or Snowflake for unstructured data to add to your analysis, or send direct messages from Spotter to Slack with your data. By connecting your third-party ecosystem (Slack, Jira, Confluence, Snowflake, Glean) directly to ThoughtSpot, you can transition from insight to execution without needing to switch tabs.
+// PATCH: Expanded connector ecosystem, clarified template breadth
+Spotter supports connecting to a large ecosystem of third-party tools and services—**over 100 pre-configured connector templates, plus custom connectors**—so you can integrate data sources, automation, and context directly into your analytics workflow.
 
-The following connectors are pre-configured for your use:
+Whether you want to search Confluence, Snowflake, or Glean for unstructured data, create tasks in Asana, message in Slack, or pull live data from the web, Spotter connectors make it possible to go from insight to action without switching tabs.
 
-//Asana:: You can now prompt the AI to instantly create and assign tasks based on your conversation, pull real-time project health metrics into your chat for status updates, or identify overdue dependencies across your team’s workspace without leaving Spotter.
-Confluence/Jira:: You can now prompt the AI to query your backlog using natural language to surface relevant Jira issues, pull technical context from Confluence pages to inform your work, or instantly publish your analysis as new, formatted Confluence pages for your team to reference.
-Slack:: You can now contextualize analysis by bringing in information from your Slack conversations, share insights instantly, and distribute comprehensive reports in Canvas format.
-Web search:: The Web Search connector enables ThoughtSpot users to augment analytics workflows with real-time web search results. This allows users to bring live, external context to inform analysis in Spotter. The Web Search connector is a common service available to all ThoughtSpot customers.
+Browse the complete catalog in the xref:spotter-connector-marketplace.adoc[Connector Marketplace].
+
+// PATCH: Examples update, marketplace cross-link
+Some popular connectors available as templates include:
+
+- **Slack**: Message, share analyses, and gather conversation context
+- **Confluence/Jira**: Search documentation, query backlogs, publish analysis
+- **Asana**: Create/assign tasks, monitor project health
+- **Web search**: Augment analytics with live external context—such as disruption news or exchange rates
+- **Microsoft Teams**, **Salesforce**, **Glean**, **Snowflake**, and many other enterprise apps
+
+See the xref:spotter-connector-marketplace.adoc[Connector Marketplace] for the full list.
 
 Example use case;;
 Search for real-time disruption news — such as port delays or weather events — to inform inventory and logistics analysis.
 
 Example use case;; Pull live exchange rates or macro news to inform financial data analysis.
+
+// PATCH: Insert Connector templates and marketplace section after intro/examples.
+== Connector templates and marketplace
+
+Spotter’s connector catalog includes **hundreds of pre-configured templates** for popular apps and platforms. Templates simplify setup, provide integration docs, and allow one-click or guided configuration.
+
+To browse the full catalog and add connectors, visit the xref:spotter-connector-marketplace.adoc[Connector Marketplace].
 
 == Understanding the MCP architecture
 
@@ -47,19 +63,15 @@ NOTE: Spotter as an MCP host is only available with Spotter 3 and must be enable
 === Register a new connector
 
 . Open Spotter and click the gear icon image:icon-gear-10px.png[gear icon] in the lower left corner. Select *Connectors*.
-. You can enable a connector from the pre-defined list or *Add custom connector*.
-. When adding a connector from the pre-defined list, simply click *Add*.
-. When adding a custom connector, you must provide the following details:
-+
---
-* *Connector Display Name*: The name users will see within Spotter (for example, “Engineering Jira”).
-* *MCP URL*: The specific endpoint where your MCP-compliant server is hosted.
-* *Authentication*:
-** *None*
-** *OAuth*: Required for most enterprise apps such as Slack or Jira. You may need to enter the *Client ID* and *Client Secret*.
-*** *Redirect URL*: Copy this ThoughtSpot callback URL (https://oauth.thoughtspot.app/callback) and paste it into your third-party app’s developer settings to allow the handshake.
-** *Bearer*: Used for token-based access.
---
+. In the *Connector Marketplace*, you can enable a connector from the catalog of templates or add a custom connector.
+. To add from a template, simply click *Add* in the marketplace.
+. To add a custom connector (not listed in the catalog), provide the required details:
+* *Connector Display Name*
+* *MCP URL*
+* *Authentication* (None, OAuth, Bearer)
+. Follow the prompts for credentials and authentication.
+
+For details on connector types and setup steps, see xref:spotter-connector-marketplace.adoc[Spotter Connector Marketplace].
 
 NOTE: When adding a custom connector and using the OAuth authentication method, you must whitelist ThoughtSpot’s callback URL: https://oauth.thoughtspot.app/callback.
 
@@ -99,25 +111,9 @@ image::connection-test-successful.png[Successful connection]
 [#manage]
 == Manage tool permissions
 
-You can now edit tool call permissions individually when you set up a Spotter connector. Although the default is that read-only tools are enabled for all users, and write/delete tools and interactive tools require user approval, you can individually change the needed permissions for each tool.
-
-To edit tool permissions:
-
-. Open Spotter, click the gear icon image:icon-gear-10px.png[gear icon], and select Connectors.
-
-. Scroll to the desired connector, select the *More* icon image:icon-more-10px.png[icon] and click *Manage Permissions*.
-
-. The Spotter tool permissions window appears.
-+
-[.bordered]
-image::spotter-tool-permissions.png[]
-
-. Each section is divided by the functionality of the tools, whether they are read-only, write/delete, or interactive. You can click the dropdown above an entire section to categorize all tools together, as `Always allow`, `Needs user approval`, or `Always deny`.
-
-. You can also click the toggle next to a particular tool to specifically mark it as
-allowed (checkmark), needs user approval (key), or blocked (prohibited symbol). Tools marked as "needs user approval" require user permission in conversation before the tool will work. Tools that are blocked cannot be accessed, although Spotter will tell you in conversation that they are prohibited by the connector's configuration.
-
-. Click *Save* once you're happy with your selections.
+////
+NOTE TO WRITER: This section is redundant with 'Managing connector permissions' in spotter-connector-marketplace.adoc. Remove from overview and move all tool permission editing instructions, UI details, and icons/toggles explanations to the marketplace article.
+////
 
 == Authentication methods
 

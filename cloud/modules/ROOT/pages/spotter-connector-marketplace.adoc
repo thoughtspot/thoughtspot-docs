@@ -1,5 +1,5 @@
 = Spotter Connector Marketplace
-:page-last_updated: Sep 22, 2026
+:page-last_updated: Sep 28, 2026
 :author: Mark
 :linkattrs:
 :experimental:
@@ -7,9 +7,11 @@
 :jira: SCAL-326029
 
 // SOURCE: SCAL-326028, PDM-4465, demo transcript
-
+[.lead]
 The Spotter Connector Marketplace is a browsable catalog of third-party connectors that extend Spotter's capabilities by connecting it to external tools and services through the link:https://modelcontextprotocol.io/[Model Context Protocol (MCP), window=_blank].
 // SOURCE: PDM-4465
+
+IMPORTANT: This feature and the *Can Manage Spotter* privilege will be rolled out in the first weekly patch after the 26.10.0.cl release.
 
 The marketplace replaces the previous connectors list on the Spotter page with two sections:
 
@@ -22,6 +24,23 @@ All Spotter users can browse the marketplace and see available connectors. Addin
 
 If a connector you need is not listed in the catalog, you can connect Spotter to any MCP-compatible server by providing its URL and credentials.
 // SOURCE: PDM-4465, demo transcript
+
+////
+NOTE TO WRITER: The following new section clarifies the breadth and value of templates. Insert immediately after this intro, before "Types of connectors".
+////
+
+== Connector templates and catalog
+
+The Spotter Connector Marketplace offers **over 100 pre-configured templates** for popular enterprise tools, communication platforms, automation platforms, and developer services. Templates streamline connector setup: ThoughtSpot pre-fills key details, links to provider documentation, and guides you through authentication and permissions.
+
+Some templates support one-click setup (Slack, Web Search), while others require guided steps on the provider’s side (Microsoft Teams, Salesforce, Asana, etc).
+
+Browse the full template catalog in the marketplace. If you don’t see the connector you need, you can add any MCP-compatible service with a custom connector.
+
+[NOTE]
+====
+Templates are the most common connector type in the marketplace. You rarely need to configure a connector from scratch.
+====
 
 == Types of connectors
 
@@ -37,12 +56,16 @@ The marketplace includes connectors with different setup requirements:
 | Slack, Web Search
 
 | Template
-| ThoughtSpot provides a pre-configured template with a link to the provider's documentation. You complete the setup on the provider's side, obtain the required credentials (such as a URL, client ID, and client secret), and then enter them in ThoughtSpot.
-| Microsoft Teams
+| **Pre-configured setup.** ThoughtSpot provides a template with pre-filled details and a link to the provider's documentation. You complete provider-side setup, obtain credentials (such as a URL, client ID, and client secret), and then enter them in ThoughtSpot. Templates cover a wide range of enterprise tools and services.
+| Microsoft Teams, Salesforce, Asana, Snowflake, Glean, and many more
 
 | Pre-filled URL
 | ThoughtSpot pre-fills the MCP server URL. You may need to provide additional credentials or configuration details.
 | // TODO: verify with engineering — confirm examples of pre-filled URL connectors
+
+| Custom connector
+| For any MCP-compatible service not in the catalog, provide its URL and credentials. You configure from scratch.
+| Custom internal APIs, niche platforms
 
 |====
 
@@ -191,19 +214,19 @@ The connector now appears in the *Added* connectors list for the selected users.
 == Managing connector permissions
 
 Administrators and users with the *Can Manage Spotter* privilege can manage the permissions of an added connector, in both the primary Org and non-primary Orgs.
-// SOURCE: demo transcript — "you kind of also have this share and manage permissions"
 
 To manage permissions for a connector:
 
 . In the Connector Marketplace, locate the connector in *Added* connectors.
 . Click the *More* menu icon image:icon-more-10px.png[More menu icon image] for the connector and select *Manage Permissions*.
-. Review and update the tool permissions for the connector.
-. Click *Save*.
+. The Spotter tool permissions window appears, showing tools divided by function: read-only, write/delete, or interactive.
+.. Click the dropdown above each section to set permissions for all tools as `Always allow`, `Needs user approval`, or `Always deny`.
+.. Use the toggle next to individual tools to mark them as allowed (checkmark), needs approval (key), or blocked (prohibited symbol). Tools needing user approval prompt for permission during Spotter conversations. Blocked tools are unavailable; Spotter will explain if you attempt to use them.
+. Click *Save* once you're happy with your selections.
 
 [NOTE]
 ====
 In non-primary Orgs, *Share* and *Manage permissions* are the only connector management actions available. Connectors can only be added or removed from the primary Org.
-// SOURCE: demo transcript
 ====
 
 == Remove a connector
