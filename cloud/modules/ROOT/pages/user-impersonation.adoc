@@ -72,7 +72,6 @@ During an impersonation session, the administrator has full access to the platfo
 [NOTE]
 ====
 // SOURCE: SCAL-325379 epic — "Third-party/agentic capabilities (Spotter, AgentSpot, Analyst Studio)
-// removed by default; configurable via blockedPrivileges / allowedPrivileges keys"
 Third-party and agentic capabilities, such as Spotter, AgentSpot, and Analyst Studio, are unavailable during an impersonation session by default.
 ====
 
@@ -101,18 +100,6 @@ On clusters that use SSO with automatic redirect, the identity provider re-authe
 On IAM v2 clusters with Okta SSO, the system clears the Okta SSO session on impersonation start to keep ThoughtSpot's session and the IdP session in sync. On non-auto-redirect SSO clusters, the external IdP session remains active after impersonation ends, and the administrator is re-authenticated as themselves by the IdP.
 ====
 
-
-////
-=== The impersonation banner
-// SOURCE: Design doc — Component Responsibilities, always-visible banner
-A persistent, non-dismissable banner appears around the perimeter of the screen for the entire session. The banner displays:
-
-* The name of the user the administrator is acting as.
-* A countdown timer showing the time remaining in the session.
-* An *Exit session* button to end the session immediately.
-////
-
-
 == Start an impersonation session
 
 Before you can act as a user, the user must grant access in *Act as setting* on their profile.
@@ -139,31 +126,7 @@ image::impersonation-5.png[Impersonation border around the ThoughtSpot interface
 [.bordered]
 image::impersonation-6.png[Exit session button in the impersonation banner]
 +
-ThoughtSpot ends the session and signs you out. On SSO clusters with auto-redirect, you are automatically re-authenticated as yourself.
-
-
-////
-== Audit trail
-
-// SOURCE: Design doc — Dual-attribution audit, Logging section
-Every action taken during an impersonation session is recorded in the security audit log (`security_audit.log`) with dual attribution. Both the acting administrator's identity and the target user's identity appear on each log entry.
-
-The following impersonation events are logged:
-
-[cols="1,2", options="header"]
-|===
-| Event | When it is recorded
-| `impersonation.session.start` | When a session begins
-| `impersonation.session.end` | When a session ends (any reason)
-| `impersonation.action.blocked` | When a blocked action is attempted
-| `impersonation.privilege_ceiling_violated` | When a privilege rule prevents impersonation
-| `impersonation.scope_violated` | When an Org boundary rule prevents impersonation
-| `impersonation.concurrent_limit_exceeded` | When the admin already has an active session
-| `impersonation.preference.changed` | When a user changes their consent toggle
-|===
-
-// TODO: verify with engineering — confirm whether impersonation audit events are visible in the ThoughtSpot Audit Log UI, or only in the backend security_audit.log file
-////
+//ThoughtSpot ends the session and signs you out. On SSO clusters with auto-redirect, you are automatically re-authenticated as yourself.
 
 
 == Limitations
@@ -178,5 +141,5 @@ The following impersonation events are logged:
 
 * xref:user-profile.adoc#impersonation-consent[Allow administrators to act as you]
 * xref:user-management.adoc[Create, edit, or delete a user]
-//* xref:security-audit-logs.adoc[]
+
 
