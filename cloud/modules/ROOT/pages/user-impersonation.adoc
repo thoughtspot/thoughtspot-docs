@@ -1,4 +1,4 @@
-= Act as (User impersonation)
+= Act as
 :page-last_updated: Sep 22, 2026
 :author: Rani
 :linkattrs:
@@ -10,7 +10,7 @@
 // SOURCE: SCAL-325379, Design doc https://docs.google.com/document/d/1imxJ2jM1oBlXnupsnphvXS_I73_cA1ZMQdYYJ-tGVYE
 
 
-ThoughtSpot allows authorized administrators to start a session as another user, referred to as *Act as user*. While in this mode, the administrator sees ThoughtSpot exactly as the target user does, with the same data access, role-based permissions, Org context, content visibility, and theme. Every action taken during the session is recorded in the audit log under the administrator's identity.
+ThoughtSpot allows authorized administrators to start a session as another user, referred to as *Act as user*. While in this mode, the administrator sees ThoughtSpot exactly as the target user does, with the same data access, role-based permissions, Org context, content visibility, and theme. Session details are recorded in the audit log under the administrator's identity.
 
 Use *Act as user* to:
 
@@ -29,8 +29,8 @@ Use *Act as user* to:
 [cols="1,3", options="header"]
 |===
 | Administrator role | Can impersonate
-| Cluster Admin | Regular users and Org Admins across all Orgs
-| Org Admin | Regular users in their own Org only
+| Cluster Admin | Any user within the entire cluster across all Orgs.
+| Org Admin | Users whose Org membership matches their own or is a sub-set of it.
 |===
 Neither Cluster Admins nor Org Admins can impersonate themselves or another Cluster Admin.
 
@@ -51,6 +51,8 @@ The user receives an email at the start and end of an impersonation session. For
 
 == Session behavior
 
+
+
 === What the administrator can do
 During an impersonation session, the administrator has full access to the platform as the target user. The following actions are permanently blocked:
 
@@ -64,8 +66,8 @@ During an impersonation session, the administrator has full access to the platfo
 | Accept or change EULA settings
 | Transfer object ownership
 | Delete the user account
-| Export large data sets or send data to external integrations
 |===
+
 
 [NOTE]
 ====
@@ -79,10 +81,15 @@ Third-party and agentic capabilities, such as Spotter, AgentSpot, and Analyst St
 Sessions end when any of the following conditions are met first:
 
 * The administrator selects *Exit session* in the impersonation banner.
-* The session reaches the cluster's standard idle timeout.
 * The session reaches the *60-minute hard cap* from when impersonation started. This limit cannot be extended and applies regardless of activity.
 
-Closing a browser tab does not end the session. All browser tabs share the same impersonation session. An administrator can have only one active impersonation session at a time.
+Closing a browser tab does not end the session. All tabs in the same browser share the same impersonation session, so an administrator can have only one active impersonation session at a time in that browser.
+
+The following rules apply to concurrent sessions:
+
+* An administrator can act as multiple users at the same time by starting each session in a separate incognito browser tab.
+* A user can be impersonated by only one administrator at a time.
+* An administrator cannot start a new impersonation session from within an active one.
 
 === What happens when a session ends
 When a session ends, the administrator is signed out of ThoughtSpot.
@@ -164,7 +171,7 @@ The following impersonation events are logged:
 // SOURCE: Design doc — Non-Goals, Limitations sections
 * The support is currently only through the ThoughtSpot UI.
 * An administrator cannot impersonate themselves.
-* Only one active impersonation session is allowed per administrator at a time.
+* Only one active impersonation session is allowed per administrator at a time in a browser window.
 * The session cannot be extended past 60 minutes.
 
 == Related information
