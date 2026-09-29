@@ -12,16 +12,11 @@ There are several methods ThoughtSpot employs to protect your ThoughtSpot data a
 [#data-protection]
 == Data Protection
 
-=== Snapshots and backups
-ThoughtSpot has a concept of both <<snapshots,snapshots>> and <<backups,backups>> for data protection and backing up your ThoughtSpot instance.
-
-[#snapshots]
-==== Snapshots
-A snapshot is a point-in-time image of your running instance. Snapshots are taken on a running instance, and later restored to the same instance. ThoughtSpot takes snapshots of your instance once an hour and stores them in persistent storage attached to your instance. If an error occurs while making any changes to your instance's environment, or changing the structure of a table, you can file an issue with {support-url} to restore the instance from snapshots.
+ThoughtSpot has a concept of <<backups,backups>> for data protection and backing up your ThoughtSpot instance.
 
 [#backups]
-==== Backups
-A backup is a procedure that stores a snapshot outside a ThoughtSpot instance. ThoughtSpot takes dataless backups of your instance once a day at midnight local instance time, and stores them in cloud object storage. ThoughtSpot can use a backup to restore your instance to a prior state. ThoughtSpot can restore your instance to any of the daily backups up to the last 7 days, and beyond that, at a weekly boundary of up to the last 30 days, in either the same or, if you enable <<disaster-recovery,cross-region disaster recovery>>, a different region from the original instance. If you enable cross-region disaster recovery, ThoughtSpot replicates the backups in a different cloud region.
+=== Backups
+A backup is a procedure that stores a point-in-time dataless image of your running cluster. Backups are the recommended way to restore your data or environment if an issue occurs. ThoughtSpot Support can assist with backup restores as needed. Snapshots are taken internally for system operations, but are not generally used or available for customer recovery. ThoughtSpot takes dataless backups of your instance once a day at midnight local instance time, and stores them in cloud object storage. ThoughtSpot can use a backup to restore your instance to a prior state. ThoughtSpot can restore your instance to any of the daily backups up to the last 7 days, and beyond that, at a weekly boundary of up to the last 30 days, in either the same or, if you enable <<disaster-recovery,cross-region disaster recovery>>, a different region from the original instance. If you enable cross-region disaster recovery, ThoughtSpot replicates the backups in a different cloud region.
 
 Backups contain the following information:
 
@@ -46,15 +41,16 @@ Backups DO NOT include the following information:
 * Usage information
 * Traces
 
-===== Backup immutability
+NOTE: ThoughtSpot takes internal snapshots for system operations, but they remain local to the instance and are not typically used to restore customer data. Backups are the recommended and supported recovery mechanism.
+// SOURCE: Engineering feedback, 2026-09-29
+
+==== Backup immutability
 
 Immutable backups:: ThoughtSpot SaaS supports immutable backups that adhere to Write-Once-Read-Many (WORM) compliance standards. This feature protects your data integrity by ensuring backups cannot be altered or deleted during the retention period.
 
 Retention policy:: The standard immutability duration is 5 days.
 
 Activation:: This feature is available upon request. Please contact {support-url} to enable it for your instance.
-
-
 
 === RPO and RTO for data protection
 A Recovery Point Objective (RPO) is the frequency of which you take a backup of a system. ThoughtSpot's RPO for Data Protection is 24 hours. Every 24 hours, ThoughtSpot automatically takes a backup and stores it in cloud object storage, in the same cloud region that your instance is in.
@@ -97,89 +93,25 @@ ThoughtSpot determines the secondary region for cross-region disaster recovery b
 | Cloud type | Primary region | Secondary region
 
 | AWS
-| us-east-1 (Northern Virginia, USA)
-| us-west-2 (Oregon, USA)
+| us-east-1
+| us-west-2
 
 | AWS
-| us-west-2 (Oregon, USA)
-| us-east-1 (Northern Virginia, USA)
+| us-west-2
+| us-east-1
 
 | AWS
-| eu-central-1 (Frankfurt, Germany)
-| eu-west-1 (Ireland)
+| eu-west-2
+| eu-west-1
 
 | AWS
-| eu-west-1 (Ireland)
-| eu-central-1 (Frankfurt, Germany)
-
-| AWS
-| eu-west-2 (London, UK)
-| eu-west-1 (Ireland)
-
-| AWS
-| eu-west-1 (Ireland)
-| eu-west-2 (London, UK)
-
-| AWS
-| ap-southeast-1 (Singapore)
-| ap-northeast-2 (Seoul, South Korea)
-
-| AWS
-| ap-northeast-2 (Seoul, South Korea)
-| ap-southeast-1 (Singapore)
-
-| AWS
-| eu-west-1 (Ireland)
-| eu-west-2 (London, UK)
-
-| AWS
-| eu-west-2 (London, UK)
-| eu-west-1 (Ireland)
-
-| AWS
-| ap-southeast-2 (Sydney, Australia)
-| ap-southeast-1 (Singapore)
-
-| AWS
-| ap-southeast-1 (Singapore)
-| ap-southeast-2 (Sydney, Australia)
-
-| AWS
-| ap-northeast-1 (Tokyo, Japan)
-| ap-northeast-2 (Seoul, South Korea)
-
-| AWS
-| ap-northeast-2 (Seoul, South Korea)
-| ap-northeast-1 (Tokyo, Japan)
-
-//| GCP
-//| us-east4 (Northern Virginia, USA)
-//| us-central1 (Iowa, USA)
-
-//| GCP
-//| us-central1 (Iowa, USA)
-//| us-east4  (Northern Virginia, USA)
-
-//| GCP
-//| europe-west3 (Frankfurt, Germany)
-//| europe-west2 (London, UK)
-
-//| GCP
-//| europe-west2 (London, UK)
-//| europe-west3 (Frankfurt, Germany)
-
-//| GCP
-//| australia-southeast1 (Sydney, Australia)
-//| asia-southeast1 (Singapore)
-
-//| GCP
-//| asia-southeast1 (Singapore)
-//| australia-southeast1 (Sydney, Australia)
+| eu-west-1
+| eu-west-2
 |===
 
 ThoughtSpot plans to expand region support over time.
 
-For Virtual Private ThoughtSpot (VPT) deployments, you can select your primary and secondary regions during setup. For all other SaaS customers, ThoughtSpot determines the secondary region.
+For Virtual Private ThoughtSpot (VPT) deployments, you can select from among the supported regions during setup. For all other SaaS customers, ThoughtSpot determines the secondary region.
 
 [#dr-limitations]
 === Limitations
