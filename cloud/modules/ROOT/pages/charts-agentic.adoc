@@ -1,24 +1,28 @@
 = Agentic charts
-:page-last_updated: Sep 10, 2026
+:page-last_updated: Sep 30, 2026
 :linkattrs:
 :author: Mark
 :experimental:
 :page-aliases:
+:page-layout: default-cloud-early-access
 :description: Spotter automatically visualizes non-token answers with interactive charts.
 :jira: SCAL-304279
 
 // Draft for SCAL-304278 / SCAL-304279
-// Target version: ThoughtSpot 26.8.0.cl+
+// Target version: ThoughtSpot 26.9.0.cl+ (non-token only); 26.10.0.cl+ (token and non-token)
 // Deployment: TS Cloud, On-Premises
 // Design doc: https://docs.google.com/document/d/1ub5dP_cyt9rrH3-FqzSg89wuE0aNdK_sm3kHM5qdk5M/edit
 
 
 [.lead]
-Agentic charts are interactive visualizations that Spotter creates automatically for non-token answers.
+Agentic charts are interactive visualizations that Spotter creates automatically for token and non-token-based answers.
+
+Agentic charts are generated from the tabular output of analytical tools that produce non-token answers. This article describes each supported data source, what data it produces, and how it maps to charts. In 26.9.0.cl, agentic charts supported non-token-based answers only. Beginning in 26.10.0.cl, they support both token-based and non-token-based answers.
+// SOURCE: PM confirmation, September 2026
 
 Spotter selects the chart type, encodings, and formatting based on the intent of your question and the structure of the result data, and you can refine the chart further using natural language.
 
-== What is a non-token answer?
+== What are token and non-token-based answers?
 
 In Spotter, answers are produced through different tools:
 
@@ -29,7 +33,9 @@ Generated from ThoughtSpot's native data models, worksheets, and tables. These a
 Generated from analytical tools that run outside of ThoughtSpot's native data model. These include:
 * xref:charts-agentic-supported-sources.adoc[Code execution] (Python-based analysis)
 * xref:charts-agentic-supported-sources.adoc[MCP] (Model Context Protocol) tool output
-* xref:charts-agentic-supported-sources.adoc[AgentQL] and other agent-generated data
+* xref:charts-agentic-supported-sources.adoc[File upload] (CSV and other uploaded files)
+* Semantic query (xref:agentql.adoc[AgentQL])
+// SOURCE: PM confirmation, September 2026
 
 Non-token answers previously returned data as plain tables or text. Agentic charting closes this gap by automatically rendering charts from the tabular output of these tools.
 
@@ -37,11 +43,6 @@ Non-token answers previously returned data as plain tables or text. Agentic char
 image::non-token-answer.png[]
 
 == Key features
-
-[NOTE]
-====
-Starting with ThoughtSpot 26.10.0.cl, Muze Studio also includes an AI chat interface [.badge.badge-beta-relnotes]#Beta# that generates custom chart code from natural-language prompts. While agentic charts render automatically for non-token answers, the Muze Studio AI chat lets you create and refine custom charts inside an Answer using conversational prompts. See xref:chart-create.adoc#ai-chat[Use AI chat to create and refine charts].
-====
 
 === Intent-aware chart generation
 
@@ -59,9 +60,15 @@ Charts are automatically enriched with:
 
 [NOTE]
 ====
-Starting with ThoughtSpot 26.10.0.cl, your administrator can enable *progressive rendering* for agentic charts in Spotter.
-When enabled, the base chart appears immediately and enhancements are applied in the background a few seconds later.
-See xref:charts-agentic-progressive-rendering.adoc[Progressive rendering] for details.
+Starting with ThoughtSpot 26.10.0.cl, your administrator can enable *progressive rendering* for agentic charts in Spotter. When enabled, the base chart appears immediately and AI-driven enhancements, such as improved axis formatting, data labels, and styling, are applied in the background a few seconds later. If the enhancement step fails or times out, the base chart remains visible with no interruption.
+
+To enable progressive rendering, contact your ThoughtSpot administrator. See xref:charts-agentic-progressive-rendering.adoc[Progressive rendering] for details.
+// SOURCE: SCAL-330485
+====
+
+[NOTE]
+====
+Starting with ThoughtSpot 26.10.0.cl, Muze Studio also includes an AI chat interface [.badge.badge-beta-relnotes]#Beta# that generates custom chart code from natural-language prompts. While agentic charts render automatically, the Muze Studio AI chat lets you create and refine custom charts inside an Answer using conversational prompts. See xref:chart-create.adoc#ai-chat[Use AI chat to create and refine charts].
 ====
 
 === Natural-language chart editing
@@ -84,19 +91,20 @@ Generated charts are fully interactive:
 Use agentic charting when you want to:
 
 * Visualize data produced by Python code execution (for example, statistical forecasts, simulations, or custom calculations)
-* Chart results from external web data retrieved through MCP
-* Create charts from AgentQL or other agent-generated data
-
-Agentic charts are *not* used for standard token-based answers from ThoughtSpot worksheets and tables. Those continue to use ThoughtSpot's existing charting system.
+* Chart results from external data retrieved through MCP connectors
+* Visualize uploaded files such as CSVs
+* Chart results from semantic queries using xref:agentql.adoc[AgentQL]
+* Visualize token-based answers from ThoughtSpot worksheets and tables with AI-powered chart selection and enrichment (starting in 26.10.0.cl)
+// SOURCE: PM confirmation, September 2026
 
 == Limitations and scope
 
 [IMPORTANT]
 ====
-* Agentic charting applies to *non-token answers only*. Token-based answers (TML answers from ThoughtSpot data models) continue to use the existing charting system.
-* Available starting from *ThoughtSpot 26.8.0.cl*.
-* Supported deployment types: *TS Cloud*, *On-Premises*.
+* In 26.9.0.cl, agentic charting applies to non-token answers only.
+* Starting in 26.10.0.cl, agentic charting supports both token-based and non-token-based answers.
 ====
+// SOURCE: PM confirmation, September 2026
 
 == Related topics
 

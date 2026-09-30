@@ -1,5 +1,5 @@
 = Edit agentic charts with natural language
-:page-last_updated: Sep 8, 2026
+:page-last_updated: Sep 30, 2026
 :linkattrs:
 :author: Mark
 :experimental:
@@ -8,7 +8,7 @@
 :jira: SCAL-304279
 
 // Draft for SCAL-304278 / SCAL-304279
-// Target version: ThoughtSpot 26.8.0.cl+
+// Target version: ThoughtSpot 26.9.0.cl+ (non-token only); 26.10.0.cl+ (token and non-token)
 // Deployment: TS Cloud, On-Premises
 
 After an agentic chart is generated, you can refine its appearance, formatting, and type using natural-language commands.
@@ -16,21 +16,22 @@ This feature lets you iterate on the chart visually without writing code or usin
 
 == How natural-language chart editing works
 
-When you submit a follow-up request that targets only the chart configuration, the system:
+The charts agent is a part of Spotter. When you submit a follow-up request, Spotter determines what needs to change and coordinates the response:
+// SOURCE: PM feedback, September 2026
 
-1. *Interprets your intent* — The LLM parses your natural-language request to identify chart changes (type, color, labels, axes, and so on).
-2. *Maps to chart parameters* — The request is translated into specific chart configuration changes.
-3. *Re-renders the chart* — The charting tool invokes the Muze charting service with the updated parameters and returns the new chart.
+* *Chart-only changes* — If your request targets only the chart configuration (for example, changing the chart type or adding data labels), Spotter routes the request directly to the charts agent without re-running the analytical query. This means chart-only edits are typically faster than full answer regenerations.
+* *Data and chart changes* — If your request requires changes to the underlying data or query (for example, "show me the top 10 instead of top 5 and make it a bar chart"), Spotter updates the data first, then calls the charts agent to render the updated result.
 
-[NOTE]
-====
-If your follow-up request only involves chart configuration changes (and does not require regenerating the underlying answer data), the system invokes the charting tool directly without re-running the analytical query.
-This means chart-only edits are typically faster than full answer regenerations.
-====
+The charts agent then:
+
+1. *Interprets your intent* — Parses your natural-language request to identify chart changes (type, color, labels, axes, and so on).
+2. *Maps to chart parameters* — Translates the request into specific chart configuration changes.
+3. *Re-renders the chart* — Applies the updated parameters and returns the new chart.
+// SOURCE: PM feedback, September 2026
 
 == Supported natural-language commands
 
-The following table lists common natural-language commands that the charting engine understands.
+The following table lists common natural-language commands you can use to refine an agentic chart.
 
 [cols="1,2", options="header"]
 |===
@@ -61,7 +62,7 @@ The following table lists common natural-language commands that the charting eng
 "Change this to a bar chart"
 
 .Result:
-The charting engine re-renders the data as a bar chart.
+The charts agent re-renders the data as a bar chart.
 
 === Example 2: Change colors
 
@@ -113,18 +114,26 @@ Line charts are rendered with smooth (curved) lines rather than straight line se
 .Result:
 The legend is repositioned from its default location to the top of the chart.
 
+=== Example 6: Combined data and chart changes
+
+.User asks:
+"Show me the top 5 regions by revenue as a pie chart"
+
+.Result:
+Spotter updates the underlying query to filter to the top 5 regions, then the charts agent renders the result as a pie chart.
+// SOURCE: PM feedback, September 2026
+
 == Tips for effective commands
 
 * Be specific about what you want to change. For example, "Change the Y-axis to show in thousands" is more precise than "Fix the axis."
-* You can combine multiple changes in a single request, such as "Change to a bar chart and use blue colors."
-* The charting engine understands synonyms. "Make it a column chart" and "Change to a bar chart" may produce similar results depending on the data orientation.
-* If a command is ambiguous, the system will apply the most likely interpretation and render the chart.
+* You can combine data changes and chart changes in a single request. For example, "Show me only Q4 data and make it a stacked bar chart." Spotter handles the data change first, then the charts agent renders the updated chart.
+* The charts agent understands synonyms. "Make it a column chart" and "Change to a bar chart" may produce similar results depending on the data orientation.
+* If a command is ambiguous, the system applies the most likely interpretation and renders the chart.
 
 == Limitations
 
-* Natural-language editing applies to the chart configuration only. It does not modify the underlying data or query.
-* Some advanced chart features (for example, custom JavaScript, third-party chart libraries) are not supported through natural-language editing.
-* The system may not understand highly specialized or domain-specific chart terminology.
+* Some advanced chart features (for example, custom JavaScript or third-party chart libraries) are not supported through natural-language editing.
+* The charts agent may not understand highly specialized or domain-specific chart terminology.
 
 == Related topics
 
