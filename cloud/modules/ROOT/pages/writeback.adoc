@@ -94,7 +94,7 @@ If you used writeback already during the beta, the following capabilities are ne
 * Spreadsheet-style copy and paste.
 * Edit an input table directly from a Liveboard, without navigating back to Search Data.
 * Dedicated privileges for managing and editing input tables.
-//* Support in embedded ThoughtSpot, controlled by an SDK flag.
+* Support in ThoughtSpot Embedded (TSE), controlled by an SDK flag.
 
 == Key concepts
 
@@ -124,11 +124,13 @@ This key links the input table to the source model and cannot be changed after t
 === Date granularity
 
 When you include a date column from your source model, you choose the granularity at which values are stored — for example, Order Date at Month rather than at Day.
-Input column values are stored against the selected grain.
+Input column values are stored against the selected grain. After the input table is created, the granularity is fixed and cannot be changed, and you have to use a coarser date granularity when building an Answer.
 
 === Validation rule
 
 An optional constraint you define on an input column that limits what users can enter.
+
+NOTE: Validation is currently limited to string values.
 
 == Prerequisites
 
@@ -139,6 +141,8 @@ Before creating an input table, ensure:
 * Your organization is connected to a supported CDW.
 * You have the *Can manage data* privilege.
 * You have the *Can manage input table* privilege.
++
+NOTE: *Can manage input table* is for Analysts, who perform DDL operations on input tables.
 * You have edit access on the source model.
 * You have write access to the target schema in your CDW.
 * You have *Configure Data Upload* enabled for the connection where the objects are located.
@@ -152,9 +156,14 @@ Before editing or updating an input table, ensure:
 * Your organization is connected to a supported CDW.
 * You have the *Can manage data* privilege.
 * You have the *Can edit input table* privilege.
++
+NOTE: *Can edit input table* is for Business Users, who edit values in existing columns.
 * You have edit access on the source model.
 * You have write access to the target schema in your CDW.
 * You have *Configure Data Upload* enabled for the connection where the objects are located.
+
+
+
 
 == Creating an input table
 
@@ -191,7 +200,7 @@ The primary key cannot be modified after the input table is saved.
 ** *Column Name*: A descriptive name for the editable column.
 ** *Data Type*: Select from Integer, Double, Boolean, String, or Date.
 +
-You can also use the *Custom* section to define a fixed set of string values for users to choose from when filling the column.
+You can also use the *Custom* dropdown section to define a fixed set of string values for users to choose from when filling the column.
 . You can add multiple input columns to the same table.
 
 === Enter values
@@ -352,7 +361,7 @@ The resulting behavior:
 
 |View an input table, and build Answers and Liveboards from it
 |Standard read access
-|View access on the model and on the input table
+|View access on the model, underlying tables, and on the input table
 |===
 
 Users who only have *Can edit input table* can modify existing values but cannot create or delete input tables or input columns — those options are not shown to them.
@@ -376,15 +385,19 @@ The following are known limitations:
 * CSV upload to create an input table is not available.
 * Concurrent editing is not locked. If two users edit the same input table at the same time, the most recent saved value per key wins.
 * TML export and import is not supported.
+* TML edit is not supported for input tables.
 * Publishing is not supported.
 * Cohorts created on model columns don't work with input columns included in search.
 * For Databricks and Google BigQuery, column names must comply with the naming rules of the target CDW.
 For example, if you name a column `Is Holiday`, the CDW may rename it to `IsHoliday` or `Is_Holiday`.
++
+NOTE: This rule applies when new input columns are added.
 * Governance features — audit snapshots, approval flows, and version control for reverting to a previous version — are planned for a future release.
 * Writeback is not supported on the ThoughtSpot mobile app.
 * Creating, updating, or deleting tables using APIs programmatically is not supported.
-* Row-level security (RLS) and column-level security (CLS) are not supported.
+* Row-level security (RLS) and column-level security (CLS/CSR) are not supported.
 
+////
 == Input tables in Orgs
 
 Input tables are not published to an Org automatically, even when the underlying base model is published to that Org.
@@ -394,7 +407,7 @@ This gives Primary Admins explicit control over which Orgs can view and write ba
 * *The base model must be published first.* Attempting to publish an input table to an Org where its base model isn't published fails with an error.
 * *Unpublishing revokes access.* Unpublishing an input table from an Org removes access for that Org. If the base model is later unpublished from an Org, the input table's publish state to that Org is revoked along with it.
 * *Publishing grants view access only.* Write-back access continues to be governed separately by row-level security and object permissions. Publishing alone does not grant edit rights.
-
+////
 ////
 == Managing input tables with the REST API
 
