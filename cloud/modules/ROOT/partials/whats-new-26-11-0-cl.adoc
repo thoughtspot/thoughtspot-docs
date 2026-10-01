@@ -372,6 +372,11 @@ endif::free-trial-feature[]
 [#26-11-0-cl-org-deletion]
 [discrete]
 === Handling queries post Org deletion [.badge.badge-ga-relnotes]#GA#
+Previously, deleting an Org in ThoughtSpot stopped user-initiated queries immediately, but background processes — including scheduled Liveboard reports, alerts, and search indexing — continued to run warehouse queries against the deleted Org's connections for up to 7 days during the deletion grace period, resulting in unexpected warehouse spend.
+ThoughtSpot now stops all warehouse query execution for deleted Orgs immediately at deletion time.
+Deleted Orgs remain restorable during the grace period; the query block is automatically lifted if an org is restored.
+
+//confirm the grace period length visible to customers is still 7 days (retainOrgContentSec default) and whether this is surfaced anywhere in the Admin UI
 
 // Mary. jira: SCAL-327128. docs jira: SCAL-327129
 // PM: Sejal
