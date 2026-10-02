@@ -30,7 +30,7 @@ The following table describes how ThoughtSpot generates SQL for string compariso
 | ThoughtSpot assumes the stored data is already lowercase. The `LOWER()` function is *not* applied to the column during string comparison.
 
 | ALL_UPPERCASE
-| ThoughtSpot assumes the stored data is already uppercase. The `LOWER()` function is *not* applied to the column. Instead, ThoughtSpot wraps the search string values in the `UPPER()` function during comparison.
+| ThoughtSpot assumes the stored data is already uppercase. The `LOWER()` function is *not* applied to the column. Instead, ThoughtSpot converts the filter values you provide to uppercase *before* generating SQL, so the query contains uppercase string literals for comparison.
 |===
 
 NOTE: ThoughtSpot does not sample the data for these columns. If the actual data casing does not match the configured setting, query results may be incorrect.
@@ -82,17 +82,18 @@ With ALL_UPPERCASE, ThoughtSpot assumes the stored data is already uppercase. Th
 SELECT "ta_1"."COMPANY_NAME" "ca_1"
 FROM "DUNDERMIFFLIN"."PUBLIC"."DM_CUSTOMER" "ta_1"
 WHERE "ta_1"."COMPANY_NAME" IN (
-  UPPER('acme industries'), UPPER('nakatomi corporation')
+  'ACME INDUSTRIES', 'NAKATOMI CORPORATION'
 )
 GROUP BY "ca_1"
 ORDER BY "ca_1" ASC NULLS LAST
 ----
 
-NOTE: If the stored data is not actually uppercase, query results may be incorrect.
+NOTE: ThoughtSpot converts filter values to uppercase before generating SQL, instead of wrapping them with the `UPPER()` function. This improves query performance, but requires the stored data to actually be uppercase. If your stored data is not all uppercase, results may be incorrect.
+
 // SOURCE: SCAL-278738 — SQL example provided by Damian Waldron
 === ALL_UPPERCASE behavior
 
-When a column is configured as ALL_UPPERCASE, ThoughtSpot assumes the stored data is already uppercase. During string comparison, instead of applying `UPPER()` to the column, ThoughtSpot applies `UPPER()` to the search string values you provide. This means the column value itself is compared as-is against an uppercased version of your filter input.
+When a column is configured as ALL_UPPERCASE, ThoughtSpot assumes the stored data is already uppercase. During string comparison, ThoughtSpot converts the filter values you provide to uppercase *before* generating SQL, so the SQL query directly compares column values to uppercase string literals. The column value itself is compared as-is against these uppercase values.
 
 For example, if you filter on `COMPANY_NAME` with values `acme industries` and `nakatomi corporation`, the generated SQL looks like this:
 
@@ -101,7 +102,7 @@ For example, if you filter on `COMPANY_NAME` with values `acme industries` and `
 SELECT "ta_1"."COMPANY_NAME" "ca_1"
 FROM "DUNDERMIFFLIN"."PUBLIC"."DM_CUSTOMER" "ta_1"
 WHERE "ta_1"."COMPANY_NAME" IN (
-  UPPER('acme industries'), UPPER('nakatomi corporation')
+  'ACME INDUSTRIES', 'NAKATOMI CORPORATION'
 )
 GROUP BY "ca_1"
 ORDER BY "ca_1" ASC NULLS LAST
