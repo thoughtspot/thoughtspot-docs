@@ -1,6 +1,6 @@
 = Weekly release notes
 :experimental:
-:page-last_updated: Feb 23, 2026
+:page-last_updated: Oct 1, 2026
 :linkattrs:
 :description: These weekly release notes include information about enhanced features and fixes which are released on a weekly basis.
 :jira: SCAL-278217, SCAL-280996, SCAL-281927, SCAL-280886, SCAL-281156, SCAL-283473, SCAL-278723, SCAL-284023, SCAL-264083, SCAL-280423, SCAL-288834, SCAL-293915, SCAL-296024, SCAL-296606, SCAL-221340, SCAL-299403, SCAL-301088, SCAL-301041, SCAL-298693, SCAL-301658, SCAL-301811, SCAL-299991, SCAL-313211, SCAL-312267, SCAL-313800, SCAL-315352
@@ -52,11 +52,77 @@
 
 The following release notes cover weekly changes to the ThoughtSpot Cloud release. These enhancements and fixes are automatically deployed to customer instances. For the latest monthly release notes see the xref:notes.adoc[{version} release notes].
 
+[#oct-05-2026]
+== Oct 05, 2026
+[cols="10%,90%a", grid=none, frame=none]
+|====================
+|[.badge.badge-fix-relnotes]#Fix#|Improved liveboard performance and filter response times for complex models when rendering Liveboards and processing interactive filter selections.
+|====================
+
+[cols="10%,90%a", grid=none, frame=none]
+|====================
+|[.badge.badge-fix-relnotes]#Fix#|When you publish an object from the primary org to one or more orgs, ThoughtSpot no longer sends notification emails to the admins of the receiving orgs. Published objects still appear in each receiving org as before. This change avoids a large number of notification emails during bulk publishing.
+|====================
+
+[#sep-28-2026]
+== Sep 28, 2026
+[cols="10%,90%a", grid=none, frame=none]
+|====================
+|[.badge.badge-fix-relnotes]#Fix#| Updating the value of a connection variable bound to a password field did not take effect on the connection. After a password variable was updated, the connection continued to use the old credential because the internal credential cache was not invalidated when the variable value changed. Non-sensitive variable fields such as database name and username were unaffected. This issue is resolved. Password variable updates are now correctly propagated to the connection on next use, without requiring a workaround.
+|====================
+
 [#sep-21-2026]
 == Sep 21, 2026
 [cols="10%,90%a", grid=none, frame=none]
 |====================
 |[.badge.badge-enhance-relnotes]#Enhancement#| We now support OAuth and OAuth with PKCE for Snowflake connections in Analyst Studio. For more information, see xref:analyst-studio-connect-snowflake.adoc[].
+|====================
+
+[cols="10%,90%a", grid=none, frame=none]
+|====================
+|[.badge.badge-fix-relnotes]#Fix#|Fixed an issue where the Spotter Analytics Liveboard showed a blank model name for some conversations when used in *Auto Mode*. Spotter now captures and records the model name for all conversation types, including *Auto Mode* sessions.
+|====================
+
+[cols="10%,90%a", grid=none, frame=none]
+|====================
+|[.badge.badge-fix-relnotes]#Fix#|Fixed an issue where Spotter Analyst did not follow admin-configured instructions for selecting a model when responding to user questions. Spotter Analyst now correctly follows the configured routing instructions to select the appropriate model.
+|====================
+
+[cols="10%,90%a", grid=none, frame=none]
+|====================
+|[.badge.badge-fix-relnotes]#Fix#|Fixed an issue where download permissions were not correctly enforced for Spotter-generated files when role-based access control (RBAC) was enabled. Users could download files they did not have permission to access, while users with the correct permissions were blocked from downloading. Download permissions for Spotter-generated files are now applied correctly based on the user's assigned privileges.
+|====================
+
+[cols="10%,90%a", grid=none, frame=none]
+|====================
+|[.badge.badge-fix-relnotes]#Fix#|Fixed an issue where manually triggering a data build did not pick up the latest metadata changes, causing Search, Spotter, and Liveboard results to reflect outdated data. This issue is resolved. Manual data build triggers now correctly use the latest available metadata.
+|====================
+
+[cols="10%,90%a", grid=none, frame=none]
+|====================
+|[.badge.badge-fix-relnotes]#Fix#|Fixed an issue in embedded deployments where Liveboard filter dropdowns showed empty or incorrect values when runtime filters were applied via the embed configuration. Filter dropdowns now correctly reflect runtime filter values.
+|====================
+
+[cols="10%,90%a", grid=none, frame=none]
+|====================
+|[.badge.badge-fix-relnotes]#Fix#|Fixed an issue where  where token requests passing user attributes with `persist_option: REPLACE` caused intermittent authentication failures and service instability. This issue is now resolved.
+|====================
+
+[#sep-14-2026]
+== Sep 14, 2026
+[cols="10%,90%a", grid=none, frame=none]
+|====================
+|[.badge.badge-fix-relnotes]#Fix#|Fixed an issue where the indexing service experienced a rapid surge in memory usage when processing high-cardinality columns with long text or URL values (>2000 bytes). This caused cluster instability and intermittent degradation in rendering Search, Spotter, and Liveboard for instance. The indexing service now handles high-cardinality data without unbounded memory growth.
+|====================
+
+[cols="10%,90%a", grid=none, frame=none]
+|====================
+|[.badge.badge-fix-relnotes]#Fix#|Fixed an issue where background queries tagged as `SECURE_SAMPLING` were not routed to the Snowflake warehouse configured in Connection Configuration. Secure sampling queries are now routed correctly according to the configured Connection Configuration settings.
+|====================
+
+[cols="10%,90%a", grid=none, frame=none]
+|====================
+|[.badge.badge-fix-relnotes]#Fix#|Fixed an issue where Japanese-locale users could not complete the Org deletion flow. When using an IME (Input Method Editor) to type the required confirmation word in the Org deletion flow, intermediate composition keystrokes were processed incorrectly, producing garbled text that never matched the required confirmation string and deletion operation could not be performed. The confirmation dialog now correctly handles IME composition input for Japanese locale.
 |====================
 
 [#sep-07-2026]
