@@ -76,7 +76,7 @@ NOTE: If the stored data is not actually lowercase, query results may be incorre
 
 === ALL_UPPERCASE
 
-With ALL_UPPERCASE, ThoughtSpot assumes the stored data is already uppercase. The `LOWER()` function is not applied to the column. Instead, ThoughtSpot wraps the search string values in the `UPPER()` function so they match the stored casing.
+With ALL_UPPERCASE, ThoughtSpot assumes the stored data is already uppercase. The `LOWER()` function is not applied to the column. Instead, ThoughtSpot converts the filter values to uppercase before generating SQL, so the query contains uppercase string literals that match the stored casing.
 
 [source,sql]
 ----
@@ -90,23 +90,3 @@ ORDER BY "ca_1" ASC NULLS LAST
 ----
 
 NOTE: ThoughtSpot converts filter values to uppercase before generating SQL, instead of wrapping them with the `UPPER()` function. This improves query performance, but requires the stored data to actually be uppercase. If your stored data is not all uppercase, results may be incorrect.
-
-// SOURCE: SCAL-278738 — SQL example provided by Damian Waldron
-=== ALL_UPPERCASE behavior
-
-When a column is configured as ALL_UPPERCASE, ThoughtSpot assumes the stored data is already uppercase. During string comparison, ThoughtSpot converts the filter values you provide to uppercase *before* generating SQL, so the SQL query directly compares column values to uppercase string literals. The column value itself is compared as-is against these uppercase values.
-
-For example, if you filter on `COMPANY_NAME` with values `acme industries` and `nakatomi corporation`, the generated SQL looks like this:
-
-[source,sql]
-----
-SELECT "ta_1"."COMPANY_NAME" "ca_1"
-FROM "DUNDERMIFFLIN"."PUBLIC"."DM_CUSTOMER" "ta_1"
-WHERE "ta_1"."COMPANY_NAME" IN (
-  'ACME INDUSTRIES', 'NAKATOMI CORPORATION'
-)
-GROUP BY "ca_1"
-ORDER BY "ca_1" ASC NULLS LAST
-----
-
-NOTE: If you configure a column as ALL_UPPERCASE but the stored data is not actually uppercase, query results may be incorrect or incomplete.
