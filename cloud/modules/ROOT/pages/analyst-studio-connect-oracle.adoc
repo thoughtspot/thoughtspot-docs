@@ -1,0 +1,61 @@
+= Connect to Oracle in Analyst Studio
+:product: Analyst Studio
+:connection: Oracle
+:author: Naomi
+:page-last_updated: Sep 21, 2026
+:experimental:
+:linkattrs:
+:description: Connect to Oracle to start searching your data in Analyst Studio.
+:jira: SCAL-315450
+
+*Additionally supports:* _Oracle Autonomous Database_
+
+== Supported JDBC drivers and known issues
+
+|===
+| Driver | Driver Release Date | {product} Removal Date
+
+| Oracle v 23.5                          | 7/26/2024               |
+
+| (Recommended) Oracle v 21.1
+| 1/14/2021
+|
+
+| Oracle v 19.11
+| 6/4/2021
+|
+
+| Oracle v 19.7
+| 4/1/2019
+|
+|===
+
+There are no known issues for these drivers.
+
+== Database configuration instructions
+
+=== Oracle Autonomous Database (Public Endpoint)
+
+. Navigate to your link:https://cloud.oracle.com/db/adb[Oracle Cloud Autonomous Databases page,window=_blank] and click on your instance. +
+image:oadb-main.png[Oracle Autonomous Main]
+. Click on *DB Connection*. +
+image:oadb-dbconnection.png[Oracle Autonomous DB Connection]
+. Click on *Download Wallet* to retrieve the zip file to upload to {product} (instance wallet contains credentials for single DB and regional contains all DBs in that region). +
+image:oadb-wallet.png[Oracle Autonomous Wallet]
+. Scroll down to see the Database Service (TNS) Names to copy into {product}.
+It is usually the database name + "`_`" + low, medium or high.
+These predefined names indicate the amount of resources to each SQL statement;
+high results in the highest performance, but supports only a few concurrent queries.
+To restrict access to certain database service names, you can delete the entries from the tnsnames.ora file in the wallet. +
+image:oadb-tnsname.png[Oracle Autonomous TNS Name]
+
+=== Oracle Autonomous Database (Private Endpoint)
+
+NOTE: mTLS requirement must be relaxed link:https://docs.oracle.com/en/cloud/paas/autonomous-database/adbsa/support-tls-mtls-authentication.html#GUID-6A34B30A-3692-4D1F-8458-FD8F32736199[to allow for TLS,window=_blank] (default for ADB is to require mTLS).
+
+. Navigate to your link:https://cloud.oracle.com/db/adb[Oracle Cloud Autonomous Databases page,window=_blank] and click on your instance. +
+image:oadb-main.png[Oracle Autonomous Main]
+. Click on *DB Connection*. +
+image:oadb-dbconnection.png[Oracle Autonomous DB Connection]
+. Scroll down to select the Connection string to the desired TNS name to copy into {product}. +
+image:oadb-connectionstring.png[Oracle Autonomous TNS Name]

@@ -1,0 +1,51 @@
+= Connect to dbt semantic layer in Analyst Studio
+:product: Analyst Studio
+:connection: dbt semantic layer
+:author: Naomi
+:page-last_updated: Sep 21, 2026
+:experimental:
+:linkattrs:
+:description: Connect to dbt semantic layer to start searching your data in Analyst Studio.
+:jira: SCAL-315450
+
+== Supported JDBC drivers and known issues
+
+|===
+| Driver | Driver Release Date | {product} Removal Date
+
+| (Recommended) Arrow Flight SQL version 12.0.1
+| 6/13/2023
+|
+|===
+
+=== Connecting to {product}
+
+You will also need the following to set up the connection in {product}:
+
+* *dbt Cloud Hostname*: The hostname for the instance of dbt cloud.
+* *Environment Id*: The unique identifier for a dbt environment in the dbt Cloud URL, when you navigate to that environment under Deployments.
+* *Service Token*: Service Tokens for dbt Cloud can be created in dbt account settings, and must have at least "Semantic Layer Only" permissions.
+
+Start by xref:analyst-studio-connecting-analyst-studio-to-your-database.adoc[connecting a database.]
+
+From the dropdown, select *dbt Semantic Layer*.
+
+=== Writing metrics queries in {product}
+
+To write a new metrics query, *navigate to the SQL editor* and select your dbt Semantic Layer connection from the *database dropdown*.
+
+By default, this connection will surface all available schemas and tables.
+*To reference a metric within your query, use the following syntax:*
+
+Note all queries need to be wrapped in `{%raw %} {% endraw %}` tags.
+
+For example:
+
+[source]
+----
+{% raw %}
+select * from {{
+	semantic_layer.metrics()
+}}
+{% endraw %}
+----

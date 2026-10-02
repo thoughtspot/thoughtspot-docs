@@ -1,0 +1,145 @@
+= Act as user
+:page-last_updated: Sep 22, 2026
+:author: Rani
+:linkattrs:
+:experimental:
+:page-layout: default-cloud-early-access
+:description: Authorized administrators can start a governed, time-bounded impersonation session to view ThoughtSpot exactly as a specific user would, for troubleshooting and support.
+:jira: SCAL-325380
+
+// SOURCE: SCAL-325379, Design doc https://docs.google.com/document/d/1imxJ2jM1oBlXnupsnphvXS_I73_cA1ZMQdYYJ-tGVYE
+
+
+ThoughtSpot allows authorized administrators to start a session as another user, referred to as *Act as user*. While in this mode, the administrator sees ThoughtSpot exactly as the target user does, with the same data access, role-based permissions, Org context, content visibility, and theme. Session details are recorded in the audit log under the administrator's identity.
+
+Use *Act as user* to:
+
+* Reproduce permission-related issues without creating shadow accounts or requesting screen shares.
+* Verify that row-level security, column-level security, and sharing rules apply correctly before rolling out changes.
+* Provide support by seeing and resolving issues in the user's exact context.
+
+== Prerequisites
+
+// SOURCE: SCAL-325379 epic (orion.impersonationConfig.enabled, off by default); 26.10.0.cl release notes
+*Act as user* is available for ThoughtSpot Analytics customers with the xref:admin-portal-2.adoc[new Admin Portal] enabled. A cluster administrator must turn on the feature from *Admin* > *Feature Management* > *Early Access*.
+
+== Who can use this feature
+
+=== Administrators
+[cols="1,3", options="header"]
+|===
+| Administrator role | Can impersonate
+| Cluster Admin | Any user within the entire cluster across all Orgs.
+| Org Admin | Users whose Org membership matches their own or is a sub-set of it.
+|===
+Neither Cluster Admins nor Org Admins can impersonate themselves or another Cluster Admin.
+
+=== Target users (consent)
+// SOURCE: SCAL-325379 epic — consent gate is a time-boxed grant (6h / 24h / 3 days), default "Don't allow"
+Each user controls whether administrators can impersonate their account. In *Act as setting* on the user's profile, the *Allow admins to act as you* preference is set to *Don't allow* by default. Before an administrator can start a session as that user, the user must grant access for one of the following periods:
+
+* *Allow for 6 hours*
+* *Allow for 24 hours*
+* *Allow for 3 days*
+
+[.bordered]
+image::impersonation-3.png[Act as setting on the user profile]
+
+Access expires automatically at the end of the selected period, and the setting returns to *Don't allow*.
+
+The user receives an email at the start and end of an impersonation session. For more information, see xref:user-profile.adoc#impersonation-consent[Allow administrators to act as you].
+
+== Session behavior
+
+
+
+=== What the administrator can do
+During an impersonation session, the administrator has full access to the platform as the target user. The following actions are permanently blocked:
+
+// SOURCE: Design doc — Forever-blocked actions
+[cols="1", options="header"]
+|===
+| Action blocked during impersonation
+| Change password, MFA settings, or email
+| Issue or revoke API tokens
+| Modify role or group membership
+| Accept or change EULA settings
+| Transfer object ownership
+| Delete the user account
+|===
+
+
+[NOTE]
+====
+// SOURCE: SCAL-325379 epic — "Third-party/agentic capabilities (Spotter, AgentSpot, Analyst Studio)
+Third-party and agentic capabilities, such as Spotter, AgentSpot, and Analyst Studio, are unavailable during an impersonation session by default.
+====
+
+=== Session limits and expiry
+// SOURCE: Design doc — Session Lifetime, Hard Cap
+Sessions end when any of the following conditions are met first:
+
+* The administrator selects *Exit session* in the impersonation banner.
+* The session reaches the *60-minute hard cap* from when impersonation started. This limit cannot be extended and applies regardless of activity.
+
+Closing a browser tab does not end the session. All tabs in the same browser share the same impersonation session, so an administrator can have only one active impersonation session at a time in that browser.
+
+The following rules apply to concurrent sessions:
+
+* An administrator can act as multiple users at the same time by starting each session in a separate incognito browser tab.
+* A user can be impersonated by only one administrator at a time.
+* An administrator cannot start a new impersonation session from within an active one.
+
+=== What happens when a session ends
+When a session ends, the administrator is signed out of ThoughtSpot.
+On clusters that use SSO with automatic redirect, the identity provider re-authenticates the administrator as themselves automatically.
+
+[NOTE]
+====
+// SOURCE: Design doc — IAM v2 Okta SSO section
+On IAM v2 clusters with Okta SSO, the system clears the Okta SSO session on impersonation start to keep ThoughtSpot's session and the IdP session in sync. On non-auto-redirect SSO clusters, the external IdP session remains active after impersonation ends, and the administrator is re-authenticated as themselves by the IdP.
+====
+
+== Start an impersonation session
+
+Before you can act as a user, the user must grant access in *Act as setting* on their profile.
+
+. Navigate to *Admin settings* > *User management*.
+. Locate the user you want to act as.
+. Click the *Act as user* option from the user's action menu.
++
+[.bordered]
+image::impersonation-1.png[Act as user]
++
+[NOTE]
+====
+The *Act as user* option is visible only if the target user is an `Active` user.
+====
++
+A colored impersonation border appears around the perimeter of the screen. You are now viewing ThoughtSpot as the target user.
++
+[.bordered]
+image::impersonation-5.png[Impersonation border around the ThoughtSpot interface]
+
+. To end the session before it expires, click *Exit session*.
++
+[.bordered]
+image::impersonation-6.png[Exit session button in the impersonation banner]
++
+//ThoughtSpot ends the session and signs you out. On SSO clusters with auto-redirect, you are automatically re-authenticated as yourself.
+
+
+== Limitations
+
+// SOURCE: Design doc — Non-Goals, Limitations sections
+* The support is currently only through the ThoughtSpot UI.
+* An administrator cannot impersonate themselves.
+* Only one active impersonation session is allowed per administrator at a time in a browser window.
+* The session cannot be extended past 60 minutes.
+
+== Related information
+
+* xref:user-profile.adoc#impersonation-consent[Allow administrators to act as you]
+* xref:user-management.adoc[Create, edit, or delete a user]
+
+

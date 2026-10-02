@@ -1,0 +1,142 @@
+= Edit agentic charts with natural language
+:page-last_updated: Sep 30, 2026
+:linkattrs:
+:author: Mark
+:experimental:
+:page-aliases:
+:description: Refine the appearance, formatting, and type of an agentic chart using natural-language commands.
+:jira: SCAL-304279
+
+// Draft for SCAL-304278 / SCAL-304279
+// Target version: ThoughtSpot 26.9.0.cl+ (non-token only); 26.10.0.cl+ (token and non-token)
+// Deployment: TS Cloud, On-Premises
+
+After an agentic chart is generated, you can refine its appearance, formatting, and type using natural-language commands.
+This feature lets you iterate on the chart visually without writing code or using manual configuration panels.
+
+== How natural-language chart editing works
+
+The charts agent is a part of Spotter. When you submit a follow-up request, Spotter determines what needs to change and coordinates the response:
+// SOURCE: PM feedback, September 2026
+
+* *Chart-only changes* — If your request targets only the chart configuration (for example, changing the chart type or adding data labels), Spotter routes the request directly to the charts agent without re-running the analytical query. This means chart-only edits are typically faster than full answer regenerations.
+* *Data and chart changes* — If your request requires changes to the underlying data or query (for example, "show me the top 10 instead of top 5 and make it a bar chart"), Spotter updates the data first, then calls the charts agent to render the updated result.
+
+The charts agent then:
+
+1. *Interprets your intent* — Parses your natural-language request to identify chart changes (type, color, labels, axes, and so on).
+2. *Maps to chart parameters* — Translates the request into specific chart configuration changes.
+3. *Re-renders the chart* — Applies the updated parameters and returns the new chart.
+// SOURCE: PM feedback, September 2026
+
+== Supported natural-language commands
+
+The following table lists common natural-language commands you can use to refine an agentic chart.
+
+[cols="1,2", options="header"]
+|===
+| Command pattern | Result
+| "Change this to a [bar/line/pie/area] chart" | Switches the chart type
+| "Use a different color for each [bar/line/series]" | Assigns distinct colors to each data series
+| "Make it [color]" | Changes the overall color scheme (for example, "Make it blue")
+| "Add data labels" | Displays numeric values directly on chart elements
+| "Show all data labels" | Ensures every data point is labeled
+| "Remove data labels" | Hides numeric labels
+| "Change the Y-axis to show in [thousands/millions/billions]" | Reformats the axis scale and tick labels
+| "Format the Y-axis as [currency/percentage/scientific]" | Changes the axis number format
+| "Move the legend to the [top/bottom/left/right]" | Repositions the chart legend
+| "Hide the legend" | Removes the legend
+| "Show the legend" | Restores the legend
+| "Use a smooth curve" | Applies smooth curves to line charts
+| "Make it stacked" | Converts to a stacked chart format
+| "Sort by [ascending/descending]" | Sorts the data series
+| "Add a title: [text]" | Sets or updates the chart title
+| "Change the title to [text]" | Updates the chart title
+|===
+
+== Examples
+
+=== Example 1: Change chart type
+
+.User asks (after a chart is generated):
+"Change this to a bar chart"
+
+.Result:
+The charts agent re-renders the data as a bar chart.
+
+=== Example 2: Change colors
+
+.User asks:
+"Use a different color for each bar"
+
+.Result:
+Each bar in the chart is assigned a distinct color from the palette.
+
+=== Example 3: Add data labels
+
+.User asks:
+"Add data labels"
+
+.Result:
+Numeric values appear on each data point (for example, on top of each bar or at each line point).
+
+.User asks:
+"Show all data labels"
+
+.Result:
+The chart ensures all data points are labeled, even if some would normally be omitted for readability.
+
+=== Example 4: Format the Y-axis
+
+.User asks:
+"Change the Y-axis to show in thousands"
+
+.Result:
+The Y-axis tick labels are reformatted. For example, `1,000,000` becomes `1,000` with a "in thousands" suffix.
+
+.User asks:
+"Change the Y-axis to show in millions"
+
+.Result:
+The Y-axis tick labels are reformatted. For example, `1,000,000,000` becomes `1,000` with a "in millions" suffix.
+
+=== Example 5: Styling refinements
+
+.User asks:
+"Use a smooth curve"
+
+.Result:
+Line charts are rendered with smooth (curved) lines rather than straight line segments.
+
+.User asks:
+"Move the legend to the top"
+
+.Result:
+The legend is repositioned from its default location to the top of the chart.
+
+=== Example 6: Combined data and chart changes
+
+.User asks:
+"Show me the top 5 regions by revenue as a pie chart"
+
+.Result:
+Spotter updates the underlying query to filter to the top 5 regions, then the charts agent renders the result as a pie chart.
+// SOURCE: PM feedback, September 2026
+
+== Tips for effective commands
+
+* Be specific about what you want to change. For example, "Change the Y-axis to show in thousands" is more precise than "Fix the axis."
+* You can combine data changes and chart changes in a single request. For example, "Show me only Q4 data and make it a stacked bar chart." Spotter handles the data change first, then the charts agent renders the updated chart.
+* The charts agent understands synonyms. "Make it a column chart" and "Change to a bar chart" may produce similar results depending on the data orientation.
+* If a command is ambiguous, the system applies the most likely interpretation and renders the chart.
+
+== Limitations
+
+* Some advanced chart features (for example, custom JavaScript or third-party chart libraries) are not supported through natural-language editing.
+* The charts agent may not understand highly specialized or domain-specific chart terminology.
+
+== Related topics
+
+* xref:charts-agentic.adoc[Charts for agentic answers overview]
+* xref:charts-agentic-supported-sources.adoc[Supported data sources]
+* xref:charts-agentic-examples.adoc[Examples]

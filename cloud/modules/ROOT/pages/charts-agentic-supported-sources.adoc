@@ -1,0 +1,100 @@
+= Supported data sources for agentic charts
+:page-last_updated: Sep 8, 2026
+:linkattrs:
+:author: Mark
+:experimental:
+:page-aliases:
+:description: Supported data sources for agentic charts
+:jira: SCAL-304279
+
+// Draft for SCAL-304278 / SCAL-304279
+// Target version: ThoughtSpot 26.8.0.cl+
+// Deployment: TS Cloud, On-Premises
+
+Agentic charts are generated from the tabular output of analytical tools that produce non-token answers.
+This article describes each supported data source, what data it produces, and how it maps to charts.
+
+== Overview
+
+Agentic charting supports any non-token answer that produces a tabular result set.
+The charting engine reads the result data, classifies columns by semantic type, and generates an appropriate visualization.
+
+[cols="1,2,3", options="header"]
+|===
+| Source | Description | Typical use case
+| Code execution | Python-based code runs to analyze data | Forecasting, simulations, statistical modeling, custom calculations
+| MCP (Model Context Protocol) | Web search and external data retrieval | Comparing market data, retrieving public statistics, web-sourced analysis
+| AgentQL | Agent-generated data queries | Custom data analysis via agent-structured queries
+|===
+
+== Code execution
+
+When you ask a question that requires computational analysis (for example, forecasting or trend analysis), Spotter can generate and execute Python code.
+
+=== What data is produced
+
+The code execution tool produces a tabular output with:
+
+* One or more data columns (quantitative values, dates, categories)
+* Optional metadata columns (confidence intervals, lower bounds, upper bounds)
+* Text output (explanations, interpretations)
+
+The charting engine uses the tabular portion to render the chart.
+
+=== Example
+
+.User asks:
+"Forecast sales for the next 6 months"
+
+.Result:
+Python code generates a table with:
+* `Month` (date)
+* `Forecasted Sales` (quantitative)
+* `Lower Bound` (quantitative)
+* `Upper Bound` (quantitative)
+
+The charting engine renders a line chart with:
+* A line for the forecasted sales
+* Shaded confidence interval between the lower and upper bounds
+* Properly formatted time axis
+
+=== When charts are not generated
+
+If the code execution produces only text output (for example, a textual summary or explanation without tabular data), no chart is generated.
+
+== AgentQL
+
+AgentQL is the agent's structured query language for data retrieval.
+
+=== What data is produced
+
+AgentQL produces tabular results.
+The charting engine processes these results using the same classification and rendering pipeline.
+
+=== Example
+
+.User asks:
+"Analyze customer churn by region"
+
+.Result:
+AgentQL retrieves a table with:
+* `Region` (text)
+* `Churn Rate` (numeric)
+
+The charting engine renders a bar chart or map visualization depending on the data structure.
+
+== What makes data chartable
+
+For agentic charting to generate a visualization, the non-token answer must produce:
+
+1. *Tabular data* — At least one row and one column of data
+2. *At least one quantitative column* — A numeric measure to plot
+3. *At least one dimension column* — A category, date, or label to organize the measure by
+
+If the result contains only a single scalar value (for example, "Total revenue: $1,000,000"), the charting engine may display the value as a KPI or simple metric rather than a chart.
+
+== Related topics
+
+* xref:charts-agentic.adoc[Charts for agentic answers overview]
+* xref:charts-agentic-nl-editing.adoc[Edit charts with natural language]
+* xref:charts-agentic-examples.adoc[Examples]
