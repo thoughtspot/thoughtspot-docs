@@ -1,5 +1,70 @@
 # AgentSpot Changelog
 
+## 2026-10-01 — ad61002992ef..6bdef0edf498
+
+### Product changes
+
+- fix(workflows): route agent steps through stream runner (SCAL-341076) · `6bdef0edf498` · SCAL-341076 · [#2476](https://github.com/thoughtspot/agentspot/pull/2476)
+- fix(runtime): stop a failed heartbeat start from leaking a pool permit, and an unreadable record from ending a live lease (SCAL-341065) · `0eb0454a2433` · SCAL-341065 · [#2475](https://github.com/thoughtspot/agentspot/pull/2475)
+- Revert "Bring query-mode turn recovery up to the stream path, and fix the retry guard it relied on (SCAL-341063) (#2466)" · `d836360d3382` · SCAL-341063 · [#2467](https://github.com/thoughtspot/agentspot/pull/2467)
+- Add Microsoft workspace file transfers and email attachments (SCAL-341017) · `75cb5ff19a49` · SCAL-341017 · [#2440](https://github.com/thoughtspot/agentspot/pull/2440)
+- Bring query-mode turn recovery up to the stream path, and fix the retry guard it relied on (SCAL-341063) · `b16dd9935629` · SCAL-341063, SCAL-341077 · [#2466](https://github.com/thoughtspot/agentspot/pull/2466)
+- fix(runtime): run workflow agent steps on a bounded worker pool with a lease (SCAL-341065) · `687ed3a5cd5b` · SCAL-341065 · [#2456](https://github.com/thoughtspot/agentspot/pull/2456)
+- Discover: rank the org's shared work by real adoption, on main's Home/Discover chrome (SCAL-331511) · `421c48c6e2b6` · SCAL-331511, SCAL-326893, SCAL-337380 · [#2135](https://github.com/thoughtspot/agentspot/pull/2135)
+- Summarize the oldest span when clearing tool payloads is not enough (SCAL-330851) · `396ecd461ddb` · SCAL-330851 · [#1873](https://github.com/thoughtspot/agentspot/pull/1873)
+- Serve security response headers from the SRE admin console (SCAL-338251) · `484714ffa2a4` · SCAL-338251 · [#2232](https://github.com/thoughtspot/agentspot/pull/2232)
+- feat(analytics): export original tenant identity fields (SCAL-340987) · `857e47c670a1` · SCAL-340987 · [#2436](https://github.com/thoughtspot/agentspot/pull/2436)
+- Fixing Scout's backend issues (SCAL-339917) · `bb36967d8667` · SCAL-339917 · [#2325](https://github.com/thoughtspot/agentspot/pull/2325)
+- SCAL-327436: Harden Vertex Agent Engine session creation · `edd4f461f2f8` · SCAL-327436 · [#2416](https://github.com/thoughtspot/agentspot/pull/2416)
+- Escape LIKE wildcards in the SRE console tenant search (SCAL-338254) · `fe3a44506ba1` · SCAL-338254 · [#2230](https://github.com/thoughtspot/agentspot/pull/2230)
+- Stop trusting localhost CORS origins outside dev on the SRE console (SCAL-338247) · `504161a9b893` · SCAL-338247 · [#2223](https://github.com/thoughtspot/agentspot/pull/2223)
+- Add opt-in OTLP metric exporters for GKE and Agent Engine (SCAL-327546) · `9c01b57dcdf2` · SCAL-327546 · [#2369](https://github.com/thoughtspot/agentspot/pull/2369)
+- Name the workflow builder and let people go back from it (SCAL-337789) · `36174922c3da` · SCAL-337789 · [#2348](https://github.com/thoughtspot/agentspot/pull/2348)
+- Show every connector on agent cards, including ones without an icon (SCAL-327252) · `34127cef1897` · SCAL-327252 · [#2431](https://github.com/thoughtspot/agentspot/pull/2431)
+- refactor(auth): consolidate the duplicated cluster base URL helpers (SCAL-339371) · `f24f51abed50` · SCAL-339371 · [#2340](https://github.com/thoughtspot/agentspot/pull/2340)
+- Add per-admin rate limits to the SRE bot session and turn routes (SCAL-338250) · `13c3838ded91` · SCAL-338250 · [#2226](https://github.com/thoughtspot/agentspot/pull/2226)
+- Stop serving source maps and API docs from the SRE admin console (SCAL-338252) · `6dce805ed7a7` · SCAL-338252 · [#2233](https://github.com/thoughtspot/agentspot/pull/2233)
+- Add service actor identity bindings (SCAL-327551) · `6b7559cb1312` · SCAL-327551 · [#2211](https://github.com/thoughtspot/agentspot/pull/2211)
+- Give workflow builder nodes the redesigned icons (SCAL-337789) · `b544e685850e` · SCAL-337789 · [#2344](https://github.com/thoughtspot/agentspot/pull/2344)
+- Bind the SRE console CSRF token to the admin identity and refuse cross-site mutations (SCAL-338249) · `dfae9f53f88e` · SCAL-338249 · [#2225](https://github.com/thoughtspot/agentspot/pull/2225)
+- fix(db): enable RLS on provisioning request and connector consent tables (SCAL-338246) · `3626f8fd5bde` · SCAL-338246 · [#2222](https://github.com/thoughtspot/agentspot/pull/2222)
+- fix(security): validate proxied admin paths before forwarding upstream (SCAL-338248) · `a71f105d4231` · SCAL-338248 · [#2224](https://github.com/thoughtspot/agentspot/pull/2224)
+- fix(internal-admin): validate ids and tenant status filter at the boundary (SCAL-338253) · `56580a2cb43b` · SCAL-338253 · [#2227](https://github.com/thoughtspot/agentspot/pull/2227)
+- Add memory and learning switches to the memory pages (SCAL-338958) · `6aace05adeec` · SCAL-338958 · [#2339](https://github.com/thoughtspot/agentspot/pull/2339)
+- Enforce the memory switch in the agent runtime (SCAL-338958) · `e0eeb6dc7042` · SCAL-338958 · [#2338](https://github.com/thoughtspot/agentspot/pull/2338)
+- Confirm async memory writes instead of reporting a false "saved" (SCAL-338911) · `8a4b896a0725` · SCAL-338911 · [#2303](https://github.com/thoughtspot/agentspot/pull/2303)
+- Stamp a server-authored trust tier on every memory write (SCAL-338908) · `f144ffede1f2` · SCAL-338908 · [#2245](https://github.com/thoughtspot/agentspot/pull/2245)
+- Add a tenant and user memory switch with a capture-consent gate (SCAL-338958) · `47974e9ac947` · SCAL-338958 · [#2333](https://github.com/thoughtspot/agentspot/pull/2333)
+- fix(observability): retire generic outbound timing SCAL-327539 · `984797af24b7` · SCAL-327539 · [#2360](https://github.com/thoughtspot/agentspot/pull/2360)
+- fix(observability): group configuration route latency SCAL-327541 · `46844eed698f` · SCAL-327541 · [#2359](https://github.com/thoughtspot/agentspot/pull/2359)
+- feat(templates): add Chief of Staff persona and agent templates (SCAL-337593) · `a4f730844726` · SCAL-337593 · [#2331](https://github.com/thoughtspot/agentspot/pull/2331)
+- Build agents with apps that are not connected yet, and connect them without leaving the flow (SCAL-337382) · `c043f37332dd` · SCAL-337382 · [#2207](https://github.com/thoughtspot/agentspot/pull/2207)
+- Require a tenant on every memory write and read; quarantine legacy tenantless records (SCAL-338906) · `49ded44406c2` · SCAL-338906 · [#2240](https://github.com/thoughtspot/agentspot/pull/2240)
+- fix(memory): enforce a read-only toolset for connector-learning (SCAL-338906) · `036a5867ec27` · SCAL-338906 · [#2220](https://github.com/thoughtspot/agentspot/pull/2220)
+- Re-check agent-write permission at write time so a downgraded editor can't write shared memory (SCAL-338906) · `f88c1b8f4f85` · SCAL-338906 · [#2217](https://github.com/thoughtspot/agentspot/pull/2217)
+
+### Internal / infra
+
+- Pin chandan-dev to its dedicated Vertex Agent Engine runtime (SCAL-340220) · `e32435379687` · SCAL-340220 · [#2354](https://github.com/thoughtspot/agentspot/pull/2354)
+- feat(infra): declare the summarization flag and enable it in dev (SCAL-330851) · `f3c5b8aee69e` · SCAL-330851 · [#2038](https://github.com/thoughtspot/agentspot/pull/2038)
+- Add gated OTLP dashboards, alerts and historical queries (SCAL-327546) · `8001cb6b0b41` · SCAL-327546 · [#2367](https://github.com/thoughtspot/agentspot/pull/2367)
+- Add an isolated dev OTLP metrics collector pilot (SCAL-327546) · `9926ae060dd3` · SCAL-327546 · [#2368](https://github.com/thoughtspot/agentspot/pull/2368)
+- SRE provisioning: read the per-org auth flag case-insensitively, and gate turning it on (SCAL-000000) · `666a36339658` · SCAL-000000 · [#2433](https://github.com/thoughtspot/agentspot/pull/2433)
+- Inventory metrics and verify OTLP ingestion savings (SCAL-327546) · `c68f4a949c77` · SCAL-327546 · [#2366](https://github.com/thoughtspot/agentspot/pull/2366)
+- SRE provisioning: mark the org enabled only after the tenant exists, and never forward an undecryptable trusted-auth secret (SCAL-000000) · `186aca265b1c` · SCAL-000000 · [#2428](https://github.com/thoughtspot/agentspot/pull/2428)
+- Hard-cap runtime memory writes to the user partition (SCAL-338908) · `c9f8de3d145b` · SCAL-338908 · [#2247](https://github.com/thoughtspot/agentspot/pull/2247)
+- chore(staging): enable Microsoft 365 config SCAL-340510 · `099bfecdc771` · SCAL-340510 · [#2384](https://github.com/thoughtspot/agentspot/pull/2384)
+- Add shared Memory Bank activation probes: isolation, cross-engine, consolidation (SCAL-338913) · `d8c3d0864c28` · SCAL-338913, SCAL-332666 · [#2298](https://github.com/thoughtspot/agentspot/pull/2298)
+- Fail closed instead of silently falling back to in-memory memory in deployed runtimes (SCAL-338913) · `eed904c672de` · SCAL-338913 · [#2248](https://github.com/thoughtspot/agentspot/pull/2248)
+- Route personal memory to the user's private partition and isolate the in-memory backend by tenant (SCAL-338906) · `e6798f876ab5` · SCAL-338906 · [#2242](https://github.com/thoughtspot/agentspot/pull/2242)
+- chore(mridul-dev): pin shared runtime engine id (SCAL-339730) · `92152aa992c4` · SCAL-339730 · [#2323](https://github.com/thoughtspot/agentspot/pull/2323)
+- fix(deploy): grant the staging workflow deployments write SCAL-334744 · `6fd3ce3d6bbd` · SCAL-334744 · [#2370](https://github.com/thoughtspot/agentspot/pull/2370)
+- Treat retrieved memory as untrusted data on read — neutralize injection in search/preload output (SCAL-338908) · `38ffbf2fc216` · SCAL-338908 · [#2243](https://github.com/thoughtspot/agentspot/pull/2243)
+- fix(ci): hand the staging runner its private GKE endpoint before the promotion driver SCAL-334744 · `70ab0039be6c` · SCAL-334744 · [#2365](https://github.com/thoughtspot/agentspot/pull/2365)
+- feat: Apps domain name change for all env · `336d89ded9cc` · [#2346](https://github.com/thoughtspot/agentspot/pull/2346)
+- Let the agent runtime read the skills bucket so attached skills reach the model (SCAL-340312) · `85ddca474c5f` · SCAL-340312 · [#2362](https://github.com/thoughtspot/agentspot/pull/2362)
+- fix(deploy): export GitHub git auth for the whole promotion process tree SCAL-334744 · `0d69c68e34e4` · SCAL-334744 · [#2357](https://github.com/thoughtspot/agentspot/pull/2357)
+
 ## 2026-09-15 — beb5bd4f1952..95f72bb57539
 
 ### Product changes
