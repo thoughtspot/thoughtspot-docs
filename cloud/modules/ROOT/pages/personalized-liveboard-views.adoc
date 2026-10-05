@@ -1,10 +1,11 @@
 = Personalized Liveboards
-:page-last_updated: 8/4/2025
+:page-last_updated: Oct 5, 2026
 :linkattrs:
+:author: Mark
 :experimental:
 :page-aliases:
 :description: You can personalize Liveboards by applying filters that are persisted.
-:jira: SCAL-201673, SCAL-212615, SCAL-265737, SCAL-266011
+:jira: SCAL-201673, SCAL-212615, SCAL-265737, SCAL-266011, SCAL-337718
 
 Liveboards that contain consolidated data for all business users can now be personalized for a specific user or group. You can filter values to display only the information that is relevant to you, and save the personalized Liveboard. The personalized Liveboard retains the filter values, and remains synced with the original Liveboard. It also works for both filters and parameters on the Liveboard. This allows you to bookmark a personalized Liveboard for easy access to the information you need, and eliminates the need to create a personal copy of a Liveboard which can result in copies falling out of sync with the original.
 
@@ -81,6 +82,43 @@ image::manage-views.png[Manage views drop-down]
 == Limitation
 
 * Personalized views saved in a Liveboard are not supported in ThoughtSpot Mobile. This means that filters added in personalized views are not used for KPIs and the watchlist. As a result, the numbers that appear in ThoughtSpot Mobile for them are different.
+
+== Migrate personalized views across environments
+
+Starting with ThoughtSpot Cloud 26.11.0.cl, you can migrate personalized Liveboard views between environments, such as from development to production, without losing user customizations.
+
+=== Smart Merge TML import
+
+When you import a Liveboard TML file that contains personalized views, ThoughtSpot can preserve those views instead of overwriting them. Use the dedicated REST API endpoint to enable Smart Merge upsert behavior during import:
+
+`POST /api/rest/2.0/metadata/tml/import/enable_personalized_view_upsert`
+
+When `enable_personalized_view_upsert` is set to `true`, the import operation:
+
+* Creates any personalized views that do not already exist on the target Liveboard
+* Updates existing personalized views with the imported filter and parameter values
+* Preserves personalized views on the target Liveboard that are not included in the import
+
+For full API details, refer to the https://developers.thoughtspot.com/docs[ThoughtSpot Developer Documentation^].
+
+// TODO: verify with engineering — confirm exact endpoint path and parameter names
+
+=== Ownership metadata in TML
+
+Personalized view TML now includes explicit owner metadata. Administrators can use this metadata to transfer ownership of personalized views between users during migration.
+
+When exporting a Liveboard TML, each entry in the `views` section includes the owner information. You can modify the owner field before importing the TML to a new environment to reassign views to a different user.
+
+// TODO: verify with engineering — confirm exact TML attribute name for owner metadata (e.g. owner, owner_id, owner_name)
+
+=== Best practices for migrating personalized views
+
+* Always use the Smart Merge upsert endpoint when migrating Liveboards with personalized views. Standard TML import may overwrite or remove existing views on the target.
+* Review ownership assignments before importing into production. Use the owner metadata in TML to reassign views as needed.
+* After migration, verify that personalized views appear correctly for their assigned users on the target environment.
+* If personalized views are missing after migration, confirm that `enable_personalized_view_upsert` was set to `true` during import, and check ownership settings in the TML file.
+
+NOTE: If you encounter issues migrating personalized views, contact ThoughtSpot Support.
 
 '''
 > **image:tsu-logo.png[ThoughtSpot Training,role=light-only,width=400]image:tsu-logo-dark.png[ThoughtSpot Training,role=dark-only,width=400]**
