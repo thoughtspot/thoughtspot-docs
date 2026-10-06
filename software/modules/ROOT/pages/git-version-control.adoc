@@ -1,0 +1,359 @@
+= Version control for Liveboards and Answers
+:last_updated: 7/15/2024
+:author: Mark
+:experimental:
+:linkattrs:
+:description: Enable version control on your ThoughtSpot cluster, so users can enable version control on specific Liveboards and Answers.
+:jira: SCAL-196890, SCAL-185652 (can manage version control privilege), SCAL-207739 (troubleshooting), SCAL-213208 (change to GA)
+
+With version control, every time a user saves changes to a Liveboard or Answer, a new version is created and stored in Github. Any user with edit access to the Liveboard or Answer can browse the version history in ThoughtSpot and restore any saved versions whenever needed. Version control must first be configured on your cluster or Org. After that, it can be enabled on specific Liveboards and Answers where version control is wanted.
+
+There are two steps to enabling version control in ThoughtSpot, which must be done in the following order:
+
+. Enable version control for the cluster or Org.
+. Enable version control for specific Liveboards or Answers in the Org.
+
+IMPORTANT: Version control cannot be enabled by default for all Liveboards and Answers.
+
+== Version control for a cluster or Org
+
+=== Prerequisites
+
+To enable version control for a cluster or Org, the following are required:
+
+* Administrator access to the cluster/Org
+* GitHub repository created in Github or GitHub Enterprise
+* Github user ID of admin who has access to the repository
+* Github repository configured with:
+
+** One commit branch for _each Org_ where you are enabling version control
+*** ThoughtSpot stores TML files here for each Liveboard and Answer enabled for version control.
+** One configuration branch
+*** ThoughtSpot stores a set of configuration files here which are required for the GIT integration and CI/CD to work.
++
+TIP: ThoughtSpot recommends *not* using the Main branch for either commits or configuration.
+** Personal access token from Github (https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic[Classic^] or https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-fine-grained-personal-access-token[fine-grained^])
+*** Under _Select scopes_, be sure to select the *repo* checkbox before clicking *Generate token*.
+
+* The https URL to the Github repository.
+
+=== Enabling version control for a cluster or Org
+
+To enable version control for a cluster or Org, do the following:
+
+. Go to the *Admin* tab.
+. If enabling for an Org, select the Org where you want to enable version control.
+. Under _Application settings_, select *Version Control*.
+. Under the message "Version control not configured", Click *Configure*.
++
+image::github-creds.png[Enter github credentials]
+
+. In the _Enter Github Credentials_ window, do the following:
+.. For _Repository_, enter the Github repository to store version control information.
+.. For _Username_, enter your Github username.
+.. For _Token_, enter or paste your personal access token associated with your Github username.
++
+If you don't a have personal access token yet, sign in to Github and create one of the following access tokens, and enter it in the _Token_ field:
+
+... https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic[Classic^]
+... https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-fine-grained-personal-access-token[fine-grained^]
++
+Under Select scopes be sure to select the repo checkbox before clicking *Generate token*.
+. Click *Continue*.
+. In the _Select Branch_ window, do the following:
+* For _Commit branch_ select the commit branch you created in your repository.
+* For _Configuration branch_ select the configuration branch you created in your repository.
+* Make sure the *Save version history* checkbox is selected.
+. Click *Enable*.
+
+
+Version control is now enabled for your Org. In order for version control to be available for any Liveboard or Answer, it must be enabled individually in the Liveboard or Answer.
+
+== Version control for a Liveboard or Answer
+
+=== Prerequisites
+
+To enable version control on a Liveboard or Answer, you must:
+
+* Be in a group which is assigned the "Can manage version control" privilege
+* Have edit permission on the Liveboard or Answer and the underlying datasource(s)
+
+=== Enabling version control for a Liveboard or Answer
+
+To enable version control for a Liveboard or Answer, do the following:
+
+. Navigate to the Liveboard or Answer where you want to enable version control.
+. Click the More menu image:icon-more-10px.png[more menu], and select *Enable Version Control*.
+
+== Editing the version control configuration
+
+After you enable version control for a cluster or Org, you can edit the configuration. However, changing these settings will cause a service interruption for all users of a few minutes. Consider making your changes during a scheduled maintenance window.
+
+. Go to the *Admin* tab.
+. If editing for an Org, select the Org where you want to edit version control.
+. Under _Application settings_, select *Version Control*.
+. Click *Edit*.
+. In the _Enter Github credentials_ window, Make any changes required to the Repository, Username, or Token and click *Continue*.
+. In the _Select Branch_ window, make any changes required to the Commit and Configuration branches, make sure the Save version history checkbox is selected, and click *Update*.
+
+== Resetting the version control configuration
+
+CAUTION: Resetting your version control configuration deletes the configuration completely, causing all version history from your GIT branches to be lost.
+
+To reset the version control configuration, do the following:
+
+. Click *Reset Configuration*.
++
+The _Reset Configuration_ message appears asking you if you really want to reset the configuration.
+. To proceed, click *Yes*.
+
+== Troubleshooting
+
+The following are some possible errors you may encounter and the recommended steps to resolve them:
+
+[%collapsible]
+.*Cannot select <BranchName> as it has protection rules enabled*
+====
+--
+[discrete]
+==== What are Branch protection rules?
+Branch protection rules are configurations within version control systems like Git that safeguard designated branches from unauthorized or accidental changes. These rules typically include restrictions such as preventing direct pushes to protected branches, requiring code reviews for proposed changes, enforcing passing status checks before merging, mandating approvals from designated reviewers, and limiting or disallowing force pushes to maintain branch history integrity. By enforcing these rules, teams ensure a controlled and collaborative development process, reducing the risk of errors and conflicts while maintaining code quality and stability.
+
+[discrete]
+==== Why does it need to be disabled to create Git configuration in ThoughtSpot?
+With Branch protection rules enabled, it’s impossible to directly commit and push the TS objects to the remote repository. So both the Commit branch and Configuration branch should not be protected.
+
+[discrete]
+==== How to disable the Branch protection rules?
+
+. Navigate to your Git repository and open settings.
+. Under 'Code and Automation', click on 'Branches'.
+. Delete any branch protection rules specified for the branch from which you want to create a Git configuration.
+. Finally, create the Git configuration in ThoughtSpot.
+
+--
+====
+[%collapsible]
+.*Git token about to expire, Contact your admin for uninterrupted access of version history*
+====
+--
+[discrete]
+==== What does this error mean?
+The Git access token you're using to authenticate with Git (such as GitHub, GitLab, etc.) is nearing its expiration date. Git platforms commonly use access tokens for authentication when interacting with their APIs, such as when pushing commits, pulling changes, or performing other actions that require authentication.
+
+[discrete]
+==== Why does it need to be disabled to create Git configuration in ThoughtSpot?
+With Branch protection rules enabled, it’s impossible to directly commit and push the TS objects to the remote repository. So both the Commit branch and Configuration branch should not be protected.
+
+[discrete]
+==== How to disable the Branch protection rules?
+Navigate to your Git repository and open settings.
+Under 'Code and Automation', click on 'Branches'.
+Delete any branch protection rules specified for the branch from which you want to create a Git configuration.
+Finally, create the Git configuration in ThoughtSpot.
+
+[discrete]
+==== Solution
+
+. Sign in to your Github account and open the developer settings section.
+. Find the section for managing personal access tokens.
+. Review the token expiry settings on GitHub. Adjust the settings according to your requirements to avoid frequent token expiration issues.
+. Generate a new token or Regenerate a token with the appropriate permissions required for your use case.
+
+--
+====
+
+[%collapsible]
+.*Version history is unavailable as connection with Github could not be established. Contact admin to restore services.*
+====
+--
+[discrete]
+==== Root cause
+
+The access token you're using to authenticate with GitHub must be expired. GitHub commonly uses access tokens for authentication when interacting with their APIs, such as when pushing commits, pulling changes, or performing other actions that require authentication.
+
+[discrete]
+==== Solution
+
+. Sign in to your Github account and open the developer settings section.
+. Find the section for managing personal access tokens.
+. Review the token expiry settings on GitHub. Adjust the settings according to your requirements to avoid frequent token expiration issues.
+. Generate a new token or Regenerate a token with the appropriate permissions required for your use case.
+
+--
+====
+
+[%collapsible]
+.*Answers could not be loaded in Liveboard*
+====
+--
+[discrete]
+==== Root cause
+
+This error occurs when a table or column is needed to display visualizations in the version of the Liveboard that is being previewed, but no longer exists in ThoughtSpot (the table / worksheet used for these visualizations have likely changed recently and removed the tables / columns needed).
+
+[discrete]
+==== Solution for column not found
+
+. Navigate to the data tab and open the respective worksheet or table.
+. Click edit table option and import the column you need to search from ThoughtSpot.
+. Navigate to the data tab and open the respective worksheet or table.
+. Click edit table option and import the column you need to search from ThoughtSpot.
+
+[discrete]
+==== Solution for table not found
+
+. Navigate to the data tab and open the connection where your table/worksheet belongs to.
+. Click *Edit connection*.
+. Import the column you need to search from ThoughtSpot.
+--
+====
+
+[%collapsible]
+.*Column not found in Answer*
+====
+--
+[discrete]
+==== Root cause
+
+This error occurs when a table or column is not found in ThoughtSpot but was present in previous versions of the Answer you’re looking into. The table or column probably existed in earlier versions of the Answer but may have been removed from ThoughtSpot more recently.
+
+[discrete]
+==== Solution
+
+. Navigate to the data tab and open the respective worksheet or table.
+
+. Click edit table option and import the column you need to search from ThoughtSpot.
+--
+====
+
+[%collapsible]
+.*Updating details might lead to loss of version history*
+====
+--
+[discrete]
+==== Explanation
+
+*Updating Git remote repository (Not recommended)* - Updating the Git configuration details and replacing the repository information may lead to the loss of version history. This occurs because the newer repository may lack versioned object information present in the older repository. As a result, users may be unable to access older versions of the ThoughtSpot objects committed to the previous repository.
+
+*Updating access token* - The newer access token might not have the necessary permissions to the repository which the older access token had. It’s always better to verify if the newer access token has the permissions needed to commit the objects to the repository.
+
+[discrete]
+==== Recommendation
+
+ThoughtSpot recommends always maintaining a single Git repository for an Org. This prevents unnecessary loss of data.
+--
+====
+
+[%collapsible]
+.*Check the credentials you entered are correct and try again*
+====
+--
+[discrete]
+==== Root cause
+
+- The username or the access token entered might be incorrect.
+- The access token entered might be expired.
+
+[discrete]
+==== Solutions
+- Check that the username and password are correct. If not correct and try again.
+
+- Check that the access token is expired, if expired create a new access token and try again.
+
+--
+====
+
+[%collapsible]
+.*Could not establish a connection with Github*
+====
+--
+[discrete]
+==== Root cause
+
+This error occurs for the following reasons:
+
+- The Git repository does not exist or is deleted.
+
+- The token does not have the necessary permissions to read from or write to the repository.
+
+
+[discrete]
+==== Solutions
+- Check that the repository exists in the Github and provide a valid Git repository.
+
+- Check that the access token has sufficient permissions to read from and write to the repository.
+
+[discrete]
+==== Minimum token requirements to create a git configuration and commit
+
+*Classic token*
+
+User should be given permission to write to the repository, and the created classic tokens must have repository access in order to make changes.
+
+*Fine-grained token*
+
+User should have read and write access to the content and read-only access to the metadata as below.
+
+--
+====
+
+[%collapsible]
+.*The branch <BranchName> is configured for an another organization with same repository setup*
+====
+--
+[discrete]
+==== Root cause
+
+This error shows up if you try to configure a commit branch for an Org that is already configured to be used with another Org. Version Control does not allow us to configure the same branch as a commit branch for two different Orgs.
+
+
+[discrete]
+==== Reason
+
+To maintain data integrity and avoid conflicts, it's good for multiple organizations not to commit their ThoughtSpot objects in the same branch. Configuring one commit branch per Org enables users to manage the data of each organization separately, ensuring that it can be seamlessly imported into ThoughtSpot when needed.
+
+[discrete]
+==== Solution
+
+The user should use different commit branches for each Org while configuring version control.
+
+--
+====
+
+[%collapsible]
+.*Some branches in the given list [<BranchName>, <BranchName>] do not exist*
+====
+--
+[discrete]
+==== Root cause
+
+This error appears if the user is trying to configure a branch in ThoughtSpot which does not exist in the remote repository. The branch might have been deleted or never created.
+
+
+[discrete]
+==== Solution
+
+. Navigate to the remote repository and click view all branches.
+. Click create new branch to create a branch with the desired name.
+
+--
+====
+
+[%collapsible]
+.*Repository already configured for the organization*
+====
+--
+[discrete]
+==== Root cause
+
+This error occurs when the user attempts to configure Git for an organization in ThoughtSpot, but the configuration for that specific organization already exists.
+
+
+[discrete]
+==== Solution
+
+Update the current configuration with the required data.
+
+--
+====

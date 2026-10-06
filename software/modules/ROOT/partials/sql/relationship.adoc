@@ -1,0 +1,18 @@
+RELATIONSHIP:: Defines a relationship where the value(s) in the first table can join to a second table, using a _required_ equality condition and one or more _optional_ range conditions. These conditions act like a `WHERE` clause when the two tables are joined. The conditions combine using `AND` logic; all conditions must be met for a row to be in the result.
++
+You may add multiple relationships between tables. When creating a relationship, name it. You can reference the relationship by name later, if you want to remove it.
+
+Examples;;
++
+[source]
+----
+ALTER TABLE "wholesale_buys"
+  ADD RELATIONSHIP "REL_fruit"
+  WITH "retail_sales"
+  AS "wholesale_buys"."fruit" = "retail_sales"."fruit"
+  AND ("wholesale_buys"."date_order" < "retail_sales"."date_sold"
+  AND "retail_sales"."date_sold" < "wholesale_buys"."expire_date");
+
+ALTER TABLE "wholesale_buys"
+  DROP RELATIONSHIP "REL_fruit";
+----
