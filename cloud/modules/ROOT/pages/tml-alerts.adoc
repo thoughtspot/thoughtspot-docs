@@ -17,12 +17,19 @@ include::partial$tml-syntax-alert.adoc[]
 
 [IMPORTANT]
 ====
-Importing a Monitor alert TML file into a *different org* fails when the alert is associated with a Personalized View (PV). The Alert TML stores static references to the source org's Liveboard ID (`pinboard_id`), visualization ID (`viz_id`), and Personalized View ID (`personalised_view_id`). When a Liveboard TML is imported into a new org, ThoughtSpot generates *new* IDs for the Liveboard and its visualizations. The Alert TML is not automatically updated to reflect these new IDs, so it continues to reference the original org's IDs, which are invalid in the destination org.
+This limitation applies *only when importing Monitor alert TML files into a different org*, for example, when migrating alerts between clusters or tenants.
+
+If you restore a Monitor alert TML *within the same org*, the IDs for Liveboards, visualizations, and Personalized Views remain valid and the import works as expected.
+
+When you import the TML into a *different org* and the alert is associated with a Personalized View (PV), the Alert TML contains static references to the source org's Liveboard ID (`pinboard_id`), visualization ID (`viz_id`), and Personalized View ID (`personalised_view_id`). During cross-org import, ThoughtSpot generates *new* IDs for the Liveboard and its visualizations in the destination org. The Alert TML is not automatically updated to reflect these new IDs, so it continues to reference the original org's IDs, which are invalid in the destination org.
+
+If the referenced Personalized View does not exist in the destination org, the import fails or creates a non-functional alert.
 
 *Workaround — manually update IDs before or after import:*
 
 . In the destination org, locate the newly created Liveboard and note its new *Liveboard ID* (`pinboard_id`) and *visualization ID* (`viz_id`).
-. If the alert uses a Personalized View, locate the correct *Personalized View ID* (`personalised_view_id`) in the destination org.
+. If the alert uses a Personalized View, verify that the Personalized View exists in the destination org. If it does not exist, recreate the Personalized View in the destination org first.
+. Locate the correct *Personalized View ID* (`personalised_view_id`) in the destination org.
 . Open the Alert TML file and replace the old `pinboard_id`, `viz_id`, and `personalised_view_id` values with the new destination org IDs.
 . Save and re-import (or re-publish) the updated TML.
 ====
