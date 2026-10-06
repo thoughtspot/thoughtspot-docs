@@ -1,5 +1,24 @@
 # AgentSpot Changelog
 
+## 2026-10-06 — 6bdef0edf498..8688779205d4
+
+### Product changes
+
+- Give Scout the acting user's connectors, and act on them instead of routing (SCAL-340480) · `3a1554eb9ccf` · SCAL-340480 · [#2382](https://github.com/thoughtspot/agentspot/pull/2382)
+- Meter free Scout conversations for later pricing (SCAL-340504) · `7a8e8cfe1bf6` · SCAL-340504, SCAL-340480 · [#2387](https://github.com/thoughtspot/agentspot/pull/2387)
+- feat(scout): run Scout on Claude Opus 5 (SCAL-340927) · `0b84864a127d` · SCAL-340927 · [#2434](https://github.com/thoughtspot/agentspot/pull/2434)
+- Ask users onboarded before the persona picker to pick one (SCAL-341265) · `c71e9d3fddb8` · SCAL-341265 · [#2474](https://github.com/thoughtspot/agentspot/pull/2474)
+- Complete workflow stream recovery parity (SCAL-341076) · `6d75fb81c27b` · SCAL-341076 · [#2477](https://github.com/thoughtspot/agentspot/pull/2477)
+
+### Internal / infra
+
+- Block unhealthy Agent Engine PSC updates (SCAL-338784) · `8688779205d4` · SCAL-338784 · [#2479](https://github.com/thoughtspot/agentspot/pull/2479)
+- fix(infra): raise backend memory headroom SCAL-340536 · `c9f44b48b8ba` · SCAL-340536 · [#2388](https://github.com/thoughtspot/agentspot/pull/2388)
+- Log per-call prompt-cache usage and prefix hashes for Anthropic calls (SCAL-341246) · `1cdcd5a2b1bd` · SCAL-341246 · [#2469](https://github.com/thoughtspot/agentspot/pull/2469)
+- fix(deploy): reuse Git auth for shared dev fetch SCAL-334744 · `f030e48e10a4` · SCAL-334744 · [#2499](https://github.com/thoughtspot/agentspot/pull/2499)
+- fix(deploy): accept pinned release source during render SCAL-334744 · `75442b684743` · SCAL-334744 · [#2498](https://github.com/thoughtspot/agentspot/pull/2498)
+- fix(deploy): align Skaffold runner with published pin SCAL-334744 · `d31c5dd857c9` · SCAL-334744 · [#2356](https://github.com/thoughtspot/agentspot/pull/2356)
+
 ## 2026-10-01 — ad61002992ef..6bdef0edf498
 
 ### Product changes
