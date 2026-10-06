@@ -1,5 +1,5 @@
 = Personalized Liveboards
-:page-last_updated: Oct 5, 2026
+:page-last_updated: Oct 6, 2026
 :linkattrs:
 :author: Mark
 :experimental:
@@ -85,13 +85,13 @@ image::manage-views.png[Manage views drop-down]
 
 == Migrate personalized views across environments
 
-Starting with ThoughtSpot Cloud 26.11.0.cl, you can migrate personalized Liveboard views between environments, such as from development to production, without losing user customizations.
+Starting with ThoughtSpot Cloud 26.11.0.cl, you can migrate personalized Liveboard views between environments, such as from development to production, without losing them.
 
 === Smart Merge TML import
 
-When you import a Liveboard TML file that contains personalized views, ThoughtSpot can preserve those views instead of overwriting them. Use the dedicated REST API endpoint to enable Smart Merge upsert behavior during import:
+When you import a Liveboard TML file that contains personalized views, ThoughtSpot can preserve those views instead of overwriting them. To enable Smart Merge upsert behavior, set the `enable_personalized_view_upsert` field to `true` in your request to the existing TML import endpoint:
 
-`POST /api/rest/2.0/metadata/tml/import/enable_personalized_view_upsert`
+`POST /api/rest/2.0/metadata/tml/import`
 
 When `enable_personalized_view_upsert` is set to `true`, the import operation:
 
@@ -101,22 +101,25 @@ When `enable_personalized_view_upsert` is set to `true`, the import operation:
 
 For full API details, refer to the https://developers.thoughtspot.com/docs[ThoughtSpot Developer Documentation^].
 
-// TODO: verify with engineering — confirm exact endpoint path and parameter names
+NOTE: Smart Merge TML import is only available using the REST API.
 
 === Ownership metadata in TML
 
-Personalized view TML now includes explicit owner metadata. Administrators can use this metadata to transfer ownership of personalized views between users during migration.
+Personalized views in the Liveboard's TML now include explicit owner metadata. Administrators can use this metadata to transfer ownership of personalized views between users during migration. The current owner may not be the original creator of a view, for example if an administrator has transferred ownership.
 
-When exporting a Liveboard TML, each entry in the `views` section includes the owner information. You can modify the owner field before importing the TML to a new environment to reassign views to a different user.
+When exporting a Liveboard TML, each entry in the `views` section includes an `author` block with the following attributes:
 
-// TODO: verify with engineering — confirm exact TML attribute name for owner metadata (e.g. owner, owner_id, owner_name)
+* `username` — the username of the view owner
+* `user_email` — the email address of the view owner
+
+Administrators can modify the `author` attributes before importing the TML to a new environment to reassign views to a different user.
 
 === Best practices for migrating personalized views
 
-* Always use the Smart Merge upsert endpoint when migrating Liveboards with personalized views. Standard TML import may overwrite or remove existing views on the target.
-* Review ownership assignments before importing into production. Use the owner metadata in TML to reassign views as needed.
+* Always set `enable_personalized_view_upsert` to `true` in the TML import request when migrating Liveboards with personalized views. Standard TML import without this field may overwrite or remove existing views on the target.
+* Review `author` assignments before importing into production. Modify the `username` and `user_email` values in the TML to reassign views as needed.
 * After migration, verify that personalized views appear correctly for their assigned users on the target environment.
-* If personalized views are missing after migration, confirm that `enable_personalized_view_upsert` was set to `true` during import, and check ownership settings in the TML file.
+* If personalized views are missing after migration, confirm that `enable_personalized_view_upsert` was set to `true` during import, and check the `author` attributes in the TML file.
 
 NOTE: If you encounter issues migrating personalized views, contact ThoughtSpot Support.
 

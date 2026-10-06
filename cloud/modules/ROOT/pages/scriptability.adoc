@@ -1,5 +1,5 @@
 = Import and export TML files
-:page-last_updated: Oct 5, 2026
+:page-last_updated: Oct 6, 2026
 :linkattrs:
 :experimental:
 :author: Mark
@@ -40,15 +40,19 @@ Note that this workflow changes the object(s) in both clusters.
 
 When you import a Liveboard TML file that contains personalized views, you can choose to preserve or overwrite existing personalized views on the target Liveboard.
 
-To preserve existing personalized views during import, use the Smart Merge upsert endpoint:
+To preserve existing personalized views during import, set the `enable_personalized_view_upsert` field to `true` in your request to the existing TML import endpoint:
 
-`POST /api/rest/2.0/metadata/tml/import/enable_personalized_view_upsert`
+`POST /api/rest/2.0/metadata/tml/import`
 
-Set `enable_personalized_view_upsert` to `true` to enable upsert behavior.
+When `enable_personalized_view_upsert` is set to `true`, the import operation:
+
+* Creates any personalized views that do not already exist on the target Liveboard
+* Updates existing personalized views with the imported filter and parameter values
+* Preserves personalized views on the target Liveboard that are not included in the import
 
 For more information, see xref:personalized-liveboard-views.adoc#_migrate_personalized_views_across_environments[Migrate personalized views across environments].
 
-// TODO: verify with engineering — confirm if standard UI import also supports upsert, or if this is API-only
+NOTE: Smart Merge TML import is only available using the REST API.
 
 == Prerequisites
 
