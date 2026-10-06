@@ -1,12 +1,12 @@
 = TML for Liveboards
-:page-last_updated: 7/22/2026
-:author: Teresa Killmond
+:page-last_updated: Oct 6, 2026
+:author: Teresa Killmond, Mark
 :linkattrs:
 :experimental:
 :page-aliases: /admin/scriptability/tsl-pinboard.adoc, /admin/scriptability/tml-pinboard.adoc, /admin/ts-cloud/tsl-pinboard.adoc
 :description: Use TML to modify Liveboards in a flat-file format. Then, migrate the Liveboard to a different cluster, or restore it to the same cluster.
 :object: Liveboards
-:jira: SCAL-264258, SCAL-266034
+:jira: SCAL-264258, SCAL-266034, SCAL-342889
 
 include::partial$tml-intro.adoc[]
 
@@ -209,7 +209,12 @@ List of parameter overrides applied to a xref:personalized-liveboard-views.adoc[
 
 [#views]
 views::
-List of xref:personalized-liveboard-views.adoc[personalized Liveboard views] associated with the Liveboard. When you export a Liveboard TML, ThoughtSpot includes all personalized views that are accessible to the exporting user — both public views and any private views belonging to that user. Each entry contains:
+List of xref:personalized-liveboard-views.adoc[personalized Liveboard views] associated with the Liveboard. When you export a Liveboard TML, the personalized views included in the export depend on your role:
++
+* *Non-admin users* — ThoughtSpot includes only the views *owned by* the exporting user (both public and private). Public views owned by other users are not included, even if they are visible on the Liveboard.
+* *Admin users* — ThoughtSpot includes *all* views created by all users.
++
+Each entry contains:
 
 * <<view_guid,view_guid>> — the GUID of the personalized view.
 * `name` — the display name of the view.
@@ -253,12 +258,12 @@ The vertical location of the Liveboard visualization, relative to the upper left
 
 [IMPORTANT]
 ====
-When you export a Liveboard TML file, ThoughtSpot automatically includes *all* xref:personalized-liveboard-views.adoc[personalized Liveboard views] that are accessible to the user performing the export. This includes:
+When you export a Liveboard TML file, the xref:personalized-liveboard-views.adoc[personalized Liveboard views] included in the export depend on the role of the user performing the export:
 
-* *Public views* — views that any user with access to the Liveboard can see.
-* *Private views* — views that belong to the exporting user and are not visible to others.
+* *Non-admin users* — ThoughtSpot includes only the views *owned by* the exporting user. This includes both public and private views that the user created. Public views owned by other users are *not* included in the export, even though they are visible on the Liveboard.
+* *Admin users* — ThoughtSpot includes *all* views created by all users (both public and private).
 
-There is currently no automated way to exclude private views from a Liveboard TML export. If you do not want to migrate private personalized views when importing the TML into a different cluster or org, you must manually remove the relevant entries from the `views` section of the TML file before importing.
+There is currently no automated way to exclude specific views from a Liveboard TML export. If you do not want to migrate certain personalized views when importing the TML into a different cluster or org, you must manually remove the relevant entries from the `views` section of the TML file before importing.
 ====
 
 [#limitations]
