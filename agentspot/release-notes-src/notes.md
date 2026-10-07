@@ -1,3 +1,339 @@
+## 2026-10-07 — c6eb098bf0ab..1c4cc137c3ef
+
+Range: `c6eb098bf0ab..1c4cc137c3ef` · 2026-10-07
+
+Internal, humanized digest for the docs team. Not a published page. Every item from the
+release manifest is recorded here; the docs team decides what warrants a customer-facing page
+or known-issue note. AgentSpot is in Preview, so nothing here is published automatically.
+
+### Features
+
+- **Memory and learning switches with a capture-consent gate** — memory can now be switched on or
+  off at the tenant (org) level and per user, and capturing new memories goes through a consent
+  gate. The memory pages (personal memory and the admin *Org memory* tab) gained memory and
+  learning switches, and the agent runtime enforces the switch, so agents stop reading and saving
+  memory when it is off. Backend memory-policy service + memories/internal-runtime routers +
+  audit actions + migration (memory master switch); runtime memory policy + save/retrieve tools;
+  frontend `memorySwitches`, `MemoryPage`, `AdminMemoryTab`.
+  (SCAL-338958 · [#2333](https://github.com/thoughtspot/agentspot/pull/2333),
+  [#2339](https://github.com/thoughtspot/agentspot/pull/2339),
+  [#2338](https://github.com/thoughtspot/agentspot/pull/2338))
+  _Auto-drafted a hedged "Turning memory on or off" subsection onto `agentspot-use-agent.adoc` and
+  a "Memory and learning switches" subsection onto `agentspot-admin.adoc` (Org memory), marked
+  `REVIEW`. Exact switch labels and the consent wording are not evidenced by the diff. Flagged that
+  the existing "Auto-learning is currently inactive" note may now be stale._
+- **Every memory topic shown on the memory management pages** — the personal, agent, and admin
+  memory pages now list memories grouped by every topic rather than a subset. Frontend
+  `useMemoriesByTopic`, `MemoryPage`, `AgentMemoryPage`, `AdminMemoryTab`.
+  (SCAL-338929 · [#2334](https://github.com/thoughtspot/agentspot/pull/2334))
+  _Auto-drafted a one-line note into the memory section of `agentspot-use-agent.adoc`, marked
+  `REVIEW`._
+- **Home page split into My workspace and Discover, with template suggestions** — the home page now
+  has a *My workspace* view and a *Discover* view (header nav tabs), plus template idea cards you
+  can build from. A follow-up added a *View more ideas* control to the idea cards, and Discover now
+  ranks the org's shared agents, workflows, and Apps by real adoption (with a "love" section and a
+  top-item ring) on the new Home/Discover chrome, including a "jump back in" strip of recently
+  visited items. Backend adoption DAO + discover endpoints on agents/dataapps/workflows routers +
+  migration; frontend `HomePage`, `DiscoverPage`, `DiscoverBrowsePage`, `WhatOthersBuilt`,
+  `TemplateIdeaCard`, `JumpBackIn`, `HeaderNavTabs`.
+  (SCAL-337380, SCAL-337386 · [#2155](https://github.com/thoughtspot/agentspot/pull/2155);
+  SCAL-337380 · [#2205](https://github.com/thoughtspot/agentspot/pull/2205); SCAL-331511,
+  SCAL-326893, SCAL-337380 · [#2135](https://github.com/thoughtspot/agentspot/pull/2135))
+  _Auto-drafted onto `agentspot-getting-started.adoc` (home page section), marked `REVIEW`.
+  Flagged `agent-spot-home-apps.png` for re-capture. Exact tab labels beyond "My workspace" /
+  "Discover" are not evidenced._
+- **Visit ThoughtSpot link in the profile menu** — the user/profile menu now has a *Visit
+  ThoughtSpot* link back to the user's ThoughtSpot instance (the auth session now carries the
+  ThoughtSpot URL). Backend auth router/schema; frontend `AppHeader`, `AuthContext`, `RootShell`.
+  (SCAL-338104, SCAL-335011 · [#2324](https://github.com/thoughtspot/agentspot/pull/2324))
+  _Auto-drafted onto the user-menu list in `agentspot-getting-started.adoc`, marked `REVIEW`._
+- **User-selectable time zone for all times** — AgentSpot now renders times (workflow schedules and
+  runs, credits, audit log, chat) in a time zone the user picks, via a time-zone control in the
+  header/settings; list APIs also return workflow run status/schedule and App creator/required
+  connectors. Backend timezone utils + auth/user settings + list schemas + migration (dataapp
+  required connectors); frontend `TimeZonePicker`, `TimeZoneControl`, `timezoneStore`,
+  `WorkflowSchedulePanel`, `datetime` utils; admin-frontend pages.
+  (SCAL-326893, SCAL-324988 · [#1858](https://github.com/thoughtspot/agentspot/pull/1858))
+  _Auto-drafted onto `agentspot-create-workflow.adoc` (replaced the "scheduler uses UTC" note with
+  a hedged time-zone note) and `agentspot-getting-started.adoc` (user menu), marked `REVIEW`.
+  Confirm whether the schedule itself is saved in the selected time zone or only displayed in it._
+- **Structured run recaps and graph execution visuals on the Workflow run page** — a finished run
+  now shows a structured recap of its results, and the run graph shows execution state on nodes and
+  edges (including conditional and loop edges). Also adds a per-workflow connector-health check.
+  Backend workflow run-result summary + connector-health service/DAO/route; frontend
+  `WorkflowRunRecap`, `WorkflowDetailsRail`, vertex-graph-kit edges/nodes.
+  (SCAL-337788 and related · [#2179](https://github.com/thoughtspot/agentspot/pull/2179))
+  _Auto-drafted onto `agentspot-create-workflow.adoc` (Managing existing workflows), marked
+  `REVIEW`; flagged a screenshot to capture._
+- **Reconnect a failed connector from the Workflow run page** — when a Workflow's connector has
+  failed, you can reconnect it directly from the run details instead of leaving for the Connectors
+  page. Frontend `WorkflowDetailsPage`, `WorkflowDetailsRail`, `useWorkflowConnectorHealth`,
+  `useConnectorAuthWithTokenDialog`.
+  (SCAL-337785 · [#2350](https://github.com/thoughtspot/agentspot/pull/2350))
+  _Auto-drafted a "Reconnecting a failed connector" subsection onto
+  `agentspot-create-workflow.adoc`, marked `REVIEW`. Exact control label not evidenced._
+- **Workflow builder is named and has a back control** — the Workflow builder now shows a name and
+  lets you go back from it. Frontend `WorkflowStudioPage`. A companion change gave builder nodes
+  redesigned icons.
+  (SCAL-337789 · [#2348](https://github.com/thoughtspot/agentspot/pull/2348),
+  [#2344](https://github.com/thoughtspot/agentspot/pull/2344))
+  _Auto-drafted a hedged sentence onto `agentspot-create-workflow.adoc` (Creating a new Workflow),
+  marked `REVIEW`._
+- **Build agents with apps that are not connected yet** — the agent builder can now include
+  connectors you have not connected yet, and you can connect them from setup pills in the builder
+  without leaving the flow. Backend agent-builder prompt + unconnected-connector policy/eval +
+  arsenal connector service + MCP router; frontend `ConnectorSetupPills`, `BuilderConnectorsPill`,
+  `ConnectAgentAppsModal`, `RegisterCatalogConnectorDialog`.
+  (SCAL-337382 · [#2207](https://github.com/thoughtspot/agentspot/pull/2207))
+  _Auto-drafted onto `agentspot-create-agent.adoc` (Connecting applications), marked `REVIEW`._
+- **Scout (Default Agent) acts on your own connectors** — Scout now receives the acting user's
+  connectors and acts on them directly instead of only routing you to another agent. Its chat
+  connector menu shows brand icons, descriptions, a count of connectors that are on, and the full
+  connector set. (An earlier change in the same range removed the connectors popover from Scout's
+  composer; #2382/#2517 bring a connectors menu back.) Backend hub-default prompt + hub agent
+  service + runtime snapshot + evals; frontend `ChatConnectorsPopover`, `AgentComposer`,
+  `AgentChatPage`, `coreConnectorPresentation`.
+  (SCAL-340480 · [#2382](https://github.com/thoughtspot/agentspot/pull/2382); SCAL-341933 ·
+  [#2517](https://github.com/thoughtspot/agentspot/pull/2517); [#2198](https://github.com/thoughtspot/agentspot/pull/2198))
+  _Auto-drafted onto the Default Agent paragraph of `agentspot-getting-started.adoc`, marked
+  `REVIEW`._
+- **Scout cold-start loading screen** — a full-screen loading screen covers the Default Agent's
+  warm-up. Frontend `ScoutLoadingScreen`.
+  (SCAL-339672 · [#2320](https://github.com/thoughtspot/agentspot/pull/2320))
+  _Not auto-edited: too minor for a page section; left for the docs team._
+- **Scout always-on cross-surface semantic roster** — Scout always has a semantic roster of the
+  agents, workflows, and Apps available to the user, across surfaces, to pick from.
+  (SCAL-339507 · [#2307](https://github.com/thoughtspot/agentspot/pull/2307))
+  _Not auto-edited: behavior of the Default Agent is only described briefly on
+  `agentspot-getting-started.adoc`; left for the docs team._
+- **Microsoft 365 connector** — a platform-native Microsoft 365 connector: OAuth with tenant
+  binding and a private credential lifecycle, admin consent and connection controls (setup dialog
+  on the admin Connectors tab), 54 Graph tools wired into the agent runtime, and now Microsoft
+  workspace file transfers and email attachments. Enabled in staging, preprod, and prod (see
+  Internal / infra).
+  (SCAL-313498 · [#1931](https://github.com/thoughtspot/agentspot/pull/1931),
+  [#1932](https://github.com/thoughtspot/agentspot/pull/1932); SCAL-341017 ·
+  [#2440](https://github.com/thoughtspot/agentspot/pull/2440))
+  _Auto-drafted: added Microsoft 365 to the table in `agentspot-connector-reference.adoc` plus a
+  short hedged paragraph on file transfers / email attachments, marked `REVIEW`. `agentspot-admin.adoc` already notes Microsoft 365 is platform-native with admin
+  consent; no edit there._
+- **Persona picker for previously onboarded users** — users who finished onboarding before the
+  persona picker existed are now asked to pick a persona. Backend user persona state + auth;
+  frontend `PersonaPickerModal`, `WelcomePersonaPage`, `HomePage`.
+  (SCAL-341265 · [#2474](https://github.com/thoughtspot/agentspot/pull/2474))
+  _Auto-drafted a hedged note onto `agentspot-getting-started.adoc` (onboarding journey), marked
+  `REVIEW`._
+- **Chief of Staff persona and agent template** — adds a Chief of Staff onboarding persona and a
+  matching agent template. Backend `agent_templates/chief-of-staff.json` + user personas; frontend
+  onboarding personas.
+  (SCAL-337593 · [#2331](https://github.com/thoughtspot/agentspot/pull/2331))
+  _Not auto-edited: no page lists personas or templates. Left for the docs team._
+- **"Data Apps" renamed to "Apps" in product copy** — product copy, builder prompts, credits labels,
+  and home tiles now say "Apps".
+  (SCAL-338742, SCAL-332365 · [#2228](https://github.com/thoughtspot/agentspot/pull/2228))
+  _Auto-drafted: updated the remaining "Data App Builder" wording in the summary table of
+  `agentspot-create-app.adoc`, marked `REVIEW`._
+
+### Fixes & stability
+
+- **Show why a connector failed to connect** — connector connect failures now show the actual reason
+  instead of a generic "try again" message (user Connectors, admin Connectors, Apps). Backend
+  arsenal client/errors + HTTP error mapping; frontend `useConnectorAuth`, `apiClient`,
+  `AdminConnectorsTab`. (SCAL-318703, SCAL-313883 · [#2393](https://github.com/thoughtspot/agentspot/pull/2393))
+- **Show every connector on agent cards** — agent cards count and show every connector, including
+  ones without an icon. Frontend `AgentCard`, `AgentsPage`, `AgentsShowcase`.
+  (SCAL-327252 · [#2431](https://github.com/thoughtspot/agentspot/pull/2431))
+- **Scout chat-page avatar fix; landing connectors pill removed** — fixes the Scout avatar on the
+  chat page and removes the connectors pill from the landing view. Frontend `AgentPage`.
+  (SCAL-342384, SCAL-339916 · [#2595](https://github.com/thoughtspot/agentspot/pull/2595))
+- **Scout route cards resolve the Default Agent avatar** — agent metadata is forwarded so route-card
+  rows show the right avatar. (SCAL-339916 · [#2327](https://github.com/thoughtspot/agentspot/pull/2327))
+- **Scout backend fixes** — assorted Default Agent backend fixes.
+  (SCAL-339917 · [#2325](https://github.com/thoughtspot/agentspot/pull/2325))
+- **Scout runs on Claude Opus 5** — the Default Agent's model moved to Claude Opus 5.
+  (SCAL-340927 · [#2434](https://github.com/thoughtspot/agentspot/pull/2434))
+- **Meter free Scout conversations** — free Scout conversations are now metered (not charged) so they
+  can be priced later. Backend agents router. (SCAL-340504 · [#2387](https://github.com/thoughtspot/agentspot/pull/2387))
+- **Remove the dead scripted-Scout module** — code cleanup on the home page.
+  (SCAL-338742 · [#2229](https://github.com/thoughtspot/agentspot/pull/2229))
+- **Model upgrades: Opus-tier → Claude Opus 5.5, Sonnet-tier → Claude Sonnet 5.5** — builders,
+  workflow agent steps, run examiner, SRE bot, memory population, and the agent copy advisor move to
+  the 5.5 models, with new pricing rates (migrations). (SCAL-340302 ·
+  [#2379](https://github.com/thoughtspot/agentspot/pull/2379); SCAL-342166, SCAL-337646 ·
+  [#2536](https://github.com/thoughtspot/agentspot/pull/2536))
+- **Memory forgetting is complete and confirmed; chats keep working when Memory Bank is slow or
+  down** — deleting memory now removes it fully and confirms the result, and conversations degrade
+  gracefully instead of failing when the memory backend is unavailable. Adds finding expiry,
+  resilience wrapper, metrics/alerts, and a rollout runbook.
+  (SCAL-338909, SCAL-338912 · [#2383](https://github.com/thoughtspot/agentspot/pull/2383))
+- **Redact secrets from memory writes and audit every memory read** — secrets are redacted before
+  they are written to memory, and every memory read is audit-logged (new audit action).
+  (SCAL-338910 · [#2432](https://github.com/thoughtspot/agentspot/pull/2432))
+- **Confirm async memory writes** — the agent no longer reports a memory as "saved" until the write is
+  confirmed. (SCAL-338911 · [#2303](https://github.com/thoughtspot/agentspot/pull/2303))
+- **Server-authored trust tier on memory writes** — every memory write is stamped with a trust tier
+  set by the server. (SCAL-338908 · [#2245](https://github.com/thoughtspot/agentspot/pull/2245))
+- **Typed memory model** — memories gain a first-class class and schema version.
+  (SCAL-338930 · [#2246](https://github.com/thoughtspot/agentspot/pull/2246))
+- **Tenant required on every memory read/write** — legacy tenantless memory records are quarantined.
+  (SCAL-338906 · [#2240](https://github.com/thoughtspot/agentspot/pull/2240))
+- **Read-only toolset for connector learning** — memory population from connectors can only use
+  read-only tools. (SCAL-338906 · [#2220](https://github.com/thoughtspot/agentspot/pull/2220))
+- **Re-check agent-write permission at memory write time** — a downgraded editor can no longer write
+  to an agent's shared memory. (SCAL-338906 · [#2217](https://github.com/thoughtspot/agentspot/pull/2217))
+- **Fix doubled engine path when editing a profile memory section.**
+  (SCAL-342348 · [#2613](https://github.com/thoughtspot/agentspot/pull/2613))
+- **Workflow agent steps: streaming by default and stream-recovery parity** — managed-agent workflow
+  steps now run through the stream runner, default to streaming, and recover like the chat stream
+  path. (SCAL-341076 · [#2476](https://github.com/thoughtspot/agentspot/pull/2476),
+  [#2477](https://github.com/thoughtspot/agentspot/pull/2477),
+  [#2511](https://github.com/thoughtspot/agentspot/pull/2511))
+- **Workflow agent steps on a bounded worker pool with a lease** — plus fixes so a failed heartbeat
+  start doesn't leak a pool permit and an unreadable record doesn't end a live lease.
+  (SCAL-341065 · [#2456](https://github.com/thoughtspot/agentspot/pull/2456),
+  [#2475](https://github.com/thoughtspot/agentspot/pull/2475))
+- **Query-mode turn recovery — landed and reverted** — a change bringing query-mode turn recovery up
+  to the stream path was merged and then reverted in the same range; net no behavior change.
+  (SCAL-341063, SCAL-341077 · [#2466](https://github.com/thoughtspot/agentspot/pull/2466), reverted
+  by [#2467](https://github.com/thoughtspot/agentspot/pull/2467))
+- **Resolve workflow terminal outputs consistently.**
+  (SCAL-339930 · [#2328](https://github.com/thoughtspot/agentspot/pull/2328))
+- **Stop-requested runs stay marked running; cron labels fixed** — a run you asked to stop keeps
+  showing as running until it actually stops, and schedules no longer show half a cron expression.
+  (SCAL-337782 · [#2168](https://github.com/thoughtspot/agentspot/pull/2168))
+- **Agent Edit conversations stay on the correct agent snapshot.**
+  (SCAL-338192 · [#2186](https://github.com/thoughtspot/agentspot/pull/2186))
+- **Summarize the oldest span when clearing tool payloads isn't enough** — context management
+  fallback for long conversations. (SCAL-330851 · [#1873](https://github.com/thoughtspot/agentspot/pull/1873))
+- **Harden Vertex Agent Engine session creation.**
+  (SCAL-327436 · [#2416](https://github.com/thoughtspot/agentspot/pull/2416))
+- **Keep auth Redis lookups off the event loop with more worker capacity.**
+  (SCAL-342862 · [#2599](https://github.com/thoughtspot/agentspot/pull/2599))
+- **Service actor identity bindings and short-lived service actor sessions** — backend auth support
+  for non-human service actors (used by scheduled evals), with rate limiting and audit.
+  (SCAL-327551 · [#2211](https://github.com/thoughtspot/agentspot/pull/2211),
+  [#2212](https://github.com/thoughtspot/agentspot/pull/2212))
+- **Product analytics go to the shared Customers Mixpanel project.**
+  (SCAL-338543 · [#2507](https://github.com/thoughtspot/agentspot/pull/2507))
+- **Usage analytics export: readable cluster/org metadata and original tenant identity fields**
+  (migration). (SCAL-341705 · [#2506](https://github.com/thoughtspot/agentspot/pull/2506);
+  SCAL-340987 · [#2436](https://github.com/thoughtspot/agentspot/pull/2436))
+- **Consolidate duplicated cluster base-URL helpers** (refactor).
+  (SCAL-339371 · [#2340](https://github.com/thoughtspot/agentspot/pull/2340))
+- **SRE admin console hardening** — security response headers, no source maps/API docs, per-admin
+  rate limits on SRE bot routes, CSRF token bound to admin identity, no localhost CORS outside dev,
+  proxied admin path validation, id/status-filter validation, and LIKE-wildcard escaping in tenant
+  search. (SCAL-338251 · [#2232](https://github.com/thoughtspot/agentspot/pull/2232); SCAL-338252 ·
+  [#2233](https://github.com/thoughtspot/agentspot/pull/2233); SCAL-338250 ·
+  [#2226](https://github.com/thoughtspot/agentspot/pull/2226); SCAL-338249 ·
+  [#2225](https://github.com/thoughtspot/agentspot/pull/2225); SCAL-338247 ·
+  [#2223](https://github.com/thoughtspot/agentspot/pull/2223); SCAL-338248 ·
+  [#2224](https://github.com/thoughtspot/agentspot/pull/2224); SCAL-338253 ·
+  [#2227](https://github.com/thoughtspot/agentspot/pull/2227); SCAL-338254 ·
+  [#2230](https://github.com/thoughtspot/agentspot/pull/2230))
+- **Enable RLS on provisioning-request and connector-consent tables.**
+  (SCAL-338246 · [#2222](https://github.com/thoughtspot/agentspot/pull/2222))
+- **Metrics cost/cardinality cleanup** — opt-in OTLP metric exporters for GKE and Agent Engine;
+  bounded endpoint metrics; grouped configuration-route latency; retired generic outbound timing and
+  unused inbound size metrics; lower agent lifecycle metric cardinality.
+  (SCAL-327546 · [#2369](https://github.com/thoughtspot/agentspot/pull/2369); SCAL-327541 ·
+  [#2126](https://github.com/thoughtspot/agentspot/pull/2126),
+  [#2359](https://github.com/thoughtspot/agentspot/pull/2359); SCAL-327539 ·
+  [#2123](https://github.com/thoughtspot/agentspot/pull/2123),
+  [#2360](https://github.com/thoughtspot/agentspot/pull/2360); SCAL-327540 ·
+  [#2121](https://github.com/thoughtspot/agentspot/pull/2121))
+- **Cookie-free private PREDEPLOY E2E and isolated test Vertex gateway** — release-testing plumbing
+  that also touches backend health and Vertex client wiring.
+  (SCAL-334744 · [#2392](https://github.com/thoughtspot/agentspot/pull/2392),
+  [#2389](https://github.com/thoughtspot/agentspot/pull/2389))
+
+### Internal / infra
+
+- Default BigQuery CMEK for managed datasets. (SCAL-339718 · [#2444](https://github.com/thoughtspot/agentspot/pull/2444))
+- Alert on GCP control-plane changes. (SCAL-339718 · [#2443](https://github.com/thoughtspot/agentspot/pull/2443))
+- Preserve Cloud Build bucket viewer access. ([#2574](https://github.com/thoughtspot/agentspot/pull/2574))
+- Enable DNSSEC on public zones. ([#2445](https://github.com/thoughtspot/agentspot/pull/2445))
+- Grant CDN cache-fill origin access. ([#2567](https://github.com/thoughtspot/agentspot/pull/2567))
+- Adopt the prod-eu recovery PSC attachment into Terraform. (SCAL-338784 · [#2601](https://github.com/thoughtspot/agentspot/pull/2601))
+- Raise backend liveness timeout to 10 seconds. (SCAL-342252 · [#2541](https://github.com/thoughtspot/agentspot/pull/2541))
+- Size every Agent Engine PSC subnet as /26. (SCAL-338784 · [#2600](https://github.com/thoughtspot/agentspot/pull/2600))
+- Restore Referee evaluation login in Vinayak dev. (SCAL-327551 · [#2593](https://github.com/thoughtspot/agentspot/pull/2593))
+- Add default-off pristine worker transport and identities. (SCAL-334744 · [#2426](https://github.com/thoughtspot/agentspot/pull/2426))
+- Admit sandbox candidates and publish managed RC images. (SCAL-334744 · [#2418](https://github.com/thoughtspot/agentspot/pull/2418))
+- Private dispatcher connectivity and phase transport. (SCAL-334744 · [#2413](https://github.com/thoughtspot/agentspot/pull/2413))
+- Route native phases through a fixed dispatcher. (SCAL-334744 · [#2405](https://github.com/thoughtspot/agentspot/pull/2405))
+- Native phase attestation and normal VERIFY readers. (SCAL-334744 · [#2401](https://github.com/thoughtspot/agentspot/pull/2401))
+- Produce pristine schema evidence for candidates. (SCAL-334744 · [#2397](https://github.com/thoughtspot/agentspot/pull/2397))
+- Define immutable candidate and private HTTPS test contracts. (SCAL-334744 · [#2395](https://github.com/thoughtspot/agentspot/pull/2395))
+- Add inactive isolated testing runtime resources. (SCAL-334744 · [#2378](https://github.com/thoughtspot/agentspot/pull/2378))
+- Deployment leases and isolated test databases. (SCAL-334744 · [#2377](https://github.com/thoughtspot/agentspot/pull/2377))
+- Prepare usage analytics enablement for EU preprod and production. (SCAL-337536 · [#2581](https://github.com/thoughtspot/agentspot/pull/2581))
+- SRE bootstrap and attested infrastructure runs. (SCAL-334744 · [#2374](https://github.com/thoughtspot/agentspot/pull/2374))
+- Provision managed per-cell Terraform execution. (SCAL-334744 · [#2364](https://github.com/thoughtspot/agentspot/pull/2364))
+- Run dev release infrastructure on GitHub runners. (SCAL-334744 · [#2355](https://github.com/thoughtspot/agentspot/pull/2355))
+- Resolve public app hosts inside private DNS. (SCAL-334744 · [#2560](https://github.com/thoughtspot/agentspot/pull/2560))
+- Repin the Cloud Deploy renderer for pinned release source. (SCAL-334744 · [#2561](https://github.com/thoughtspot/agentspot/pull/2561))
+- Enable AgentSpot platform VPC logging. (SCAL-339718 · [#2441](https://github.com/thoughtspot/agentspot/pull/2441))
+- Log Cloud SQL connections. (SCAL-339718 · [#2439](https://github.com/thoughtspot/agentspot/pull/2439))
+- Prepare runtime proxy SSH access. ([#2448](https://github.com/thoughtspot/agentspot/pull/2448))
+- Prepare private Twingate connector access. (SCAL-339718 · [#2446](https://github.com/thoughtspot/agentspot/pull/2446))
+- Audit AgentSpot CIS findings and remediation status. (SCAL-339718 · [#2442](https://github.com/thoughtspot/agentspot/pull/2442))
+- Enable the Cloud Asset API. (SCAL-339718 · [#2438](https://github.com/thoughtspot/agentspot/pull/2438))
+- Enforce modern TLS for static assets. (SCAL-339718 · [#2437](https://github.com/thoughtspot/agentspot/pull/2437))
+- Keep qualified dev RCs valid when main advances. (SCAL-334744 · [#2508](https://github.com/thoughtspot/agentspot/pull/2508))
+- Lock the Azure sandbox providers for linux and init every root read-only. (SCAL-334744 · [#2352](https://github.com/thoughtspot/agentspot/pull/2352))
+- Make the db-roles clean-checkout gate refresh the index and name the files. (SCAL-334744 · [#2345](https://github.com/thoughtspot/agentspot/pull/2345))
+- Publish staging releases with their git tag. (SCAL-334744 · [#2371](https://github.com/thoughtspot/agentspot/pull/2371))
+- Enable Microsoft 365 in preprod and prod. (SCAL-342019 · [#2518](https://github.com/thoughtspot/agentspot/pull/2518))
+- Pin staging backend replicas. (SCAL-335927 · [#2512](https://github.com/thoughtspot/agentspot/pull/2512))
+- Block unhealthy Agent Engine PSC updates. (SCAL-338784 · [#2479](https://github.com/thoughtspot/agentspot/pull/2479))
+- Raise backend memory headroom. (SCAL-340536 · [#2388](https://github.com/thoughtspot/agentspot/pull/2388))
+- Log per-call prompt-cache usage and prefix hashes for Anthropic calls. (SCAL-341246 · [#2469](https://github.com/thoughtspot/agentspot/pull/2469))
+- Reuse Git auth for the shared dev fetch. (SCAL-334744 · [#2499](https://github.com/thoughtspot/agentspot/pull/2499))
+- Accept pinned release source during render. (SCAL-334744 · [#2498](https://github.com/thoughtspot/agentspot/pull/2498))
+- Align the Skaffold runner with the published pin. (SCAL-334744 · [#2356](https://github.com/thoughtspot/agentspot/pull/2356))
+- Pin chandan-dev to its dedicated Vertex Agent Engine runtime. (SCAL-340220 · [#2354](https://github.com/thoughtspot/agentspot/pull/2354))
+- Declare the summarization flag and enable it in dev. (SCAL-330851 · [#2038](https://github.com/thoughtspot/agentspot/pull/2038))
+- Gated OTLP dashboards, alerts, and historical queries. (SCAL-327546 · [#2367](https://github.com/thoughtspot/agentspot/pull/2367))
+- Isolated dev OTLP metrics collector pilot. (SCAL-327546 · [#2368](https://github.com/thoughtspot/agentspot/pull/2368))
+- SRE provisioning: read the per-org auth flag case-insensitively and gate turning it on. ([#2433](https://github.com/thoughtspot/agentspot/pull/2433))
+- Inventory metrics and verify OTLP ingestion savings. (SCAL-327546 · [#2366](https://github.com/thoughtspot/agentspot/pull/2366))
+- SRE provisioning: mark the org enabled only after the tenant exists; never forward an undecryptable trusted-auth secret. ([#2428](https://github.com/thoughtspot/agentspot/pull/2428))
+- Hard-cap runtime memory writes to the user partition. (SCAL-338908 · [#2247](https://github.com/thoughtspot/agentspot/pull/2247))
+- Enable Microsoft 365 config in staging. (SCAL-340510 · [#2384](https://github.com/thoughtspot/agentspot/pull/2384))
+- Shared Memory Bank activation probes: isolation, cross-engine, consolidation. (SCAL-338913 · [#2298](https://github.com/thoughtspot/agentspot/pull/2298))
+- Fail closed instead of silently falling back to in-memory memory in deployed runtimes. (SCAL-338913 · [#2248](https://github.com/thoughtspot/agentspot/pull/2248))
+- Route personal memory to the user's private partition; isolate the in-memory backend by tenant. (SCAL-338906 · [#2242](https://github.com/thoughtspot/agentspot/pull/2242))
+- Pin the mridul-dev shared runtime engine id. (SCAL-339730 · [#2323](https://github.com/thoughtspot/agentspot/pull/2323))
+- Grant the staging workflow deployments write. (SCAL-334744 · [#2370](https://github.com/thoughtspot/agentspot/pull/2370))
+- Treat retrieved memory as untrusted data on read (neutralize injection in search/preload output). (SCAL-338908 · [#2243](https://github.com/thoughtspot/agentspot/pull/2243))
+- Hand the staging runner its private GKE endpoint before the promotion driver. (SCAL-334744 · [#2365](https://github.com/thoughtspot/agentspot/pull/2365))
+- Apps domain name change for all environments. ([#2346](https://github.com/thoughtspot/agentspot/pull/2346))
+- Let the agent runtime read the skills bucket so attached skills reach the model. (SCAL-340312 · [#2362](https://github.com/thoughtspot/agentspot/pull/2362))
+- Export GitHub git auth for the whole promotion process tree. (SCAL-334744 · [#2357](https://github.com/thoughtspot/agentspot/pull/2357))
+- Qualify the dev release before shared rollout. (SCAL-334744 · [#2349](https://github.com/thoughtspot/agentspot/pull/2349))
+- Keep the Azure provider lock immutable during deployment. (SCAL-334744 · [#2347](https://github.com/thoughtspot/agentspot/pull/2347))
+- Keep shared-dev validation from skipping after the report-fixture skip. (SCAL-334744 · [#2341](https://github.com/thoughtspot/agentspot/pull/2341))
+- Register Cloud Deploy releases using the active execution stage. (SCAL-334744 · [#2336](https://github.com/thoughtspot/agentspot/pull/2336))
+- Render every release-candidate workload from the testing overlay. (SCAL-334744 · [#2335](https://github.com/thoughtspot/agentspot/pull/2335))
+- Tolerate exporter label drift and repin the dev cleanup SA id. (SCAL-334744 · [#2330](https://github.com/thoughtspot/agentspot/pull/2330))
+- Drop live-state audit gates from the Cloud Deploy apply wrappers. (SCAL-334744 · [#2329](https://github.com/thoughtspot/agentspot/pull/2329))
+- Install git in the frontend image build stage for lefthook's postinstall. (SCAL-334744 · [#2326](https://github.com/thoughtspot/agentspot/pull/2326))
+- Advance the Cloud Deploy execution stage to dev. (SCAL-334744 · [#2239](https://github.com/thoughtspot/agentspot/pull/2239))
+- Unwrap gcloud's single-key list objects in the foundation audit. (SCAL-334744 · [#2238](https://github.com/thoughtspot/agentspot/pull/2238))
+- Microsoft 365 connector architecture, scope, and operations guide. (SCAL-313498 · [#1930](https://github.com/thoughtspot/agentspot/pull/1930))
+- Give the bharat-dev namespace its own Slack event worker. (SCAL-338847 · [#2203](https://github.com/thoughtspot/agentspot/pull/2203))
+- Define Cloud Deploy verify jobs with verify_config only. (SCAL-334744 · [#2234](https://github.com/thoughtspot/agentspot/pull/2234))
+- Move the Cloud Deploy control roots to google provider 8.3.0 to fix the pipeline apply crash. (SCAL-334744 · [#2221](https://github.com/thoughtspot/agentspot/pull/2221))
+- Defer the shared-state execution Deny with the control profile. (SCAL-334744 · [#2215](https://github.com/thoughtspot/agentspot/pull/2215))
+- Prepare the dev Cloud Deploy sandbox graph with the pinned verifier image. (SCAL-334744 · [#2210](https://github.com/thoughtspot/agentspot/pull/2210))
+- Expand prod-eu PSC capacity. (SCAL-338784 · [#2202](https://github.com/thoughtspot/agentspot/pull/2202))
+- Consolidate Cloud Deploy Terraform into two guarded roots. (SCAL-334744 · [#2199](https://github.com/thoughtspot/agentspot/pull/2199))
+- Profile-driven Cloud Deploy control plane: run on agentspot-dev now, dedicated project later. (SCAL-334744 · [#2165](https://github.com/thoughtspot/agentspot/pull/2165))
+- Enable US preprod and production usage-analytics exports. (SCAL-338362 · [#2201](https://github.com/thoughtspot/agentspot/pull/2201))
+
+_4 additional trivial commits (ci/lockfile/test noise) were filtered from this range and are not itemized._
+
 ## 2026-09-09 — beb5bd4f1952..95f72bb57539
 
 Range: `beb5bd4f1952..95f72bb57539` · 2026-09-09

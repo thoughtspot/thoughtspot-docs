@@ -36,6 +36,9 @@ Event-based triggers (for example, a new ticket appearing in ServiceNow) are pla
 . On the AgentSpot home page, scroll to the bottom and click *Create new Workflow*.
 +
 The Workflow builder opens — it works the same way as the agent builder.
++
+// auto-draft PR#2348 — REVIEW
+The builder shows the name of the Workflow you are building, and you can go back from the builder to the page you came from.
 . In the prompt field, describe the task you want to automate in plain language.
 +
 .Example prompt
@@ -60,8 +63,9 @@ You can click any sub-agent to review or edit its instructions and connectors.
 +
 Enter the time and frequency you want the Workflow to run. Options include hourly, daily, weekly or monthly
 +
-NOTE: The scheduler currently uses UTC. You must convert your preferred local time to UTC before saving.
-// TODO: verify with engineering — confirm whether timezone support beyond UTC has shipped
+// auto-draft PR#1858 — REVIEW
+NOTE: AgentSpot shows times, including Workflow schedules and run times, in the time zone you select in AgentSpot.
+// TODO: verify with engineering — confirm whether the schedule is saved in the selected time zone or only displayed in it (previous text said the scheduler uses UTC), and the exact label of the time zone control
 . Click *Save*.
 
 == Testing and scheduling
@@ -89,6 +93,19 @@ Click any Workflow to open it. The Workflow view has three panels:
 When a run finishes, AgentSpot examines the completed run and shows a pass (Green circle) or fail (red circle) verdict for it.
 * *Center panel*: Workflow graph. Shows the full orchestration — every sub-agent and the connections between them.
 * *Right panel*: Run details. Click any step in the graph to see its status, duration, when it started, and when it ended.
+
+// auto-draft PR#2179 — REVIEW
+When a run finishes, the run details also show a structured recap of the run's results, and the Workflow graph shows how the run moved through each step and connection.
+// TODO image: capture the run details panel with the run recap and the graph showing execution state
+
+// auto-draft PR#2350 — REVIEW
+=== Reconnecting a failed connector
+
+If a connector used by your Workflow fails — for example, because your connection expired — the Workflow run page shows the problem and lets you reconnect the connector directly from there, without leaving for the *Connectors* page.
+
+After you reconnect, run the Workflow again to confirm it completes.
+// TODO: verify with engineering — confirm the exact label of the reconnect control on the run page
+// TODO image: capture the reconnect prompt for a failed connector on the Workflow run page
 
 === Stopping a running Workflow
 
