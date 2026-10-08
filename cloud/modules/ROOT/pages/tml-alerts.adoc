@@ -1,31 +1,50 @@
 = TML for Monitor alerts
-:page-last_updated: 7/22/2026
-:author: Teresa Killmond
+:page-last_updated: Oct 8, 2026
+:author: Teresa Killmond, Mark
 :linkattrs:
 :experimental:
 :description: Use TML to modify Monitor alerts in a flat-file format. Then, migrate the Monitor alert to a different cluster, or restore it to the same cluster.
 :object: Monitor alerts
-:jira: SCAL-190426, SCAL-264258, SCAL-300461
+:jira: SCAL-190426, SCAL-264258, SCAL-300461, SCAL-342872
 
 include::partial$tml-intro.adoc[]
 
 [#syntax-alerts]
 include::partial$tml-syntax-alert.adoc[]
 
+[#alert-tml-limitations]
+== Limitations
+
+The following limitations apply when importing Monitor alert TML files.
+
+[#zip-import-limitation]
+=== Importing Liveboard and Alert TML files together
+
+If you import an entire Liveboard TML zip file, containing both the Liveboard TML and the Alerts TML files, in a single import operation from one environment to another, the alerts fail to import. This limitation applies to both inter-org and inter-cluster deployments.
+
+*Workaround — import in two passes:*
+
+. Import the Liveboard TML file first, without the Alerts TML file.
+. After the Liveboard imports successfully, import the Alerts TML file.
+
 [#inter-org-limitation]
-== Limitation: importing Monitor alert TML across orgs
+=== Importing Monitor alert TML across orgs
 
-[IMPORTANT]
-====
-Importing a Monitor alert TML file into a *different org* fails when the alert is associated with a Personalized View (PV). The Alert TML stores static references to the source org's Liveboard ID (`pinboard_id`), visualization ID (`viz_id`), and Personalized View ID (`personalised_view_id`). When a Liveboard TML is imported into a new org, ThoughtSpot generates *new* IDs for the Liveboard and its visualizations. The Alert TML is not automatically updated to reflect these new IDs, so it continues to reference the original org's IDs, which are invalid in the destination org.
+This limitation applies *only when importing Monitor alert TML files into a different org within the same cluster*.
 
-*Workaround — manually update IDs before or after import:*
+If you restore a Monitor alert TML *within the same org*, the IDs for Liveboards, visualizations, and Personalized Views remain valid and the import works as expected.
+
+When you import the TML into a *different org* and the alert is associated with a Personalized View (PV), the Alert TML contains static references to the source org's Liveboard ID (`pinboard_id`), visualization ID (`viz_id`), and Personalized View ID (`personalised_view_id`). During cross-org import, ThoughtSpot generates *new* IDs for the Liveboard and its visualizations in the destination org. The Alert TML is not automatically updated to reflect these new IDs, so it continues to reference the original org's IDs, which are invalid in the destination org.
+
+If the referenced Personalized View does not exist in the destination org, the import fails or creates a non-functional alert.
+
+*Workaround — manually update IDs before importing:*
 
 . In the destination org, locate the newly created Liveboard and note its new *Liveboard ID* (`pinboard_id`) and *visualization ID* (`viz_id`).
-. If the alert uses a Personalized View, locate the correct *Personalized View ID* (`personalised_view_id`) in the destination org.
+. If the alert uses a Personalized View, verify that the Personalized View exists in the destination org. If it does not exist, recreate the Personalized View in the destination org first.
+. Locate the correct *Personalized View ID* (`personalised_view_id`) in the destination org.
 . Open the Alert TML file and replace the old `pinboard_id`, `viz_id`, and `personalised_view_id` values with the new destination org IDs.
-. Save and re-import (or re-publish) the updated TML.
-====
+. Save and import the updated TML.
 
 [#alert-parameters]
 == TML parameters for {object}
