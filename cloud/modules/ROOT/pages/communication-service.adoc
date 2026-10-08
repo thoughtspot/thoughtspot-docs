@@ -36,7 +36,6 @@ The communication service sends notifications for the following events:
 * SpotIQ analysis results are ready
 * Account events: welcome and account activation, invitations, password reset, and locked accounts
 
-// TO CONFIRM (Swarnima): Liveboard schedule emails go through the communication service only when a separate setting is on. Do we tell customers this, or just say "contact support"? customize-email-template.adoc already says "To customize Liveboard schedules, contact support."
 Liveboard schedule emails can also be delivered through the communication service. To enable this for your instance, contact {support-url}.
 
 [.bordered]
@@ -49,8 +48,8 @@ Some notifications are available only when the communication service is enabled:
 * *Spotter chat share notifications.* Users receive an email and in-app notification when a Spotter chat is shared with them. Without the communication service, shared chats generate no notification, and recipients can reach a shared chat only through its link.
 * *Notification preferences* in the user profile.
 * *Email customizations* in *Admin settings*.
+* Webhooks
 
-// TO CONFIRM (Swarnima): any other features that silently depend on COMS, for example Monitor alerts in the notification center or the Slack app.
 
 == How users manage notifications
 
@@ -67,6 +66,8 @@ For more information, see xref:user-profile.adoc#notification-prefs[Notification
 
 Administrators can change the branding, terminology, and footer content of notification emails from *Admin settings* > *Email customizations*. For more information, see xref:customize-email-template.adoc[Customize ThoughtSpot email template].
 
+
+////
 == Compatibility
 
 [cols="1,2",options="header"]
@@ -77,24 +78,30 @@ Administrators can change the branding, terminology, and footer content of notif
 |Enabled by default.
 
 |ThoughtSpot Embedded (Cloud)
-|Supported, but not enabled by default. Contact {support-url} to enable it.
+|Enabled by default on new instances.
 
 |ThoughtSpot Software (on-premises)
 |Not supported.
 |===
+////
 
-=== Before you enable the service on an embedded instance
 
-The communication service is not enabled by default for ThoughtSpot Embedded because notification emails use a styled template, and some embedded customers need emails that carry their own branding. Starting in 10.10.0.cl, administrators can rebrand notification emails with xref:customize-email-template.adoc[email customization], including the logo, colors, terminology, and footer.
+== Check whether the service is enabled
 
-Before you ask for the service to be enabled, review the following:
+Some existing ThoughtSpot Cloud instances, including some ThoughtSpot Embedded instances, might not have the communication service enabled.
 
-* *Email appearance.* Notification emails change from a plain-text style to the styled template. Users see the ThoughtSpot logo and terminology until an administrator customizes the template.
-// TO CONFIRM (Swarnima): Is a custom sender address incompatible with COMS, or only with COMS-routed Liveboard schedules? Slack thread suggests clusters with a custom "from" address and Liveboard schedules were kept off COMS. Rewrite or remove this bullet based on the answer.
+To check, select your user icon, then select *Profile*. If your profile doesn't have a *Notification preferences* section, the communication service is not enabled on your instance. To enable it, see <<enable-service,Enable the communication service>>.
+
+== Before you enable the service
+
+If the communication service is not enabled on your instance, review the following before you ask for it to be enabled:
+
+* *Email appearance.* Notification emails change from a plain-text style to the styled template. Users see the ThoughtSpot logo and terminology until an administrator rebrands the emails with xref:customize-email-template.adoc[email customization], including the logo, colors, terminology, and footer.
 * *Custom sender address.* If your instance sends notification emails from a custom sender address, ThoughtSpot Support confirms how this address applies to emails sent by the communication service before enabling it.
 * *Notification defaults.* Email and in-app notifications for shared objects and access requests are on by default. Users who don't want these notifications can turn them off in their profile.
 * *Test first.* If you have a development or staging instance, enable the service there first and review the emails your users will receive.
 
+[#enable-service]
 == Enable the communication service
 
 To enable the communication service on your instance, contact {support-url}. Include your ThoughtSpot instance URL in your request.
