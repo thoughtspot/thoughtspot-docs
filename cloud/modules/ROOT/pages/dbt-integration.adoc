@@ -3,7 +3,7 @@
 :linkattrs:
 :experimental:
 :author: Teresa Killmond, Naomi
-:jira: SCAL-157885, SCAL-157886, SCAL-157887, SCAL-157890, SCAL-157889, SCAL-119947, SCAL-182271, SCAL-182987, SCAL-186187, SCAL-132886, SCAL-169614, SCAL-180960, SCAL-126451, SCAL-201301, SCAL-201304, SCAL-208784, SCAL-263318, SCAL-320301
+:jira: SCAL-157885, SCAL-157886, SCAL-157887, SCAL-157890, SCAL-157889, SCAL-119947, SCAL-182271, SCAL-182987, SCAL-186187, SCAL-132886, SCAL-169614, SCAL-180960, SCAL-126451, SCAL-201301, SCAL-201304, SCAL-208784, SCAL-263318, SCAL-320301, SCAL-341832, SCAL-341836
 :description: ThoughtSpot's dbt sync allows you to provide your existing dbt models and create ThoughtSpot Models, which you can use to search your data.
 
 
@@ -17,7 +17,7 @@ NOTE: Integration with dbt is certified only for Amazon Redshift, Databricks, Go
 == Prerequisites
 Before you can integrate with dbt, you must satisfy the following prerequisites
 
-* Create a xref:connections.adoc[connection] to your external cloud data warehouse: Amazon Redshift, Databricks, Google BigQuery, or Snowflake. This cloud data warehouse must contain the tables that are created from your dbt models.
+* Create a xref:connections.adoc[connection] to your external cloud data warehouse: Amazon Redshift, Databricks, Google BigQuery, Snowflake, or Teradata. This cloud data warehouse must contain the tables that are created from your dbt models.
 * If you are using a single-tenant dbt environment, you must ask your dbt contact to enable access to the https://docs.getdbt.com/dbt-cloud/api-v2[dbt Cloud API v2 (2.0.0)^].
 * The following dbt permissions are required:
 ** Metadata only
@@ -91,9 +91,7 @@ Unable to fetch dbt models
 +
 image::dbt-error.png[Error message saying "Unable to fetch dbt models"]
 
-. On the next screen, select up to 4 dbt folders to import. ThoughtSpot lists the model names, paths, and the number of tables they have.
-+
-To increase the maximum number of dbt folders you can import at a time, contact {support-url}.
+. On the next screen, select the dbt folders to import. ThoughtSpot lists the model names, paths, and the number of tables they have.
 +
 image::dbt-integration-folder-multiple.png[dbt integration step 2]
 +
@@ -130,7 +128,7 @@ Click the *Download summary* button in the banner to download a JSON summary rep
 [.bordered]
 image::dbt-MetricFlow.png[dbt semantic layer translation]
 +
-NOTE: Importing dbt semantic translations is only available on Snowflake connections.
+NOTE: Importing dbt semantic translations is only available on Snowflake and Databricks connections.
 
 . Select *Exit*.
 
@@ -175,7 +173,7 @@ ThoughtSpot reads the following information from the `catalog.json` file:
 
 * Column data types
 
-NOTE: For Snowflake connections, ThoughtSpot imports semantic definitions like formulas, measures, dimensions, and metrics from dbt.
+NOTE: For Snowflake and Databricks connections, ThoughtSpot imports semantic definitions like formulas, measures, dimensions, and metrics from dbt.
 
 === How ThoughtSpot creates Models from dbt
 
@@ -258,9 +256,9 @@ Once selected, access will automatically be granted to the user or group. To rem
 
 * You must import at least 1 table.
 
-* Integration with dbt is certified only for Amazon Redshift, Databricks, Google BigQuery, and Snowflake connections.
+* Integration with dbt is certified only for Amazon Redshift, Databricks, Google BigQuery, Snowflake, and Teradata connections.
 
-* Integration for dbt semantic layer translation is only supported for Snowflake connections.
+* Integration for dbt semantic layer translation is only supported for Snowflake and Databricks connections.
 
 * If you make changes to your dbt models in dbt, ThoughtSpot does not automatically reflect those changes. You must integrate with dbt again. This may affect changes you made to the tables and Models in ThoughtSpot.
 
