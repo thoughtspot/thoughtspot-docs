@@ -621,35 +621,50 @@ To add facts and instructions to org memory, do the following:
 . Sign in to AgentSpot.
 . Click image:settings-agent-spot.svg[10,Admin Settings] *Admin Settings* in the upper-right corner.
 . Select the *Org memory* tab.
-. Click *Add fact* or *Add instruction*, depending on the type of entry you are adding.
+. Click inside the field for *Verified facts*, *Instructions*, *Terminology*, or *Playbooks*, depending on the type of entry you are adding.
 . Enter your content.
 +
-NOTE: Org memory entries support markdown formatting.
+NOTE: Org memory entries support Markdown formatting.
 You can use tables, lists, and headings to organize content within a single entry.
-. Click *Save*.
-. Repeat for each fact or instruction you want to add.
+. Click the checkbox to save your changes.
+. Repeat for each type of memory information that you want to add.
 
-After saving, org memory is broken down into *Verified facts* and *Instructions* sections in the UI.
 You can review, edit, and correct individual entries at any time by clicking directly into them.
-////
-// auto-draft PR#2333 — REVIEW
-// auto-draft PR#2339 — REVIEW
-// auto-draft PR#2338 — REVIEW
+
 === Memory and learning switches
 
-The *Org memory* tab includes memory and learning switches for your organization. When you turn memory off for the organization, agents stop reading from and saving to memory for every user, regardless of their personal settings. Capturing new memories is also subject to a consent check.
-// TODO: verify with engineering — confirm the exact switch labels, how the org switch interacts with each user's switch, and who gives consent for memory capture
+The Org memory tab includes two independent controls that manage how memory functions across your organization:
+
+[cols="1,3", options="header"]
+|===
+| Switch | Behavior
+
+| Memory for your organization
+| When enabled (default), agents and workflows can read from and write to org memory for all users. When disabled, agents stop accessing org memory entirely, acting as an organization-wide kill switch. This setting overrides individual user preferences.
+
+// TODO: verify with engineering — confirm exact switch label, whether disabling prevents reads only or both reads and writes, and the user experience when this switch is off
+
+| Auto-learning
+| When enabled, AgentSpot automatically extracts reusable facts and instructions from completed agent sessions and surfaces them as candidate entries in org memory. You review each candidate and explicitly approve it before it is added. When disabled, only entries you manually add to org memory are stored.
+
+// TODO: verify with engineering — confirm exact switch label and whether auto-learning operates independently of the Memory for your organization switch
+|===
+
+Both switches are independent. Disabling Memory for your organization does not disable Auto-learning, and vice versa.
+
+[CAUTION]
+====
+Disabling *Memory for your organization* removes org memory context from all agents and workflows for all users. Existing agents that rely on org memory context may produce inconsistent or less accurate results until the switch is re-enabled.
+====
+
+////
+NOTE TO WRITER: User consent for memory capture is mentioned in the agent memory research but not yet confirmed for org-level memory. Clarify with engineering whether consent applies at the org level or only at the user level.
+////
 
 === Auto-learning
 
 The Org memory page includes an *Auto-learning* toggle that, when enabled, automatically extracts reusable instructions from completed agent sessions.
 
-// TODO: verify with engineering — PR#2339 added a learning switch to the memory pages; confirm whether the note below is still accurate
-[NOTE]
-====
-Auto-learning is currently inactive. The UI shows a "Not ready for use" indicator, and tenant auto-learning controls are not yet connected.
-====
-////
 === Updating org memory over time
 
 Org memory is not a one-time configuration.
@@ -665,20 +680,5 @@ As an administrator, you have full visibility over all agents and workflows crea
 
 To see all agents in your organization do the following:
 
-. From the AgentSpot homepage, under _My Team_, click *Browse existing agents*.
-. Click *From My Org*.
-
-=== Share an agent in your organization
-
-To share an agent in your organization, do the following:
-
-. From the AgentSpot homepage, click the agent you want to share.
-. In the upper-right corner of the agent window, click *Share agent*.
-. In the Share window, do the following:
-.. In the *Add people or groups* field, find the people or group(s) to share with.
-.. In the *Ready to share* field, confirm the people or group(s) to share with.
-... For each person or group added, using the menu on the right to specify whether they *Can use* or *Can edit* the agent.
-.. In the *People and groups with access* field, confirm the people and groups who already access and make changes, if needed.
-.. Click *Done*.
-+
-The agent you shared will now appear in the Agents dashboard for the people and groups you shared it with.
+. Go to the *Discover* tab.
+. In the _Most used agents_ section, click *View all*.
