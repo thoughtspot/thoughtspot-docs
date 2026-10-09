@@ -3,7 +3,7 @@
 :page-last_updated: Oct 1, 2026
 :linkattrs:
 :description: These weekly release notes include information about enhanced features and fixes which are released on a weekly basis.
-:jira: SCAL-278217, SCAL-280996, SCAL-281927, SCAL-280886, SCAL-281156, SCAL-283473, SCAL-278723, SCAL-284023, SCAL-264083, SCAL-280423, SCAL-288834, SCAL-293915, SCAL-296024, SCAL-296606, SCAL-221340, SCAL-299403, SCAL-301088, SCAL-301041, SCAL-298693, SCAL-301658, SCAL-301811, SCAL-299991, SCAL-313211, SCAL-312267, SCAL-313800, SCAL-315352
+:jira: SCAL-278217, SCAL-280996, SCAL-281927, SCAL-280886, SCAL-281156, SCAL-283473, SCAL-278723, SCAL-284023, SCAL-264083, SCAL-280423, SCAL-288834, SCAL-293915, SCAL-296024, SCAL-296606, SCAL-221340, SCAL-299403, SCAL-301088, SCAL-301041, SCAL-298693, SCAL-301658, SCAL-301811, SCAL-299991, SCAL-313211, SCAL-312267, SCAL-313800, SCAL-315352, SCAL-342354, SCAL-340446, SCAL-340223, SCAL-339608, SCAL-338529, SCAL-338001, SCAL-325408
 
 ++++
 <style>
@@ -52,6 +52,50 @@
 
 The following release notes cover weekly changes to the ThoughtSpot Cloud release. These enhancements and fixes are automatically deployed to customer instances. For the latest monthly release notes see the xref:notes.adoc[{version} release notes].
 
+[#oct-12-2026]
+== Oct 12, 2026
+
+[cols="10%,90%a", grid=none, frame=none]
+|====================
+|[.badge.badge-fix-relnotes]#Fix#|Fixed an issue where tables published to an Org kept running background queries against that Org's data source after the Org was deleted, such as nightly row-count and indexing queries. ThoughtSpot no longer sends queries on behalf of deleted Orgs. Orgs that still use the same published tables are not affected.
+|====================
+
+[cols="10%,90%a", grid=none, frame=none]
+|====================
+|[.badge.badge-fix-relnotes]#Fix#|Fixed an issue where running scheduled Liveboard reports or triggering multiple consecutive *Send now* export jobs (PDF or PNG) could lead to resource accumulation and service degradation or restart. Metadata snapshot resources are now released immediately after report generation, ensuring stable memory consumption during high-volume export jobs.
+|====================
+
+[cols="10%,90%a", grid=none, frame=none]
+|====================
+|[.badge.badge-fix-relnotes]#Fix#|Fixed an issue where the Spotter icon was not displayed on the Spotter landing page. The icon now appears on the Spotter landing page in both ThoughtSpot Analytics and ThoughtSpot Embedded deployments. Customers using embedded deployments can still replace it with their own icon through the existing customization settings.
+|====================
+
+=== Data workspace
+[cols="10%,90%a", grid=none, frame=none]
+|====================
+|[.badge.badge-fix-relnotes]#Fix#|Fixed an issue where users could not edit some models or worksheets, including adding or removing columns or updating formulas, when a formula was nested very deeply. Edits failed with an `UPSTREAM_FAILURE` or "too many levels of nesting" error.
+|====================
+
+[cols="10%,90%a", grid=none, frame=none]
+|====================
+|[.badge.badge-fix-relnotes]#Fix#|Fixed an issue on ClickHouse connections where global filters on string columns containing non-ASCII characters, such as Nordic or CJK characters, returned no results even when matching values existed. ThoughtSpot now uses a UTF-8-aware case function when generating filter SQL for ClickHouse, so string filters on non-ASCII values return correct results. To enable this fix on your cluster, contact ThoughtSpot Support.
+
+NOTE: This fix does not apply to `FixedString` data type columns in ClickHouse.
+|====================
+
+=== REST APIs
+[cols="10%,90%a", grid=none, frame=none]
+|====================
+|[.badge.badge-fix-relnotes]#Fix#|Fixed an issue where exporting a table's TML from the UI or via `POST /api/rest/2.0/metadata/tml/export` omitted row-level security (RLS) rules that compare `ts_groups` or `ts_username` to a constant value, for example `'Sales' = ts_groups`. Re-importing that export returned success but deleted those rules, allowing users to see rows the rules had restricted. TML exports now include all RLS rules that reference system variables, ensuring security rules are fully preserved across export and import cycles.
+|====================
+
+[cols="10%,90%a", grid=none, frame=none]
+|====================
+|[.badge.badge-fix-relnotes]#Fix#|Fixed an issue where calling `POST /api/rest/2.0/security/metadata/fetch-permissions` with `permission_type: DEFINED` on an Answer that has been shared returned an HTTP 500 error. The endpoint now returns HTTP 200 along with the defined permissions.
+
+NOTE: For Answers pinned to a Liveboard (hidden child objects), the API response safely omits `metadata_author` and `metadata_owner`.
+|====================
+
 [#oct-05-2026]
 == Oct 05, 2026
 [cols="10%,90%a", grid=none, frame=none]
@@ -80,21 +124,6 @@ The following release notes cover weekly changes to the ThoughtSpot Cloud releas
 
 [cols="10%,90%a", grid=none, frame=none]
 |====================
-|[.badge.badge-fix-relnotes]#Fix#|Fixed an issue where the Spotter Analytics Liveboard showed a blank model name for some conversations when used in *Auto Mode*. Spotter now captures and records the model name for all conversation types, including *Auto Mode* sessions.
-|====================
-
-[cols="10%,90%a", grid=none, frame=none]
-|====================
-|[.badge.badge-fix-relnotes]#Fix#|Fixed an issue where Spotter Analyst did not follow admin-configured instructions for selecting a model when responding to user questions. Spotter Analyst now correctly follows the configured routing instructions to select the appropriate model.
-|====================
-
-[cols="10%,90%a", grid=none, frame=none]
-|====================
-|[.badge.badge-fix-relnotes]#Fix#|Fixed an issue where download permissions were not correctly enforced for Spotter-generated files when role-based access control (RBAC) was enabled. Users could download files they did not have permission to access, while users with the correct permissions were blocked from downloading. Download permissions for Spotter-generated files are now applied correctly based on the user's assigned privileges.
-|====================
-
-[cols="10%,90%a", grid=none, frame=none]
-|====================
 |[.badge.badge-fix-relnotes]#Fix#|Fixed an issue where manually triggering a data build did not pick up the latest metadata changes, causing Search, Spotter, and Liveboard results to reflect outdated data. This issue is resolved. Manual data build triggers now correctly use the latest available metadata.
 |====================
 
@@ -106,6 +135,22 @@ The following release notes cover weekly changes to the ThoughtSpot Cloud releas
 [cols="10%,90%a", grid=none, frame=none]
 |====================
 |[.badge.badge-fix-relnotes]#Fix#|Fixed an issue where  where token requests passing user attributes with `persist_option: REPLACE` caused intermittent authentication failures and service instability. This issue is now resolved.
+|====================
+
+=== Spotter
+[cols="10%,90%a", grid=none, frame=none]
+|====================
+|[.badge.badge-fix-relnotes]#Fix#|Fixed an issue where the Spotter Analytics Liveboard showed a blank model name for some conversations when used in *Auto Mode*. Spotter now captures and records the model name for all conversation types, including *Auto Mode* sessions.
+|====================
+
+[cols="10%,90%a", grid=none, frame=none]
+|====================
+|[.badge.badge-fix-relnotes]#Fix#|Fixed an issue where Spotter Analyst did not follow admin-configured instructions for selecting a model when responding to user questions. Spotter Analyst now correctly follows the configured routing instructions to select the appropriate model.
+|====================
+
+[cols="10%,90%a", grid=none, frame=none]
+|====================
+|[.badge.badge-fix-relnotes]#Fix#|Fixed an issue where download permissions were not correctly enforced for Spotter-generated files when role-based access control (RBAC) was enabled. Users could download files they did not have permission to access, while users with the correct permissions were blocked from downloading. Download permissions for Spotter-generated files are now applied correctly based on the user's assigned privileges.
 |====================
 
 [#sep-14-2026]
