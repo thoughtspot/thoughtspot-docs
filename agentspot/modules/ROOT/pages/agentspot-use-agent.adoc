@@ -158,9 +158,9 @@ AgentSpot maintains three types of memories:
 +
 Agent memory allows agents' creators to refine how the agent behaves as it goes through tasks together, improving the agent's accuracy and efficiency over time and ensuring that everyone using this agent benefits from these learnings. Agent creators can view and modify an agent's memory. Conversations with agents will result in memory being updated either in the agent's memory, or on the user's memory.
 
-. *User memory*:
+. *Personal memory*:
 +
-User memory tracks the platform's growing understanding of a user's work style and key facts, improving accuracy over time. Connected applications can optionally provide regular updates on the user to keep the memory up to date. Users can view their memory. Think of it as the platform learning how each person works so agents give better answers over time
+Personal memory tracks the platform's growing understanding of a user's work style and key facts, improving accuracy over time. Connected applications can optionally provide regular updates on the user to keep the memory up to date. Users can view their memory. Think of it as the platform learning how each person works so agents give better answers over time.
 . *Org memory*:
 +
 Org memory allows administrators to teach AgentSpot key facts about your organization, ensuring that each agent and each workflow across the organization is grounded in your company's context. The company memory can automatically grow over time based on agents' conversations. Administrators can always view and modify the company memory.
@@ -176,21 +176,52 @@ Memory shapes how all agents across the platform interact with you based on your
 ====
 Memory is the "DNA" of your user experience. It ensures that every agent you interact with—regardless of its specific function—understands how you prefer to work.
 ====
-////
-// auto-draft PR#2334 — REVIEW
-The memory pages list your memories grouped by topic, and every topic is shown so you can review everything AgentSpot remembers.
 
-// auto-draft PR#2333 — REVIEW
-// auto-draft PR#2339 — REVIEW
-// auto-draft PR#2338 — REVIEW
-=== Turning memory on or off
+[#import-context]
+=== Import context from another AI tool
 
-You control whether AgentSpot uses memory for you. To manage it, click your user menu in the upper right and select *Personal memory*, then use the memory and learning switches on the page.
+If you have been using another AI tool such as ChatGPT or Claude, you can bring the context it has learned about you into AgentSpot. This gives AgentSpot a head start in understanding how you work, so every agent you interact with delivers more relevant, personalized responses from your first conversation.
 
-* When memory is off, agents stop reading from and saving to your memory.
-* AgentSpot asks for your consent before it starts capturing new memories.
+. Open the AI tool you have been using (ChatGPT, Claude, or a previous version of AgentSpot) and paste the following prompt:
++
+[source]
+----
+Export all of my stored memories and any context you've learned
+about me from past conversations. Preserve my words verbatim
+where possible, especially for instructions and preferences.
+
+Categories (output in this order):
+1. Instructions – Rules I've asked you to follow: tone, format,
+   style, "always do X", "never do Y"
+2. Personal info – Name, role, background, anything biographical
+3. Preferences – Tools, workflows, communication style
+4. Ongoing projects – Active work, goals, recurring topics
+5. Other context – Anything else you know about me
+
+Output: Wrap the entire export in a single code block for
+easy copying.
+----
++
+. Copy the output that your AI tool generates.
+. In AgentSpot, click your user menu in the upper right and select *Personal memory*.
+. Paste the copied output into your personal memory and save your changes.
+
+Your agents now have context about your preferences, role, and work style, and can give more personalized responses.
+
+TIP: You can also populate your memory by asking an agent to remember key details from a document. For example, ask an agent to read a PDF or Confluence page and remember the definitions it contains. The agent saves the relevant facts to memory automatically.
+
+=== Using Personal memory
+
+You control whether AgentSpot uses memory for you. To manage it, click your user menu in the upper right and select *Personal memory*.
+
+You can enable or disable the following settings:
+
+* *Personal memory* contains facts, preferences, and context you've explicitly added or imported. Turning it off means agents stop reading from your memory.
+* *Learn about me from conversations* contains fact that AgentSpot saves about you as you chat. Turning it off means your memory only contains what you've manually added.
+
 
 NOTE: Your administrator can also turn memory off for the whole organization. When memory is off at the organization level, it stays off for every user.
 // TODO: verify with engineering — confirm the exact switch labels, what the "learning" switch controls, the consent prompt wording, and whether an org-level off overrides the user switch
 // TODO image: capture the memory and learning switches on the Personal memory page
 ////
+
