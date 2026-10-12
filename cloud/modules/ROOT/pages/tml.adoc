@@ -50,6 +50,8 @@ To disable Object ID, contact {support-url}.
 
 // TODO: verify with engineering — the FAQ says Object ID is optional and can be disabled on request, and an open FAQ comment (Akshat Shah) asks whether it is on by default since GA. The supported object types reference and dev-docs object-id.adoc say Object ID must be enabled at the instance (cluster) level before obj_id participates in TML export, import, and search, and that until then objects resolve by GUID and name. Confirm the default state, and whether enablement is per instance or per Org.
 
+
+////
 [#obj-id-availability]
 === Availability
 
@@ -72,6 +74,8 @@ To disable Object ID, contact {support-url}.
 | GA release
 |===
 // SOURCE: Google Doc FAQ §2
+////
+
 
 [#obj-id-supported-objects]
 === Supported object types
@@ -79,67 +83,53 @@ To disable Object ID, contact {support-url}.
 The following object types support `obj_id`:
 
 // TODO: verify with engineering — the FAQ (§1) and the 10.12.0.cl and 26.3.0.cl release notes list Views as supported, but Views are not in the supported object types reference or dev-docs object-id.adoc. Confirm whether the `view` TML kind supports obj_id.
-// TODO: verify with engineering — the supported object types reference lists no TML kind for Collections, but TML for Collections exists (tml-collections.adoc). Confirm the TML kind.
+// TODO: verify with engineering — the supported object types reference lists no TML kind for Collections, but Collections have their own TML file (tml-collections.adoc). Confirm that TML import honors obj_id in Collection TML.
 
-[cols="2,2,4", options="header"]
+[cols="1,2", options="header"]
 |===
-| Object type | TML kind | Notes
+| Object type | In TML
 
 | Liveboard
 | `liveboard`
-|
 
 | Answer
 | `answer`
-|
 
 | Model
-| `model`
-| Includes Worksheets.
+| `model`. Includes Worksheets.
 
 | Table
 | `table`
-|
 
 | SQL view
 | `sql_view`
-|
 
 | Column
-| None
-| Supported on columns within tables and Models.
+| No TML file of its own. Defined inside table and Model TML.
 
 | Connection
 | `connection`
-|
 
 | Collection
-| None
-|
+| `collection`. See xref:tml-collections.adoc[TML for Collections].
 
 | Custom action
-| None
-| Supported for custom actions managed through the API or the server.
+| No TML file of its own. Supported for custom actions managed through the API or the server.
 
 | Personalized view
-| None
-| Each view in a Liveboard's TML carries its own `obj_id`. See <<obj-id-import>>.
+| No TML file of its own. Defined inside Liveboard TML, where each view carries its own `obj_id`. See <<obj-id-import>>.
 
 | Variable
-| None
-| Supported from 26.10.0.cl. Template variables can also reference Object IDs from 26.10.0.cl.
+| No TML file of its own. Supported from 26.10.0.cl. Template variables can also reference Object IDs from 26.10.0.cl.
 
 | Memory
-| None
-| Carries the Object ID of the Model it is tagged to.
+| No TML file of its own. Carries the Object ID of the Model it is tagged to.
 
 | Group
-| None
-|
+| No TML file of its own.
 
 | Role
-| None
-|
+| No TML file of its own.
 |===
 // SOURCE: Object ID supported object types reference (Oct 2026); dev-docs object-id.adoc
 
@@ -190,9 +180,9 @@ The following objects do not have an `obj_id`:
 // SOURCE: Object ID supported object types reference (Oct 2026)
 
 [#obj-id-ignored-kinds]
-==== TML kinds that ignore obj_id on import
+==== TML types that ignore obj_id on import
 
-The `obj_id` field is present in the following TML kinds, but ThoughtSpot ignores it during import:
+The `obj_id` field is present in the following TML types, but ThoughtSpot ignores it during import:
 
 * `Join`
 * `user_object`
@@ -210,6 +200,7 @@ The `obj_id` field is present in the following TML kinds, but ThoughtSpot ignore
 
 When you import a TML file, ThoughtSpot matches it to an existing object in the target Org in the following order:
 // SOURCE: Google Doc FAQ §6, §7; dev-docs object-id.adoc (TML import)
+// TODO: verify with engineering — dev-docs deploy-with-tml-apis.adoc ("Rules for create vs. update operations") contradicts dev-docs object-id.adoc and the FAQ: it says object names are never used for matching, that an obj_id with no match creates a new object (no GUID fallback or WARNING), and that Table objects match on the database table rather than on obj_id or GUID. Confirm the actual import behavior, then update this section, <<obj-id-import>>, and <<obj-id-cicd>>.
 
 . *Object ID* (`obj_id`)
 . *GUID* (`guid`)
@@ -375,12 +366,10 @@ The Git commit APIs used for xref:git-version-control.adoc[Git version control] 
 // SOURCE: Google Doc FAQ §13; git-version-control.adoc; dev-docs git-provider-integration.adoc
 
 [#obj-id-cicd]
-=== Using object IDs in CI/CD pipelines
+=== Moving content between Orgs with object IDs
 
-Object IDs simplify multi-Org CI/CD workflows by giving each object a stable, portable identifier. Without `obj_id`, promoting TML between Orgs requires maintaining a GUID mapping table because the same object gets a different system-generated GUID in each Org.
+Without `obj_id`, moving TML between Orgs or instances requires you to track the GUID of each copy of an object, because the same object gets a different system-generated GUID in each Org. With `obj_id`, the same identifier resolves to the correct object in every Org:
 // SOURCE: Google Doc FAQ §10
-
-With `obj_id`, the same identifier resolves to the correct object in every Org:
 
 [cols="1,1,1", options="header"]
 |===
@@ -399,35 +388,24 @@ With `obj_id`, the same identifier resolves to the correct object in every Org:
 | `ccc-333-...`
 |===
 
+When you move content between Orgs using TML, keep the following in mind:
+// SOURCE: Google Doc FAQ §9, §10, §11; dev-docs deploy-with-tml-apis.adoc
+
+* *Use the same `obj_id` for every copy of an object.* Assign the value in each Org where a copy exists, following a consistent <<obj-id-format,naming convention>>. Do not rely on automatically generated values, because they include part of the GUID and differ between Orgs.
+* *The first import creates the object.* If no object in the target Org matches the `obj_id`, GUID, or name in the TML, ThoughtSpot creates the object and assigns it a new GUID in that Org. To make sure ThoughtSpot creates a new object, remove the `guid` from the TML before the first import.
+* *Later imports update the object.* When you import the same TML again, ThoughtSpot finds the existing object by its `obj_id` and updates it.
+* *You can adopt Object ID gradually.* Start with the objects you move most often. GUID-based and FQN-based workflows continue to work for the rest.
+
 NOTE: Visualizations and Liveboard tabs do not have an `obj_id`. Objects that point to a visualization, such as Monitor alerts, Liveboard schedules, and related links, still depend on a GUID that is different in each Org. See <<obj-id-unsupported-objects>>.
 
-==== Recommended adoption workflow
+To automate these steps in a CI/CD pipeline with the REST API and Git, see link:https://developers.thoughtspot.com/docs/deploy-with-tml-apis[Deploy with TML APIs^].
+// TODO: confirm with the SCAL-335107 requester that the step-by-step CI/CD migration walkthrough the ticket asks for can live in the developer documentation instead of this page.
 
-To adopt Object IDs in an existing CI/CD pipeline:
-// SOURCE: Google Doc FAQ §9, §10
-// TODO: update step 1 once the enablement question in the "Object ID is optional" section is resolved.
+For other ways to move content between Orgs and environments, see:
 
-. *Confirm that Object ID is enabled* on every instance in your pipeline (Dev, Staging, Production).
-. *Define a naming convention.* See <<obj-id-format>>.
-. *Assign `obj_id` values* to all objects you intend to promote, using the TML editor or the TML file. Use the same `obj_id` for each copy of an object in every Org. Do not rely on automatically generated values, because they differ between Orgs.
-. *Export TML from the Dev Org* with object IDs included.
-. *Deploy for the first time.* Import the TML into the target Org without a `guid`. If the object does not exist in the target Org, ThoughtSpot creates it and assigns a new GUID in that Org.
-. *Deploy subsequent updates.* Import the same TML. ThoughtSpot finds the existing object by its `obj_id` and updates it.
-. *Validate* the imported objects in the target Org to confirm they resolved correctly.
-. *Retire your GUID mapping.* Once all promoted objects have stable `obj_id` values, you no longer need to maintain a table mapping GUIDs across Orgs.
-
-For scripted deployment through the REST API, see link:https://developers.thoughtspot.com/docs/deploy-with-tml-apis[Deploy with TML APIs^].
-
-[#obj-id-migration]
-==== Migrating existing pipelines
-
-Adopting Object ID does not require migrating your entire pipeline at once. You can migrate incrementally:
-// SOURCE: Google Doc FAQ §11; dev-docs deploy-with-tml-apis.adoc
-
-* Start with the objects you promote most frequently.
-* Assign `obj_id` values to those objects in all Orgs. If you already maintain a GUID mapping, use it to find each object's copies in the other Orgs. You only need to do this once for existing objects.
-* Gradually expand to cover more objects as you gain confidence.
-* Existing GUID-based and FQN-based workflows continue to work during and after migration.
+* xref:publishing.adoc[Publishing objects between Orgs]: Publish objects from the Primary Org to other Orgs without creating a separate copy in each Org.
+* xref:tml-import-export-multiple.adoc[Migrate multiple TML files]: Export and import several objects at once from the ThoughtSpot UI.
+* xref:create-variables.adoc[Create variables]: Use different tables or connection properties in each Org with the same TML.
 
 [#obj-id-quick-reference]
 === Quick reference
@@ -452,7 +430,7 @@ Adopting Object ID does not require migrating your entire pipeline at once. You 
 | 1 to 64 characters: letters, numbers, hyphens, underscores, periods, and tildes. No spaces or other special characters.
 
 | *Auto-generated?*
-| Yes. New objects receive one on creation; existing objects receive one on their first update or TML import. Override for CI/CD.
+| Yes. New objects receive one on creation; existing objects receive one on their first update or TML import. Override it for objects that you move between Orgs.
 
 | *Export (UI)*
 | Included automatically when Object ID is enabled.
