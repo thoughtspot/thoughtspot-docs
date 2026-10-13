@@ -8,7 +8,7 @@
 :jira: SCAL-201655, SCAL-71323, SCAL-246579, SCAL-264258, SCAL-287601, SCAL-342645
 
 
-Most of the monitoring information in ThoughtSpot's system Liveboards comes from system Models, tables, and views that administrators can view, but not modify.
+Most of the monitoring information in ThoughtSpot's xref:system-liveboards.adoc[system Liveboards] comes from system Models, tables, and views that administrators can view, but not modify.
 The underlying tables are protected system tables that you cannot access directly.
 However, administrators can create new, custom monitoring reports from the Models and views.
 
@@ -29,12 +29,12 @@ Credit Usage Model:: Tracks the credits for xref:consumption-pricing.adoc[consum
 Discover Monitoring Data:: This Model contains data on how users are searching for existing Answers and Liveboards. It contains information on what users are searching for, where users are successful and where they are not. This Model contains data from the MetricsMonitoring table, and is used for the xref:spotter-conversations-liveboard.adoc#[Spotter Conversations Liveboard].
 Product Usage:: Contains usage data for the product. Specifies what existing Models, tables, and views users search on and create objects from, and what those objects are. Specifies what actions users complete in the product. You can also use this Model to view the underlying data sources for any objects, and any object's dependents.
 MetricsMonitoring:: This table contains data on how users are searching for existing Answers and Liveboards. It contains information on what users are searching for, where users are successful and where they are not, based on click count and position. This table is a source for the Discover Monitoring Data Model.
-xref:ts-entitlement-tracking.adoc[TS: Entitlement Tracking]:: Sources data from Snowflake via a secure view and refreshes every 24 hours to track entitlements for the products purchased by customers. This system Model is automatically provisioned on all ThoughtSpot Cloud instances and shared across all Orgs on the instance by default.
+xref:ts-entitlement-tracking.adoc[TS: Entitlement Tracking]:: Sources data from Snowflake via a secure view and refreshes every 24 hours to track entitlements for the products purchased by customers. This system Model is automatically provisioned on all ThoughtSpot Cloud instances and shared across all Orgs on the instance by default. Used for the xref:ai-bi-stats.adoc#_entitlements[Entitlements tab] of the AI and BI System Liveboard.
 xref:ts-object-tracking.adoc[TS: Object Tracking] [.badge.badge-beta-relnotes]#Beta#:: Contains creation date, creator, last modification date, and last modifier for any supported Liveboard, Model, and Answer. Administrators can use this Model to build custom monitoring Liveboards that show who created or modified objects and when.
 xref:ts-login-activity-tracking.adoc[TS: Login Activity Tracking]:: This Model shows how users access the system. It contains username and ID, Org name and ID, login timestamp, whether the login was successful, HTTP Response Code, and login success rate.
 xref:ts-provisioned-users.adoc[TS: Provisioned Users]:: Contains data related to the current status of the user (active, inactive, or deleted), Org ID and Org name as in ThoughtSpot, user ID, and the number of provisioned users.
-TS: AI and BI Stats:: Contains query performance metrics for each query made against an external database. It is based on Query Stats, derived from Data Manager. It offers a stable and trusted alternative to other data sources. This data source is already used for billing and has demonstrated reliability. This Model is enabled by default. For more information, see xref:data-workspace.adoc#aibistats[AI and BI Stats] and xref:ai-bi-stats-model.adoc[].
-xref:ts-bi-server.adoc[TS: BI Server]:: Contains data related to the systems associated with underlying the ThoughtSpot BI server. This includes database latency, browser clients, size of responses, and more.
+xref:ai-bi-stats-model.adoc[TS: AI and BI Stats]:: Contains query performance metrics for each query made against an external database, based on Query Stats. Reports product usage, adoption, and credit consumption across all Orgs. This Model is enabled by default. Used for the xref:ai-bi-stats.adoc[AI and BI System Liveboard].
+xref:ts-bi-server.adoc[TS: BI Server]:: Contains data related to the systems associated with underlying the ThoughtSpot BI server. This includes database latency, browser clients, size of responses, and more. Used for the TS Stats: Latency Visualizations xref:system-liveboards.adoc[system Liveboard].
 TS: External Table Current Row Count::
 Contains data related to the row count for external tables, or tables loaded through Connections.
 TS: Rows of un-cached tables for each connection:: Contains data related to the sum of rows count for each un-cached table in a connection.
@@ -56,6 +56,9 @@ ThoughtSpot ships a set of read-only system Models that expose the platform's ow
 You search them, build Liveboards on them, and pull from them through the same Data API you use for any other Model.
 Administrators of the Primary Org see data across all Orgs; an Org administrator sees only their own Org.
 Nothing needs to be installed: the Models are provisioned automatically on ThoughtSpot Cloud.
+
+Several of the xref:system-liveboards.adoc[system Liveboards] are built on these Models.
+Start with those Liveboards for ready-made views, and search the Models directly when you need a view the Liveboards do not provide.
 
 To let a non-admin analyst use a system Model, share both the Model and any Liveboard built on it.
 
@@ -87,11 +90,11 @@ To let a non-admin analyst use a system Model, share both the Model and any Live
 
 | What did we buy, and how much is consumed?
 | xref:ts-entitlement-tracking.adoc[TS: Entitlement Tracking]
-| Sourced from ThoughtSpot's commercial system every 24 hours.
+| Sourced from ThoughtSpot's commercial system every 24 hours. Also shown on the xref:ai-bi-stats.adoc#_entitlements[Entitlements tab] of the AI and BI System Liveboard.
 
 | Adoption, query performance, credits, Spotter usage
 | xref:ai-bi-stats-model.adoc[TS: AI and BI Stats]
-| See xref:ai-bi-stats-model.adoc[] and the xref:ai-bi-stats.adoc[AI and BI Stats Liveboard].
+| See xref:ai-bi-stats-model.adoc[] and the xref:ai-bi-stats.adoc[AI and BI System Liveboard].
 
 | The definitive list of users and Org membership right now
 | REST API `POST /api/rest/2.0/users/search`
@@ -145,7 +148,7 @@ Treat differences between the two as expected lag, not as data quality failures,
 
 * The pre-built *Inactive Users* and *Active Users* visualizations exclude `tsadmin`, system, and internal ThoughtSpot-domain users by design.
 Build your own Answer if you need those accounts included.
-* The *Provisioned Users* KPI on the xref:ai-bi-stats.adoc[AI and BI Stats Liveboard] does not respond to the Org filter.
+* The *Provisioned Users* KPI on the xref:ai-bi-stats.adoc[AI and BI System Liveboard] does not respond to the Org filter.
 For per-Org counts, search TS: Provisioned Users directly.
 * Users who have never run a query do not appear in TS: AI and BI Stats or TS: Object Tracking.
 They do appear in TS: Provisioned Users and, once they log in, in TS: Login Activity Tracking.
@@ -157,6 +160,8 @@ Always group by *User ID* and *Org*.
 == Build a governance reporting pack
 
 The user provisioning, access, and content governance Models are designed to be combined.
+For adoption and performance, start with the xref:system-liveboards.adoc[system Liveboards].
+For governance reporting across these Models, build your own Liveboard.
 A practical monthly governance Liveboard for a platform team could contain the following visualizations:
 
 [options="header",cols="25%,25%,50%"]
@@ -193,7 +198,7 @@ A practical monthly governance Liveboard for a platform team could contain the f
 
 | Adoption and performance
 | TS: AI and BI Stats
-| See xref:ai-bi-stats-model.adoc[]
+| Use the xref:ai-bi-stats.adoc[AI and BI System Liveboard], or see xref:ai-bi-stats-model.adoc[] to build your own
 |===
 
 === Data API access

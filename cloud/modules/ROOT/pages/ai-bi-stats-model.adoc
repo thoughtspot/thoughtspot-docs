@@ -7,7 +7,34 @@
 :jira: SCAL-342645
 
 *TS: AI and BI Stats* is the system Model that reports product usage, adoption, and credit consumption across all Orgs on a cluster.
-This page explains how the Model is populated, how often each type of data refreshes, what the Model excludes by design, and how to read it correctly.
+This page explains why to use the Model, how it is populated, how often each type of data refreshes, what it excludes by design, and how to read it correctly.
+
+The Model is enabled by default.
+The xref:ai-bi-stats.adoc[AI and BI System Liveboard] is built on it.
+
+[#aibistats-benefits]
+== Why use this Model
+
+The *TS: AI and BI Stats* Model moves system Liveboard reporting to the more robust Query Stats data source.
+It lets you build your own Answers and Liveboards on detailed product usage, using query performance metrics for every query run against your external databases.
+The same data source is used for billing.
+
+Usage translation::
+The Model links query activity directly to business context, capturing the creation of Answers, Liveboards, and Models, and providing a clear lineage from user action to business outcome.
+Broader tracking::
+It covers more user actions, including Spotter interactions, index queries, and Analyst Studio activities, for a more complete view of product engagement and adoption.
+Reliable data::
+Query Stats delivers a stable and trusted data pipeline, minimizing disruptions and ensuring consistent reporting.
+Improved accuracy::
+By tying metrics directly to query logs, the Model removes ambiguity and supports precise, fact-based reporting.
+Audit trail::
+You can validate ThoughtSpot usage data against your own databases, which provides transparency and prevents issues like double counting.
+Data quality::
+Query Stats addresses earlier data quality issues, such as the incorrect association of Models and Liveboards, by mapping product usage more accurately.
+Group privileges::
+The Model includes privilege information for each group, giving administrators a single place to review what each group is permitted to do in ThoughtSpot.
+
+// SME: The earlier data-workspace.adoc text listed "downloads" under tracked actions. Removed because this page says downloads that do not fire a query are excluded. Confirm whether any download or export activity appears in the Model.
 
 == How the Model is populated
 
@@ -143,7 +170,7 @@ None of these are defects.
 | NULL object names on older rows.
 
 | Model name in some scenarios
-| Known limitation. See xref:ai-bi-stats.adoc#_model_name_appears_as_null_in_query_stats[Model name appears as NULL in query stats].
+| Known limitation. See <<model-name-null>>.
 | NULL in the *Model* column.
 
 | Provisioned users by Org
@@ -311,6 +338,27 @@ See xref:action-codes.adoc#tracking-answer-downloads[Tracking Answer downloads].
 | Can I see which table a download came from?
 | No. Neither Model records the underlying data source of an export, only the object (Liveboard or Answer).
 |===
+
+== Troubleshooting
+
+[#model-name-null]
+=== Model name appears as NULL in query stats
+
+*Symptom:* The *TS: AI and BI Stats* Model shows `NULL` for Model names in query stats, and no Model details are displayed.
+
+*Cause:* This can occur in the following cases:
+
+* A Liveboard or Answer has been shared with a user who does not have access to the underlying Model. In this case, Model name fields are empty by design.
+* The Answer was edited in a way that changed the query object from a Model to a table. This is expected behavior.
+* The system cannot resolve the Model reference from the query specification. This is a known issue addressed in release 26.7.0.cl.
+
+*Resolution:*
+
+. Verify that the user viewing the Liveboard has access to the underlying *TS: AI and BI Stats* Model.
+. If Model names are missing for a specific Answer, check whether the Answer references a Model or a table.
+. If the issue persists after confirming access, it may be the known issue fixed in 26.7.0.cl (patch available in 26.6.0.cl-66). Contact {support-url} if you are on an affected release.
+
+// SOURCE: SCAL-319541, SCAL-322924
 
 == Get help
 
