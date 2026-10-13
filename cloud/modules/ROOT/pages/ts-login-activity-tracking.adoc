@@ -89,7 +89,7 @@ Use *Timestamp* as the date field, *Org* to scope to a product, `max(Timestamp)`
 
 == Use case: Automated, Org-scoped deprovisioning of inactive users
 
-A common requirement in multi-Org deployments is to remove a user from an Org they no longer use while leaving them in the Orgs they still use, and to do this automatically for large user populations.
+A common requirement in multi-Org deployments is automated deprovisioning: removing a user from an Org they no longer use while keeping them in the Orgs they still use.
 The recommended pattern is:
 
 . Extract the last login per user per Org from this Model, either as a scheduled Liveboard export or by calling the https://developers.thoughtspot.com/docs/?pageid=search-data-api[Data API^] (`POST /api/rest/2.0/searchdata`) with the search `user id max timestamp org`.
@@ -102,7 +102,7 @@ Removing an Org membership does not delete the user or affect their other Orgs.
 
 [TIP]
 ====
-*Recommendation on thresholds:* A 10-day window flags people who are still active, because sessions can be resumed without a fresh login, and the Model runs a day behind.
+*Recommendation on thresholds:* A 10-day window may include users who are still active, because sessions can be resumed without a fresh login and the Model runs a day behind.
 For a first release, notify at 30 days and remove at 45, then tighten once you have compared the Model's output with what your support teams observe.
 
 Always exclude service and integration accounts (for example, `tsadmin`, `system`, and the trusted authentication service user) with a protected-user list in your automation.
@@ -123,9 +123,8 @@ Set inactivity thresholds at least a day longer than your policy to allow for th
 * A user who belongs to several Orgs appears once per Org.
 Always group by *User ID* and *Org*.
 
----
-> **Related information**
->
-> * xref:system-model.adoc[]
-> * xref:ts-provisioned-users.adoc[]
-> * xref:ai-bi-stats-model.adoc[]
+== Related information
+
+* xref:system-model.adoc[]
+* xref:ts-provisioned-users.adoc[]
+* xref:ai-bi-stats-model.adoc[]
