@@ -266,39 +266,188 @@ General Availability (GA) features are usually enabled by default for all custom
 [#26-8-0-cl-business-user]
 === For the Business User
 
-TBD
+[#26-11-0-cl-x-lb]
+Spotter on Liveboards [.badge.badge-early-access-relnotes]#Early Access#::
+You can now open Spotter from a Liveboard, and Spotter is now grounded in the context of that Liveboard — its tabs, visualizations, and the effective filters and time ranges applied to each chart.
+You can ask questions like "why did revenue drop in Q3?" or "summarize what you see on this Liveboard" and Spotter reads the actual live data behind each visualization to answer, without you having to re-specify your filters or date range.
+Multi-step tasks — such as building a forecast, running a why analysis, and charting the result — now stay in a single conversation context across Spotter and Liveboard, with each step tracked so long tasks remain on course. To enable this feature, contact {support-url}.
+
+[#26-11-0-cl-search]
+Search your Spotter chats [.badge.badge-early-access-relnotes]#Early Access#::
+// Naomi. jira: SCAL-327913, SCAL-293208. docs jira: SCAL-293209, SCAL-?
+// PM: Mayur. add screenshot. check if you can also search chats from the data workspace object search.
+You can now search for Spotter chats within the Spotter sidebar, and in the search bar in the top navigation. This makes it easier to find specific chats, and resume a conversation where you left off. To enable these features, contact your administrator.
+
+[#26-11-0-cl-search]
+[discrete]
+Search your Spotter chats [.badge.badge-early-access-relnotes]#Early Access#::
+// Naomi. jira: SCAL-327913, SCAL-293208. docs jira: SCAL-293209, SCAL-?
+// PM: Mayur. add screenshot. check if you can also search chats from the data workspace object search.
+You can now search for Spotter chats within the Spotter sidebar, and in the search bar in the top navigation. This makes it easier to find specific chats, and resume a conversation where you left off. To enable these features, contact your administrator.
+////
+[#26-11-0-cl-spotterviz]
+[discrete]
+=== SpotterViz enabled by default [.badge.badge-ga-relnotes]#GA#
+// Naomi. jira: SCAL-335866. docs jira: SCAL-311573
+// PM: Arpit. no doc needed
+
+SpotterViz is now generally available (GA) and on by default. For more information, see
+ifndef::pendo-links[]
+xref:spotter-viz.adoc[SpotterViz].
+endif::[]
+ifdef::pendo-links[]
+xref:spotter-viz.adoc[SpotterViz,window=_blank].
+endif::[]
+////
+
+[#26-11-0-cl-spotterviz-migration]
+SpotterViz file upload [.badge.badge-early-access-relnotes]#Early Access#::
+// Naomi. jira: SCAL-325694. docs jira: SCAL-325695
+// PM: Dilip. download tableau as image/pdf/twb, or do file upload. clarify which document types are supported-- '.twb', .twbx', '.png','.jpg','.jpeg','.gif','.webp','.pdf'
+You can now upload a Tableau workbook (.twb, .twbx), or supported file type (.png, .jpg, .jpeg, .gif, .webp, or .pdf) to SpotterViz, and instruct the agent to create a Liveboard based on the file. You can request styling, visualization order, and filters within the SpotterViz interface. To enable this feature, contact your administrator. For more information, see xref:spotter-viz.adoc[SpotterViz].
+
+[#26-11-0-cl-scheduling]
+Spotter 3 scheduling [.badge.badge-early-access-relnotes]#Early Access#::
+// Naomi. jira: SCAL-311572. docs jira: SCAL-336737
+// PM: Aaghran. request video.
+You can now request Spotter to send you scheduled updates on particular answers, without leaving your chat. Simply write, "Send me updates on this answer every Monday," and Spotter will email you updates as requested. To enable this feature, contact your administrator.
+
+[#26-11-0-cl-spreadsheet]
+Writeback for Spreadsheet [.badge.badge-beta-relnotes]#Beta#::
+ThoughtSpot Spreadsheet view now supports *writeback*, allowing analysts to enter and publish data directly to the cloud data warehouse without leaving ThoughtSpot.
+In Spreadsheet view, you can create *input tables* alongside your Answer, define key columns to set the grain, and add editable or formula-based columns. Edits are held in session state until you click *Publish to Warehouse*, ensuring that no unintended writes occur. Published data is immediately available for Search, Liveboards, and Spotter queries. To enable this feature, contact {support-url}.
 
 [#26-8-0-cl-analyst]
 === For the Analyst
 
-TBD
+[#26-11-0-cl-email]
+Emails for failed schedule jobs [.badge.badge-ga-relnotes]#GA#::
+ThoughtSpot now automatically sends a failure notification email to the Liveboard schedule author whenever a scheduled job fails, eliminating the need for the author to check the run history manually.
 
 [#26-8-0-cl-data-engineer]
 === For the Data Engineer
 
+[#26-11-0-cl-spotter-x]
+Admin panel changes for Spotter on Liveboards [.badge.badge-ga-relnotes]#GA#::
+ThoughtSpot introduces *Spotter on Liveboards* — a redesigned Spotter that is available across Liveboards, the Homepage, embedded ThoughtSpot, REST API, MCP, Slack, and Teams from a single toggle.
+Administrators can choose the experience under *Admin* > *ThoughtSpot AI* > *Choose Spotter 3 Liveboard Experience*.
+New clusters default to the New experience with Spotter 3 enabled; existing Spotter 3 clusters remain on the Classic experience after upgrading to 26.11 and can switch to New at any time.
+The Spotter 3 capabilities section now shows only the settings relevant to the active experience, and every setting defaults to enabled on new clusters.
+
 [#personalized-views-portability]
-=== Improved portability of personalized Liveboard views [.badge.badge-ga-relnotes]#GA#
+Improved portability of personalized Liveboard views [.badge.badge-ga-relnotes]#GA#::
 
 You can now migrate personalized Liveboard views between environments, such as from development to production, without losing them. This release introduces:
 
 * *Smart Merge TML import*: A new `enable_personalized_view_upsert` field on the existing TML import endpoint (`POST /api/rest/2.0/metadata/tml/import`) preserves personalized views during Liveboard TML import, instead of overwriting them.
-* *Ownership metadata in TML*: Personalized views now include an `author` block in TML with `username` and `user_email` attributes, allowing administrators to transfer view ownership during migration.
+* *Ownership metadata in TML*: Personalized views now include an `author` block in TML with `username` and `user_email` attributes, allowing administrators to transfer view ownership during migration. For more information, see xref:personalized-liveboard-views.adoc#_migrate_personalized_views_across_environments[Migrate personalized views across environments].
 
-For more information, see xref:personalized-liveboard-views.adoc#_migrate_personalized_views_across_environments[Migrate personalized views across environments].
+[#26-11-0-cl-x-monitoring]
+Monitoring for Spotter [.badge.badge-early-access-relnotes]#Early Access#::
+
+Administrators can now monitor Spotter usage and review conversations from the Spotter settings menu.
+Two options are available:
+
+* *Monitor metrics*:
+Opens a Spotter usage metrics Liveboard in a new tab.
+
+* *Monitor all chats*:
+Opens a side panel with a searchable, filterable, and sortable list of all Spotter conversations in your organization.
+
+Administrators can preview conversations, download the list as a CSV, and filter by user, agent, data source, date range, and more.
+Selecting a conversation opens a detailed view of the full message history, tool calls, and execution timings.
+
+To enable Spotter chat monitoring, contact {support-url}.
+// Confirm external name (this is Spotter X) & enablement. request image of spotter usage metrics liveboard? confirm monitor all chats exists.
+// Mary. jira: SCAL-317753. docs jira: SCAL-317754
+// PM: Mayur
+
+[#26-11-0-cl-benchmark]
+Spotter benchmark platform [.badge.badge-ga-relnotes]#GA#::
+// Naomi. jira: SCAL-318931. docs jira: SCAL-344425
+// PM: Kallol. confirm if customer-facing feature. request video.
+Users with admin or Can manage Spotter privileges can now access a platform to evaluate Spotter's answers to specific queries for latency and accuracy, from within Spotter. The *Benchmark* tab allows you to see an overview of past query runs, create your own sample query and specify the correct answer in text or SQL, run those specific queries, and compare the results of selected query runs.
+
+[#26-11-0-cl-ai-context]
+AI Context generation on Model save [.badge.badge-early-access-relnotes]#Early Access#::
+// Naomi. jira: SCAL-326573. docs jira: SCAL-326574
+// PM: Akshat. keep in what's new?
+Models now generate AI Context automatically once saved. This includes Models created manually, and those created in SpotterModel. To enable this feature, contact your administrator.
+
+[#26-11-0-cl-memory]
+Generate memory from Liveboards in Model [.badge.badge-ga-relnotes]#GA#::
+// Naomi. jira: SCAL-304453. docs jira: SCAL-304454
+// PM: Anant. add image. confirm when it was released.
+You can now access memory generation for Liveboards from the Spotter optimization tab on a Model. Click *View added Liveboards* to see all Liveboards with current memory on the Memory sources tab.
+
+[#26-11-0-cl-writeback]
+Writeback for cloud data warehouse [.badge.badge-ga-relnotes]#GA#::
+ThoughtSpot writeback tables are now generally available (GA).
+For more information, see xref:writeback.adoc[Writeback].
+
+[discrete]
+Data Cache for modeled sources [.badge.badge-ga-relnotes]#GA#::
+ThoughtSpot now supports model-level caching with Data Cache. Data Cache copies frequently queried data from your cloud data warehouse into ThoughtSpot-managed storage, so eligible queries are served from the cache instead of running on your warehouse. This means faster answers and lower warehouse compute costs. Once Data Cache is enabled for your cluster, data model editors can turn on caching for individual Models from the new Caching tab in the Model editor. No SQL changes, TML edits, or manual configuration are required. ThoughtSpot automatically routes queries to the cache when the requested data is available, and falls back to your live warehouse when it isn't, so results are always correct. To enable this feature, contact {support-url}.
+
+[#26-11-0-cl-publishing]
+Publishing tables and views [.badge.badge-ga-relnotes]#GA#::
+You can now publish, unpublish, and manage publishing for *tables* and *views* directly from ThoughtSpot, using the same workflow previously available for Models.
+
+[#26-7-0-cl-dbt]
+dbt MetricFlow integration - Google BigQuery and Amazon Redshift support [.badge.badge-early-access-relnotes]#Early Access#::
+ThoughtSpot introduces support for Google BigQuery and Amazon Redshift as underlying cloud data warehouses (CDWs) in dbt MetricFlow. To enable this feature, contact your administrator. For more information, see
+xref:dbt-metricflow-integration.adoc[Integrate with dbt MetricFlow].
+// Naomi. jira: SCAL-332228. docs jira: SCAL-332229
+// PM: Prayansh - EA - Confirmed support for BigQuery and Redshift and release of the public APIs are the only changes
+
+[#26-7-0-cl-semantic]
+Snowflake Semantic View integration [.badge.badge-early-access-relnotes]#Early Access#::
+ThoughtSpot now preserves your custom model configuration when you re-sync a Snowflake Semantic View integration, so your column descriptions, formatting, custom calendars, geo configuration, and Spotter optimization settings are no longer overwritten on each sync.
+ThoughtSpot expands Semantic View coverage to include *measures with dimension filters*, *hierarchies*, and *parameterized queries*, so more of your Snowflake Semantic View definitions map directly into ThoughtSpot Models without manual adjustment.
+//The *Import Semantic Updates* page now shows a direct link to the affected Model in a new browser tab, and the resync API response includes a new `hasUpdates` field so that API consumers can determine whether a sync produced any changes without inspecting the full model diff.
+Formula and parameter associations are re-applied automatically after a sync, reducing manual reconciliation after each Snowflake Semantic View update. To enable this feature, contact {support-url}.
+// Mary. jira: SpotterX: Convex and Liveboard agents (EA). docs jira: SCAL-?
+// PM: Prayansh
+
+[#26-7-0-cl-obj]
+Web URL support for Object ID [.badge.badge-early-access-relnotes]#Early Access#::
+ThoughtSpot now supports custom, human-readable Object IDs (object_id) directly in Web URLs. Instead of relying solely on system-generated GUIDs, you can use stable, readable identifiers to navigate, share, and embed ThoughtSpot assets across environments. Existing GUID-based URLs continue to work unchanged. To enable this feature, contact {support-url}.
+// Rani. jira: SCAL-322466. docs jira: SCAL-338575. add sample URL.
+// PM: Shreyash
+
+[#26-11-0-cl-org-deletion]
+Handling queries post Org deletion [.badge.badge-ga-relnotes]#GA#::
+Previously, deleting an Org in ThoughtSpot stopped user-initiated queries immediately, but background processes — including scheduled Liveboard reports, alerts, and search indexing — continued to run warehouse queries against the deleted Org's connections for up to 7 days during the deletion grace period, resulting in unexpected warehouse spend.
+ThoughtSpot now stops all warehouse query execution for deleted Orgs immediately at deletion time.
+Deleted Orgs remain restorable during the grace period; the query block is automatically lifted if an Org is restored.
+
+// Mary. jira: SCAL-327128. docs jira: SCAL-327129
+// PM: Sejal - waiting on confirmation but this is likely RN only.
 
 [#26-11-0-cl-rendering]
-=== New visual styling for future dates in line charts [.badge.badge-ga-relnotes]#GA#
+New visual styling for future dates in line charts [.badge.badge-ga-relnotes]#GA#::
 // Mark. jira: SCAL-288419. docs jira: SCAL-?
 // PM: Anshul. request image. should this be release notes only?
-
 Line charts in the new charts library now visually distinguish future dates from historical data. When a chart's time axis includes dates in the future, ThoughtSpot renders the future segment with a dashed or dotted-line style so you can quickly identify projected or forecasted data at a glance. You can control it in the *Column* tab of the chart.
 
 [#26-11-0-cl-cust-css]
-=== Custom CSS rules for new charts [.badge.badge-ga-relnotes]#GA#
+Custom CSS rules for new charts [.badge.badge-ga-relnotes]#GA#::
 // Mark. jira: SCAL-336048. docs jira: SCAL-336049
 // PM: Anshul.
-
 For embedded deployments, CSS rule overrides defined using the `rules_UNSTABLE` property of the customCSS object in the Visual Embed SDK are now supported for charts in the new charts library. For more information, see https://developers.thoughtspot.com/docs/css-rules[Customize style elements using Rules^] in the ThoughtSpot Developers documentation.
+
+[#26-11-0-cl-mysql]
+MySQL driver upgrade [.badge.badge-ga-relnotes]#GA#::
+// Naomi. jira: SCAL-330175. docs jira: SCAL-330176
+// PM: Prayansh
+We have upgraded the MySQL driver to version 8.4.0. For more information, see
+xref:connections-driver-reference.adoc[Cloud data warehouse driver details for connections].
+
+[#26-11-0-cl-snowflake]
+Snowflake driver upgrade [.badge.badge-ga-relnotes]#GA#::
+// Naomi. jira: SCAL-327623. docs jira: SCAL-327624
+// PM: Prayansh
+We have upgraded the Snowflake driver to version 4.3.2. For more information, see xref:connections-driver-reference.adoc[Cloud data warehouse driver details for connections].
 
 [#26-8-0-cl-developer]
 === For the Developer
