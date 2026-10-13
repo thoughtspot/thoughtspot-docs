@@ -1,0 +1,359 @@
+= TS: Object Tracking system Model
+:page-last_updated: October 13, 2026
+:author: Rani
+:linkattrs:
+:experimental:
+:description: Use the TS: Object Tracking system Model to see who created and last changed each object, and whether it is still being used.
+:jira: SCAL-342645
+
+[.badge.badge-beta]#Beta#
+
+The *TS: Object Tracking* system Model, sometimes referred to as _Object History_, gives a complete metadata view of every Liveboard, Answer, and Model that has issued a query: who created it, when, who last changed it, and how it is being used.
+It combines object metadata (author, created, modified) with the query telemetry behind xref:ai-bi-stats-data-refresh.adoc[TS: AI and BI Stats], so you can go from "this object is unused" to "here is who owns it" in a single search.
+
+The Model has 53 columns: 9 measures and 44 attributes.
+It is available from release 26.3.0.cl.
+
+[TIP]
+====
+Use *Object Type* to pick Liveboards, Answers, or tables.
+Use *Object Modified Time* and *Object Author Name* for ownership and staleness.
+Use *User Action Time* with *Impressions* or *Active Users* to see whether anything is still being used.
+Filter *Is System* = `False` to exclude background work.
+
+Columns that start with _Object_ describe the Liveboard or Answer itself.
+Columns that start with _Model_ describe the Model it is built on.
+====
+
+== Column reference
+
+[options="header",cols="20%,12%,13%,55%"]
+|===
+| Column name | Data type | Category | Description
+
+| Actions
+| int64
+| Measure
+| Number of user actions recorded. One Liveboard open with six visualizations records six actions, because the count is query-based.
+
+| Active Users
+| int64
+| Measure
+| Unique number of users who ran at least one query in the period (unique count of *User ID*).
+
+| Answer Session ID
+| varchar
+| Attribute
+| Internal ThoughtSpot session ID for a single Answer or Liveboard viewing session.
+
+| Connection
+| varchar
+| Attribute
+| Name of the live-query connection to your cloud data warehouse.
+
+| Connection ID
+| varchar
+| Attribute
+| Unique ThoughtSpot ID of that connection.
+
+| Credits
+| int64
+| Measure
+| Overall ThoughtSpot credit usage attributed to the query.
+
+| DB Auth Type
+| varchar
+| Attribute
+| Authentication method (for example, OAuth) used on the warehouse connection.
+
+| DB End Time
+| date_time
+| Attribute
+| When the external data warehouse finished processing the query.
+
+| DB Start Time
+| date_time
+| Attribute
+| When the external data warehouse started processing the query.
+
+| DB Type
+| varchar
+| Attribute
+| Type of data warehouse the query ran against (Snowflake, Databricks, BigQuery, and so on).
+
+| Error Message
+| varchar
+| Attribute
+| Error text returned when a query fails. Empty for successful queries.
+
+| Impressions
+| int64
+| Measure
+| Interactions with an object (unique count of Answer sessions).
+
+| Is Billable
+| bool
+| Attribute
+| True if the query counts toward usage and billing.
+
+| Is System
+| bool
+| Attribute
+| True if ThoughtSpot ran the query itself as background work. Filter to `False` to see genuine user activity.
+
+| Model
+| varchar
+| Attribute
+| Name of the Model the object is built on.
+
+| Model Author ID
+| varchar
+| Attribute
+| User ID of the person who created the Model.
+
+| Model Author Name
+| varchar
+| Attribute
+| Display name of the person who created the Model.
+
+| Model Created Time
+| date_time
+| Attribute
+| When the Model was created.
+
+| Model ID
+| varchar
+| Attribute
+| Unique ID of the Model.
+
+| Model Modified By ID
+| varchar
+| Attribute
+| User ID of the person who last modified the Model.
+
+| Model Modified By Name
+| varchar
+| Attribute
+| Display name of the person who last modified the Model.
+
+| Model Modified Time
+| date_time
+| Attribute
+| When the Model was last modified.
+
+| Object Author ID
+| varchar
+| Attribute
+| User ID of the person who created the object.
+
+| Object Author Name
+| varchar
+| Attribute
+| Display name of the person who created the object.
+
+| Object Created Time
+| date_time
+| Attribute
+| When the object was created.
+
+| Object ID
+| varchar
+| Attribute
+| Unique ID of the object. Use this to join to REST API output or trace an object across environments.
+
+| Object Modified By ID
+| varchar
+| Attribute
+| User ID of the person who last modified the object.
+
+| Object Modified By Name
+| varchar
+| Attribute
+| Display name of the person who last modified the object.
+
+| Object Modified Time
+| date_time
+| Attribute
+| When the object was last modified.
+
+| Object Name
+| varchar
+| Attribute
+| Name of the object as shown in the ThoughtSpot UI.
+
+| Object Subtype
+| varchar
+| Attribute
+| More specific type within an object type, for example, the individual Answers inside a Liveboard.
+
+| Object Type
+| varchar
+| Attribute
+| Type of object: `LIVEBOARD`, `ANSWER`, or `table`.
+
+| Org
+| varchar
+| Attribute
+| Name of the Org the object and activity belong to.
+
+| Org ID
+| varchar
+| Attribute
+| Unique ID of the Org.
+
+| Queries
+| int64
+| Measure
+| Number of queries run (unique count of ThoughtSpot Query IDs).
+
+| Query Errors
+| int64
+| Measure
+| Number of queries that ended in error or timeout.
+
+| Query ID
+| varchar
+| Attribute
+| Query ID assigned by the external data warehouse. Useful for tracing on the warehouse side.
+
+| Query Latency (External)
+| int64
+| Measure
+| Seconds the data warehouse spent on the query (*DB End Time* − *DB Start Time*).
+
+| Query Rows Fetched
+| int64
+| Measure
+| Number of rows the query returned.
+
+| Query SQL
+| varchar
+| Attribute
+| SQL statement ThoughtSpot sent to the data warehouse.
+
+| Query Status
+| varchar
+| Attribute
+| Whether the query succeeded or failed.
+
+| System Latency (Overall)
+| int64
+| Measure
+| Total seconds to answer the query end to end, including ThoughtSpot processing.
+
+| ThoughtSpot Query ID
+| varchar
+| Attribute
+| ThoughtSpot's own unique ID for the query. Quote this when raising a support case.
+
+| Trace ID
+| varchar
+| Attribute
+| Follows one request across every ThoughtSpot layer. Diagnostic aid.
+
+| TS Query End Time
+| date_time
+| Attribute
+| When ThoughtSpot finished handling the query.
+
+| TS Query Start Time
+| date_time
+| Attribute
+| When ThoughtSpot began handling the query.
+
+| User
+| varchar
+| Attribute
+| Username of the person who ran the query or action.
+
+| User Action
+| varchar
+| Attribute
+| What the user did, for example, viewed a Liveboard, opened an Answer, ran a search, or had a Spotter conversation. See xref:action-codes.adoc[].
+
+| User Action Time
+| date_time
+| Attribute
+| When the activity happened. Main date field for usage trends.
+
+| User Display Name
+| varchar
+| Attribute
+| Full name of the user as shown in ThoughtSpot.
+
+| User ID
+| varchar
+| Attribute
+| Unique ID of the user.
+
+| Visualization ID
+| varchar
+| Attribute
+| Unique ID of the visualization.
+
+| Vizualization Name
+| varchar
+| Attribute
+| Name of the chart or table the user interacted with. The column name is spelled as it appears in the Model.
+|===
+
+== Example searches
+
+[options="header",cols="50%,50%"]
+|===
+| Search | Returns
+
+| `object name object type = 'LIVEBOARD' object author name object created time object modified by name object modified time org`
+| Ownership register of every Liveboard per Org.
+
+| `object name object type object author name max user action time org user action time > 180 days ago`
+| Objects with any usage in the last 180 days. Everything not on this list is a candidate for archiving.
+
+| `object name object type object modified time object modified time < 180 days ago org`
+| Objects not modified in the last 180 days. The staleness half of an archiving rule.
+
+| `model model author name model modified by name model modified time object name object type`
+| Which Liveboards and Answers depend on each Model. Use this for impact analysis before changing a Model.
+
+| `object author name unique count object id object type`
+| Content footprint per author. Find owners with large estates before they leave or change role.
+
+| `object name org impressions active users user action time monthly object type = 'LIVEBOARD'`
+| Monthly usage per Liveboard per Org. An adoption view for a product team.
+|===
+
+== Use cases
+
+Inactive content identification for migration and archiving::
+If you apply an inactivity rule, such as 180 days, this Model gives both halves of it: last modification (metadata) and last use (telemetry), per Org, with the owner to contact.
+
+Reconciling "last viewed" discrepancies::
+Check `max user action time` for the object.
+Remember the two lags: metadata refreshes every 2–3 days, and telemetry is D-1.
+Names for Liveboards captured before February 26, 2026 may be null.
+
+Change audit::
+*Object Modified By Name* and *Object Modified Time* answer "who changed this Liveboard last week" without opening each object.
+
+Model impact analysis::
+Before altering a Model, list every Liveboard and Answer built on it and notify those owners.
+
+== Things to be aware of
+
+* The Model is in Beta.
+Column names are stable, but additional columns may be added.
+* Only objects that have issued at least one query appear.
+A Liveboard that was created but never opened is not listed until it is used.
+* *Object Name* is only populated for Liveboards for activity captured after February 26, 2026.
+Earlier rows show null.
+* The author and modified metadata refreshes every 2–3 days.
+The usage columns follow the daily query-stats refresh.
+* On large clusters, open-ended searches with no date filter can be slow.
+Always add a date range on *User Action Time* or *Object Modified Time*.
+
+---
+> **Related information**
+>
+> * xref:system-model.adoc[]
+> * xref:ai-bi-stats-data-refresh.adoc[]
+> * xref:action-codes.adoc[]
