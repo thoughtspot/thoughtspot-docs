@@ -12,6 +12,44 @@ Most of the monitoring information in ThoughtSpot's system Liveboards comes from
 The underlying tables are protected system tables that you cannot access directly.
 However, administrators can create new, custom monitoring reports from the Models and views.
 
+== List the system Models, tables, and views
+
+To list the system Models, tables, and views:
+
+. Go to the *Data workspace* tab and click *Data objects*.
+. Choose *All*.
+. Enter `System User` in the search field.
+
+== Description of system Models, tables, and views
+
+Credits Purchased::
+Contains data on the number of credits for xref:consumption-pricing.adoc[consumption-based pricing] your cluster has, and their expiration date. Used for the xref:consumption-pricing-time-based.adoc#credit-usage-pinboard[Credit Usage Liveboard].
+Sample Retail - Apparel:: Contains sample retail data.
+Credit Usage Model:: Tracks the credits for xref:consumption-pricing.adoc[consumption-based pricing] your cluster has consumed. Used for the xref:consumption-pricing-time-based.adoc#credit-usage-pinboard[Credit Usage Liveboard].
+Discover Monitoring Data:: This Model contains data on how users are searching for existing Answers and Liveboards. It contains information on what users are searching for, where users are successful and where they are not. This Model contains data from the MetricsMonitoring table, and is used for the xref:spotter-conversations-liveboard.adoc#[Spotter Conversations Liveboard].
+Product Usage:: Contains usage data for the product. Specifies what existing Models, tables, and views users search on and create objects from, and what those objects are. Specifies what actions users complete in the product. You can also use this Model to view the underlying data sources for any objects, and any object's dependents.
+MetricsMonitoring:: This table contains data on how users are searching for existing Answers and Liveboards. It contains information on what users are searching for, where users are successful and where they are not, based on click count and position. This table is a source for the Discover Monitoring Data Model.
+xref:ts-entitlement-tracking.adoc[TS: Entitlement Tracking]:: Sources data from Snowflake via a secure view and refreshes every 24 hours to track entitlements for the products purchased by customers. This system model is automatically provisioned on all ThoughtSpot Cloud instances and shared across all Orgs on the instance by default.
+xref:ts-object-tracking.adoc[TS: Object Tracking] [.badge.badge-beta-relnotes]#Beta#:: Contains creation date, creator, last modification date, and last modifier for any supported Liveboard, Model, and Answer. Administrators can leverage this data model to build custom monitoring Liveboards, offering visibility into who created or modified objects or models, and when these actions occurred.
+xref:ts-login-activity-tracking.adoc[TS: Login Activity Tracking]:: This model provides visibility into how users access the system. It contains username and ID, Org name and ID, login timestamp, whether the login was successful or not, https response code, and login success rate.
+xref:ts-provisioned-users.adoc[TS: Provisioned Users]:: Contains data related to the current status of the user (active, inactive, or deleted), Org ID and Org name as in ThoughtSpot, user ID, and the number of provisioned users.
+TS: AI and BI Stats :: Contains query performance metrics for each query made against an external database. It is based on Query Stats, derived from Data manager. It offers a stable and trusted alternative to other data sources. This data source is already utilized for billing and has demonstrated reliability. This model is enabled by default. For more information, see xref:data-workspace.adoc#aibistats[AI and BI Stats] and xref:ai-bi-stats-model.adoc[].
+xref:ts-bi-server.adoc[TS: BI Server]:: Contains data related to the systems associated with underlying the ThoughtSpot BI server.  This includes database latency, browser clients, size of responses, and more.
+TS: External Table Current Row Count::
+Contains data related to the row count for external tables, or tables loaded through Connections.
+TS: Rows of un-cached tables for each connection:: Contains data related to the sum of rows count for each un-cached table in a connection.
+
+////
+TS: External Table Stats WS::
+Contains data related to the stats collected for external tables, or tables loaded through Connections.
+////
+
+TS: External Table Info:: Contains data related to external tables, or tables loaded through Connections.
+TS: Daily Row Count External Table::
+Contains Connections data, stored on a daily basis: the number of rows in your external database, and whether each external table is cached or not.
+TS: Query Stats::
+Contains data related to billable query consumption for customers on the query-based xref:consumption-pricing.adoc[consumption pricing] Model. ThoughtSpot now distinguishes between regular query consumption and Spotter queries. Used for the xref:query-stats.adoc[Billable Query Stats Liveboard]. Currently, Spotter queries will not show up in a separate visualization on the Billable Query Stats Liveboard.
+
 == How the system Models fit together
 
 ThoughtSpot ships a set of read-only system Models that expose the platform's own metadata and usage telemetry inside ThoughtSpot itself.
@@ -36,7 +74,7 @@ To let a non-admin analyst use a system Model, share both the Model and any Live
 | Records every login attempt with Org, timestamp, and HTTP response. The only Model that captures logins rather than queries.
 
 | Who is inactive in a given Org for 30, 60, or 90 days?
-| xref:ts-login-activity-tracking.adoc[TS: Login Activity Tracking] (primary) + xref:ai-bi-stats-data-refresh.adoc[TS: AI and BI Stats] (secondary)
+| xref:ts-login-activity-tracking.adoc[TS: Login Activity Tracking] (primary) + xref:ai-bi-stats-model.adoc[TS: AI and BI Stats] (secondary)
 | Login recency answers "has not signed in". Query recency (AI and BI Stats) answers "has not used content". Use login for deprovisioning; use query for adoption.
 
 | Who created or last changed this Liveboard, and is anyone still using it?
@@ -52,8 +90,8 @@ To let a non-admin analyst use a system Model, share both the Model and any Live
 | Sourced from ThoughtSpot's commercial system every 24 hours.
 
 | Adoption, query performance, credits, Spotter usage
-| xref:ai-bi-stats-data-refresh.adoc[TS: AI and BI Stats]
-| See xref:ai-bi-stats-data-refresh.adoc[] and the xref:ai-bi-stats.adoc[AI and BI Stats Liveboard].
+| xref:ai-bi-stats-model.adoc[TS: AI and BI Stats]
+| See xref:ai-bi-stats-model.adoc[] and the xref:ai-bi-stats.adoc[AI and BI Stats Liveboard].
 
 | The definitive list of users and Org membership right now
 | REST API `POST /api/rest/2.0/users/search`
@@ -88,7 +126,7 @@ Plan around these cadences:
 
 | TS: AI and BI Stats
 | D-1 to D-2
-| See xref:ai-bi-stats-data-refresh.adoc[].
+| See xref:ai-bi-stats-model.adoc[].
 |===
 
 === Source of truth
@@ -115,44 +153,6 @@ They do appear in TS: Provisioned Users and, once they log in, in TS: Login Acti
 Always group by *User ID* and *Org*.
 
 // SME: whats-new-26-3-0-cl.adoc says the Provisioned users tab "can now be filtered by Orgs". This page and ai-bi-stats.adoc say the KPI ignores the Org filter. Confirm and correct one of them.
-
-== List the system Models, tables, and views
-
-To list the system Models, tables, and views:
-
-. Go to the *Data workspace* tab and click *Data objects*.
-. Choose *All*.
-. Enter `System User` in the search field.
-
-== Description of system Models, tables, and views
-
-Credits Purchased::
-Contains data on the number of credits for xref:consumption-pricing.adoc[consumption-based pricing] your cluster has, and their expiration date. Used for the xref:consumption-pricing-time-based.adoc#credit-usage-pinboard[Credit Usage Liveboard].
-Sample Retail - Apparel:: Contains sample retail data.
-Credit Usage Model:: Tracks the credits for xref:consumption-pricing.adoc[consumption-based pricing] your cluster has consumed. Used for the xref:consumption-pricing-time-based.adoc#credit-usage-pinboard[Credit Usage Liveboard].
-Discover Monitoring Data:: This Model contains data on how users are searching for existing Answers and Liveboards. It contains information on what users are searching for, where users are successful and where they are not. This Model contains data from the MetricsMonitoring table, and is used for the xref:spotter-conversations-liveboard.adoc#[Spotter Conversations Liveboard].
-Product Usage:: Contains usage data for the product. Specifies what existing Models, tables, and views users search on and create objects from, and what those objects are. Specifies what actions users complete in the product. You can also use this Model to view the underlying data sources for any objects, and any object's dependents.
-MetricsMonitoring:: This table contains data on how users are searching for existing Answers and Liveboards. It contains information on what users are searching for, where users are successful and where they are not, based on click count and position. This table is a source for the Discover Monitoring Data Model.
-xref:ts-entitlement-tracking.adoc[TS: Entitlement Tracking]:: Sources data from Snowflake via a secure view and refreshes every 24 hours to track entitlements for the products purchased by customers. This system model is automatically provisioned on all ThoughtSpot Cloud instances and shared across all Orgs on the instance by default.
-xref:ts-object-tracking.adoc[TS: Object Tracking] [.badge.badge-beta-relnotes]#Beta#:: Contains creation date, creator, last modification date, and last modifier for any supported Liveboard, Model, and Answer. Administrators can leverage this data model to build custom monitoring Liveboards, offering visibility into who created or modified objects or models, and when these actions occurred.
-xref:ts-login-activity-tracking.adoc[TS: Login Activity Tracking]:: This model provides visibility into how users access the system. It contains username and ID, Org name and ID, login timestamp, whether the login was successful or not, https response code, and login success rate.
-xref:ts-provisioned-users.adoc[TS: Provisioned Users]:: Contains data related to the current status of the user (active, inactive, or deleted), Org ID and Org name as in ThoughtSpot, user ID, and the number of provisioned users.
-TS: AI and BI Stats :: Contains query performance metrics for each query made against an external database. It is based on Query Stats, derived from Data manager. It offers a stable and trusted alternative to other data sources. This data source is already utilized for billing and has demonstrated reliability. This model is enabled by default. For more information, see xref:data-workspace.adoc#aibistats[AI and BI Stats] and xref:ai-bi-stats-data-refresh.adoc[].
-xref:ts-bi-server.adoc[TS: BI Server]:: Contains data related to the systems associated with underlying the ThoughtSpot BI server.  This includes database latency, browser clients, size of responses, and more.
-TS: External Table Current Row Count::
-Contains data related to the row count for external tables, or tables loaded through Connections.
-TS: Rows of un-cached tables for each connection:: Contains data related to the sum of rows count for each un-cached table in a connection.
-
-////
-TS: External Table Stats WS::
-Contains data related to the stats collected for external tables, or tables loaded through Connections.
-////
-
-TS: External Table Info:: Contains data related to external tables, or tables loaded through Connections.
-TS: Daily Row Count External Table::
-Contains Connections data, stored on a daily basis: the number of rows in your external database, and whether each external table is cached or not.
-TS: Query Stats::
-Contains data related to billable query consumption for customers on the query-based xref:consumption-pricing.adoc[consumption pricing] Model. ThoughtSpot now distinguishes between regular query consumption and Spotter queries. Used for the xref:query-stats.adoc[Billable Query Stats Liveboard]. Currently, Spotter queries will not show up in a separate visualization on the Billable Query Stats Liveboard.
 
 == Build a governance reporting pack
 
@@ -193,7 +193,7 @@ A practical monthly governance Liveboard for a platform team could contain the f
 
 | Adoption and performance
 | TS: AI and BI Stats
-| See xref:ai-bi-stats-data-refresh.adoc[]
+| See xref:ai-bi-stats-model.adoc[]
 |===
 
 === Data API access
