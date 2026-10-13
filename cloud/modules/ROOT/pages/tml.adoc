@@ -6,22 +6,21 @@
 :description: Use TML to modify a ThoughtSpot object in a flat-file format. Then, migrate the object to a different instance, or restore it to the same instance.
 :jira: SCAL-188027, SCAL-240697, SCAL-265156, SCAL-264258, SCAL-335107
 
-ThoughtSpot Modeling Language (TML) is a markup language that represents ThoughtSpot objects (Models, Answers, Liveboards, tables, etc.) as human-readable text files — enabling version control, bulk editing, and migration of ThoughtSpot content.
+ThoughtSpot Modeling Language (TML) is a markup language that represents ThoughtSpot objects (Models, Answers, Liveboards, tables, etc.) as human-readable text files, enabling version control, bulk editing, and migration of ThoughtSpot content.
 
-Use TML to modify a ThoughtSpot object in a flat-file format. Then, migrate the object to a different instance, or restore it to the same instance.
+TML files use YAML syntax and map one-to-one with ThoughtSpot objects. You can download, edit, and re-upload them to update content, migrate between instances, or manage objects programmatically.
 
-To work with TML files for Models, views, SQL views, tables, Answers, Liveboards, and Monitor alerts in ThoughtSpot, you can download these objects to a flat file in `.TML` format, modify it, and subsequently upload this file either to the same instance, or to a different instance.
+To work with TML files, download a ThoughtSpot object (Model, view, SQL view, table, Answer, Liveboard, or Monitor alert) to a flat file in `.TML` format. Modify the file, and then upload it to the same instance or to a different instance.
 To learn how to export, change, and update Models, views, tables, Answers, and Liveboards, see xref:scriptability.adoc[Import and export TML files]. To learn how to migrate multiple TML files at a time, see xref:tml-import-export-multiple.adoc[].
 
-In this section, you learn the syntax of the TML files for each object.
-You also learn how to add and modify joins for Models, views, SQL views, and tables.
+Each article below describes the TML syntax for a specific object type, including how to add and modify joins for Models, views, SQL views, and tables.
 
 See the following articles for the full syntax of each type of TML file:
 
 * xref:tml-answers.adoc[TML for Answers]
 * xref:tml-collections.adoc[TML for Collections]
 * xref:tml-connections.adoc[TML for Connections]
-* xref:tml-coaching.adoc[TML for coaching]
+* xref:tml-coaching.adoc[TML for Coaching]
 * xref:tml-joins.adoc[TML for joins]
 * xref:tml-liveboards.adoc[TML for Liveboards]
 * xref:tml-models.adoc[TML for Models]
@@ -96,7 +95,7 @@ The following object types support `obj_id`:
 | `answer`
 
 | Model
-| `model`. Includes Worksheets.
+| `model` (includes Worksheets)
 
 | Table
 | `table`
@@ -256,18 +255,18 @@ Using a consistent naming convention across your Orgs makes TML files easier to 
 // SOURCE: Google Doc FAQ §15
 
 [#obj-id-auto-generation]
-=== Auto-generation and overriding
+=== Auto-generated values
 
 ThoughtSpot assigns an `obj_id` automatically:
 
-* New objects receive an `obj_id` when they are created.
+* ThoughtSpot assigns an `obj_id` to each object when it is created.
 * Objects that existed before Object ID was enabled do not receive an `obj_id` retroactively. They receive one the first time they are updated or imported through TML.
 // SOURCE: dev-docs object-id.adoc; Object ID supported object types reference (Oct 2026)
 
 An automatically generated `obj_id` combines the object name with the first segment of the object's GUID. For example, a Liveboard named *Retail Sales RAD - KPIs* might receive the `obj_id` `RetailSalesRAD-KPIs-c1e4043a`.
 // SOURCE: dev-docs object-id.adoc, deploy-with-tml-apis.adoc
 
-Because the generated value includes part of a GUID, copies of the same object in different Orgs receive different generated values. For any object that you deploy across Orgs, replace the generated value with a deliberate identifier and use the same value in every Org. You can override the value at any time using the TML editor or by editing the TML file directly.
+Because the generated value includes part of a GUID, copies of the same object in different Orgs receive different generated values. For any object that you deploy across Orgs, replace the generated value with a deliberate identifier and use the same value in every Org. To override the value, use the TML editor or edit the TML file directly.
 // SOURCE: Google Doc FAQ §14
 
 [#obj-id-set]
@@ -282,7 +281,7 @@ image::tml-edit-image.png[A TML section of the More menu, showing the options to
 
 . Select *Edit*.
 
-. Once the TML file opens, click *Edit* and select *Change ObjectId*.
+. When the TML file opens, click *Edit* and select *Change ObjectId*.
 +
 [.bordered]
 image::change-objectid.png[TML editor with the Edit menu selected, and a highlighted option "Change ObjectId".]
@@ -302,7 +301,7 @@ obj_id: <your_unique_string>
 
 You can also set the `obj_id` by editing it at the top of a TML file and importing the file.
 
-Before you change an existing `obj_id`, export the object's TML as a backup. After the change, the previous value no longer resolves, so update everything that refers to it, such as other TML files that reference the object by `obj_id`, TML file names in your Git repository, and deployment scripts.
+Before you change an existing `obj_id`, export the object's TML as a backup. After the change, the previous value no longer resolves. Update all references: TML files that use the `obj_id`, TML file names in your Git repository, and deployment scripts.
 // SOURCE: dev-docs object-id.adoc (Behavior and limitations), git-provider-integration.adoc
 
 To change the `obj_id` of many objects at once, use the REST API. For more information, see link:https://developers.thoughtspot.com/docs/object-id[Object ID (obj_id)^].
@@ -454,15 +453,15 @@ For other ways to move content between Orgs and environments, see:
 [#fqn]
 == fqn
 
-fqn refers to the source table's GUID. You can find this string of letters and numbers at the end of the URL for that table or connection.
+The `fqn` parameter refers to the source table's GUID. You can find this string of letters and numbers at the end of the URL for that table or connection.
 
 For example, in `\https://<company>.thoughtspot.com/#/data/tables/34226aaa-4bcf-4d6b-9045-24cb1e9437cb`, the GUID is `34226aaa-4bcf-4d6b-9045-24cb1e9437cb`.
 
-Use this optional parameter to reduce ambiguity and identify a specific table, if you have multiple tables with the same name. When exporting a TML file, you have the option to *Export FQNs of referenced objects*, which ensures that the TML files you export contain FQNs for the underlying tables and connections. If you do not add the `fqn` parameter, and the connection or table you reference does not have a unique name, the file import fails.
+Use this optional parameter to reduce ambiguity and identify a specific table, if you have multiple tables with the same name. When exporting a TML file, select *Export FQNs of referenced objects* to include FQNs for the underlying tables and connections. If you do not add the `fqn` parameter, and the connection or table you reference does not have a unique name, the file import fails.
 
 [#limitations]
 == Limitations of working with TML files
 
-There are certain limitations to the changes you can apply by editing a Model, Answer, table, view, Liveboard, or xref:monitor.adoc[Monitor alert] through TML.
+The following limitations apply when you edit a Model, Answer, table, view, Liveboard, or xref:monitor.adoc[Monitor alert] through TML.
 
 include::partial$scriptability-limitations.adoc[]
