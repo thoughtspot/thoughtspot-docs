@@ -1,0 +1,130 @@
+= TS: Login Activity Tracking system Model
+:page-last_updated: October 13, 2026
+:author: Rani
+:linkattrs:
+:experimental:
+:description: Use the TS: Login Activity Tracking system Model to find each user's last login per Org, track login health, and identify inactive users.
+:jira: SCAL-342645
+
+The *TS: Login Activity Tracking* system Model records every login attempt to the cluster: who, when, into which Org, and whether it succeeded.
+It is the right source for "last login" and inactivity questions, because it captures users who sign in but never run a query.
+It is also Org-aware, so activity in one Org does not mask inactivity in another.
+
+The Model has 8 columns: 1 measure and 7 attributes.
+It is available from release 26.5.0.cl.
+
+[TIP]
+====
+Use *Timestamp* as the date field, *Org* to scope to a product, `max(Timestamp)` per *User ID* for last login, and *HTTP Response Code* = `200` to count only successful logins.
+====
+
+== Column reference
+
+[options="header",cols="20%,12%,13%,55%"]
+|===
+| Column name | Data type | Category | Description
+
+| HTTP Response Code
+| varchar
+| Attribute
+| HTTP status returned for the login request. `200` = successful login; `401` / `403` = authentication or authorization failures.
+
+| Login Success Rate
+| double
+| Measure
+| Share of login attempts that succeeded, over whatever grouping you choose (user, Org, day).
+
+| Org
+| varchar
+| Attribute
+| Name of the Org the login was made to.
+
+| Org ID
+| varchar
+| Attribute
+| Unique ID of the Org.
+
+| Timestamp
+| date_time
+| Attribute
+| Date and time of the login attempt. Use the latest *Timestamp* per user as "last login".
+
+| User
+| varchar
+| Attribute
+| Username of the person who attempted to log in.
+
+| User ID
+| varchar
+| Attribute
+| Unique ID of the user.
+
+| User Status
+| varchar
+| Attribute
+| Current state of the user account at the time the Model was refreshed (_active_, _inactive_, _deleted_).
+|===
+
+== Example searches
+
+[options="header",cols="50%,50%"]
+|===
+| Search | Returns
+
+| `user id user max timestamp org`
+| Last login of every user, per Org. This is the core input for an inactivity policy.
+
+| `user id user max timestamp org = '<org name>' http response code = 200`
+| Last _successful_ login into a single Org.
+
+| `user org timestamp last 30 days http response code != 200 count timestamp`
+| Failed login attempts in the last 30 days, per user and Org. A security and support signal.
+
+| `login success rate org timestamp weekly`
+| Weekly login success rate per Org. Detects SSO or JIT provisioning issues before users report them.
+
+| `unique count user id org timestamp monthly`
+| Monthly logged-in users per Org. The simplest adoption trend for an embedded deployment.
+|===
+
+== Use case: Automated, Org-scoped deprovisioning of inactive users
+
+A common requirement in multi-Org deployments is automated deprovisioning: removing a user from an Org they no longer use while keeping them in the Orgs they still use.
+The recommended pattern is:
+
+. Extract the last login per user per Org from this Model, either as a scheduled Liveboard export or by calling the https://developers.thoughtspot.com/docs/?pageid=search-data-api[Data API^] (`POST /api/rest/2.0/searchdata`) with the search `user id max timestamp org`.
+. Apply the threshold in your application, not in the search, so business units can run 30, 60, or 90-day policies against the same extract.
+Allow at least one extra day for the D-1 refresh.
+. Reconcile against `POST /api/rest/2.0/users/search` to confirm the user still exists and is still a member of the target Org.
+. Remove the Org membership for each confirmed user through the REST API.
+Removing an Org membership does not delete the user or affect their other Orgs.
+. Verify on the next refresh that xref:ts-provisioned-users.adoc[TS: Provisioned Users] shows the reduced count for that Org.
+
+[TIP]
+====
+*Recommendation on thresholds:* A 10-day window may include users who are still active, because sessions can be resumed without a fresh login and the Model runs a day behind.
+For a first release, notify at 30 days and remove at 45, then tighten once you have compared the Model's output with what your support teams observe.
+
+Always exclude service and integration accounts (for example, `tsadmin`, `system`, and the trusted authentication service user) with a protected-user list in your automation.
+====
+
+== Use case: Login health and security review
+
+* Track *Login Success Rate* per Org weekly.
+A drop in one Org usually points at an SSO configuration or certificate change for that Org's identity provider.
+* Filter *HTTP Response Code* to `401` / `403` and group by *User* to find accounts with repeated failures.
+* Combine *User Status* with login history to find accounts that are still active but have never logged in since creation. These are candidates for clean-up.
+
+== Things to be aware of
+
+* This Model refreshes daily with the previous day's data (D-1).
+Today's logins appear tomorrow.
+Set inactivity thresholds at least a day longer than your policy to allow for this.
+* A user who belongs to several Orgs appears once per Org.
+Always group by *User ID* and *Org*.
+
+== Related information
+
+* xref:system-model.adoc[]
+* xref:ts-provisioned-users.adoc[]
+* xref:ai-bi-stats-model.adoc[]

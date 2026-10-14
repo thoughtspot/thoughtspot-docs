@@ -1,0 +1,106 @@
+= TS: Entitlement Tracking system Model
+:page-last_updated: October 13, 2026
+:author: Rani
+:linkattrs:
+:experimental:
+:description: Use the TS: Entitlement Tracking system Model to compare what you purchased with what you have consumed.
+:jira: SCAL-342645
+
+The *TS: Entitlement Tracking* system Model reflects your commercial entitlements: the SKUs purchased for each cluster and how much of each has been consumed to date.
+It is sourced from ThoughtSpot's commercial system through a secure view, refreshes every 24 hours, and is shared across all Orgs by default.
+
+The Model has 8 columns: 2 measures and 6 attributes.
+
+[TIP]
+====
+*Product Code* and *Product Offering* identify what was bought.
+*Quantity Purchased* against *Quantity Consumed* gives headroom.
+*Cluster Type* separates production from development entitlements.
+====
+
+== Column reference
+
+[options="header",cols="20%,12%,13%,55%"]
+|===
+| Column name | Data type | Category | Description
+
+| Account Name
+| varchar
+| Attribute
+| Name of the customer account that purchased the entitlement.
+
+| Cluster Type
+| varchar
+| Attribute
+| Type of cluster: Production or Development.
+
+| Opportunity Id
+| varchar
+| Attribute
+| Commercial reference recorded at the time of purchase, renewal, or expansion.
+
+| Pricing Type
+| varchar
+| Attribute
+| Pricing model, for example, provisioned-user or consumption (credit) based.
+
+| Product Code
+| varchar
+| Attribute
+| SKU code of the offering purchased.
+
+| Product Offering
+| varchar
+| Attribute
+| Primary product offering, for example, ThoughtSpot Embedded (TSE) or ThoughtSpot Analytics (TSA).
+
+| Quantity Consumed
+| double
+| Measure
+| Quantity consumed to date against what was purchased.
+
+| Quantity Purchased
+| double
+| Measure
+| Quantity of the SKU purchased (for example, number of provisioned users or credits).
+|===
+
+== Example searches
+
+[options="header",cols="50%,50%"]
+|===
+| Search | Returns
+
+| `product offering product code quantity purchased quantity consumed cluster type`
+| Entitlement statement: every SKU, purchased versus consumed, per cluster type.
+
+| `product code quantity purchased quantity consumed cluster type = 'Production'`
+| Production headroom only.
+
+| `pricing type product offering quantity purchased`
+| Which pricing model each offering is on.
+|===
+
+== Use cases
+
+License headroom before onboarding::
+Compare *Quantity Purchased* for the provisioned-user SKU with the current *Provisioned Users* total from xref:ts-provisioned-users.adoc[TS: Provisioned Users].
+
+Renewal preparation::
+Trend *Quantity Consumed* over time through a scheduled Liveboard to forecast when you will need to expand.
+
+Production versus development::
+Use *Cluster Type* to keep development-cluster consumption out of production license discussions.
+
+== Things to be aware of
+
+* Figures are as of the previous day.
+* *Quantity Consumed* is a commercial figure.
+For an operational Org-level count, use xref:ts-provisioned-users.adoc[TS: Provisioned Users].
+The two should agree at the cluster level within the xref:system-model.adoc#refresh-cadence[refresh windows].
+
+== Related information
+
+* xref:system-model.adoc[]
+* xref:ts-provisioned-users.adoc[]
+* xref:ai-bi-stats.adoc[]
