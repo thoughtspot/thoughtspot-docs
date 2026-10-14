@@ -6,7 +6,7 @@
 :page-layout: default-cloud-spotter-3
 :page-aliases:
 :description:
-:jira: SCAL-300551, SCAL-289467, SCAL-295867, SCAL-306618, SCAL-320863
+:jira: SCAL-300551, SCAL-289467, SCAL-295867, SCAL-306618, SCAL-320863, SCAL-344923
 
 Spotter can read a Liveboard and extract structured memory — business rules, metric definitions, and analytical patterns — that it applies to future questions automatically. This page covers how to generate that memory, what gets captured, and how to validate and correct it.
 
@@ -48,7 +48,7 @@ What happens when memory is disabled:
 
 Users with Manage Memory access or data model edit access on the data models associated with the Liveboard can generate memory from it. If a Liveboard touches data models the user cannot access, those models are excluded from generation.
 
-== How to generate memory from a Liveboard
+== Generate memory from a Liveboard
 
 . Navigate to *Data workspace* > *Memory sources* > *Liveboards tab* > *+ Add Liveboards*.
 
@@ -76,7 +76,28 @@ image::liveboard-add-context.png[Add context to memory.]
 
 . Click *Generate memory*. Generation runs asynchronously, and typically takes ten to twenty minutes depending on the size of the Liveboard. You can reference the status column to see if memory generation is complete. ThoughtSpot notifies you once memory is fully generated.
 
-== Writing a useful context description
+[#memory-model]
+=== Generate Liveboard memory from a Model
+
+To generate Liveboard memory from a Model:
+
+. Navigate to the desired Model in the Data workspace. If the Model does not have Spotter enabled, click the More menu image:icon-more-10px.png[more icon] and select *Enable Spotter*.
+
+. Select the Spotter optimization tab. Under *Add memory from Liveboards, click *Add memory*.
++
+[.bordered]
+image::model-add-memory.png[Add Liveboard memory]
+
+. In the *Add memory from Liveboards* pop-up, select the desired Liveboard and click *Next*.
++
+[.bordered]
+image::add-memory-popup.png[Add memory from Liveboards]
+
+. (Optional) Use the *Add context* text box to write any context to help Spotter interpret the memory it builds from the Liveboard. In the *Select data models* box, select any additional data models you'd like to link to the Liveboard memory.
+
+. Click *Add memory*. Once the memory is generated, ThoughtSpot will let you know. Click *View progress* to watch as memory generates from your selected sources.
+
+== Write a useful context description
 
 The context description is the most important input. Spotter uses it to interpret what the Liveboard represents and which patterns are worth generalizing into memory. Describe the business purpose and audience — not the charts.
 
@@ -101,7 +122,7 @@ The following are not stored as memory:
 
 If a Liveboard is built entirely on tables or Views, memory generation fails. If the Liveboard has a mix of data model charts and table/View charts, generation proceeds on the data model charts only.
 
-== Validating generated memory
+== Validate generated memory
 
 After generation completes, verify what Spotter has learned before relying on it in production. There are three ways to check:
 
@@ -111,7 +132,7 @@ After generation completes, verify what Spotter has learned before relying on it
 
 The most reliable approach is to run five to ten representative questions on the data model after generation and compare answers to your baseline.
 
-== Correcting wrong memory
+== Correct wrong memory
 
 If Spotter's answers degrade after generation, use the Thinking view to identify which memory context was applied on a bad answer.
 
