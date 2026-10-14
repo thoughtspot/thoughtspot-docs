@@ -3,7 +3,7 @@
 :linkattrs:
 :experimental:
 :description: Learn how ThoughtSpot protects your data and ensures business continuity. This article describes ThoughtSpot's disaster recovery strategy.
-:jira: SCAL-248217, SCAL-279213, SCAL-327060
+:jira: SCAL-248217, SCAL-279213
 
 This article describes ThoughtSpot's data protection and disaster recovery strategy for ThoughtSpot Cloud.
 
@@ -12,11 +12,16 @@ There are several methods ThoughtSpot employs to protect your ThoughtSpot data a
 [#data-protection]
 == Data Protection
 
-ThoughtSpot has a concept of <<backups,backups>> for data protection and backing up your ThoughtSpot instance.
+=== Snapshots and backups
+ThoughtSpot has a concept of both <<snapshots,snapshots>> and <<backups,backups>> for data protection and backing up your ThoughtSpot instance.
+
+[#snapshots]
+==== Snapshots
+A snapshot is a point-in-time image of your running instance. Snapshots are taken on a running instance, and later restored to the same instance. ThoughtSpot takes snapshots of your instance once an hour and stores them in persistent storage attached to your instance. If an error occurs while making any changes to your instance’s environment, or changing the structure of a table, you can file an issue with {support-url} to restore the instance from snapshots.
 
 [#backups]
-=== Backups
-A backup is a procedure that stores a point-in-time dataless image of your running cluster. Backups are the recommended way to restore your data or environment if an issue occurs. ThoughtSpot Support can assist with backup restores as needed. Snapshots are taken internally for system operations, but are not generally used or available for customer recovery. ThoughtSpot takes dataless backups of your instance once a day at midnight local instance time, and stores them in cloud object storage. ThoughtSpot can use a backup to restore your instance to a prior state. ThoughtSpot can restore your instance to any of the daily backups up to the last 7 days, and beyond that, at a weekly boundary of up to the last 30 days, in either the same or, if you enable <<disaster-recovery,cross-region disaster recovery>>, a different region from the original instance. If you enable cross-region disaster recovery, ThoughtSpot replicates the backups in a different cloud region.
+==== Backups
+A backup is a procedure that stores a snapshot outside a ThoughtSpot instance. ThoughtSpot takes dataless backups of your instance once a day at midnight local instance time, and stores them in cloud object storage. ThoughtSpot can use a backup to restore your instance to a prior state. ThoughtSpot can restore your instance to any of the daily backups up to the last 7 days, and beyond that, at a weekly boundary of up to the last 30 days, in either the same or, if you enable <<disaster-recovery,cross-region disaster recovery>>, a different region from the original instance. If you enable cross-region disaster recovery, ThoughtSpot replicates the backups in a different cloud region.
 
 Backups contain the following information:
 
@@ -41,16 +46,15 @@ Backups DO NOT include the following information:
 * Usage information
 * Traces
 
-NOTE: ThoughtSpot takes internal snapshots for system operations, but they remain local to the instance and are not typically used to restore customer data. Backups are the recommended and supported recovery mechanism.
-// SOURCE: Engineering feedback, 2026-09-29
-
-==== Backup immutability
+===== Backup immutability
 
 Immutable backups:: ThoughtSpot SaaS supports immutable backups that adhere to Write-Once-Read-Many (WORM) compliance standards. This feature protects your data integrity by ensuring backups cannot be altered or deleted during the retention period.
 
 Retention policy:: The standard immutability duration is 5 days.
 
 Activation:: This feature is available upon request. Please contact {support-url} to enable it for your instance.
+
+
 
 === RPO and RTO for data protection
 A Recovery Point Objective (RPO) is the frequency of which you take a backup of a system. ThoughtSpot's RPO for Data Protection is 24 hours. Every 24 hours, ThoughtSpot automatically takes a backup and stores it in cloud object storage, in the same cloud region that your instance is in.
@@ -62,78 +66,16 @@ ThoughtSpot's Data Protection procedure is fully automated. You do not need to f
 
 If an instance is not available, {support-url} receives an alert after 15 minutes of unavailability. Then, ThoughtSpot Support investigates the instance to determine the problem and tries to fix it. If necessary, ThoughtSpot Support restores the instance from a snapshot or backup.
 
-// SOURCE: Google Doc draft "Cross-Region Disaster Recovery"
-// https://docs.google.com/document/d/1wkUhvohAwKvcx3tKUrTpOozNPkKV74CLEfiNfKrKeJM
 [#disaster-recovery]
 == Cross-region disaster recovery [.badge.badge-aws]#AWS-only#
 Cross-region disaster recovery allows ThoughtSpot to recover your ThoughtSpot instance in a secondary cloud region in the case of a failure of the primary cloud region where the ThoughtSpot service is running. ThoughtSpot takes automated <<backups,backups>> of your instance once a day, and replicates those backups in a different cloud region from the region your ThoughtSpot primary instance is in. This ensures that if one cloud region fails, ThoughtSpot can start in another region, guaranteeing minimal downtime.
 
 === RPO and RTO for cross-region disaster recovery
 ThoughtSpot's RPO for Cross-Region Disaster Recovery is 24 hours. Every 24 hours, ThoughtSpot automatically takes a backup and replicates it in cloud object storage, in a different cloud region than the one your instance is in.
-
-ThoughtSpot's RTO for Cross-Region Disaster Recovery is a few hours.
+ThoughtSpot's RTO for Cross-Region Disaster Recovery is 2 hours.
 
 === Enabling cross-region disaster recovery
 Enabling cross-region disaster recovery requires the purchase of a new SKU. Contact your ThoughtSpot sales representative for information on how to purchase the DR SKU. After you purchase the DR SKU, contact {support-url} to enable disaster recovery in your environment.
-
-[#dr-feature-availability]
-=== Feature availability
-Cross-region disaster recovery is available for ThoughtSpot Cloud Enterprise SaaS.
-
-You must be on ThoughtSpot Cloud version 26.8.0.cl or later to use cross-region disaster recovery.
-
-Virtual Private ThoughtSpot (VPT) and non-VPT deployments both support cross-region disaster recovery.
-
-[#dr-supported-regions]
-=== Supported regions
-ThoughtSpot determines the secondary region for cross-region disaster recovery based on your primary region. The following regions are currently supported:
-
-[cols="1,1,1"]
-|===
-| Cloud type | Primary region | Secondary region
-
-| AWS
-| us-east-1
-| us-west-2
-
-| AWS
-| us-west-2
-| us-east-1
-
-| AWS
-| eu-west-2
-| eu-west-1
-
-| AWS
-| eu-west-1
-| eu-west-2
-|===
-
-ThoughtSpot plans to expand region support over time.
-
-For Virtual Private ThoughtSpot (VPT) deployments, you can select from among the supported regions during setup. For all other SaaS customers, ThoughtSpot determines the secondary region.
-
-[#dr-limitations]
-=== Limitations
-* Cross-region disaster recovery is available for ThoughtSpot Cloud SaaS only.
-* Analyst Studio does not currently have cross-region disaster recovery support.
-* ThoughtSpot determines the secondary region for all SaaS customers that are not on Virtual Private ThoughtSpot (VPT).
-
-[#dr-recovery-process]
-=== Recovery process
-In the event of a regional disaster, ThoughtSpot recovers your instance in the secondary region using the replicated backups.
-
-You are responsible for the following to complete the recovery process:
-
-* Ensure your Cloud Data Warehouse (CDW) data is available in the secondary region. Your CDW must be accessible in both the primary and secondary regions.
-* Maintain any custom private networking between ThoughtSpot and your CDW in the secondary region.
-* Maintain the same hostname and credentials for your CDW across both regions. If you use different hostnames or credentials in the secondary region, update them promptly after recovery to avoid delays in bringing your use cases back online.
-
-Contact {support-url} for information about your assigned secondary region.
-
-[#dr-testing]
-=== Testing guidance
-ThoughtSpot conducts periodic drills to rehearse cross-region disaster recovery functionality. If any participation is required from your organization, ThoughtSpot notifies you in advance.
 
 [#high-availability]
 == High Availability
