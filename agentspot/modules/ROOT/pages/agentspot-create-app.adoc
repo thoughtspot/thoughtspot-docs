@@ -1,5 +1,5 @@
 = Creating an App in AgentSpot
-:last_updated: Sep 3, 2026
+:last_updated: Oct 15, 2026
 :linkattrs:
 :experimental:
 :page-aliases:
@@ -309,10 +309,25 @@ Actions behave differently from the rest of an App:
 
 NOTE: The exact button label, placement, and confirmation wording are chosen when the App is built and vary by App. Confirm the action's target source and permissions before sharing the App widely.
 
+=== Example action prompts
+
+AgentSpot supports actions like marking items done, updating records, or notifying users in external systems. Here are typical examples you can use in your app prompts:
+
+* "Add a button to mark a Jira issue as Done directly from the App."
+* "Create a card with a 'Post to Slack' button to notify my team when a KPI reaches a threshold."
+* "Let sales managers update a Salesforce opportunity status to Closed Won from the App."
+
+When you describe these in your prompt, AgentSpot adds the necessary controls and handles permission and confirmation flows automatically.
+
 == Known limitations
 
 * *Planning with Spotter*: The App builder now uses Spotter to do model-scoping during planning, so it plans queries against your ThoughtSpot Models based on the context you provide. Extra context in the prompt still helps accuracy for ThoughtSpot model data: fiscal year rules (e.g., "our year runs August to July"), measure grain, entity aliases and so on.
 * *Data accuracy is a work in progress*: The agent occasionally builds against the wrong data shape, or ThoughtSpot returns 0s where you expect numbers. If you see it, tell the agent inline: "why is X blank? diagnose and fix it." It recovers within minutes. Please report cases so we can review and improve.
 * *Interactivity favors the browser, with reactive re-fetch when needed*: Sorting, tabs, drill-downs, and local filters work at the browser level on already-fetched data. Controls that re-scope the server query — a filter on a large table, a period picker — are now supported as reactive re-fetches for a tile's filters, sort, and parameters. The agent prefers client-side interactivity and only re-queries the backend when a control genuinely needs fresh rows.
 * *Write-backs only through confirmed actions*: An App performs side effects only through a viewer-triggered, confirm-gated action (see <<adding-actions-to-an-app>>). There are no automatic or load-time writes, and the queries that display data stay read-only.
++
+[NOTE]
+====
+Currently, write-back actions in Apps are supported for Jira, Slack, and Salesforce connectors only. Other connectors and services do not support write-backs, and all non-supported sources behave as read-only within Apps. Additional connectors may be supported in future releases.
+====
 * *Workflow outputs are not convertible to Apps*: Output from AgentSpot Workflows cannot currently be converted into a published App.
