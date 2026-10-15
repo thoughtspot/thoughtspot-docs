@@ -1,5 +1,5 @@
 = Multi-tenancy with Orgs
-:page-last_updated: 9/23/2022
+:page-last_updated: Oct 15, 2026
 :linkattrs:
 :experimental:
 :description: Understand ThoughtSpot's multi-tenancy feature, allowing your instance to be logically partitioned into multiple environments.
@@ -90,24 +90,29 @@ A cluster administrator can access several Org objects and apply configuration c
 //image::org-switcher-gif.gif[Switch the Org]
 
 [#admin-visibility-orgs]
-=== #Administrator visibility across Orgs#
+=== Administrator visibility across Orgs
 
-When a cluster administrator switches between Orgs, ThoughtSpot displays only the admin account used to log in to the current session. Other cluster admin accounts are not shown in non-Primary Orgs.
+In any Org other than the Primary Org, ThoughtSpot hides cluster administrators from the user list in the Admin Console and from the list of users in the share dialog. This behavior is by design and applies to all users in the Org: other cluster administrators, Org administrators, and users without administrator privileges see the same list. Each user always sees their own account.
 
-This behavior applies to both local and SSO/SAML cluster admin accounts:
+Whether a user is hidden depends on where their administrator privilege comes from:
 
-* If you log in with a *local* cluster admin account, only that local account is visible when you switch between Orgs.
-* If you log in with an *SSO/SAML* cluster admin account, only that SSO account is visible when you switch between Orgs.
+* *Cluster administrators are hidden.* A cluster administrator is a user who gets the *Can administer ThoughtSpot* privilege through a group in the Primary Org, either directly or through a nested group or role. This applies even if the user only manages one Org, and to both local and SSO accounts.
+* *Org administrators are visible.* An Org administrator is a user who gets the *Can administer ThoughtSpot* privilege through a group inside the Org itself, such as the Org's administrator group or a custom group created in that Org. Org administrators are visible to all users in the Org, including other Org administrators.
 
-#Org administrators see their own account and all other users in their Org, including other Org administrators. They do not see cluster administrators.#
+The *Can manage Orgs* privilege does not affect visibility.
 
-#ThoughtSpot hides cluster administrators from Org user lists by design, so that users in an Org, who are often your own customers, do not see cluster-level accounts.#
+If your cluster uses the xref:admin-portal-2.adoc[enhanced Admin settings portal], the *Users* page in a non-Primary Org also lists cluster administrators. The share dialog continues to hide them.
 
-#To manage cluster admin accounts, use *All Orgs > User management > Users* in the Primary Org. This view lists every user on the cluster. A user listed there is not necessarily a member of any particular Org; to confirm membership, switch to that Org and open *Admin > User management > Users*.#
+In the Primary Org, all users are visible. To view and manage all cluster administrator accounts, use *All Orgs > User management > Users* in the Primary Org. This view lists every user on the cluster. A user listed there is not necessarily a member of any particular Org. To confirm membership, switch to that Org and open *Admin > User management > Users*.
 
 [NOTE]
 ====
-If you notice that a specific cluster admin account is not visible in a non-Primary Org, verify which account was used to start the session. Only the session account is displayed across Orgs, this is by design. To see a different cluster admin account, log out and log in with that account.
+If administrators in a non-Primary Org cannot find each other in the share dialog, use one of the following options:
+
+* Create a group inside the Org, add the administrators to it, and share objects with that group. Groups are not hidden.
+* Grant administrator privileges through the Org's own administrator group instead of through a group in the Primary Org. The administrators then become visible in the Org, but they no longer have cluster-wide administrator privileges.
+
+For more information, see xref:user-management-orgs.adoc#troubleshoot-user-orgs[Troubleshoot user visibility in Orgs].
 ====
 
 include::partial$all-org-scope.adoc[]
