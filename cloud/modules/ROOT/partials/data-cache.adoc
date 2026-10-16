@@ -1,0 +1,296 @@
+= Data Cache
+:experimental:
+:page-last_updated: Oct 15, 2026
+:author: Mary
+:linkattrs:
+:description: Data cache
+:jira: SCAL-316578
+
+Data Cache copies frequently queried data from your cloud data warehouse (CDW) into
+ThoughtSpot-managed storage, so eligible queries are served from the cache instead
+of running on your warehouse.
+This means faster answers and lower warehouse compute costs.
+
+ThoughtSpot automatically routes queries to the cache when the requested data is available
+and falls back to your live warehouse when it is not, so results are always correct.
+
+Once Data Cache is enabled for your cluster, data model editors can turn on caching for
+individual Models from the new *Caching* tab in the Model editor.
+No SQL changes, TML edits, or manual configuration are required.
+
+[NOTE]
+====
+Data Cache is an Early Access feature available on SaaS clusters only.
+To enable it for your cluster, contact ThoughtSpot Support.
+====
+
+== How it works
+
+When you enable caching on a Model, ThoughtSpot copies the Model's table data into
+ThoughtSpot-managed storage on a schedule you choose.
+Each eligible query is then evaluated at query time:
+
+* If the query's date filters fall within the cached window and the cache is healthy,
+ThoughtSpot serves the result from the cache, typically with sub-second latency.
+* If the query reaches outside the cached window, uses an unsupported construct,
+or the cache is unavailable for any reason, ThoughtSpot automatically falls back to
+your live warehouse.
+The fallback is silent: users see correct results in all cases.
+
+The cache is always a full-overwrite copy.
+Cached answers display a *data as of* timestamp so users always know how fresh the data is.
+Live warehouse answers show no timestamp.
+
+== Prerequisites
+
+Before you can enable caching on a Model, the following must be true:
+
+* Data Cache is enabled for your cluster by ThoughtSpot Support.
+* Your Model is built on a *Snowflake* or *Databricks* connection.
+* The connection uses a *service account* (non-OAuth, non-parameterized).
+* The Model does not use a custom calendar.
+* Row-level security (RLS) rules on the Model do not reference columns from other tables.
+* You have edit access to the Model.
+
+[NOTE]
+====
+Models that do not meet these prerequisites are not eligible for caching.
+ThoughtSpot shows you the reason in the *Caching* tab before you enable it.
+====
+
+== Enable caching on a Model
+
+. Open the Model editor from the Data workspace.
+. Select the *Caching* tab.
+. Review the caching eligibility check at the top of the tab.
+If the Model is not eligible, the reason is displayed and caching cannot be enabled.
+. Under *Tables to cache*, choose how to cache each table in the Model:
++
+** *Full copy (All history)* — ThoughtSpot copies the entire table into the cache.
+Use this for dimension tables or tables where you need the full history available.
+** *Date window (Time window)* — ThoughtSpot copies a rolling window of rows,
+filtered by a date column you select.
+The default window is 13 months.
+You can adjust the window to any of the following: 1 month, 3 months, 6 months,
+13 months, or a custom duration.
++
+A Model may mix full-copy and date-windowed tables.
+For example, you can cache a large fact table with a 13-month window and full-copy
+smaller dimension tables.
+
+. Under *Refresh schedule*, choose how often ThoughtSpot refreshes the cache:
++
+** *Frequency*: Hourly, Daily, Weekly, or Monthly.
+** *Time and timezone*: Set the time the refresh runs.
++
+You can also trigger a manual refresh at any time.
+. Click *Enable caching*.
++
+ThoughtSpot begins provisioning the cache.
+The *Caching* tab shows the current cache state and a progress indicator while
+provisioning completes.
+
+== Cache states
+
+The *Caching* tab shows the current state of the cache for the Model.
+
+[cols="1,2",options="header"]
+|===
+|State |Meaning
+
+|Provisioning
+|Cache infrastructure is being set up for the first time.
+No queries are routed to the cache yet.
+
+|Caching
+|First data load is running.
+No queries are routed to the cache yet.
+
+|Active
+|Cache is loaded and serving queries.
+The *data as of* timestamp shows when the data was last refreshed.
+
+|Refreshing
+|A scheduled or manual refresh is running.
+The cache continues to serve queries from the most recent successful load.
+
+|Failed
+|The most recent refresh failed.
+ThoughtSpot falls back to your live warehouse for all queries on this Model.
+An alert is sent to the email address configured for the Model.
+
+|Purged
+|Cache data has been deleted.
+All queries fall back to the live warehouse.
+The cache configuration is retained — you can re-enable caching without re-configuring.
+|===
+
+== Refresh the cache manually
+
+. Open the *Caching* tab in the Model editor.
+. Click *Refresh now*.
+
+ThoughtSpot starts a new load immediately.
+The previous cache continues to serve queries while the refresh runs.
+
+[NOTE]
+====
+A manual refresh always performs a full overwrite of all cached tables.
+There is no incremental or partial refresh in this release.
+====
+
+== View refresh history
+
+. Open the *Caching* tab in the Model editor.
+. Click *View history*.
+
+The run history shows each refresh: its type (scheduled or manual), start and end time,
+number of rows loaded, and whether it succeeded or failed.
+Click a row to see per-table detail.
+
+== Purge cached data
+
+Purging deletes all data from the cache immediately.
+ThoughtSpot returns to serving all queries from your live warehouse.
+The caching configuration is preserved — you can re-enable without re-configuring.
+
+. Open the *Caching* tab in the Model editor.
+. Click *Purge data*.
+. Confirm the action.
+
+== Disable caching
+
+Disabling caching purges all cached data and removes the caching configuration from the Model.
+This action cannot be undone.
+
+. Open the *Caching* tab in the Model editor.
+. Click *Disable caching*.
+. Confirm the action.
+
+== Freshness indicator
+
+When a query is served from the cache, ThoughtSpot displays a *data as of* timestamp
+alongside the result.
+This shows the watermark time of the most recent successful refresh.
+
+Queries served from the live warehouse do not show a timestamp.
+
+If the cache data is approaching the staleness limit configured for your cluster,
+ThoughtSpot displays a *newer data available* notice.
+You can dismiss it or trigger a manual refresh.
+
+== Security
+
+Data Cache is designed to preserve all existing ThoughtSpot security controls:
+
+* *Row-level security (RLS)* — RLS rules are copied to the cache and applied after routing.
+Cached results respect the same row restrictions as live warehouse results.
+* *Column-level security (CLS)* — CLS rules are also copied and applied after routing.
+* *Org isolation* — Each Org's cache is stored in a separate, isolated database.
+No cross-org sharing of cached data or credentials occurs.
+* *Encryption* — Cached data is encrypted at rest.
+Credentials for accessing the cache are encrypted and stored per Org.
+* *Opt-in* — Caching is a double opt-in: your cluster administrator must enable Data Cache
+for the cluster, and a data model editor must enable it for each individual Model.
+A warning is displayed at enable time: your data leaves your CDW and is copied into
+ThoughtSpot-managed storage.
+
+== What is not supported
+
+The following query types and Model configurations are not served from the cache.
+ThoughtSpot automatically routes these to your live warehouse:
+
+[cols="1,2",options="header"]
+|===
+|Not supported |Detail
+
+|Google BigQuery connections
+|Data Cache supports Snowflake and Databricks only in this release.
+
+|OAuth or parameterized connections
+|Service-account connections only.
+
+|Custom calendars
+|Models using custom calendars are not cacheable.
+
+|RLS referencing other tables
+|Models whose RLS rules reference columns from other tables are not cacheable.
+
+|Query sets and SQL passthrough
+|Queries using query sets or SQL-passthrough functions are always routed to the live warehouse.
+
+|Complex keywords
+|Queries using Growth of, In/Not-in, vs, or % of are always routed to the live warehouse.
+
+|Date filters spanning multiple distinct date columns
+|Queries with bounded date filters across more than one distinct date column are
+always routed to the live warehouse.
+
+|Queries outside the cached window
+|A query whose date range starts before the cache's window boundary is always
+routed to the live warehouse. Only queries whose full date range falls within the
+cached window are served from the cache.
+
+|Group aggregations reaching beyond the window
+|A measure or aggregate with its own date filter that reaches before the window
+boundary is routed to the live warehouse.
+Example: a year-over-year comparison where one period starts before the window start.
+
+|SpotQL
+|SpotQL queries are not served from the cache.
+
+|Sage indexing
+|Spotter autocomplete and indexing always run against the live warehouse.
+Only search and analysis queries are routed to the cache.
+
+|Incremental refresh
+|Each refresh is a full overwrite of all cached tables.
+Incremental or change-data-capture refresh is not available in this release.
+
+|TML export of hidden cache objects
+|The cache configuration exports cleanly in TML, but the internal hidden cache tables
+and cache model are never exposed in TML.
+
+|On-premise clusters
+|Data Cache is available on SaaS clusters only.
+|===
+
+== Data Cache and aggregate-aware Models
+
+If a Model has both an xref:model-aggregate-aware.adoc[aggregate-aware configuration]
+and Data Cache enabled, ThoughtSpot evaluates candidates in order — aggregate Models first,
+then the cache.
+The first candidate that can fully answer the query wins.
+You can use both together to cover different query patterns.
+
+== Limitations
+
+* Every refresh fully reloads all of a Model's cached tables, even if only one table changed.
+There is no partial or incremental refresh in this release.
+* Large dimension tables are full-copied, which means a practical size ceiling applies per Org.
+Contact ThoughtSpot Support if you are approaching storage limits.
+* A column added to a logical table after materialization is not cached until the next
+scheduled refresh that follows a model-change-driven re-evaluation.
+* If a column is unhidden on a cached Model, queries on that column fall back to the live
+warehouse until caching is re-enabled on the Model.
+* Aggregations whose date range extends before the cache window boundary are not accelerated —
+they fall back to the live warehouse, but results are always correct.
+* Cache data is not included in cluster snapshots.
+After a cluster restore, caching must be re-established manually.
+
+////
+NOTE TO WRITER: 3 items require verification before publishing.
+Engineering contact: Tushar Marda / Rahul Kaura (SCAL-316577).
+
+1. Exact UI label for the cache window options — confirm the exact labels
+   in the Caching tab: "1 month", "3 months", "6 months", "13 months" — and
+   whether "custom duration" is available at launch or a future release item.
+
+2. Staleness limit — confirm whether the staleness limit and the "newer data available"
+   banner are configurable by admins in the Admin portal or only by ThoughtSpot SRE.
+   If admin-configurable, document the setting location.
+
+3. Alert email — confirm how the refresh failure alert email is configured
+   (Model-level setting, connection-level, org-level admin) and add a note
+   about where admins set the recipient address.
+////
