@@ -5,13 +5,17 @@
 :linkattrs:
 :experimental:
 :description: You can add instructions in a data model conversation to teach Spotter how to answer similar questions on the data model.
-:jira: SCAL-267909, SCAL-300551, SCAL-306619, SCAL-308758, SCAL-308946, SCAL-320863
+:jira: SCAL-267909, SCAL-300551, SCAL-306619, SCAL-308758, SCAL-308946, SCAL-320863, SCAL-344816
 
 Data model instructions let you define global rules that guide how Spotter interprets and answers questions on a data model.
 
 These instructions apply broadly across queries and users, helping Spotter consistently handle default behavior, ambiguity, and recurring data nuances.
 
 Data model instructions are for hard constraints that must always apply to every query on this data model — cases where you need strict, verbatim enforcement rather than the contextual application memory provides. For most business logic (evolving definitions, query patterns, metric formulas), use memory from Liveboards or conversations instead.
+
+Data model instructions are free-text rules on a data model. They are fetched like memory and carry the same weight as data model memory. New business logic belongs in data model memory, which Spotter maintains for you; keep data model instructions for rules you already have. Spotter instructions, set at the Org level, are the only context that overrides memory.
+
+NOTE: Data model instructions will be converted to memory in a future release. Nothing you write here is lost.
 
 .See *Data model instructions* in action.
 +++
@@ -38,20 +42,11 @@ These instructions are globally applicable and influence all queries made by any
 
 Both instructions and xref:spotter-memory.adoc[memory] help Spotter follow business logic, but they differ in how they are created, maintained, and enforced.
 
-[options="header"]
-|===
-| | Instructions | Memory from Liveboards and conversation
-
-| Created by | You, manually | AI, from Liveboards or conversation
-
-| Maintained by | You, manually | AI, conflicts auto-merged
-
-| Enforcement | Strictly followed; Spotter prioritizes instructions over memory. | Applied contextually.
-|===
-
 Use instructions for hard constraints that must never be violated — stable, well-understood directives where strict enforcement matters.
 
 Use memory for definitions and business logic that evolve over time. Corrections taught in conversation update naturally as your data and usage change, without requiring you to manually update instructions.
+
+To decide between AI Context, data model memory and instructions for a given rule, see xref:spotter-where-to-write-context.adoc[Where to write context].
 
 == Create data model instructions
 
