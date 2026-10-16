@@ -1,0 +1,60 @@
+= How Spotter uses context
+:author: Naomi
+:page-last_updated: Oct 16, 2026
+:linkattrs:
+:experimental:
+:description:
+:jira: SCAL-344816
+
+Every Spotter answer is built from four kinds of context: instructions that set behavior, data model semantics that give the data meaning, memory that establishes how your business answers, and external context from the sources your admin has connected. This page shows what Spotter fetches and how it turns it into an answer.
+
+== What Spotter assembles before it answers
+
+[.bordered]
+image::spotter-context-picture.png[Three tiers: the question flows into the Spotter agent which fetches, plans and executes to produce the answer; below it the four blocks the agent draws on; below that the Liveboards and conversations memory learns from]
+
+[options="header"]
+|===
+| Kind | Written as | Answers the question | When it reaches the agent
+
+| **Behavior** | Spotter instructions, Analyst instructions | How should the agent act, for everyone? Tone, format defaults, what to decline, what to always add | Always, on every answer
+| **Meaning** | Column synonyms, column AI Context, other Model metadata | What is this column, and how are its values written? | Always in scope; used to pick the right columns for the words in the question
+| **Logic** | Data model memory, personal memory | How does this business answer this question? Definitions, filters, steps, and what Spotter knows about you | Fetched by relevance, per question
+| **Knowledge** | Connected sources such as Slack, Confluence, SharePoint | What does this question need that lives outside ThoughtSpot? | Searched by relevance, like memory, across the sources an admin has connected
+|===
+
+Memory learns from Liveboards and conversations. Row-level and column-level security sit underneath all four kinds and are never context.
+
+////
+== Walkthrough: one question, step by step
+
+++++
+<iframe src="_attachments/spotter-context-walkthrough.html" title="How Spotter assembles one answer" …>
+++++
+
+Press Play to watch Spotter assemble one answer, or step through with Next. Left and right arrow keys work while the panel is focused.
+
+The example: Priya Nair, Head of Customer Success for EMEA, asks "What was our churn last quarter?"
+
+[options="header"]
+|===
+| Step | What happens
+
+| 1. Priya asks | The question goes to the agent. Nothing is fetched yet.
+| 2. Spotter instructions | The prompt opens with the question. Every Spotter instruction loads next, whatever the question: tone, a required closing line, a guardrail.
+| 3. Data model semantics | Only the columns that match "churn" and "last quarter" enter the prompt, with their synonyms and AI Context.
+| 4. Personal memory | Priya's personal profile is always sent.
+| 5. Spotter memory | From her preferences on this data model and the data model's shared memory, only what is relevant to churn is fetched.
+| 6. External context | Relevant content is fetched from connected sources: a Confluence page on the Q2 renewal calendar. Slack and SharePoint have nothing relevant.
+| 7. Plan and query | The agent turns the prompt into a plan: churn plus downgrades, EMEA, by month. The semantic layer validates it, applies row and column security, and generates the query. The LLM never writes SQL.
+| 8. Warehouse | The warehouse runs the query. Three raw rows come back, accurate but not yet an answer.
+| 9. Analysis | The agent reads the rows against the prompt: the heaviest month, logos lost, and how Priya wants it shown.
+| 10. Delivered | Headline number first, the chart she prefers, two lines of insight, the required closing line .
+|===
+
+What Priya sees: "EMEA churn in Q2 FY26 (Feb to Apr) was $412K, 3.1% of opening ARR." A chart of churned ARR and downgrades by month, a note that churn includes downgrades per her team's definition, and "Figures unaudited."
+////
+=== Next
+
+- xref:spotter-when-sources-disagree.adoc[When sources disagree]: the order Spotter applies these elements when they conflict.
+- xref:spotter-where-to-write-context.adoc[Where to write context]: which surface each fact belongs on.
