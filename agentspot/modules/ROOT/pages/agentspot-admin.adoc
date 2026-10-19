@@ -108,8 +108,7 @@ As an administrator, you have the authority to:
 
 In the image:settings-agent-spot.svg[10,Admin Settings] *Admin Settings* > *Connectors* page, you can see the list of Available Connectors. Once you add a connector, it appears in the list of Already Added connectors near the top of the page.
 
-// auto-draft PR#2351 — REVIEW
-Each added connector shows which admin set it up and when. For example, the row reads _Added by <name> on <date>_, or _Credentials set by <name> on <date>_ after an admin updated the connector's credentials. If that admin is no longer available, the row reads _a former admin_ instead of a name.
+On the *Admin Settings* > *Connectors* page, you can see which admin set it up and when. If that admin is no longer available, the row reads _a former admin_ instead of a name.
 // TODO: verify with engineering — confirm which connectors show this line (for example, connectors added before this change)
 
 NOTE: New connectors are added on a regular basis. Check the image:settings-agent-spot.svg[10,Admin Settings] *Admin Settings* > *Connectors* page for the current list.
@@ -198,7 +197,6 @@ Here's what it supports:
 ** @mention an agent in a Slack channel thread to ask it questions or trigger tasks
 ** The agent processes your message and replies back in the same Slack thread
 ** Works in public channels, private channels (with appropriate permissions), and direct messages (off by default, but the admin can opt-in).
-// auto-draft PR#2209 — REVIEW
 * Prompt users to connect an agent's connectors: if a Slack user asks a shared agent for something that needs a connector they have not connected in AgentSpot, the bot prompts them to connect it.
 // TODO: verify with engineering — confirm the wording of the Slack prompt and where it appears (in the thread or as a private message)
 
@@ -207,7 +205,6 @@ Here's what it supports:
 workspace-admin approval.
 - You need admin access to AgentSpot (Admin Settings)
 - At least one agent must already exist, and be ready to connect.
-// auto-draft PR#2606 — REVIEW
 - Channel connections support both public and private channels. The bot must be invited to a channel before it can be connected. A disclosure checkbox is required when connecting any channel; the text follows the selected reply mode and is the same for public and private channels. Direct messages are off by default, but an admin can set a default agent for direct messages.
 
 [#part1]
@@ -410,18 +407,15 @@ image::disable-socket-mode.png[]
 +
 Channels are marked as public (with `#` prefix) or private (with a lock icon). Channels where the bot is not a member are disabled — invite the bot first, then click *Refresh channels*.
 .. Select the agent from the dropdown.
-// auto-draft PR#2606 — REVIEW
 .. Choose when the agent replies. *Only when @mentioned* keeps the agent quiet until someone @mentions it.
 +
 Other reply modes, *When it can help* and *Every conversation*, let the agent read the channel and reply without an @mention. They appear only when listen mode is turned on for your organization, and they need a verified Slack app. A channel shared with other workspaces in your Slack organization can only reply when @mentioned.
 // TODO: verify with engineering — listen mode is not turned on in every environment yet; confirm whether to document the listen reply modes before it is generally available
 .. Select the disclosure checkbox.
 +
-// auto-draft PR#2606 — REVIEW
 The disclosure text follows the reply mode you chose and is the same for public and private channels. For *Only when @mentioned*, it confirms that the channel will be connected to the selected agent and that @mentions can send thread context to AgentSpot for authorized users. If you later change the channel, agent, or reply mode, you must select the checkbox again.
 .. Click *Connect channel*.
 
-// auto-draft PR#2606 — REVIEW
 If listen mode is turned off after a channel was saved with a listen reply mode, the channel shows as *Paused*. Its edit dialog shows the saved mode. You can still switch the channel to *Only when @mentioned*.
 // TODO image: capture the reply mode options in the Connect channel dialog
 
@@ -429,7 +423,6 @@ If listen mode is turned off after a channel was saved with a listen reply mode,
 
 - Mention the bot in the connected channel. The agent replies in the same thread.
 +
-// auto-draft PR#3114 — REVIEW
 If the Slack app has the optional `reactions:write` scope, the bot also shows its progress on your message: an eyes (👀) reaction while it works, replaced by a check mark (✅) when it replies, or by a warning reaction if the request is denied or fails. Reactions are best effort. A missing scope or a Slack error never stops the reply.
 +
 TIP: Test at the top level of the channel first rather than inside an existing thread. It rules out a whole class of
@@ -481,7 +474,6 @@ joining
 
 |Reactions
 |`reactions:write`
-// auto-draft PR#3114 — REVIEW
 |Optional. Bot shows progress with reactions on the triggering message: eyes while working, then a check mark on success (or a warning if the request is denied or fails).
 |===
 
@@ -559,15 +551,13 @@ You can download a .csv file containing a complete list of AgentSpot users, incl
 TIP: To add or remove AgentSpot users, you must go to image:settings-agent-spot.svg[10,Admin Settings] *Admin Settings* > *Users* in your ThoughtSpot instance.
 // TODO: verify with engineering — this TIP may be stale now that teammates can be invited from AgentSpot (PR#3136)
 
-// auto-draft PR#3136 — REVIEW
 ==== Inviting teammates
 
-You can invite teammates to AgentSpot from the home page or from the _Users_ page. In the invite dialog, enter one or more email addresses; AgentSpot checks that each address is valid before sending. After an invite is sent, you can resend it, but only after a short waiting period.
+You can invite teammates to AgentSpot from the home page or from the *Admin Settings* > *Users* page. In the invite dialog, enter one or more email addresses; AgentSpot checks that each address is valid before sending. After an invite is sent, you can resend it, but only after a short waiting period.
 
 // TODO: verify with engineering — confirm who can send invites, the exact control labels, the resend waiting period, and whether the Users page shows pending invites
 // TODO image: capture the invite dialog
 
-// auto-draft PR#2992 — REVIEW
 ==== Inviting users
 
 When invitations are enabled for your organization, the _Users_ page shows an *Invite users* button. Click it to open the *Invite teammates* dialog, enter one or more email addresses, optionally add a note, and send the invitations. Pending invitations appear on the _Users_ page, where you can resend an invitation or remove it. Invitees complete sign-in from the link in their invitation email.
@@ -690,7 +680,6 @@ The Org memory tab includes two independent controls that manage how memory func
 
 Both switches are independent. Disabling Memory for your organization does not disable Auto-learning, and vice versa.
 
-// auto-draft PR#2614 — REVIEW
 When you change a switch, conversations that are already open follow the new setting from their next message.
 
 [CAUTION]
@@ -702,7 +691,6 @@ Disabling *Memory for your organization* removes org memory context from all age
 NOTE TO WRITER: User consent for memory capture is mentioned in the agent memory research but not yet confirmed for org-level memory. Clarify with engineering whether consent applies at the org level or only at the user level.
 ////
 
-// auto-draft PR#2933 — REVIEW
 === Org links for shared chats
 
 The Org memory tab also includes an *Org links for shared chats* switch. When it is on, chat owners can let anyone in your organization read a shared chat through a link; only people the owner adds can collaborate in it. Turn the switch off to block all org links.
