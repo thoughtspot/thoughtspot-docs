@@ -1,5 +1,68 @@
 # AgentSpot Changelog
 
+## 2026-10-15 — 8688779205d4..1c4cc137c3ef
+
+### Product changes
+
+- fix(memory): stop doubling the engine path when editing a profile section (SCAL-342348) · `1df982ec8073` · SCAL-342348 · [#2613](https://github.com/thoughtspot/agentspot/pull/2613)
+- feat(memory): show every memory topic on the memory management pages (SCAL-338929) · `d04b98425510` · SCAL-338929 · [#2334](https://github.com/thoughtspot/agentspot/pull/2334)
+- Add a typed memory model — first-class class + schema version (SCAL-338930) · `8826c48103af` · SCAL-338930 · [#2246](https://github.com/thoughtspot/agentspot/pull/2246)
+- Scout connector menu: brand icons, descriptions, an on-counter, and the full connector set (SCAL-341933) · `a37f5e03682a` · SCAL-341933 · [#2517](https://github.com/thoughtspot/agentspot/pull/2517)
+- Keep auth Redis lookups off the event loop with more worker capacity (SCAL-342862) · `06a2765f8b74` · SCAL-342862 · [#2599](https://github.com/thoughtspot/agentspot/pull/2599)
+- Make memory forgetting complete and confirmed, and keep chats working when Memory Bank is slow or down (SCAL-338909, SCAL-338912) · `920dc476879c` · SCAL-338909, SCAL-338912 · [#2383](https://github.com/thoughtspot/agentspot/pull/2383)
+- Scout chat-page avatar fix + remove the landing connectors pill (SCAL-342384) · `64b2c4f7f3d7` · SCAL-342384, SCAL-339916 · [#2595](https://github.com/thoughtspot/agentspot/pull/2595)
+- Redact secrets from memory writes and audit every memory read (SCAL-338910) · `76bb6cc0e0ec` · SCAL-338910 · [#2432](https://github.com/thoughtspot/agentspot/pull/2432)
+- Wire cookie-free private PREDEPLOY E2E (SCAL-334744) · `69d7c88fc23d` · SCAL-334744 · [#2392](https://github.com/thoughtspot/agentspot/pull/2392)
+- Add isolated test Vertex gateway and client wiring (SCAL-334744) · `2c1416c75430` · SCAL-334744 · [#2389](https://github.com/thoughtspot/agentspot/pull/2389)
+- Bootstrap short-lived service actor sessions (SCAL-327551) · `9d1575fba861` · SCAL-327551 · [#2212](https://github.com/thoughtspot/agentspot/pull/2212)
+- Show why a connector failed to connect instead of a generic retry message (SCAL-318703) · `fe22afa427f9` · SCAL-318703, SCAL-313883 · [#2393](https://github.com/thoughtspot/agentspot/pull/2393)
+- Send AgentSpot product analytics to the shared Customers Mixpanel project (SCAL-338543) · `6e0a1568928b` · SCAL-338543 · [#2507](https://github.com/thoughtspot/agentspot/pull/2507)
+- Move Sonnet-tier usage to Claude Sonnet 5.5 (SCAL-342166) · `029baf4880ac` · SCAL-342166, SCAL-337646 · [#2536](https://github.com/thoughtspot/agentspot/pull/2536)
+- Move Opus-tier traffic to Claude Opus 5.5 and update LLM cost rates (SCAL-340302) · `840697dcf97d` · SCAL-340302 · [#2379](https://github.com/thoughtspot/agentspot/pull/2379)
+- Let people reconnect a failed connector from the workflow run page (SCAL-337785) · `1b97244a2945` · SCAL-337785 · [#2350](https://github.com/thoughtspot/agentspot/pull/2350)
+- fix(workflows): default managed-agent steps to streaming (SCAL-341076) · `1ec5a7fbe30d` · SCAL-341076 · [#2511](https://github.com/thoughtspot/agentspot/pull/2511)
+- Export readable cluster and org metadata in usage analytics (SCAL-341705) · `226bb417e274` · SCAL-341705 · [#2506](https://github.com/thoughtspot/agentspot/pull/2506)
+
+### Internal / infra
+
+- Add default BigQuery CMEK for managed datasets (SCAL-339718) · `1c4cc137c3ef` · SCAL-339718 · [#2444](https://github.com/thoughtspot/agentspot/pull/2444)
+- Alert on GCP control-plane changes (SCAL-339718) · `1e6cf6089e9f` · SCAL-339718 · [#2443](https://github.com/thoughtspot/agentspot/pull/2443)
+- fix(storage): preserve Cloud Build bucket viewer access · `c5ee59cbccbe` · [#2574](https://github.com/thoughtspot/agentspot/pull/2574)
+- fix(infra): enable DNSSEC on public zones · `6d32d091dc30` · [#2445](https://github.com/thoughtspot/agentspot/pull/2445)
+- fix(infra): grant CDN cache-fill origin access · `23a7f1506733` · [#2567](https://github.com/thoughtspot/agentspot/pull/2567)
+- Adopt the prod-eu recovery PSC attachment into Terraform (SCAL-338784) · `c3a1a4dbbf82` · SCAL-338784 · [#2601](https://github.com/thoughtspot/agentspot/pull/2601)
+- Raise backend liveness timeout to 10 seconds (SCAL-342252) · `5542b9fe6a59` · SCAL-342252 · [#2541](https://github.com/thoughtspot/agentspot/pull/2541)
+- Size every Agent Engine PSC subnet as /26 (SCAL-338784) · `bf4bebc7021e` · SCAL-338784 · [#2600](https://github.com/thoughtspot/agentspot/pull/2600)
+- Restore Referee evaluation login in Vinayak dev (SCAL-327551) · `0de5b4ff0d3c` · SCAL-327551 · [#2593](https://github.com/thoughtspot/agentspot/pull/2593)
+- Add default-off pristine worker transport and identities (SCAL-334744) · `425b5951238d` · SCAL-334744 · [#2426](https://github.com/thoughtspot/agentspot/pull/2426)
+- Admit sandbox candidates and publish managed RC images (SCAL-334744) · `a418f02df1af` · SCAL-334744 · [#2418](https://github.com/thoughtspot/agentspot/pull/2418)
+- Add private dispatcher connectivity and phase transport (SCAL-334744) · `12881dd43a15` · SCAL-334744 · [#2413](https://github.com/thoughtspot/agentspot/pull/2413)
+- Route native phases through fixed dispatcher (SCAL-334744) · `66d4624a96b7` · SCAL-334744 · [#2405](https://github.com/thoughtspot/agentspot/pull/2405)
+- Add native phase attestation and normal VERIFY readers (SCAL-334744) · `06fcf5d7cc88` · SCAL-334744 · [#2401](https://github.com/thoughtspot/agentspot/pull/2401)
+- Produce pristine schema evidence for candidates (SCAL-334744) · `0aa4e9cc1d1e` · SCAL-334744 · [#2397](https://github.com/thoughtspot/agentspot/pull/2397)
+- Define immutable candidate and private HTTPS test contracts (SCAL-334744) · `537118a9453a` · SCAL-334744 · [#2395](https://github.com/thoughtspot/agentspot/pull/2395)
+- Add inactive isolated testing runtime resources (SCAL-334744) · `974a1ec4c42f` · SCAL-334744 · [#2378](https://github.com/thoughtspot/agentspot/pull/2378)
+- Add deployment leases and isolated test databases (SCAL-334744) · `4ecf030fed55` · SCAL-334744 · [#2377](https://github.com/thoughtspot/agentspot/pull/2377)
+- Prepare usage analytics enablement for EU preprod and production (SCAL-337536) · `ccd7e67deff8` · SCAL-337536 · [#2581](https://github.com/thoughtspot/agentspot/pull/2581)
+- Add SRE bootstrap and attested infrastructure runs (SCAL-334744) · `802f997901c3` · SCAL-334744 · [#2374](https://github.com/thoughtspot/agentspot/pull/2374)
+- Provision managed per-cell Terraform execution (SCAL-334744) · `f3fd14352c99` · SCAL-334744 · [#2364](https://github.com/thoughtspot/agentspot/pull/2364)
+- Run dev release infrastructure on GitHub runners (SCAL-334744) · `d3aa293690d2` · SCAL-334744 · [#2355](https://github.com/thoughtspot/agentspot/pull/2355)
+- fix(infra): resolve public app hosts inside private DNS SCAL-334744 · `6a566f2c3780` · SCAL-334744 · [#2560](https://github.com/thoughtspot/agentspot/pull/2560)
+- Repin Cloud Deploy renderer for pinned release source (SCAL-334744) · `9090a251a010` · SCAL-334744 · [#2561](https://github.com/thoughtspot/agentspot/pull/2561)
+- Enable AgentSpot platform VPC logging (SCAL-339718) · `10a14a62c07c` · SCAL-339718 · [#2441](https://github.com/thoughtspot/agentspot/pull/2441)
+- fix(security): log Cloud SQL connections (SCAL-339718) · `42bc009af975` · SCAL-339718 · [#2439](https://github.com/thoughtspot/agentspot/pull/2439)
+- fix(infra): prepare runtime proxy SSH access · `6ba97c875c91` · [#2448](https://github.com/thoughtspot/agentspot/pull/2448)
+- Prepare private Twingate connector access (SCAL-339718) · `569397e0ca25` · SCAL-339718 · [#2446](https://github.com/thoughtspot/agentspot/pull/2446)
+- Audit AgentSpot CIS findings and remediation status (SCAL-339718) · `bdfdf9e9139d` · SCAL-339718 · [#2442](https://github.com/thoughtspot/agentspot/pull/2442)
+- fix(security): enable Cloud Asset API (SCAL-339718) · `17504ed2dcbb` · SCAL-339718 · [#2438](https://github.com/thoughtspot/agentspot/pull/2438)
+- fix(security): enforce modern TLS for static assets (SCAL-339718) · `b14ecd09dc38` · SCAL-339718 · [#2437](https://github.com/thoughtspot/agentspot/pull/2437)
+- Keep qualified dev RCs valid when main advances (SCAL-334744) · `a578cf78c357` · SCAL-334744 · [#2508](https://github.com/thoughtspot/agentspot/pull/2508)
+- fix(infra): lock the Azure sandbox providers for linux and init every root read-only SCAL-334744 · `19e3e451a390` · SCAL-334744 · [#2352](https://github.com/thoughtspot/agentspot/pull/2352)
+- Make the db-roles clean-checkout gate refresh the index and name the files (SCAL-334744) · `0653509d4e8c` · SCAL-334744 · [#2345](https://github.com/thoughtspot/agentspot/pull/2345)
+- Publish staging releases with their git tag instead of an untagged release (SCAL-334744) · `e77dcad0f2e3` · SCAL-334744 · [#2371](https://github.com/thoughtspot/agentspot/pull/2371)
+- chore(infra): enable Microsoft 365 in preprod and prod SCAL-342019 · `fa0f17413281` · SCAL-342019 · [#2518](https://github.com/thoughtspot/agentspot/pull/2518)
+- Fix/scal 335927 staging pin backend replicas · `58ed75b342cf` · SCAL-335927 · [#2512](https://github.com/thoughtspot/agentspot/pull/2512)
+
 ## 2026-10-07 — c6eb098bf0ab..1c4cc137c3ef
 
 ### Product changes

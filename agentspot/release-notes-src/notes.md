@@ -1,3 +1,144 @@
+## 2026-10-15 — 8688779205d4..1c4cc137c3ef
+
+Range: `8688779205d4..1c4cc137c3ef` · 2026-10-15
+
+Internal, humanized digest for the docs team. Not a published page. Every item from the
+release manifest is recorded here; the docs team decides what warrants a customer-facing page
+or known-issue note. AgentSpot is in Preview, so nothing here is published automatically.
+
+_Overlap note: this range ends on the same commit (`1c4cc137c3ef`) as the 2026-10-07 section, and
+every PR below was already recorded there. The three features are already covered on the feature
+pages (the earlier auto-drafts have since been merged without their `REVIEW` markers), so this run
+made no new page edits. Items are re-recorded below for completeness._
+
+### Features
+
+- **Every memory topic shown on the memory management pages** — the personal, agent, and admin
+  memory pages now list memories grouped by every topic rather than a subset. Frontend
+  `useMemoriesByTopic`, `MemoryPage`, `AgentMemoryPage`, `AdminMemoryTab`.
+  (SCAL-338929 · [#2334](https://github.com/thoughtspot/agentspot/pull/2334))
+  _No page edit: already covered on `agentspot-use-agent.adoc`. Docs-team cleanup: that page now
+  says this twice, once at the end of "Memory: personalizing the experience" and again at the end
+  of "Using Personal memory". One of the two can go._
+- **Reconnect a failed connector from the Workflow run page** — when a Workflow's connector has
+  failed, you can reconnect it directly from the run details instead of going to the Connectors
+  page. Frontend `WorkflowDetailsPage`, `WorkflowDetailsRail`, `useWorkflowConnectorHealth`,
+  `useConnectorAuthWithTokenDialog` (also touches `AgentPage` and `useDataappReconnect`).
+  (SCAL-337785 · [#2350](https://github.com/thoughtspot/agentspot/pull/2350))
+  _No page edit: already covered by "Reconnecting a failed connector" on
+  `agentspot-create-workflow.adoc`. Its open TODOs (exact control label, screenshot) still stand._
+- **Scout connector menu: brand icons, descriptions, an on-counter, and the full connector set** —
+  the Default Agent's chat connector menu shows each connector's brand icon and a short description,
+  a count of how many connectors are on, and the full connector set. Backend hub-default prompt +
+  hub agent service + eval variant; frontend `ChatConnectorsPopover`, `coreConnectorPresentation`.
+  (SCAL-341933 · [#2517](https://github.com/thoughtspot/agentspot/pull/2517))
+  _No page edit: already covered by the Default Agent paragraph on
+  `agentspot-getting-started.adoc`. See the #2595 entry below about the landing connectors pill._
+
+### Fixes & stability
+
+- **Show why a connector failed to connect** — when a connector fails to connect, AgentSpot now shows
+  the actual reason instead of a generic "try again" message. Affects user Connectors, admin
+  Connectors, and Apps. Backend arsenal client/errors + HTTP error mapping (admin connectors,
+  dataapps, MCP routers); frontend `useConnectorAuth`, `apiClient`, `AdminConnectorsTab`.
+  (SCAL-318703, SCAL-313883 · [#2393](https://github.com/thoughtspot/agentspot/pull/2393))
+  _Docs-team candidate: could be a troubleshooting row on `agentspot-use-agent.adoc` (Managing
+  Connectors)._
+- **Scout chat-page avatar fix; landing connectors pill removed** — fixes the Scout avatar on the
+  chat page and removes the connectors pill from the landing view. Frontend `AgentPage`.
+  (SCAL-342384, SCAL-339916 · [#2595](https://github.com/thoughtspot/agentspot/pull/2595))
+  _Docs-team check: the Default Agent paragraph on `agentspot-getting-started.adoc` describes "a
+  connectors menu in the chat box" and shows `default-agent-connectors.png`. Make sure the
+  screenshot doesn't show the removed landing pill._
+- **Memory forgetting is complete and confirmed; chats keep working when Memory Bank is slow or
+  down** — deleting a memory now removes it fully and confirms the result, and conversations keep
+  working instead of failing when the memory backend is slow or unavailable. Adds finding expiry
+  (with a backfill script), a memory resilience wrapper, metrics and alerts, and a rollout runbook.
+  (SCAL-338909, SCAL-338912 · [#2383](https://github.com/thoughtspot/agentspot/pull/2383))
+- **Redact secrets from memory writes and audit every memory read** — secrets are redacted before
+  they are written to memory, and every memory read is audit-logged (new audit action and product
+  analytics event).
+  (SCAL-338910 · [#2432](https://github.com/thoughtspot/agentspot/pull/2432))
+- **Typed memory model** — memories gain a first-class class and a schema version (memory schema,
+  memory service, runtime save-to-memory tool).
+  (SCAL-338930 · [#2246](https://github.com/thoughtspot/agentspot/pull/2246))
+- **Fix doubled engine path when editing a profile memory section** — editing a section of a profile
+  memory no longer builds a broken memory-engine path. Backend `memory_service`.
+  (SCAL-342348 · [#2613](https://github.com/thoughtspot/agentspot/pull/2613))
+- **Model upgrade: Opus-tier → Claude Opus 5.5, with updated LLM cost rates** — the agent, workflow,
+  and App builders, the Default Agent, workflow agent steps, the workflow run examiner, and the SRE
+  bot move to Claude Opus 5.5. A migration adds Opus 5.5 pricing.
+  (SCAL-340302 · [#2379](https://github.com/thoughtspot/agentspot/pull/2379))
+- **Model upgrade: Sonnet-tier → Claude Sonnet 5.5** — Sonnet-tier usage (memory population, the
+  agent copy advisor, the agent builder prompt, workflow builder and pipeline tools) moves to Claude
+  Sonnet 5.5, and the Agent Studio model types are updated. A migration adds Sonnet 5.5 pricing.
+  (SCAL-342166, SCAL-337646 · [#2536](https://github.com/thoughtspot/agentspot/pull/2536))
+- **Workflow managed-agent steps stream by default** — managed-agent steps in a workflow now default
+  to streaming. Backend `workflow_agent_step_service`.
+  (SCAL-341076 · [#2511](https://github.com/thoughtspot/agentspot/pull/2511))
+- **Keep auth Redis lookups off the event loop with more worker capacity** — session-refresh Redis
+  lookups no longer block the request loop, and there is more worker capacity for them (config +
+  middleware).
+  (SCAL-342862 · [#2599](https://github.com/thoughtspot/agentspot/pull/2599))
+- **Short-lived service actor sessions** — backend auth can bootstrap short-lived sessions for
+  non-human service actors (used by scheduled agent evals), with rate limiting and audit.
+  (SCAL-327551 · [#2212](https://github.com/thoughtspot/agentspot/pull/2212))
+- **Product analytics go to the shared Customers Mixpanel project** — backend and frontend analytics
+  now report into the shared Customers Mixpanel project (auth session carries the config; overlay
+  updates across environments).
+  (SCAL-338543 · [#2507](https://github.com/thoughtspot/agentspot/pull/2507))
+- **Usage analytics export includes readable cluster and org metadata** — the usage analytics export
+  now carries human-readable cluster and org fields (migration + Snowflake rendering).
+  (SCAL-341705 · [#2506](https://github.com/thoughtspot/agentspot/pull/2506))
+- **Cookie-free private PREDEPLOY E2E** — release-testing plumbing that also changes the backend
+  health route/schema and the Playwright E2E smoke suites.
+  (SCAL-334744 · [#2392](https://github.com/thoughtspot/agentspot/pull/2392))
+- **Isolated test Vertex gateway and client wiring** — release-testing plumbing that routes backend
+  and runtime Vertex/Anthropic clients through an isolated test gateway when configured.
+  (SCAL-334744 · [#2389](https://github.com/thoughtspot/agentspot/pull/2389))
+
+### Internal / infra
+
+- Default BigQuery CMEK for managed datasets. (SCAL-339718 · [#2444](https://github.com/thoughtspot/agentspot/pull/2444))
+- Alert on GCP control-plane changes. (SCAL-339718 · [#2443](https://github.com/thoughtspot/agentspot/pull/2443))
+- Preserve Cloud Build bucket viewer access. ([#2574](https://github.com/thoughtspot/agentspot/pull/2574))
+- Enable DNSSEC on public zones. ([#2445](https://github.com/thoughtspot/agentspot/pull/2445))
+- Grant CDN cache-fill origin access. ([#2567](https://github.com/thoughtspot/agentspot/pull/2567))
+- Adopt the prod-eu recovery PSC attachment into Terraform. (SCAL-338784 · [#2601](https://github.com/thoughtspot/agentspot/pull/2601))
+- Raise backend liveness timeout to 10 seconds. (SCAL-342252 · [#2541](https://github.com/thoughtspot/agentspot/pull/2541))
+- Size every Agent Engine PSC subnet as /26. (SCAL-338784 · [#2600](https://github.com/thoughtspot/agentspot/pull/2600))
+- Restore Referee evaluation login in Vinayak dev. (SCAL-327551 · [#2593](https://github.com/thoughtspot/agentspot/pull/2593))
+- Add default-off pristine worker transport and identities. (SCAL-334744 · [#2426](https://github.com/thoughtspot/agentspot/pull/2426))
+- Admit sandbox candidates and publish managed RC images. (SCAL-334744 · [#2418](https://github.com/thoughtspot/agentspot/pull/2418))
+- Private dispatcher connectivity and phase transport. (SCAL-334744 · [#2413](https://github.com/thoughtspot/agentspot/pull/2413))
+- Route native phases through a fixed dispatcher. (SCAL-334744 · [#2405](https://github.com/thoughtspot/agentspot/pull/2405))
+- Native phase attestation and normal VERIFY readers. (SCAL-334744 · [#2401](https://github.com/thoughtspot/agentspot/pull/2401))
+- Produce pristine schema evidence for candidates. (SCAL-334744 · [#2397](https://github.com/thoughtspot/agentspot/pull/2397))
+- Define immutable candidate and private HTTPS test contracts. (SCAL-334744 · [#2395](https://github.com/thoughtspot/agentspot/pull/2395))
+- Add inactive isolated testing runtime resources. (SCAL-334744 · [#2378](https://github.com/thoughtspot/agentspot/pull/2378))
+- Deployment leases and isolated test databases. (SCAL-334744 · [#2377](https://github.com/thoughtspot/agentspot/pull/2377))
+- Prepare usage analytics enablement for EU preprod and production. (SCAL-337536 · [#2581](https://github.com/thoughtspot/agentspot/pull/2581))
+- SRE bootstrap and attested infrastructure runs. (SCAL-334744 · [#2374](https://github.com/thoughtspot/agentspot/pull/2374))
+- Provision managed per-cell Terraform execution. (SCAL-334744 · [#2364](https://github.com/thoughtspot/agentspot/pull/2364))
+- Run dev release infrastructure on GitHub runners. (SCAL-334744 · [#2355](https://github.com/thoughtspot/agentspot/pull/2355))
+- Resolve public app hosts inside private DNS. (SCAL-334744 · [#2560](https://github.com/thoughtspot/agentspot/pull/2560))
+- Repin the Cloud Deploy renderer for pinned release source. (SCAL-334744 · [#2561](https://github.com/thoughtspot/agentspot/pull/2561))
+- Enable AgentSpot platform VPC logging. (SCAL-339718 · [#2441](https://github.com/thoughtspot/agentspot/pull/2441))
+- Log Cloud SQL connections. (SCAL-339718 · [#2439](https://github.com/thoughtspot/agentspot/pull/2439))
+- Prepare runtime proxy SSH access. ([#2448](https://github.com/thoughtspot/agentspot/pull/2448))
+- Prepare private Twingate connector access. (SCAL-339718 · [#2446](https://github.com/thoughtspot/agentspot/pull/2446))
+- Audit AgentSpot CIS findings and remediation status (docs only). (SCAL-339718 · [#2442](https://github.com/thoughtspot/agentspot/pull/2442))
+- Enable the Cloud Asset API. (SCAL-339718 · [#2438](https://github.com/thoughtspot/agentspot/pull/2438))
+- Enforce modern TLS for static assets. (SCAL-339718 · [#2437](https://github.com/thoughtspot/agentspot/pull/2437))
+- Keep qualified dev RCs valid when main advances. (SCAL-334744 · [#2508](https://github.com/thoughtspot/agentspot/pull/2508))
+- Lock the Azure sandbox Terraform providers for Linux and init every root read-only. (SCAL-334744 · [#2352](https://github.com/thoughtspot/agentspot/pull/2352))
+- Make the db-roles clean-checkout gate refresh the index and name the files. (SCAL-334744 · [#2345](https://github.com/thoughtspot/agentspot/pull/2345))
+- Publish staging releases with their git tag instead of an untagged release. (SCAL-334744 · [#2371](https://github.com/thoughtspot/agentspot/pull/2371))
+- Enable Microsoft 365 in preprod and prod. (SCAL-342019 · [#2518](https://github.com/thoughtspot/agentspot/pull/2518))
+- Pin backend replicas / HPA sizing in staging, preprod, and prod. (SCAL-335927 · [#2512](https://github.com/thoughtspot/agentspot/pull/2512))
+
+_Also filtered as trivial by the manifest: 2 changes._
+
 ## 2026-10-07 — c6eb098bf0ab..1c4cc137c3ef
 
 Range: `c6eb098bf0ab..1c4cc137c3ef` · 2026-10-07
