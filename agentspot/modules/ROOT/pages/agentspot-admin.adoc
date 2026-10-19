@@ -108,6 +108,10 @@ As an administrator, you have the authority to:
 
 In the image:settings-agent-spot.svg[10,Admin Settings] *Admin Settings* > *Connectors* page, you can see the list of Available Connectors. Once you add a connector, it appears in the list of Already Added connectors near the top of the page.
 
+// auto-draft PR#2351 — REVIEW
+Each added connector shows which admin set it up and when. For example, the row reads _Added by <name> on <date>_, or _Credentials set by <name> on <date>_ after an admin updated the connector's credentials. If that admin is no longer available, the row reads _a former admin_ instead of a name.
+// TODO: verify with engineering — confirm which connectors show this line (for example, connectors added before this change)
+
 NOTE: New connectors are added on a regular basis. Check the image:settings-agent-spot.svg[10,Admin Settings] *Admin Settings* > *Connectors* page for the current list.
 
 ==== Requirements for adding a connector
@@ -194,13 +198,17 @@ Here's what it supports:
 ** @mention an agent in a Slack channel thread to ask it questions or trigger tasks
 ** The agent processes your message and replies back in the same Slack thread
 ** Works in public channels, private channels (with appropriate permissions), and direct messages (off by default, but the admin can opt-in).
+// auto-draft PR#2209 — REVIEW
+* Prompt users to connect an agent's connectors: if a Slack user asks a shared agent for something that needs a connector they have not connected in AgentSpot, the bot prompts them to connect it.
+// TODO: verify with engineering — confirm the wording of the Slack prompt and where it appears (in the thread or as a private message)
 
 ==== Before you begin
 - You need permission to create and install a Slack app in your workspace. Scope changes may require
 workspace-admin approval.
 - You need admin access to AgentSpot (Admin Settings)
 - At least one agent must already exist, and be ready to connect.
-- Channel connections support both public and private channels. The bot must be invited to a channel before it can be connected. A disclosure checkbox is required when connecting any channel; the text adapts to show whether the selected channel is public or private. Direct messages are off by default, but an admin can set a default agent for direct messages.
+// auto-draft PR#2606 — REVIEW
+- Channel connections support both public and private channels. The bot must be invited to a channel before it can be connected. A disclosure checkbox is required when connecting any channel; the text follows the selected reply mode and is the same for public and private channels. Direct messages are off by default, but an admin can set a default agent for direct messages.
 
 [#part1]
 ==== Part 1: Create the Slack app from a manifest
@@ -402,10 +410,20 @@ image::disable-socket-mode.png[]
 +
 Channels are marked as public (with `#` prefix) or private (with a lock icon). Channels where the bot is not a member are disabled — invite the bot first, then click *Refresh channels*.
 .. Select the agent from the dropdown.
+// auto-draft PR#2606 — REVIEW
+.. Choose when the agent replies. *Only when @mentioned* keeps the agent quiet until someone @mentions it.
++
+Other reply modes, *When it can help* and *Every conversation*, let the agent read the channel and reply without an @mention. They appear only when listen mode is turned on for your organization, and they need a verified Slack app. A channel shared with other workspaces in your Slack organization can only reply when @mentioned.
+// TODO: verify with engineering — listen mode is not turned on in every environment yet; confirm whether to document the listen reply modes before it is generally available
 .. Select the disclosure checkbox.
 +
-The disclosure text adapts to the selected channel type. For any channel, it confirms that thread context will be sent to AgentSpot for authorized users; for a private channel, it additionally discloses that private thread context may be sent.
+// auto-draft PR#2606 — REVIEW
+The disclosure text follows the reply mode you chose and is the same for public and private channels. For *Only when @mentioned*, it confirms that the channel will be connected to the selected agent and that @mentions can send thread context to AgentSpot for authorized users. If you later change the channel, agent, or reply mode, you must select the checkbox again.
 .. Click *Connect channel*.
+
+// auto-draft PR#2606 — REVIEW
+If listen mode is turned off after a channel was saved with a listen reply mode, the channel shows as *Paused*. Its edit dialog shows the saved mode. You can still switch the channel to *Only when @mentioned*.
+// TODO image: capture the reply mode options in the Connect channel dialog
 
 ==== Part 7: Test
 
