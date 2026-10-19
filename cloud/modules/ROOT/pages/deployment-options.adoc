@@ -1,0 +1,367 @@
+= ThoughtSpot deployment options
+:page-last_updated: Oct 19, 2026
+:experimental:
+:linkattrs:
+:description: Compare ThoughtSpot deployment models — ThoughtSpot Cloud, Virtual Private ThoughtSpot (VPT), and Customer-Hosted ThoughtSpot — to find the right fit for your security, compliance, and operational requirements.
+
+// SOURCE: "ThoughtSpot Deployment Options" Google Doc (shared by Mark Plummer, Oct 2026)
+
+ThoughtSpot offers three deployment models to fit a wide range of infrastructure, compliance, and operational requirements, from a fully managed multi-tenant SaaS to a deployment that runs entirely inside your own cloud account.
+
+All models deliver the same core ThoughtSpot experience: AI-powered search and analytics, Spotter, Liveboards, and the Semantic Model. What differs is who manages the infrastructure, where data and metadata reside, and how much operational control you retain.
+
+[#ts-cloud]
+== ThoughtSpot Cloud
+
+ThoughtSpot Cloud is the default deployment option and the right choice for most organizations. ThoughtSpot provisions and operates all infrastructure on your behalf, including compute, storage, networking, security patching, upgrades, and 24×7 monitoring. You connect your cloud data warehouse and start building analytics immediately, with no servers to provision or software to install.
+
+ThoughtSpot Cloud uses a multi-tenant architecture. Each customer's data and metadata are logically isolated from all other customers within the shared ThoughtSpot infrastructure. Data is never replicated into ThoughtSpot. Every query is sent live to your connected data warehouse and only results are returned to the ThoughtSpot UI.
+
+[#vpt]
+== Virtual Private ThoughtSpot
+
+Virtual Private ThoughtSpot (VPT) provides complete physical isolation within ThoughtSpot-managed infrastructure. Almost every component, including compute, storage, search indexes, and communication services, is provisioned exclusively for your organization. Nothing is shared with any other customer. ThoughtSpot continues to manage 24×7 operations, upgrades, and security inside an architecture dedicated to you.
+
+VPT adds support for Bring Your Own Key (BYOK). Your encryption keys, managed in your key management system, protect all data at rest. If you revoke your key, all data in your VPT instance becomes immediately and cryptographically inaccessible, even to ThoughtSpot.
+
+For more information about BYOK for VPT, refer to xref:byok.adoc[Bring Your Own Key (BYOK) for ThoughtSpot on GCP VPT] and xref:byok-aws.adoc[Bring Your Own Key (BYOK) for ThoughtSpot on AWS VPT].
+
+[#customer-hosted]
+== Customer-Hosted ThoughtSpot
+
+Customer-Hosted is ThoughtSpot's enterprise deployment solution for organizations with the most stringent security requirements. ThoughtSpot runs entirely within your own GCP project or AWS account. No data leaves your firewall.
+
+[IMPORTANT]
+====
+Customer-Hosted ThoughtSpot is currently available as a Beta offering on GCP. Support for AWS is coming soon. Contact your ThoughtSpot account team to discuss eligibility and Beta access.
+====
+
+[#key-characteristics]
+=== Key characteristics
+
+* *Air-gapped security* — All components run in your cloud account and VPC. No data traverses ThoughtSpot's network.
+* *Sovereign AI deployment* — Spotter and LLM agents run in your cloud environment or through your BYO LLM endpoint.
+* *Zero data residency compromises* — Built for regulated industries, including financial services, healthcare, and government.
+* *Cloud-native* — Runs on standard Kubernetes infrastructure within your account. Available on GCP now, with AWS support coming soon.
+* *BYOK support* — Your KMS keys protect all data by default because it runs in your account.
+* *No third-party data flows* — There are no external data flows to third-party observability or analytics services.
+
+[#architecture]
+=== Architecture
+
+[#network-security]
+==== Network security
+All traffic stays within your secure network. Customer-Hosted integrates with your existing network security practices.
+
+[#encryption]
+==== Encryption
+HTTPS and TLS 1.3 encrypt all data in transit. Backups are encrypted in your secure environment. BYOK is enabled by default because the deployment runs in your account and uses your keys.
+
+[#data-isolation]
+==== Data isolation
+Customer-Hosted provides complete isolation. Customer data, metadata, and column indexes stay in your cloud environment. No data leaves your firewall.
+
+[#access-controls]
+==== Access controls
+Access and change management are customer-managed. Auditing and monitoring run entirely within your environment. ThoughtSpot has no direct access to your data.
+
+[#control-plane]
+==== Control plane
+In Customer-Hosted deployments, a ThoughtSpot control plane runs within your account. ThoughtSpot provides operations tooling, automation, lifecycle management, and audit trails, but these all run within your boundary. ThoughtSpot maintains a connection through a service account to store licensing information and to push upgrades and patches.
+
+[#feature-comparison]
+== Feature comparison
+
+The following table compares key capabilities across all three deployment models.
+
+[cols="2,1,1,1", options="header"]
+|===
+| Feature | ThoughtSpot Cloud | Virtual Private ThoughtSpot | Customer-Hosted
+
+| Infrastructure ownership
+| ThoughtSpot (shared)
+| ThoughtSpot (dedicated)
+| Customer (own cloud account)
+
+| Data isolation
+| Logical
+| Physical (dedicated cell)
+| Complete (nothing leaves firewall)
+
+| Control plane location
+| ThoughtSpot
+| ThoughtSpot
+| Customer
+
+| BYOK / CMEK support
+| No
+| Yes
+| Yes
+
+| Spotter / AI features
+| Yes
+| Yes
+| Yes (BYO LLM on GCP). AWS will support Spotter 3 only.
+// TODO: verify with engineering — Confirm "Spotter 3" is the correct customer-facing name.
+
+| Third-party data flows
+| Yes
+| Partial
+| None
+
+| Analyst Studio
+| Yes
+| Yes
+| Not currently available
+
+| Cloud provider support
+| GCP, AWS
+| GCP, AWS
+| GCP (available now); AWS (December 2026)
+
+| Status
+| GA
+| GA
+| Beta
+|===
+
+[#support-model]
+== Support model
+
+The level of ThoughtSpot support differs significantly by deployment model.
+
+[cols="2,2,2", options="header"]
+|===
+| Aspect | ThoughtSpot Cloud / VPT | Customer-Hosted
+
+| Infrastructure
+| ThoughtSpot-managed
+| Customer-managed
+
+| Upgrades
+| ThoughtSpot-managed; customer notified
+| ThoughtSpot-managed; customer-initiated
+
+| Monitoring
+| ThoughtSpot 24×7 monitoring
+| Customer responsibility
+
+| Support scope
+| Full stack (infrastructure and application)
+| Application only
+
+| Incident response
+| ThoughtSpot triage; proactive response
+| Customer triage; ThoughtSpot assists
+
+| SLAs
+| Defined availability SLA
+| Limited
+|===
+
+Customer-Hosted deployments include a Premium Success plan with a dedicated SRE engineer to assist with troubleshooting during incidents.
+
+[#prerequisites]
+== Prerequisites for Customer-Hosted
+
+Before you begin, confirm the following general requirements. Your ThoughtSpot setup email includes the installer service-account name to use. ThoughtSpot has already granted that service account read access to the ThoughtSpot image registry.
+
+NOTE: Customer-Hosted ThoughtSpot is currently available on GCP. AWS prerequisites are documented below for the upcoming December 2026 release.
+
+* A service account for ThoughtSpot. ThoughtSpot SRE teams retain secure access to assist with cluster troubleshooting and emergency support.
+* Persistent connectivity to the ThoughtSpot Hub for call-home, patches, upgrades, and troubleshooting.
+
+[#prerequisites-gcp]
+=== GCP prerequisites
+
+[#gcp-project]
+==== Your project
+
+* A dedicated Google Cloud project with billing enabled. ThoughtSpot assumes one cell per project. Do not share the project with other workloads.
+* A user who can enable APIs and create service accounts, IAM bindings, VPCs, Cloud DNS zones, KMS keys, Cloud Storage buckets, Cloud Run jobs, and GKE clusters in the project, for the duration of the install. The installer runs as that user's own identity (`gcloud auth application-default login`).
+* Organization policies that allow, in the project: service-account creation, private GKE clusters, Private Service Connect endpoints, VPC peering, and Workload Identity Federation from ThoughtSpot's identity pool.
+* Compute quota in your region for two autoscaling node pools of `e2-standard-8` machines, 1 to 10 nodes each, up to 20 nodes (160 vCPUs) at full scale.
+
+[#gcp-address-ranges]
+==== Address ranges
+
+The cell uses fixed address ranges. These ranges must not overlap any network you peer with or route to from these VPCs.
+
+[cols="1,2", options="header"]
+|===
+| Range | Used by
+
+| `10.0.0.0/16`
+| Cell (Nucleus) VPC: subnets, GKE pods and services, Cloud Run connector
+
+| `10.253.0.0/16`
+| Atom VPC
+
+| A range starting at `172.16.0.0`
+| Private Service Access for Google managed services
+|===
+
+[#gcp-installer]
+==== Installer machine
+
+A machine with the Google Cloud CLI (`gcloud`) and Terraform installed, signed in to your project.
+
+[#prerequisites-aws]
+=== AWS prerequisites (December 2026)
+
+* A dedicated AWS account for ThoughtSpot. Sharing the account with other workloads is not recommended.
+* A user with administrator access to the account for the duration of the install.
+* Service control policies (SCPs) that allow the IAM, EKS, RDS, ElastiCache, KMS, Lambda, and VPC actions the installer uses.
+* The values from your ThoughtSpot setup email.
+
+[#aws-address-ranges]
+==== Address ranges
+
+The cell uses fixed address ranges. These ranges must not overlap any network you peer with or route to from these VPCs.
+
+// TODO: verify with engineering — Confirm the AWS-specific "Used by" descriptions are accurate.
+
+[cols="1,2", options="header"]
+|===
+| Range | Used by
+
+| `10.0.0.0/16`
+| Cell (Nucleus) VPC: subnets, EKS pods and services
+
+| `10.253.0.0/16`
+| Atom VPC
+
+| A range starting at `172.16.0.0`
+| Private subnets for AWS managed services
+|===
+
+[#aws-account-preparation]
+==== Account preparation
+
+Plan for at least the following quotas in the deployment region:
+
+[cols="1,2", options="header"]
+|===
+| Quota | Minimum
+
+| EC2-VPC Elastic IPs
+| 20 (6 for NAT gateways, plus load balancer and VPN addresses and headroom)
+
+| VPCs per region
+| 10
+|===
+
+[#aws-installer]
+==== Installer machine
+
+A workstation pre-configured with Terraform and active AWS access credentials required to execute the setup script.
+
+[#configuration]
+== Configuration and installation
+
+Once the cloud-specific prerequisites for either GCP or AWS are satisfied, the remaining installation and deployment process is identical across both platforms.
+
+. Download the installer on the machine using the link provided in your setup email.
+. To configure your deployment, update the `customer.tfvars` file with your specific environment details, such as your domain, certificate, target region, and installer service account name.
++
+IMPORTANT: Do not modify any settings below the "DO NOT MODIFY" marker in `customer.tfvars`. These define default ThoughtSpot infrastructure settings.
+
+[source,bash]
+----
+tar xzf ch-installer-v1.0.0.tar.gz
+
+cp customer.tfvars.example customer.tfvars
+
+# Fill in gcp_project, customer_region, installer_sa_name (GCP only)
+gcloud auth application-default login   # <1>
+
+./install.sh --config=customer.tfvars
+----
+<1> This step is required for GCP only.
+
+`install.sh` runs three phases. You can re-run the entire script, or a single phase, safely. Every phase is idempotent.
+
+[cols="1,2,3", options="header"]
+|===
+| Phase | Command | What it does
+
+| 1. Project init
+| `./install.sh --config=customer.tfvars project-init`
+| Enables APIs, creates the Terraform state bucket and service accounts, and generates the cell's IDs.
+
+| 2. Cell
+| `./install.sh --config=customer.tfvars cell`
+| Builds the Nucleus and Atom networks and clusters, and connects the cell to the ThoughtSpot Hub.
+
+| 3. Check
+| `./install.sh --config=customer.tfvars check`
+| Connects to both clusters and confirms their nodes are ready.
+|===
+
+[#verify]
+=== Verify the installation
+
+Run the check phase to verify that the deployment is complete and healthy:
+
+[source,bash]
+----
+./install.sh --config=customer.tfvars check
+----
+
+[#upgrades]
+== Upgrades and day-2 operations
+
+ThoughtSpot delivers every upgrade and patch through the same private connection used at install time. Your team does not run upgrade commands.
+
+* *Service updates* — New versions of cell services arrive as manifests from the Hub and are applied automatically when maintenance is scheduled.
+* *Images* — New container images are pulled through the Hub.
+* *Tenant upgrades* — New ThoughtSpot releases for your tenants run in a maintenance window, scheduled or started by a ThoughtSpot operator.
+* *Patches* — Delivered as small upgrades through the same path.
+* *Health* — A status page in the cell UI shows overall cell health (Healthy, Degraded, or Down) and per-tenant status.
+
+ThoughtSpot maintains a connection through a service account to provide weekly patches and monthly upgrades. You see a pending action message on your control plane and are expected to apply the change.
+
+[#day-2-responsibilities]
+=== Your responsibilities
+
+* Keep the account's quotas, billing, and organization policies in place.
+* Do not modify or delete resources the installer created, including network, firewall rules, the private endpoint, DNS zones, clusters, databases, keys, or the ThoughtSpot identities, without contacting ThoughtSpot first.
+* Notify ThoughtSpot about planned network or policy changes that could affect the connection to the Hub.
+
+[#faq]
+== Frequently asked questions
+
+[#faq-query-results]
+=== Does ThoughtSpot ever store my query results?
+
+No. For all deployment models, ThoughtSpot connects to your cloud data warehouse (CDW) with read-only access to execute queries. Query results are not stored or cached within ThoughtSpot. They are returned directly to the requesting user or application. Your data records reside in your CDW at all times.
+
+[#faq-vpt-vs-customer-hosted]
+=== What is the difference between VPT and Customer-Hosted?
+
+In VPT, ThoughtSpot owns and manages the dedicated infrastructure. It lives in ThoughtSpot's cloud account but is exclusively provisioned for your organization. In Customer-Hosted, the infrastructure runs in your GCP project or AWS account. You own it, and ThoughtSpot provides the application and support. Customer-Hosted is ideal for organizations that cannot allow any data to traverse a third-party network.
+
+[#faq-byok]
+=== Can I use my own encryption keys (BYOK)?
+
+BYOK / CMEK is available in VPT and Customer-Hosted deployments. It is not available in standard ThoughtSpot Cloud (multi-tenant). With BYOK, your KMS key encrypts all data at rest, and revoking the key immediately renders all data cryptographically inaccessible. Note that the ThoughtSpot global control-plane state uses ThoughtSpot-managed keys even in BYOK configurations.
+
+[#faq-spotter]
+=== Is Spotter available in all deployment models?
+
+Spotter is available in ThoughtSpot Cloud, VPT, and Customer-Hosted. In Customer-Hosted deployments on GCP (available now), Spotter agents run in your cloud environment once you configure a BYO LLM endpoint for sovereign AI operation. When AWS support launches in December 2026, only Spotter 3 will be supported initially. Analyst Studio is not currently available in Customer-Hosted deployments.
+
+[#faq-availability]
+=== Which cloud providers are supported?
+
+Customer-Hosted ThoughtSpot is available on GCP now as a Beta offering. Support for AWS is planned for December 2026. ThoughtSpot Cloud and VPT are available on both GCP and AWS.
+
+[#faq-upgrades]
+=== How do upgrades work?
+
+ThoughtSpot maintains a connection through a service account to provide weekly patches and monthly upgrades. You see a pending action message on your control plane and are expected to apply the change.
+
+[#faq-support]
+=== What support is available?
+
+The Customer-Hosted solution includes a Premium Success plan. ThoughtSpot assigns a dedicated SRE engineer to assist you with troubleshooting during incidents.
