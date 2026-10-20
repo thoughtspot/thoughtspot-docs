@@ -1,13 +1,14 @@
 = ThoughtSpot deployment options
-:page-last_updated: Oct 19, 2026
+:page-last_updated: Oct 20, 2026
 :experimental:
 :linkattrs:
 :page-layout: default-cloud-beta
 :jira: SCAL-341503
-:description: Compare ThoughtSpot deployment models — ThoughtSpot Cloud, Virtual Private ThoughtSpot (VPT), and Customer-Hosted ThoughtSpot — to find the right fit for your security, compliance, and operational requirements.
+:description: Compare ThoughtSpot deployment models — ThoughtSpot Cloud, Virtual Private ThoughtSpot (VPT), and Customer-hosted ThoughtSpot — to find the right fit for your security, compliance, and operational requirements.
 
 // SOURCE: "ThoughtSpot Deployment Options" Google Doc: https://docs.google.com/document/d/1axFjV5vhHGuAfBDx3MdzZmmvVXn2WFctpgNcvg0NYSo/edit?usp=sharing (shared by Raja Banerjee, Oct 2026)
 
+[.lead]
 ThoughtSpot offers three deployment models to fit a wide range of infrastructure, compliance, and operational requirements, from a fully managed multi-tenant SaaS to a deployment that runs entirely inside your own cloud account.
 
 All models deliver the same core ThoughtSpot experience: AI-powered search and analytics, Spotter, Liveboards, and the Semantic Model. What differs is who manages the infrastructure, where data and metadata reside, and how much operational control you retain.
@@ -29,20 +30,20 @@ VPT adds support for Bring Your Own Key (BYOK). Your encryption keys, managed in
 For more information about BYOK for VPT, refer to xref:byok.adoc[Bring Your Own Key (BYOK) for ThoughtSpot on GCP VPT] and xref:byok-aws.adoc[Bring Your Own Key (BYOK) for ThoughtSpot on AWS VPT].
 
 [#customer-hosted]
-== Customer-Hosted ThoughtSpot
+== Customer-hosted ThoughtSpot
 
-Customer-Hosted is ThoughtSpot's enterprise deployment solution for organizations with the most stringent security requirements. ThoughtSpot runs entirely within your own GCP project or AWS account. No data leaves your firewall.
+Customer-hosted is ThoughtSpot's enterprise deployment solution for organizations with the most stringent security requirements. ThoughtSpot runs entirely within your own GCP project or AWS account. No data leaves your firewall.
 
 [IMPORTANT]
 ====
-Customer-Hosted ThoughtSpot is currently available as a Beta offering on GCP. Support for AWS is coming soon. Contact your ThoughtSpot account team to discuss eligibility and Beta access.
+Availability: Customer-hosted ThoughtSpot has limited customer availability. Contact your account team to discuss eligibility.
 ====
 
 [#key-characteristics]
 === Key characteristics
 
-* *Air-gapped security* — All components run in your cloud account and VPC. No data traverses ThoughtSpot's network.
-* *Sovereign AI deployment* — Spotter and LLM agents run in your cloud environment or through your BYO LLM endpoint.
+* *VPC-isolated cloud deployment* — All application components run in your cloud account/VPC. Customer analytical data never traverses ThoughtSpot's network.
+* *Sovereign AI deployment* — Spotter and LLM agents run in your cloud environment through your BYOLLM endpoint.
 * *Zero data residency compromises* — Built for regulated industries, including financial services, healthcare, and government.
 * *Cloud-native* — Runs on standard Kubernetes infrastructure within your account. Available on GCP now, with AWS support coming soon.
 * *BYOK support* — Your KMS keys protect all data by default because it runs in your account.
@@ -53,7 +54,7 @@ Customer-Hosted ThoughtSpot is currently available as a Beta offering on GCP. Su
 
 [#network-security]
 ==== Network security
-All traffic stays within your secure network. Customer-Hosted integrates with your existing network security practices.
+All traffic stays within your secure network. Customer-hosted ThoughSpot integrates with your existing network security practices.
 
 [#encryption]
 ==== Encryption
@@ -61,15 +62,11 @@ HTTPS and TLS 1.3 encrypt all data in transit. Backups are encrypted in your sec
 
 [#data-isolation]
 ==== Data isolation
-Customer-Hosted provides complete isolation. Customer data, metadata, and column indexes stay in your cloud environment. No data leaves your firewall.
-
-[#access-controls]
-==== Access controls
-Access and change management are customer-managed. Auditing and monitoring run entirely within your environment. ThoughtSpot has no direct access to your data.
+High isolation — customer data, metadata, and column indexes stay in your cloud environment. Analytical data never leaves your firewall, while standard operational telemetry connects securely to the ThoughtSpot hub.
 
 [#control-plane]
 ==== Control plane
-In Customer-Hosted deployments, a ThoughtSpot control plane runs within your account. ThoughtSpot provides operations tooling, automation, lifecycle management, and audit trails, but these all run within your boundary. ThoughtSpot maintains a connection through a service account to store licensing information and to push upgrades and patches.
+In customer-hosted ThoughtSpot deployments, a ThoughtSpot control plane runs within your account. ThoughtSpot provides operations tooling, automation, lifecycle management, and audit trails, but these all run within your boundary. ThoughtSpot maintains a connection through a service account to store licensing information and to push upgrades and patches.
 
 [#feature-comparison]
 == Feature comparison
@@ -78,7 +75,7 @@ The following table compares key capabilities across all three deployment models
 
 [cols="2,1,1,1", options="header"]
 |===
-| Feature | ThoughtSpot Cloud | Virtual Private ThoughtSpot | Customer-Hosted
+| Feature | ThoughtSpot Cloud | Virtual Private ThoughtSpot | Customer-hosted ThoughtSpot
 
 | Infrastructure ownership
 | ThoughtSpot (shared)
@@ -88,7 +85,7 @@ The following table compares key capabilities across all three deployment models
 | Data isolation
 | Logical
 | Physical (dedicated cell)
-| Complete (nothing leaves firewall)
+| Customer Environment (telemetry/licensing syncs to Hub)
 
 | Control plane location
 | ThoughtSpot
@@ -109,11 +106,11 @@ The following table compares key capabilities across all three deployment models
 | Third-party data flows
 | Yes
 | Partial
-| None
+| None for analytical data (System health/telemetry flows to ThoughtSpot hub)
 
 | Analyst Studio
 | Yes
-| Yes
+| No
 | Not currently available
 
 | Cloud provider support
@@ -121,20 +118,25 @@ The following table compares key capabilities across all three deployment models
 | GCP, AWS
 | GCP (available now); AWS (coming soon)
 
+| AgentSpot
+| Yes
+| No
+| Not available
+
 | Status
 | GA
 | GA
-| Beta
+| Limited availability
 |===
 
 [#support-model]
 == Support model
 
-The level of ThoughtSpot support differs significantly by deployment model.
+The level of ThoughtSpot support differs by deployment model.
 
 [cols="2,2,2", options="header"]
 |===
-| Aspect | ThoughtSpot Cloud / VPT | Customer-Hosted
+| Aspect | ThoughtSpot Cloud / Virtual Private ThoughtSpot | Customer-hosted ThoughtSpot
 
 | Infrastructure
 | ThoughtSpot-managed
@@ -142,7 +144,7 @@ The level of ThoughtSpot support differs significantly by deployment model.
 
 | Upgrades
 | ThoughtSpot-managed; customer notified
-| ThoughtSpot-managed; customer-initiated
+| ThoughtSpot-delivered; customer-applied within 30 days
 
 | Monitoring
 | ThoughtSpot 24×7 monitoring
@@ -158,20 +160,20 @@ The level of ThoughtSpot support differs significantly by deployment model.
 
 | SLAs
 | Defined availability SLA
-| Limited
+| None for uptime (application incident response only)
 |===
 
-Customer-Hosted deployments include a Premium Success plan with a dedicated SRE engineer to assist with troubleshooting during incidents.
+Customer-hosted deployments include a premium success plan with a dedicated SRE engineer to assist with troubleshooting during incidents.
 
 [#prerequisites]
-== Prerequisites for Customer-Hosted
+== Prerequisites for customer-hosted ThoughtSpot
 
 Before you begin, confirm the following general requirements. Your ThoughtSpot setup email includes the installer service-account name to use. ThoughtSpot has already granted that service account read access to the ThoughtSpot image registry.
 
-NOTE: Customer-Hosted ThoughtSpot is currently available on GCP. AWS prerequisites are documented below for the future release.
+NOTE: Customer-hosted ThoughtSpot is currently available on GCP. AWS prerequisites are documented below for the future release.
 
 * A service account for ThoughtSpot. ThoughtSpot SRE teams retain secure access to assist with cluster troubleshooting and emergency support.
-* Persistent connectivity to the ThoughtSpot Hub for call-home, patches, upgrades, and troubleshooting.
+* Persistent connectivity to the ThoughtSpot hub for call-home, patches, upgrades, and troubleshooting. The central hub coordinates deployment and lifecycle operations by pushing new artifact versions and configuration updates.
 
 [#prerequisites-gcp]
 === GCP prerequisites
@@ -205,6 +207,7 @@ The cell uses fixed address ranges. These ranges must not overlap any network yo
 
 [#gcp-installer]
 ==== Installer machine
+A cell is a self-contained deployment boundary that houses all the services required to run ThoughtSpot. The nucleus is the control-plane Kubernetes cluster inside a cell that orchestrates infrastructure and manages atoms. An atom is a Kubernetes cluster within a cell that hosts the ThoughtSpot instance, providing the isolated runtime environment for the deployment.
 
 A machine with the Google Cloud CLI (`gcloud`) and Terraform installed, signed in to your project.
 
@@ -214,7 +217,7 @@ A machine with the Google Cloud CLI (`gcloud`) and Terraform installed, signed i
 * A dedicated AWS account for ThoughtSpot. Sharing the account with other workloads is not recommended.
 * A user with administrator access to the account for the duration of the install.
 * Service control policies (SCPs) that allow the IAM, EKS, RDS, ElastiCache, KMS, Lambda, and VPC actions the installer uses.
-* The values from your ThoughtSpot setup email.
+* Thoughtspot setup email containing some infrastructure parameters that will help in connecting to the customer-hosted hub.
 
 [#aws-address-ranges]
 ==== Address ranges
@@ -236,6 +239,8 @@ The cell uses fixed address ranges. These ranges must not overlap any network yo
 | A range starting at `172.16.0.0`
 | Private subnets for AWS managed services
 |===
+
+A cell is a self-contained deployment boundary that houses all the services required to run ThoughtSpot. The nucleus is the control-plane Kubernetes cluster inside a cell that orchestrates infrastructure and manages Atoms. An atom is a Kubernetes cluster within a cell that hosts ThoughtSpot instance, providing the isolated runtime environment for the deployment.
 
 [#aws-account-preparation]
 ==== Account preparation
@@ -333,37 +338,19 @@ ThoughtSpot maintains a connection through a service account to provide weekly p
 [#faq]
 == Frequently asked questions
 
-[#faq-query-results]
-=== Does ThoughtSpot ever store my query results?
+[.faq]
+--
+Does ThoughtSpot ever store my query results?:: No. For all deployment models, ThoughtSpot connects to your cloud data warehouse (CDW) with read-only access to execute queries. Query results are not stored or cached within ThoughtSpot. They are returned directly to the requesting user or application. Your data records reside in your CDW at all times.
 
-No. For all deployment models, ThoughtSpot connects to your cloud data warehouse (CDW) with read-only access to execute queries. Query results are not stored or cached within ThoughtSpot. They are returned directly to the requesting user or application. Your data records reside in your CDW at all times.
+What is the difference between VPT and customer-hosted ThoughtSpot?:: In VPT, ThoughtSpot owns and manages the dedicated infrastructure. It exists in ThoughtSpot's cloud account but is exclusively provisioned for your organization. In customer-hosted ThoughtSpot, the infrastructure runs in your GCP project or AWS account. You own it, and ThoughtSpot provides the application and support. Customer-hosted ThoughtSpot is ideal for organizations that cannot allow any analytical or customer data to traverse a third-party network.
 
-[#faq-vpt-vs-customer-hosted]
-=== What is the difference between VPT and Customer-Hosted?
+Can I use my own encryption keys (BYOK)?:: BYOK / CMEK is available in VPT and customer-hosted ThoughtSpot deployments. It is not available in standard ThoughtSpot Cloud (multi-tenant). With BYOK, your KMS key encrypts all data at rest, and revoking the key immediately renders all data cryptographically inaccessible. Note that the ThoughtSpot global control-plane state uses ThoughtSpot-managed keys even in BYOK configurations.
 
-In VPT, ThoughtSpot owns and manages the dedicated infrastructure. It lives in ThoughtSpot's cloud account but is exclusively provisioned for your organization. In Customer-Hosted, the infrastructure runs in your GCP project or AWS account. You own it, and ThoughtSpot provides the application and support. Customer-Hosted is ideal for organizations that cannot allow any data to traverse a third-party network.
+Is Spotter available in all deployment models?:: Spotter is available in ThoughtSpot Cloud, VPT, and customer-hosted ThoughtSpot. In customer-hosted ThoughtSpot deployments on GCP (available now), Spotter agents run in your cloud environment once you configure a BYOLLM endpoint for sovereign AI operation. When AWS support launches, only Spotter version 3 will be supported initially. Analyst Studio is not currently available in customer-hosted ThoughtSpot deployments.
 
-[#faq-byok]
-=== Can I use my own encryption keys (BYOK)?
+Which cloud providers are supported?:: Customer-hosted ThoughtSpot is available on GCP now. Support for AWS is coming soon. ThoughtSpot Cloud and VPT are available on both GCP and AWS.
 
-BYOK / CMEK is available in VPT and Customer-Hosted deployments. It is not available in standard ThoughtSpot Cloud (multi-tenant). With BYOK, your KMS key encrypts all data at rest, and revoking the key immediately renders all data cryptographically inaccessible. Note that the ThoughtSpot global control-plane state uses ThoughtSpot-managed keys even in BYOK configurations.
+Are the Spotter Agents available for a customer-hosted deployment?:: While Spotter 3 is available for customers to use with BYOLLM, the Spotter Agents (SpotterViz, SpotterModel, and SpotterCode) are not available with BYOLLM for AWS.
 
-[#faq-spotter]
-=== Is Spotter available in all deployment models?
-
-Spotter is available in ThoughtSpot Cloud, VPT, and Customer-Hosted. In Customer-Hosted deployments on GCP (available now), Spotter agents run in your cloud environment once you configure a BYO LLM endpoint for sovereign AI operation. When AWS support launches, only Spotter 3 will be supported initially. Analyst Studio is not currently available in Customer-Hosted deployments.
-
-[#faq-availability]
-=== Which cloud providers are supported?
-
-Customer-Hosted ThoughtSpot is available on GCP now as a Beta offering. Support for AWS is coming soon. ThoughtSpot Cloud and VPT are available on both GCP and AWS.
-
-[#faq-upgrades]
-=== How do upgrades work?
-
-ThoughtSpot maintains a connection through a service account to provide weekly patches and monthly upgrades. You see a pending action message on your control plane and are expected to apply the change.
-
-[#faq-support]
-=== What support is available?
-
-The Customer-Hosted solution includes a Premium Success plan. ThoughtSpot assigns a dedicated SRE engineer to assist you with troubleshooting during incidents.
+How do upgrades work?:: ThoughtSpot delivers automated patches and monthly upgrades through the hub connection. Customers will be notified to schedule and apply regular updates within a 30-day window, and critical security patches within 7 days, to maintain service compatibility.
+--
