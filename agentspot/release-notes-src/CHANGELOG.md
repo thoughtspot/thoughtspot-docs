@@ -1,5 +1,26 @@
 # AgentSpot Changelog
 
+## 2026-10-20 — bbf0556be626..134b083e3cfa
+
+### Product changes
+
+- Cut Okta calls per provision with caching, single-flight and an umbrella limit (SCAL-346373) · `134b083e3cfa` · SCAL-346373 · [#3284](https://github.com/thoughtspot/agentspot/pull/3284)
+- Keep runtime callbacks off the event loop (SCAL-342869) · `f7705c64cde5` · SCAL-342869 · [#3273](https://github.com/thoughtspot/agentspot/pull/3273)
+- Widen the ANN leaf scan for docs grounding and uploaded-file semantic search (SCAL-346341) · `84621a3407b0` · SCAL-346341 · [#3277](https://github.com/thoughtspot/agentspot/pull/3277)
+- Invite field V2: the name under the cursor, keyboard handling, and one shared helper (SCAL-346226) · `673f03bbb5c5` · SCAL-346226 · [#3268](https://github.com/thoughtspot/agentspot/pull/3268)
+- Harden prod for the SpotLite event: backend replica floor, DB pool 5+10, one-at-a-time PDB, Apigee rewrite headroom (SCAL-346056) · `69cc46aee045` · SCAL-346056 · [#3221](https://github.com/thoughtspot/agentspot/pull/3221)
+- fix(connectors): tidy the connector settings dialog and pin its footer (SCAL-346343) · `35f54d6b3d8f` · SCAL-346343 · [#3279](https://github.com/thoughtspot/agentspot/pull/3279)
+- fix(connectors): give native Google Workspace and Microsoft 365 connectors their logos (SCAL-346239) · `ea1884a048bd` · SCAL-346239 · [#3269](https://github.com/thoughtspot/agentspot/pull/3269)
+- Fix native AgentSpot email artwork (SCAL-346087) · `dd29bf5505df` · SCAL-346087 · [#3245](https://github.com/thoughtspot/agentspot/pull/3245)
+
+### Internal / infra
+
+- Enable Slack listen mode in preprod, prod and EU cells with Gemini and Haiku judges (SCAL-346354) · `448959dfc9c1` · SCAL-346354 · [#3280](https://github.com/thoughtspot/agentspot/pull/3280)
+- Temporary prod event mode for the Oct 22 SpotLite event (SCAL-346077) · `9286283ccd3f` · SCAL-346077 · [#3234](https://github.com/thoughtspot/agentspot/pull/3234)
+- chore(infra): turn on shared chats and chat erasure in every environment (SCAL-344597) · `05b9d28b67d3` · SCAL-344597 · [#3281](https://github.com/thoughtspot/agentspot/pull/3281)
+- chore(coms): rotate staging signing key (SCAL-344481) · `9380b56561f0` · SCAL-344481 · [#3143](https://github.com/thoughtspot/agentspot/pull/3143)
+- Raise prod DB connection limits so the backend can scale past 16 pods (SCAL-342137) · `6ff2d0338ff0` · SCAL-342137 · [#2546](https://github.com/thoughtspot/agentspot/pull/2546)
+
 ## 2026-10-15 — 8688779205d4..1c4cc137c3ef
 
 ### Product changes

@@ -1,3 +1,75 @@
+## 2026-10-20 — bbf0556be626..134b083e3cfa
+
+Range: `bbf0556be626..134b083e3cfa` · 2026-10-20
+
+Internal, humanized digest for the docs team. Not a published page. Every item from the
+release manifest is recorded here; the docs team decides what warrants a customer-facing page
+or known-issue note. AgentSpot is in Preview, so nothing here is published automatically.
+
+Suggested PR title: `Invite field: several names at once, domain completion, keyboard handling`
+
+### Features
+
+- **Invite field V2: several names at once, domain completion, and keyboard handling** — the email
+  field in the *Invite teammates* / *Invite your team to join AgentSpot* dialog now takes several
+  comma-separated names at once. Suggestions apply to the name under the cursor, and the names
+  already typed are kept when you press Enter. A plain name such as `maya` gets the company email
+  domain added; complete addresses are used as typed. A pasted `Name <email>` counts as one person.
+  A repeated address gets its own *Listed twice* row, and the first mention is still sent. Esc now
+  closes only the suggestion list (it used to close the whole dialog and lose the staged addresses).
+  Backspace in an empty field removes the last person added. The empty "Inviting" area now has an
+  empty-state figure and line. The agent, App, and workflow share dialogs now use one shared
+  candidate helper instead of their own copies; the commit describes this as a refactor with no
+  intended behavior change there. Frontend `InviteTeammatesDialog`, `inviteField`, `inviteEmails`,
+  `InviteRow`, plus `AgentShareDialog`, `DataappShareDialog`, `WorkflowPromptShareDialog`.
+  (SCAL-346226 · [#3268](https://github.com/thoughtspot/agentspot/pull/3268))
+  _Page edits (auto-draft, REVIEW): new "Entering email addresses" subsection under "Inviting
+  teammates" on `agentspot-admin.adoc`, and a sentence plus xref after the *Invite your team*
+  paragraph on `agentspot-getting-started.adoc`. Open questions are left as TODOs on the page: which
+  domain is appended, and the exact "Inviting N · N can't be invited" wording. Design note from the
+  commit: completing a bare word with the domain intentionally differs from the prototype and is
+  "worth settling with design"._
+
+### Fixes & stability
+
+- **Tidier connector settings dialog with a pinned footer** — cleans up the custom connector
+  settings form in admin Connectors so its footer (action buttons) stays visible. Frontend
+  `CustomConnectorForm`. (SCAL-346343 · [#3279](https://github.com/thoughtspot/agentspot/pull/3279))
+  _Docs-team check: any screenshot of the custom connector form on `agentspot-admin.adoc` may now
+  look different._
+- **Logos for native Google Workspace and Microsoft 365 connectors** — these native connectors now
+  show their brand logos. Backend `google_connector_service`, `microsoft_365_connector_service`.
+  (SCAL-346239 · [#3269](https://github.com/thoughtspot/agentspot/pull/3269))
+- **Fixed artwork in native AgentSpot emails** — share-notification and invite emails now render
+  their images correctly (new hosted email images, connector strip on agent share emails). Backend
+  `share_notification_service`, `share_invite_dispatch`, `coms_client`, `agent_connector_strip`;
+  `static-assets/email/*`. (SCAL-346087 · [#3245](https://github.com/thoughtspot/agentspot/pull/3245))
+- **Better recall for docs grounding and uploaded-file semantic search** — the vector (ANN) search
+  scans more of the index, so answers grounded in AgentSpot docs and searches across uploaded files
+  should find relevant passages more reliably. Backend `artifact_indexing_service`, config.
+  (SCAL-346341 · [#3277](https://github.com/thoughtspot/agentspot/pull/3277))
+- **Runtime callbacks moved off the event loop** — agent runtime callbacks no longer block the
+  runtime's event loop, which improves responsiveness under load. Adds metrics and updates the
+  shared-runtime deploy path. Backend `postgress_agent_runtime/runtime/callbacks.py`, observability
+  metrics, deploy job/scripts. (SCAL-342869 · [#3273](https://github.com/thoughtspot/agentspot/pull/3273))
+- **Fewer Okta calls during tenant provisioning** — public tenant provisioning now caches Okta
+  lookups, merges concurrent identical calls, and applies an overall rate limit, which reduces the
+  risk of Okta throttling. Backend `public_provisioning` router, `provisioning_rate_limiter`,
+  `tenant_create_okta_setup_service`; runbook updated.
+  (SCAL-346373 · [#3284](https://github.com/thoughtspot/agentspot/pull/3284))
+- **Production hardened for the SpotLite event** — higher backend replica floor, DB pool 5+10,
+  one-pod-at-a-time disruption budget, and extra headroom in the Apigee Claude request rewrite;
+  new alerts and dashboards. Touches `internal_runtime` router plus k8s/infra.
+  (SCAL-346056 · [#3221](https://github.com/thoughtspot/agentspot/pull/3221))
+
+### Internal / infra
+
+- Slack listen mode enabled in preprod, prod, and EU cells, with Gemini and Haiku judges (SCAL-346354 · [#3280](https://github.com/thoughtspot/agentspot/pull/3280)). _Docs-team check: may become user-visible in Slack; see the Slack section of `agentspot-admin.adoc`._
+- Temporary prod "event mode" (HPA, DB pool, collector sizing) for the Oct 22 SpotLite event (SCAL-346077 · [#3234](https://github.com/thoughtspot/agentspot/pull/3234)).
+- Shared chats and chat erasure turned on in every environment (SCAL-344597 · [#3281](https://github.com/thoughtspot/agentspot/pull/3281)). _Docs-team check: confirm "Sharing a conversation" on `agentspot-use-agent.adoc` no longer needs any availability caveat._
+- Staging COMS signing key rotated (SCAL-344481 · [#3143](https://github.com/thoughtspot/agentspot/pull/3143)).
+- Prod DB connection limits raised so the backend can scale past 16 pods (SCAL-342137 · [#2546](https://github.com/thoughtspot/agentspot/pull/2546)).
+
 ## 2026-10-15 — 8688779205d4..1c4cc137c3ef
 
 Range: `8688779205d4..1c4cc137c3ef` · 2026-10-15
