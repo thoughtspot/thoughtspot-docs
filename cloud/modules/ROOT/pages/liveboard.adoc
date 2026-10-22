@@ -1,12 +1,12 @@
 = Basic Liveboard usage
 :experimental:
-:page-last_updated: Oct 7, 2026
+:page-last_updated: Oct 22, 2026
 :author: Mark
 :linkattrs:
 :page-aliases: /end-user/pinboard/about-pinboards.adoc, liveboard-compact-header.adoc
 :feature: Liveboard
 :description: Create a new Liveboard to group and manage related search results. Liveboards are the ThoughtSpot term for a dashboard.
-:jira: SCAL-226578, SCAL-222476, SCAL-254332, SCAL-268291, SCAL-266067, SCAL-286089, SCAL-341139
+:jira: SCAL-226578, SCAL-222476, SCAL-254332, SCAL-268291, SCAL-266067, SCAL-286089, SCAL-341139, SCAL-346861
 
 [.lead]
 Use Liveboards to group your related charts, tables, and headlines into a single, real-time dashboard for tracking KPIs and sharing data stories.
@@ -169,6 +169,44 @@ image::liveboard-controls-view-new-experience.png[Other Liveboard actions]
 
 If you make a change to a Liveboard in *Edit* mode, you must save your changes.
 Select the *Save* button in the top menu bar to make your changes permanent.
+
+[#liveboard-dependency-management]
+=== Liveboard dependency management [.badge.badge-early-access-relnotes]#Early Access#
+Admin users can delete data model columns even if they're in use on Liveboards. When a data model column that a Liveboard depends on is deleted, ThoughtSpot detects the impact and shows you exactly what's broken instead of displaying a generic error or silently failing. To enable this feature, contact {support-url}.
+
+[.bordered]
+image::dependency-management.png[Liveboard error showing visualizations impacted by a deleted column]
+
+* *Liveboard-level banner* — A warning banner at the top of the Liveboard
+indicates that one or more visualizations are affected by a deleted source column.
++
+NOTE: The banner is hidden in present mode to avoid disrupting presentations.
+
+* *Broken tile indicator* — Each affected visualization displays a clear broken state
+instead of a generic message, so you can
+immediately identify which tiles are impacted.
+
+* *Restricted actions* — To prevent further data quality issues, the following actions are disabled on a Liveboard with broken visualizations:
+** *Make a copy*
+** *Download*
+** *TML Export*
+** *TML Edit*
+
+==== Restoring a broken Liveboard to a healthy state
+
+// SOURCE: SCAL-346861
+
+If your Liveboard displays a warning banner or shows one or more broken visualizations due to deleted data model columns, you can restore the Liveboard by removing all affected tiles.
+
+To restore a Liveboard to a healthy state:
+
+. Enter Edit mode for the Liveboard.
+. Identify all visualizations marked as broken (these appear with a clear broken state or warning icon).
+. Delete each broken visualization from the Liveboard.
+. After removing all broken tiles, the warning banner at the top will disappear automatically. This means the Liveboard is healthy again.
+. Once the Liveboard is healthy, all previously disabled actions (Make a copy, Download, TML Export, TML Edit) become available.
++
+NOTE: There is currently no way to repair broken visualizations or recover deleted data columns. To restore full functionality, all broken tiles must be deleted.
 
 '''
 > **Related information**
