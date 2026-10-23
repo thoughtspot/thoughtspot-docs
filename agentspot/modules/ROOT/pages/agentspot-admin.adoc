@@ -1,11 +1,11 @@
 = AgentSpot administration
-:last_updated: Oct 7, 2026
+:last_updated: Oct 23, 2026
 :linkattrs:
 :experimental:
 :page-layout: default-agentspot-no-index
 :page-aliases:
 :description: Learn how to administer AgentSpot
-:jira: SCAL-333599
+:jira: SCAL-333599, SCAL-330488
 
 [.lead]
 Learn the essential steps for an administrator to set up AgentSpot for their team.
@@ -124,9 +124,12 @@ NOTE: New connectors are added on a regular basis. Check the image:settings-agen
 
 ==== Requirements for adding a connector
 
-* You must know the URL of the MCP server for the external application you are connecting to. For details, refer to the documentation for the external application.
 * Your company must have a license for the external application.
 * You must have access to that external application.
+* For custom connectors, and for catalog connectors whose server URL is specific to your organization, you must know the MCP server URL. Copy it from the vendor's admin console or setup page.
+* Some applications require setup on their side first, such as turning on MCP access, creating an OAuth app, or adding the AgentSpot callback URL `https://oauth.thoughtspot.app/callback`. For details and examples, see xref:agentspot-connector-setup.adoc[].
+
+// SOURCE: SCAL-330488; standard_integrations.json (mcp_url_mode FIXED and USER_SUPPLIED)
 
 ==== Adding a connector
 AgentSpot ships with native connectors for popular applications, listed under *Available Connectors*. If you want to connect to an external application that is not included, you can add it using a custom connector.
@@ -157,6 +160,13 @@ To add a connector, do the following:
 Some connectors, such as *Google Workspace* and *Microsoft 365*, are platform-native and do not require an MCP server URL. These connectors may prompt for administrator consent or OAuth authorization instead of the registration form described above.
 ====
 
+TIP: If the external application asks for a redirect or callback URL when you create its OAuth app, enter `https://oauth.thoughtspot.app/callback`. For vendor-specific steps, see xref:agentspot-connector-setup.adoc[].
+
+You can test the connection in the _Register_ window before you save. Testing is optional and does not save or turn on the connector.
+// SOURCE: add-edit-connector-modal.container.tsx (CALLBACK_URI); eureka/arsenal/docs/test-connection-flow.md
+// TODO: verify with engineering — confirm the test control label so it can be added as a numbered step
+
+
 ==== Sharing a connector with your organization
 When you add a connector, it is private to administrators by default. It does not appear in the connector list for non-admin users until you share it. This lets you register and test a connector before rolling it out. Right after you add a connector, AgentSpot also prompts you to share it.
 
@@ -185,10 +195,31 @@ If an application is not in the list of available connectors, you can add it usi
 
 ==== User authentication and security
 Connectors use each user's existing credentials for the target application.
-When an admin enables a connector, each user must complete a one-time OAuth sign-in to authorize AgentSpot to act on their behalf.
+When an admin adds a connector, such as Jira, each user must complete a one-time sign-in with their own credentials to authorize AgentSpot to act on their behalf.
 AgentSpot respects all existing permissions within the target app — users can only access data and perform actions they are already authorized to access in that application.
 
+////
+NOTE TO WRITER: The doc assistant merged two overlapping paragraphs here into one.
+Reason: The two paragraphs stated the same policy twice in different words. The only
+unique detail in the second was the Jira example, which is kept above.
+Action required: Review before publishing. The original second paragraph was:
+
 When an admin enables a connector (e.g., Jira), each user must log in with their individual credentials. AgentSpot respects all existing permissions within the target app; users will only see data and perform actions they are already authorized to access.
+////
+
+==== Troubleshooting connectors
+
+If a connector fails to register or connect, check the following:
+
+* The external application is set up to accept MCP connections. Some vendors require you to turn on MCP access first.
+* `https://oauth.thoughtspot.app/callback` is listed as an allowed redirect URL in the vendor's app.
+* After any change to scopes or redirect URLs, the vendor's app has been reinstalled or republished.
+* The user has connected their own account from the user menu > *Connectors*, and the agent includes the connector.
+
+For more fixes and vendor-specific steps, see xref:agentspot-connector-setup.adoc#troubleshooting[Troubleshooting].
+
+NOTE: The Slack connector, which lets agents work in Slack, is separate from the <<slack-bot,Slack bot>>, which lets users talk to agents from Slack. To set up the Slack connector, see xref:agentspot-connector-setup.adoc#slack-connector[Slack].
+// SOURCE: AgentSpot Technical FAQ, Connector setup information tab
 
 [#slack-bot]
 === Slack bot

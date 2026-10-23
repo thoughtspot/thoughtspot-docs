@@ -1,0 +1,202 @@
+= Preparing an external app for an AgentSpot connector
+:last_updated: Oct 23, 2026
+:linkattrs:
+:experimental:
+:page-layout: default-agentspot-no-index
+:page-aliases:
+:description: Learn what to set up in an external application before you add it as a connector in AgentSpot.
+:jira: SCAL-330488
+
+[.lead]
+Some applications require you to turn on MCP access and create credentials on their side before AgentSpot can connect to them. Use this page to prepare the application, collect the values AgentSpot asks for, and fix common setup problems.
+
+// SOURCE: SCAL-330488
+
+== Overview
+
+AgentSpot connects to external applications through their Model Context Protocol (MCP) servers. For many connectors in the *Available Connectors* list, you only click *Add* and sign in. Other vendors require setup in their own admin console first.
+
+Vendor-side setup usually includes one or more of the following:
+
+* Turning on MCP access, or setting up an MCP server, which gives you an MCP server URL
+* Creating an OAuth app, which gives you a *Client ID* and sometimes a *Client Secret*
+* Creating an access token, such as a personal access token or API token
+* Adding the AgentSpot callback URL to the app's list of allowed redirect URLs
+
+// SOURCE: SCAL-330488; AgentSpot Technical FAQ, Connector setup information tab
+
+IMPORTANT: Vendors change their setup steps over time. If the steps on this page do not match what you see, follow the vendor's current documentation.
+
+== Before you begin
+
+* You need the *Can manage AgentSpot* privilege. For details, see xref:agentspot-admin.adoc#managing-users[Managing users].
+* You need administrator access to the external application, or help from someone who has it.
+* Your company must have a license for the external application that includes MCP or API access.
+
+// SOURCE: agentspot-admin.adoc, Requirements for adding a connector
+
+[#values-to-collect]
+== Values to collect
+
+Depending on the application, AgentSpot asks for some or all of the following values when you register the connector.
+
+[cols="1,2,2", options="header"]
+|===
+| Value | What it is | Where to get it
+
+| *Server URL*
+| The address of the application's MCP server.
+| Many connectors in the catalog already include it. For others, the URL is specific to your organization. Copy it from the vendor's admin console or setup page.
+
+| *Client ID*
+| Identifies the OAuth app you created in the external application.
+| The vendor's developer or admin console, after you create the app.
+
+| *Client Secret*
+| A private value paired with the Client ID.
+| Same place as the Client ID. Some vendors do not issue one.
+
+| *Token*
+| A static credential, such as a personal access token, used with bearer token authentication.
+| The vendor's user or developer settings.
+
+| *Callback URL* (also called redirect URL)
+| The address the vendor sends users back to after they approve access.
+| Enter this value in the external application: `https://oauth.thoughtspot.app/callback`
+|===
+
+// SOURCE: eureka/arsenal/src/resources/data/standard_integrations.json (mcp_url_mode, mcp_url_hint)
+// SOURCE: js/ts-apps/arsenal/src/components/admin-connectors/add-edit-modal/add-edit-connector-modal.container.tsx (CALLBACK_URI, authentication types oauth, bearer, none)
+// TODO: verify with engineering — confirm the exact field labels in the Register window (for example, "Token" or "Bearer token") and the Authentication option labels (for example, "OAuth 2.1", "Bearer", "None")
+
+TIP: Leave *Client ID* and *Client Secret* empty for connectors that support automatic registration. AgentSpot registers itself with the vendor when you connect.
+// TODO: verify with engineering — confirm which catalog connectors register automatically, and what AgentSpot shows when a vendor does not support automatic registration
+
+== General setup process
+
+. *In the external application*: Turn on MCP access and note the MCP server URL, if the vendor provides one.
+. *In the external application*: If the vendor requires an OAuth app, create one. Add `https://oauth.thoughtspot.app/callback` as a redirect URL, and note the Client ID and Client Secret.
+. *In AgentSpot*: Go to image:settings-agent-spot.svg[10,Admin Settings] *Admin Settings* > *Connectors* and add the connector with the values you collected. For details, see xref:agentspot-admin.adoc#managing-connectors[Managing connectors].
+. *(Optional) Test the connection* before you save. Testing does not save or turn on the connector.
+. *Connect your own account*: From your user menu, select *Connectors* and click *Connect* on the new connector.
+. *Share the connector* with your organization when it works. For details, see xref:agentspot-admin.adoc#managing-connectors[Sharing a connector with your organization].
+
+// SOURCE: eureka/arsenal/docs/test-connection-flow.md
+// TODO: verify with engineering — confirm the label of the test control in the Register window
+
+== Setup examples for common applications
+
+The following examples cover applications that require vendor-side setup.
+
+[#salesforce]
+=== Salesforce
+
+Salesforce requires you to expose an MCP server for your Salesforce org before AgentSpot can connect.
+
+*In Salesforce:*
+
+. Follow the Salesforce documentation for hosted MCP servers: https://developer.salesforce.com/docs/platform/hosted-mcp-servers/guide/claude.html[Salesforce hosted MCP servers^].
+. When asked for a callback URL, enter `https://oauth.thoughtspot.app/callback`.
+. Note the following values:
+** The *MCP server URL*. It depends on your org type. Production orgs and sandbox or scratch orgs each have their own endpoint.
+** The *Consumer Key*, which AgentSpot calls the *Client ID*.
+
+*In AgentSpot:*
+
+. Go to image:settings-agent-spot.svg[10,Admin Settings] *Admin Settings* > *Connectors*.
+. Find *Salesforce* and click *Add*.
+. For *Server URL*, enter the MCP server URL from Salesforce.
+. For *Client ID*, enter the Consumer Key.
+. Click *Register Connector*.
+
+// SOURCE: AgentSpot Technical FAQ, Connector setup information tab, Salesforce
+// SOURCE: standard_integrations.json, salesforce (oauth_client_registration MANUAL, mcp_url_mode USER_SUPPLIED, mcp_url_hint, docs_url)
+// TODO: verify with engineering — confirm whether a Client Secret is also required for Salesforce
+
+[#hubspot]
+=== HubSpot
+
+*In HubSpot:*
+
+. Follow HubSpot's instructions to create an MCP app: https://developers.hubspot.com/mcp[HubSpot MCP server^].
+. When asked for a *Redirect URL*, enter `https://oauth.thoughtspot.app/callback`.
+. After you create the app, note the *Client ID* and *Client Secret*.
+
+*In AgentSpot:*
+
+. Go to image:settings-agent-spot.svg[10,Admin Settings] *Admin Settings* > *Connectors*.
+. Search for *HubSpot* and click *Add*.
+. For *Authentication*, select *OAuth 2.1*.
+. Enter the *Client ID* and *Client Secret* from HubSpot.
+. Click *Register Connector*.
+
+// SOURCE: AgentSpot Technical FAQ, Connector setup information tab, HubSpot
+// TODO: verify with engineering — the catalog marks HubSpot for automatic client registration (DCR), but the FAQ instructs admins to create an app and enter a Client ID and Client Secret. Confirm which flow is current.
+
+[#slack-connector]
+=== Slack
+
+NOTE: The Slack connector lets agents read and act in Slack through the Slack MCP server. It is separate from the xref:agentspot-admin.adoc#slack-bot[Slack bot], which lets users talk to agents from a Slack channel.
+
+*In Slack:*
+
+Slack requires a Slack app that hosts the MCP server. For details, see the Slack documentation: https://docs.slack.dev/ai/slack-mcp-server/[Slack MCP server^].
+
+. Go to https://api.slack.com/apps[api.slack.com/apps^] and click *Create New App*.
+. Select *From a manifest*.
+. Select the workspace to install the app in, then click *Continue*.
+. Paste the manifest from the Slack documentation. It includes the scopes each MCP tool needs.
+. Click *Continue* > *Create* and approve the installation for your workspace.
+. In the app settings, open the *Agents* section and turn on *Slack Model Context Protocol (MCP) Server*.
+. Go to *OAuth & Permissions* and review the scopes. Leave them as they are unless you want to limit what AgentSpot can do in Slack.
+. Under *Redirect URLs*, click *Add New Redirect URL*, enter `https://oauth.thoughtspot.app/callback`, click *Add*, and then click *Save URLs*.
+. Go to *Basic Information* > *App Credentials* and note the *Client ID* and *Client Secret*.
+
+IMPORTANT: Any change to scopes or redirect URLs takes effect only after you reinstall the app. Go to *Install App* and reinstall it.
+
+*In AgentSpot:*
+
+. Go to image:settings-agent-spot.svg[10,Admin Settings] *Admin Settings* > *Connectors*.
+. Search for *Slack* and click *Add*.
+. Enter the *Client ID* and *Client Secret* from your Slack app.
+. Click *Register Connector*.
+. From your user menu, select *Connectors*, click *Connect* on Slack, and approve the permissions in Slack.
+
+// SOURCE: AgentSpot Technical FAQ, Connector setup information tab, Connecting AgentSpot and Slack
+// SOURCE: standard_integrations.json, slack (mcp_url https://mcp.slack.com/mcp, streamable_http, docs_url)
+// TODO: verify with engineering — the catalog marks Slack credentials as managed by ThoughtSpot (VAULT_MANAGED). Confirm whether customers must create their own Slack app, or only in some workspaces ("most workspaces" per the FAQ).
+// TODO: verify with engineering — confirm Slack UI labels (Agents section, MCP Server toggle) against the current Slack admin console
+
+[#troubleshooting]
+== Troubleshooting
+
+[.faq]
+--
+The connector does not appear in the Available Connectors list::
+Add it as a custom connector with the vendor's MCP server URL. If the application does not have an MCP server, AgentSpot cannot connect to it. For details, see xref:agentspot-admin.adoc#managing-connectors[Custom connectors].
+
+The vendor shows a redirect URL or callback error during sign-in::
+Make sure `https://oauth.thoughtspot.app/callback` is listed as an allowed redirect URL in the external application, with no extra characters or trailing spaces. Some vendors, such as Slack, also require you to reinstall the app after you change it.
+
+The connection fails after you change scopes or permissions in the vendor app::
+Reinstall or republish the app in the vendor console, then connect again in AgentSpot.
+
+The connector fails and the steps on this page look different::
+Check the vendor's documentation to confirm your account is set up to accept MCP connections. Vendor setup steps change over time.
+
+An agent cannot use a connector::
+Make sure that you have connected your own account (user menu > *Connectors* > *Connect*), and that the agent includes the connector (open the agent, click *Edit Agent*, and select the connector).
+
+The connection stops working after some time::
+Connectors that use a static token, such as a personal access token, do not refresh automatically. When the token expires, create a new token and connect again.
+// TODO: verify with engineering — confirm reconnect behavior for expired bearer tokens and for OAuth providers that do not return refresh tokens
+--
+
+// SOURCE: AgentSpot Technical FAQ, sections 1. Connectors and Connector setup information
+// SOURCE: eureka/arsenal/test/unit_tests/domains/testing/test_drafts.py (hint: "Whitelist https://oauth.thoughtspot.app/callback in the provider console.")
+
+== Related information
+
+* xref:agentspot-admin.adoc#managing-connectors[Managing connectors]
+* xref:agentspot-connector-reference.adoc[]
+* xref:agentspot-getting-started.adoc[Getting started with AgentSpot]
