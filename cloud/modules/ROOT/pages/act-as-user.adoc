@@ -6,6 +6,7 @@
 :page-layout: default-cloud-early-access
 :description: Authorized administrators can start a governed, time-bounded impersonation session to view ThoughtSpot exactly as a specific user would, for troubleshooting and support.
 :jira: SCAL-325380
+:page-aliases: user-impersonation.adoc
 
 // SOURCE: SCAL-325379, Design doc https://docs.google.com/document/d/1imxJ2jM1oBlXnupsnphvXS_I73_cA1ZMQdYYJ-tGVYE
 
@@ -36,14 +37,14 @@ Neither Cluster Admins nor Org Admins can impersonate themselves or another Clus
 
 === Target users (consent)
 // SOURCE: SCAL-325379 epic — consent gate is a time-boxed grant (6h / 24h / 3 days), default "Don't allow"
-Each user controls whether administrators can impersonate their account. In *Act as setting* on the user's profile, the *Allow admins to act as you* preference is set to *Don't allow* by default. Before an administrator can start a session as that user, the user must grant access for one of the following periods:
+Each user controls whether administrators can impersonate their account. In *Act as user setting* on the user's profile, the *Allow admins to act as you* preference is set to *Don't allow* by default. Before an administrator can start a session as that user, the user must grant access for one of the following periods:
 
 * *Allow for 6 hours*
 * *Allow for 24 hours*
 * *Allow for 3 days*
 
 [.bordered]
-image::impersonation-3.png[Act as setting on the user profile]
+image::impersonation-3.png[Act as user setting on the user profile]
 
 Access expires automatically at the end of the selected period, and the setting returns to *Don't allow*.
 
@@ -54,7 +55,9 @@ The user receives an email at the start and end of an impersonation session. For
 
 
 === What the administrator can do
-During an impersonation session, the administrator has full access to the platform as the target user. The following actions are permanently blocked:
+During an impersonation session, the administrator has access to the platform as the target user.
+////
+The following actions are permanently blocked:
 
 // SOURCE: Design doc — Forever-blocked actions
 [cols="1", options="header"]
@@ -68,6 +71,8 @@ During an impersonation session, the administrator has full access to the platfo
 | Delete the user account
 |===
 
+
+////
 
 [NOTE]
 ====
@@ -94,26 +99,30 @@ The following rules apply to concurrent sessions:
 When a session ends, the administrator is signed out of ThoughtSpot.
 On clusters that use SSO with automatic redirect, the identity provider re-authenticates the administrator as themselves automatically.
 
+
+////
 [NOTE]
 ====
 // SOURCE: Design doc — IAM v2 Okta SSO section
 On IAM v2 clusters with Okta SSO, the system clears the Okta SSO session on impersonation start to keep ThoughtSpot's session and the IdP session in sync. On non-auto-redirect SSO clusters, the external IdP session remains active after impersonation ends, and the administrator is re-authenticated as themselves by the IdP.
 ====
+////
+
 
 == Start an impersonation session
 
-Before you can act as a user, the user must grant access in *Act as setting* on their profile.
+Before you can act as a user, the user must grant access in *Act as user setting* on their profile.
 
 . Navigate to *Admin settings* > *User management*.
 . Locate the user you want to act as.
-. Click the *Act as user* option from the user's action menu.
+. Click the *Act as user* option from the user's action menu. Alternatively, you can also find the *Act as user* option in the image:icon-more-10px.png[more options menu icon] menu for the respective user on the *Users* list page.
 +
 [.bordered]
 image::impersonation-1.png[Act as user]
 +
 [NOTE]
 ====
-The *Act as user* option is visible only if the target user is an `Active` user.
+The *Act as user* option is visible only if the target user is an `Active` or a `Pending` user.
 ====
 +
 A colored impersonation border appears around the perimeter of the screen. You are now viewing ThoughtSpot as the target user.
