@@ -21,11 +21,27 @@ endif::[]
 
 [#26-12-0-cl-search]
 [discrete]
-=== Search across all conversations in Spotter on Liveboards
+=== Search across your conversations in Spotter on Liveboards
 // Mary. jira: SCAL-333707. docs jira: SCAL-?
 // PM: Mayur. add video.
 
 You can now search across all your Spotter on Liveboards conversations, making it easier to find past insights, questions, and answers. This new feature allows you to quickly locate any prior interaction, improving your ability to revisit previous discussions and discover valuable information in your chat history. No more searching each conversation individually—use global search to find relevant content wherever it appears.
+////
+You can now search across your saved Spotter conversations directly from the chat panel, without scrolling through the full history list.
+
+A new Search box appears at the top of the chat panel. As you type, Spotter searches both conversation titles and the full transcripts and returns matching conversations highlighting where the match was found.
+
+Key details:
+* Typo-tolerant matching — results tolerate minor spelling errors, so forcast finds forecast.
+* Searches your conversations only — results are strictly scoped to your own saved chats. Shared-to-me conversations are not included.
+* Results within 5 seconds — new and renamed conversations become searchable within 5 seconds of the change.
+* Filters — narrow results by date range, data model (worksheet), or agent.
+* Unsaved chats cannot be searched — the search scope matches the chat history list exactly. If chat history is turned off, the search box is not available.
+
+Conversation search is available in Spotter 3 on ThoughtSpot Cloud.
+////
+
+
 
 [#26-12-0-cl-spotter]
 [discrete]
@@ -66,11 +82,23 @@ ThoughtSpot now supports full dark, light, and system appearance modes across al
 
 [#26-12-0-cl-homepage]
 [discrete]
-=== Home page V4: Improved navigation and discovery [.badge.badge-ga-relnotes]#GA#
+=== Home page: Improved navigation and discovery [.badge.badge-ga-relnotes]#GA#
 // Mary. jira: SCAL-309500. docs jira: SCAL-309501
 // PM: Rudram. image. is this focused home page?
 
 The ThoughtSpot home page has been revamped with a new design to make finding, exploring, and accessing content easier. Enhanced navigation helps you quickly discover relevant Liveboards and Answers. The refreshed layout gives you a streamlined, modern experience when you sign in, enabling efficient access to your most-used data and analytics resources.
+
+////
+The Focused home page is now generally available and is the default home page experience for new ThoughtSpot Cloud instances provisioned on 26.12 or later.
+
+The Focused home page replaces the modular home page layout with a streamlined two-panel design built for users who regularly monitor KPIs and return to a core set of analytics assets:
+
+* Recents panel — Surfaces the Liveboards and Answers you opened most recently, so you can pick up where you left off without navigating to your library.
+* Watchlist panel — Displays your pinned KPIs with live values and trend indicators at a glance. You can add, remove, and reorder KPIs in your Watchlist at any time.
+
+Enable or switch between the Focused and Modular home page from *Admin* > *Home Page & App Experience*. The setting is available at the all-Orgs level; per-Org admins can revert their Org to the Modular home page if needed. The Focused home page requires Spotter to be enabled on your instance; if Spotter is disabled, the instance defaults to the Modular home page automatically.
+////
+
 
 ////
 [#26-12-0-cl-kpi]
@@ -106,6 +134,14 @@ The new charts library expands to add candlestick charts. This update introduces
 
 Org administrators and users with *Can manage variables* privileges can now create and manage formula variables from the *Variables* page in their own Org, without switching to the primary Org. In a secondary Org, you can create formula variables and assign values that apply only to that Org. You can then use these variables in row-level security (RLS) rules.
 
+////
+The Variables tab in the Admin portal is now visible to administrators in secondary Orgs, not just the primary (all-Orgs) view. Org admins can see and manage the variables that are in scope for their Org without needing to switch to the all-Orgs context.
+
+* Values column renamed — The column previously labelled Value assigned is now labelled No. of Values assigned, more accurately describing that a variable can have multiple values assigned across different groups or Orgs.
+* RBAC alignment — Administrators with the Can administer Org or Can administer application settings privilege can now access the Variables tab. Previously, the tab was gated to cluster super-admins only, which prevented Org admins from accessing it even when they had the Can manage variables data-control role.
+
+////
+
 [#26-12-0-cl-imp]
 [discrete]
 === Variables UI: Now available for secondary Orgs and more users
@@ -113,6 +149,10 @@ Org administrators and users with *Can manage variables* privileges can now crea
 // PM: Sejal
 
 The variables UI is now accessible to users in secondary organizations as well as a broader set of user profiles. This change helps teams leverage parameterized analytics across multiple Org contexts and makes personalization easier for more users. If your deployment uses Orgs for multi-tenant or segmentation, your users now have access to variable-driven analytics and workflows.
+
+////
+Variables now support three enhancements in the Admin portal. Formula variables can be assigned a data type (such as string, integer, date, or boolean) at creation, ensuring values are validated against the target column type and resolve correctly in RLS rules and formulas without conversion wrappers. Variable values can now be scoped to individual users and groups in addition to Orgs, with values resolved at query time in user > group > Org > default order. A default value can also be set on a variable, used as a fallback when no scoped value matches the current user context, preventing query failures for users or Orgs without an explicitly assigned value.
+////
 
 [#secondary-26-12-0-cl]
 [discrete]
@@ -127,6 +167,11 @@ The variables UI is now accessible to users in secondary organizations as well a
 // PM: Mayur. is this a new Spotter Liveboard? How does it differ from the Spotter conversations Liveboard? where is the Spotter settings menu? add image/ video.
 
 Administrators can now monitor Spotter from the Spotter settings menu. Select *Monitor metrics* to open a Liveboard that shows Spotter usage, response latency, and user feedback, so you can find slow or poorly rated conversations. Select *Monitor all chats* to browse, search, filter, and preview Spotter conversations, and to download the list as a CSV file. To enable this feature, contact ThoughtSpot Support.
+
+////
+Administrators can now monitor Spotter usage across their Org directly from Spotter > Settings. Monitor all chats opens a searchable, filterable list of every Spotter conversation in the Org, with each chat readable in full read-only view including Spotter's reasoning. Spotter metrics provides a Liveboard of aggregate usage data including feedback scores and response latency, giving administrators visibility into adoption trends and answer quality over time. Monitoring is scoped to the signed-in Org in multi-Org instances and is available in the Liveboard side panel (New) experience of Spotter 3.
+////
+
 
 ////
 [#26-12-0-cl-radiant]
@@ -190,6 +235,10 @@ All existing and new users have the first three privileges by default, so nothin
 // PM: Sejal. add an example. How is this different from column-level security?
 
 You can now secure data at the column level using Attribute-Based Access Control (ABAC) together with column security rules. This update adds publishing support, enabling administrators and data engineers to manage access and sharing with fine-grained attribute logic. With ABAC, datasets can be segmented and shared according to user attributes like department, role, or geography, improving control over sensitive data.
+
+////
+Column security rules now support attribute-based access control (ABAC), letting administrators express column visibility as a boolean rule over user attributes rather than by group membership. Existing group-based column security requires a separate group for every combination of access dimensions (role, region, tier, and so on), which becomes unmanageable at scale and cannot be applied across Orgs. ABAC rules evaluate against the attributes the user already carries from their identity system, so a single rule covers all combinations and a primary-Org admin can publish a rule that is enforced across all secondary Orgs automatically. Rules are authored in the formula editor, supported in TML and the REST API v2, and enforced everywhere column security applies: tables, Models, Answers, Liveboards, Search, and Spotter. Group-based rules continue to work unchanged alongside them.
+////
 
 [#26-12-0-cl-redshift]
 [discrete]
