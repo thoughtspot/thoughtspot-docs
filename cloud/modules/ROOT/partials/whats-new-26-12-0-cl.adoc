@@ -51,6 +51,7 @@ Conversation search is available in Spotter 3 on ThoughtSpot Cloud.
 
 Spotter now suggests recommended follow-up questions in your conversations. If you click on a question, the text appears in the chat as if you typed it.
 
+////
 [#26-12-0-cl-x]
 [discrete]
 === Smoother chart animations in Spotter on Liveboards [.badge.badge-ga-relnotes]#GA#
@@ -59,9 +60,9 @@ Spotter now suggests recommended follow-up questions in your conversations. If y
 // PM: Anshul. might not need doc, just an improvement.
 
 Spotter on Liveboards now features smoother, more fluid chart resizing animations. When you adjust the size of a chart, the visualization transitions seamlessly, reducing visual lag and dropped frames. This improvement enhances the overall viewing, exploration and search experience.
+////
 
-
-
+////
 [#26-12-0-cl-chart]
 [discrete]
 === Improved Liveboard chart data freshness
@@ -69,6 +70,7 @@ Spotter on Liveboards now features smoother, more fluid chart resizing animation
 // PM: Arpit. release notes only?
 
 Liveboard chart data is now automatically refreshed whenever you apply filters or interact with charts using features like Drill Down, Show Underlying Data, Include/Exclude, SpotIQ Analyze, Explain Change, Change Analysis, Custom Actions, or Copy to Clipboard. These actions clear stale cached data for the affected chart, ensuring that your visualizations always reflect the latest data when reloaded. This enhancement improves accuracy and reliability.
+////
 ////
 [#26-12-0-cl-dark]
 [discrete]
@@ -84,7 +86,7 @@ ThoughtSpot now supports full dark, light, and system appearance modes across al
 [discrete]
 === Home page: Improved navigation and discovery [.badge.badge-ga-relnotes]#GA#
 // Mary. jira: SCAL-309500. docs jira: SCAL-309501
-// PM: Rudram. image. is this focused home page?
+// PM: Rudram. image. is this focused home page? watchlist and recents
 
 The ThoughtSpot home page has been revamped with a new design to make finding, exploring, and accessing content easier. Enhanced navigation helps you quickly discover relevant Liveboards and Answers. The refreshed layout gives you a streamlined, modern experience when you sign in, enabling efficient access to your most-used data and analytics resources.
 
@@ -126,6 +128,91 @@ The new charts library expands to add candlestick charts. This update introduces
 
 // Analyst
 
+
+
+[#26-12-0-cl-imp]
+[discrete]
+=== Variables UI: Now available for secondary Orgs and more users
+// Mary. jira: SCAL-312203. docs jira: SCAL-312204
+// PM: Sejal. rewrite as bullet points
+////
+The variables UI is now accessible to users in secondary organizations as well as a broader set of user profiles. This change helps teams leverage parameterized analytics across multiple Org contexts and makes personalization easier for more users. If your deployment uses Orgs for multi-tenant or segmentation, your users now have access to variable-driven analytics and workflows.
+////
+
+Variables now support three enhancements in the Admin portal. Formula variables can be assigned a data type (such as string, integer, date, or boolean) at creation, ensuring values are validated against the target column type and resolve correctly in RLS rules and formulas without conversion wrappers. Variable values can now be scoped to individual users and groups in addition to Orgs, with values resolved at query time in user > group > Org > default order. A default value can also be set on a variable, used as a fallback when no scoped value matches the current user context, preventing query failures for users or Orgs without an explicitly assigned value.
+
+
+[#secondary-26-12-0-cl]
+[discrete]
+=== _Other features and enhancements_
+
+// Data Engineer
+
+[#26-12-0-cl-monitoring]
+[discrete]
+=== Monitor Spotter usage and conversations
+// Mary. jira: SCAL-338336. docs jira: SCAL-338337
+// PM: Mayur. is this a new Spotter Liveboard? How does it differ from the Spotter conversations Liveboard? where is the Spotter settings menu? add image/ video. shorten blurb
+
+Administrators can now monitor Spotter usage across their Org directly from Spotter > Settings. *Monitor all chats* opens a searchable, filterable list of every Spotter conversation in the Org, with each chat readable in full read-only view including Spotter's reasoning. Spotter metrics provides a Liveboard of aggregate usage data including feedback scores and response latency, giving administrators visibility into adoption trends and answer quality over time. Monitoring is scoped to the signed-in Org in multi-Org instances and is available in the Liveboard side panel (New) experience of Spotter 3.
+
+
+
+////
+[#26-12-0-cl-radiant]
+[discrete]
+=== Radiantizing components in the Admin panel
+// Mary. jira: SCAL-236182. docs jira: SCAL-?
+// PM: Swarnima
+// Agent indicated no doc needed. Should confirm with Swarima
+////
+
+[#26-12-0-cl-tml]
+[discrete]
+=== Spotter Answer verification and rendering
+// Naomi. jira: SCAL-324699. docs jira: SCAL-324700
+// PM: Abhijit. is it only for TML answers and how do users know which answers are TML? follow up with Abhijit over whether this is the same as view explanation panel in Spotter answers. move up to business user.
+
+You can now click *View explanation* below a Spotter Answer to see the original query, a breakdown of the columns used, and the definition of each column in plain English. This makes it easier to verify that Spotter has answered your question correctly. Options that previously lived below the Answer (Edit, Pin, Save, Download) can now be accessed from the More menu image:icon-more-10px.png[more icon] in the top right corner of the Answer.
+
+[#26-12-0-cl-token]
+[discrete]
+=== View explanation panel in Spotter answers [.badge.badge-ga-relnotes]#GA#
+// Mark. jira: SCAL-341022, SCAL-325193. docs jira: SCAL-343261, SCAL-325194
+// PM: Abhijit. consolidate and move to business user
+
+A *View explanation* link now appears in Spotter answers when ThoughtSpot can provide a detailed breakdown of how the answer was derived. Click the link to open a panel where you can see how your question was interpreted, which columns and tables were used, and how the result was calculated. The panel includes multiple tabs so you can explore different aspects of the answer.
+
+On wider screens, the panel opens to the right of the answer card. On narrower screens and in embedded contexts, it opens below the answer card.
+
+Rollout of this feature begins in 26.12.0.cl and will be enabled for all users during a phased GA.
+
+[#26-12-0-cl-rbac]
+[discrete]
+=== New privileges to control content creation and analysis
+
+// Mary. jira: SCAL-331949. docs jira: SCAL-331950
+// PM: Siddhant. switch bullet list to a table and explain more. change first line to summarize rbac-- can administer schedules privilege is not related to "creating content and analyzing data"
+
+Administrators can now use roles to control who can create content and analyze data. These new privileges are available on instances with Roles enabled:
+
+* *Can create Liveboards*: Create, edit, copy, pin to, and delete Liveboards.
+* *Can create Answers*: Search data, and create, edit, and save Answers.
+* *Can analyze data*: Use Explore, Drill down, Change analysis, and Show underlying data.
+* *Can administer schedules*: Manage all schedules in the Org.
+
+All existing and new users have the first three privileges by default, so nothing changes until an administrator revokes a privilege for a group. When a privilege is revoked, the related actions are hidden for those users. All users can still view Liveboards and Answers.
+
+ifndef::free-trial-feature[]
+[#26-12-0-cl-semantic]
+[discrete]
+=== Verified queries in Snowflake semantic views
+// Naomi. jira: SCAL-327253. docs jira: SCAL-327254
+// PM: Anant.
+
+You can now import `verified_queries` and `ai_sql_generation` instructions from Snowflake semantic views. These fields are added directly to Spotter memory. To enable this feature, contact {support-url}.
+endif::free-trial-feature[]
+
 [#26-12-0-cl-variable]
 [discrete]
 === Manage formula variables in secondary Orgs
@@ -142,103 +229,19 @@ The Variables tab in the Admin portal is now visible to administrators in second
 
 ////
 
-[#26-12-0-cl-imp]
-[discrete]
-=== Variables UI: Now available for secondary Orgs and more users
-// Mary. jira: SCAL-312203. docs jira: SCAL-312204
-// PM: Sejal
 
-The variables UI is now accessible to users in secondary organizations as well as a broader set of user profiles. This change helps teams leverage parameterized analytics across multiple Org contexts and makes personalization easier for more users. If your deployment uses Orgs for multi-tenant or segmentation, your users now have access to variable-driven analytics and workflows.
-
-////
-Variables now support three enhancements in the Admin portal. Formula variables can be assigned a data type (such as string, integer, date, or boolean) at creation, ensuring values are validated against the target column type and resolve correctly in RLS rules and formulas without conversion wrappers. Variable values can now be scoped to individual users and groups in addition to Orgs, with values resolved at query time in user > group > Org > default order. A default value can also be set on a variable, used as a fallback when no scoped value matches the current user context, preventing query failures for users or Orgs without an explicitly assigned value.
-////
-
-[#secondary-26-12-0-cl]
-[discrete]
-=== _Other features and enhancements_
-
-// Data Engineer
-
-[#26-12-0-cl-monitoring]
-[discrete]
-=== Monitor Spotter usage and conversations
-// Mary. jira: SCAL-338336. docs jira: SCAL-338337
-// PM: Mayur. is this a new Spotter Liveboard? How does it differ from the Spotter conversations Liveboard? where is the Spotter settings menu? add image/ video.
-
-Administrators can now monitor Spotter from the Spotter settings menu. Select *Monitor metrics* to open a Liveboard that shows Spotter usage, response latency, and user feedback, so you can find slow or poorly rated conversations. Select *Monitor all chats* to browse, search, filter, and preview Spotter conversations, and to download the list as a CSV file. To enable this feature, contact ThoughtSpot Support.
-
-////
-Administrators can now monitor Spotter usage across their Org directly from Spotter > Settings. Monitor all chats opens a searchable, filterable list of every Spotter conversation in the Org, with each chat readable in full read-only view including Spotter's reasoning. Spotter metrics provides a Liveboard of aggregate usage data including feedback scores and response latency, giving administrators visibility into adoption trends and answer quality over time. Monitoring is scoped to the signed-in Org in multi-Org instances and is available in the Liveboard side panel (New) experience of Spotter 3.
-////
-
-
-////
-[#26-12-0-cl-radiant]
-[discrete]
-=== Radiantizing components in the Admin panel
-// Mary. jira: SCAL-236182. docs jira: SCAL-?
-// PM: Swarnima
-// Agent indicated no doc needed. Should confirm with Swarima
-////
-
-[#26-12-0-cl-tml]
-[discrete]
-=== Spotter Answer verification and rendering
-// Naomi. jira: SCAL-324699. docs jira: SCAL-324700
-// PM: Abhijit. is it only for TML answers and how do users know which answers are TML? follow up with Abhijit over whether this is the same as view explanation panel in Spotter answers.
-
-You can now click *View explanation* below a Spotter Answer to see the original query, a breakdown of the columns used, and the definition of each column in plain English. This makes it easier to verify that Spotter has answered your question correctly. Options that previously lived below the Answer (Edit, Pin, Save, Download) can now be accessed from the More menu image:icon-more-10px.png[more icon] in the top right corner of the Answer.
-
-[#26-12-0-cl-token]
-[discrete]
-=== View explanation panel in Spotter answers [.badge.badge-ga-relnotes]#GA#
-// Mark. jira: SCAL-341022, SCAL-325193. docs jira: SCAL-343261, SCAL-325194
-// PM: Abhijit
-
-A *View explanation* link now appears in Spotter answers when ThoughtSpot can provide a detailed breakdown of how the answer was derived. Click the link to open a panel where you can see how your question was interpreted, which columns and tables were used, and how the result was calculated. The panel includes multiple tabs so you can explore different aspects of the answer.
-
-On wider screens, the panel opens to the right of the answer card. On narrower screens and in embedded contexts, it opens below the answer card.
-
-Rollout of this feature begins in 26.12.0.cl and will be enabled for all users during a phased GA.
-
-ifndef::free-trial-feature[]
-[#26-12-0-cl-semantic]
-[discrete]
-=== Verified queries in Snowflake semantic views
-// Naomi. jira: SCAL-327253. docs jira: SCAL-327254
-// PM: Anant.
-
-You can now import `verified_queries` and `ai_sql_generation` instructions from Snowflake semantic views. These fields are added directly to Spotter memory. To enable this feature, contact {support-url}.
-endif::free-trial-feature[]
-
-[#26-12-0-cl-rbac]
-[discrete]
-=== New privileges to control content creation and analysis
-
-// Mary. jira: SCAL-331949. docs jira: SCAL-331950
-// PM: Siddhant
-
-Administrators can now use roles to control who can create content and analyze data. These new privileges are available on instances with Roles enabled:
-
-* *Can create Liveboards*: Create, edit, copy, pin to, and delete Liveboards.
-* *Can create Answers*: Search data, and create, edit, and save Answers.
-* *Can analyze data*: Use Explore, Drill down, Change analysis, and Show underlying data.
-* *Can administer schedules*: Manage all schedules in the Org.
-
-All existing and new users have the first three privileges by default, so nothing changes until an administrator revokes a privilege for a group. When a privilege is revoked, the related actions are hidden for those users. All users can still view Liveboards and Answers.
 
 [#26-12-0-cl-csr]
 [discrete]
 === Column security rules: Attribute-based access control and publishing
 // Mary. jira: SCAL-311897. docs jira: SCAL-312204
 // PM: Sejal. add an example. How is this different from column-level security?
-
+////
 You can now secure data at the column level using Attribute-Based Access Control (ABAC) together with column security rules. This update adds publishing support, enabling administrators and data engineers to manage access and sharing with fine-grained attribute logic. With ABAC, datasets can be segmented and shared according to user attributes like department, role, or geography, improving control over sensitive data.
+////
 
-////
 Column security rules now support attribute-based access control (ABAC), letting administrators express column visibility as a boolean rule over user attributes rather than by group membership. Existing group-based column security requires a separate group for every combination of access dimensions (role, region, tier, and so on), which becomes unmanageable at scale and cannot be applied across Orgs. ABAC rules evaluate against the attributes the user already carries from their identity system, so a single rule covers all combinations and a primary-Org admin can publish a rule that is enforced across all secondary Orgs automatically. Rules are authored in the formula editor, supported in TML and the REST API v2, and enforced everywhere column security applies: tables, Models, Answers, Liveboards, Search, and Spotter. Group-based rules continue to work unchanged alongside them.
-////
+
 
 [#26-12-0-cl-redshift]
 [discrete]
