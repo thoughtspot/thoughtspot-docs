@@ -99,8 +99,7 @@ The following table compares key capabilities across all three deployment models
 | Spotter / AI features
 | Yes
 | Yes
-| Yes (BYO LLM on GCP). AWS will support Spotter 3 only.
-// TODO: verify with engineering — Confirm "Spotter 3" is the correct customer-facing name.
+| Yes (BYO LLM on GCP).
 
 | Third-party data flows
 | Yes
@@ -277,10 +276,12 @@ tar xzf ch-installer-v1.0.0.tar.gz
 cp customer.tfvars.example customer.tfvars
 
 # Fill in gcp_project, customer_region, installer_sa_name (GCP only)
+
 gcloud auth application-default login   # <1>
 
 ./install.sh --config=customer.tfvars
 ----
+
 <1> This step is required for GCP only.
 
 `install.sh` runs three phases. You can re-run the entire script, or a single phase, safely. Every phase is idempotent.
@@ -343,11 +344,11 @@ What is the difference between VPT and customer-hosted ThoughtSpot?:: In VPT, Th
 
 Can I use my own encryption keys (BYOK)?:: BYOK / CMEK is available in VPT and customer-hosted ThoughtSpot deployments. It is not available in standard ThoughtSpot Cloud (multi-tenant). With BYOK, your KMS key encrypts all data at rest, and revoking the key immediately renders all data cryptographically inaccessible. Note that the ThoughtSpot global control-plane state uses ThoughtSpot-managed keys even in BYOK configurations.
 
-Is Spotter available in all deployment models?:: Spotter is available in ThoughtSpot Cloud, VPT, and customer-hosted ThoughtSpot. In customer-hosted ThoughtSpot deployments on GCP (available now), Spotter agents run in your cloud environment once you configure a BYOLLM endpoint for sovereign AI operation. When AWS support launches, only Spotter version 3 will be supported initially. Analyst Studio is not currently available in customer-hosted ThoughtSpot deployments.
+Is Spotter available in all deployment models?:: Spotter is available in ThoughtSpot Cloud, VPT, and customer-hosted ThoughtSpot. In customer-hosted ThoughtSpot deployments on GCP (available now), Spotter agents run in your cloud environment once you configure a BYOLLM endpoint for sovereign AI operation. Analyst Studio is not currently available in customer-hosted ThoughtSpot deployments.
 
 Which cloud providers are supported?:: Customer-hosted ThoughtSpot is available on GCP now. Support for AWS is coming soon. ThoughtSpot Cloud and VPT are available on both GCP and AWS.
 
-Are the Spotter Agents available for a customer-hosted deployment?:: While Spotter 3 is available for customers to use with BYOLLM, the Spotter Agents (SpotterViz, SpotterModel, and SpotterCode) are not available with BYOLLM for AWS.
+Are the Spotter Agents available for a customer-hosted deployment?:: While Spotter 3 and the Spotter Agents (Spotter Viz, SpPotter Model, Spotter Code) are available for customers to use with BYOLLM on GCP, they are not supported on AWS currently.
 
 How do upgrades work?:: ThoughtSpot delivers automated patches and monthly upgrades through the hub connection. Customers will be notified to schedule and apply regular updates within a 30-day window, and critical security patches within 7 days, to maintain service compatibility.
 --
