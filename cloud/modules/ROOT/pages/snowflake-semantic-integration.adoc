@@ -4,7 +4,7 @@
 :experimental:
 :page-layout: default-cloud-early-access
 :author: Mary
-:jira: SCAL-276952, SCAL-316441, SCAL-320368, SCAL-326703
+:jira: SCAL-276952, SCAL-316441, SCAL-320368, SCAL-326703, SCAL-327254
 :description: ThoughtSpot's Snowflake semantic views integration allows you to import your semantic layer into ThoughtSpot Models.
 
 ThoughtSpot integrates with Snowflake Semantic Views, allowing you to leverage semantic models defined in Snowflake in ThoughtSpot. This enables centralized metric and business logic management in Snowflake, while providing a seamless analytics experience in ThoughtSpot, by leveraging Snowflake’s semantic layer. The integration is designed for flexibility, efficiency, and to improve data governance and discoverability.
@@ -79,6 +79,36 @@ Please confirm that the user has access to all underlying tables referenced by t
 
 When a semantic view is imported, tables are imported into ThoughtSpot using the aliases defined in the semantic view. If a table already exists in the connection with a different name, it is automatically renamed to match the alias during the semantic view import.
 
+[#spotter-memory]
+== Import Spotter memory from semantic views [.badge.badge-early-access]#Early Access#
+// jira: SCAL-327253, SCAL-336755. docs jira: SCAL-327254
+
+A Snowflake semantic view can include `verified_queries`, which pair example questions
+with the SQL that answers them, and `ai_sql_generation` instructions, which guide how
+SQL is generated for the view. When this feature is enabled, ThoughtSpot imports these
+fields with the semantic view. It uses AI to translate them into
+xref:spotter-memory.adoc[Spotter memory] on the resulting Model. Spotter then applies
+this memory when answering questions on that Model.
+
+NOTE: Importing Spotter memory from semantic views is in Early Access and is off by
+default. To enable it, contact {support-url}. When this feature is off, ThoughtSpot
+imports the semantic view but omits the `verified_queries` and `ai_sql_generation` fields.
+
+ThoughtSpot imports `verified_queries`, `ai_sql_generation` instructions, or both,
+depending on what the semantic view contains.
+
+ThoughtSpot imports memory whether you connect to the semantic view directly or upload
+a semantic view YAML file.
+
+You can import memory even if Spotter 3 is not enabled for your Org. However, Spotter
+uses the imported memory to answer questions only after Spotter 3 is enabled. After
+import, you can review the imported memory the same way as other memory on the Model.
+For more information, see xref:spotter-memory-manage.adoc[Manage memory].
+
+
+WARNING: Any changes you make to imported memory in ThoughtSpot are lost when you
+re-import the semantic view.
+
 == Limitations
 
 If the semantic model has two or more tables, then the tables must have joins defined.
@@ -86,6 +116,5 @@ If the semantic model has two or more tables, then the tables must have joins de
 Snowflake window functions are not supported in ThoughtSpot.
 
 If you do a resync, you will lose your locally-made edits and Snowflake will be considered the source of truth.
-
 
 
