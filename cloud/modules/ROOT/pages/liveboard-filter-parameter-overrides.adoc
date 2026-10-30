@@ -1,0 +1,234 @@
+= Liveboard filter and parameter overrides
+:page-last_updated: Oct 30, 2026
+:linkattrs:
+:experimental:
+:description: Add filter and parameter values to a Liveboard URL so it opens in a specific pre-filtered state.
+:jira: SCAL-280403, SCAL-280404
+
+// SOURCE: Google Doc "Draft: Product docs: Liveboard filter and parameter overrides" (https://docs.google.com/document/d/1DaYCk9l9SiVK3_pYQWzvuCfHAziiUdjwwn-Pa2ewigI)
+// SOURCE: SCAL-335102 (EA Admin Portal story — feature description and flag name)
+
+[NOTE]
+====
+Liveboard filter and parameter overrides is an Early Access feature and is off by default. To turn it on, an administrator turns on *Filtered Liveboard URLs* on the Early Access page of the Admin portal. The setting is Org-aware, so it can be turned on for some Orgs and not others.
+
+// TODO: verify with engineering — add the exact Admin portal menu path and a screenshot of the toggle before publishing
+====
+
+You can add filter and parameter values to a Liveboard's URL. When someone opens the URL, the Liveboard loads with those values already selected in its filter and parameter chips. Use this to:
+
+* Link from one Liveboard to another, filtered on the value the user clicked.
+* Send a colleague a link to a specific filtered state of a Liveboard.
+* Build links in other tools, such as a CRM or a wiki, that open a Liveboard filtered for a specific customer, region, or period.
+
+You don't need to save a personalized view for each combination of values. The values aren't saved to the Liveboard, and the people who open the link can still change the chips.
+
+[#before-you-start]
+== Before you start
+
+* A URL can only change filters and parameters that already appear as chips on the Liveboard. A URL can't add a filter or parameter that doesn't exist on the Liveboard.
+* Use the actual names of the filters/parameters, not the display names. Names are not case-sensitive.
+* To set tab-level or group-level filters, contextual filtering must be turned on for the Org. See xref:liveboard-filters.adoc[Liveboard filters].
+
+[#build-the-url]
+== Build the URL
+
+. Open the Liveboard and copy its URL from the browser's address bar, for example `\https://{your-instance}/#/pinboard/{liveboard-id}`.
+. Add `?filter=` followed by one or more filter clauses, separated by semicolons.
+. To set parameters, add `&parameter=` followed by one or more parameter clauses, separated by semicolons. If the URL has no filter, start with `?parameter=`.
+. Open the URL. The chips show the values you set.
+
+Examples:
+[source]
+----
+https://{your-instance}/#/pinboard/{liveboard-id}?filter=Region=West,East;OrderDate=last30 days&parameter=Discount Rate = 0.15
+----
+[source]
+----
+https://{your-instance}/#/insights/pinboard/a8fc9478-6872-4cc0-9549-41ae901c0e95/?view=8bd5e935-67d3-4efb-b8c2-47cc6d15aea3&filter=[https://{your-instance}/#/insights/pinboard/{liveboard-id}?{tab-id}&{view-id}&filter="state=california]
+----
+
+Rules for the URL:
+
+* The keys are `filter` and `parameter`, singular.
+* You can type or paste values as shown. The browser encodes them when it opens the URL. Always encode these characters: & as %26, + as %2B, % as %25, # as %23, and \ as %5C. If you send the URL by email or chat, where spaces can break links, encode each value.
+
+[#filter-syntax]
+== Filter syntax
+
+Each filter clause has the form `{Column name} {operator} {values}`. Separate multiple values with commas. Spaces inside a value are kept.
+
+[width="100%",cols="1,2,2"]
+[options="header"]
+|===
+|Column type |Example |Meaning
+
+|Attribute
+|`Region=West,East`
+|Region is West or East
+
+|Attribute
+|`Region!=South`
+|Region is not South
+
+|Measure
+|`Sales>10000`
+|Greater than 10000. `+>=+`, `<`, and `+<=+` also work.
+
+|Measure
+|`Sales=between10005000`
+|Between 1000 and 5000, inclusive
+
+|Date, rolling
+|`OrderDate=last30days`
+|The last 30 days. Also `this quarter`, `next 2 weeks`, `today`, `year to date`.
+
+|Date, rolling
+|`OrderDate>last2months`
+|After the last 2 months
+
+|Date,fixed
+|`OrderDate=2026-08-31`
+|On that day. Dates must be in `yyyy-MM-dd` format.
+
+|Date,fixed
+|`OrderDate=between2026-01-012026-06-30`
+|Between the two dates, inclusive
+
+|Date, fixed
+|`OrderDate=january2026`
+|The whole month. Also `q1 2026` and `2026`.
+
+|Any
+|`ProductType=`
+|Clears the chip, so all values are shown
+|===
+
+For every supported operator and date expression, and for how to write commas and other special characters inside a value, see link:https://developers.thoughtspot.com/docs/liveboard-filter-parameter-overrides[Liveboard filter and parameter overrides] in the developer documentation.
+
+[#parameter-syntax]
+== Parameter syntax
+
+Each parameter clause has the form `{Parameter name} = {value}`, with exactly one value:
+
+----
+TopN=10
+DiscountRate=0.15
+TargetRegion=West
+ForecastStart=2026-07-01
+----
+
+The value must fit the parameter. For a parameter with a list of values, use one of the values in the list. For a parameter with a range, use a value inside the range. Dynamic date values, such as `today`, are not supported.
+
+[#scope]
+== Set filters on a specific model, tab, or group
+
+A clause without a prefix updates every chip with that name across all models, tabs, and groups. To update only some chips, put names in front of the clause, separated by `::`:
+
+[width="100%",cols="2,3"]
+[options="header"]
+|===
+|Clause |Chips updated
+
+|`Region=West`
+|Every Region chip
+
+|`RetailSales::Region=West`
+|Region chips from the Retail Sales model
+
+|`RegionalDetail::ProductType=Shoes`
+|Product Type chips on the Regional Detail tab, including its groups
+
+|`RegionalDetail::TopStores::StoreName=Downtown`
+|The Store Name chip in the Top Stores group on the Regional Detail tab
+|===
+
+You can give up to three names, in the order model, tab, group. Parameters accept the same prefixes.
+
+NOTE: The system takes the first prefix, tries to match it with the names of all the data sources used in the Liveboard. If there is no match, then it tries to match it with the names of all the tabs of the Liveboard, then tries to match it with the names of all the groups in the Liveboard. If there is still no match, then the clause is skipped.
+
+[#example-link]
+== Example: link from one Liveboard to another
+
+Suppose you have a Liveboard with a table of regions, and a detail Liveboard with a Region filter. You can add a link to each row that opens the detail Liveboard filtered on that row's region.
+
+. Copy the detail Liveboard's URL.
+. In the Answer that contains the table, create a formula named `Region details`:
++
+----
+concat ('{caption}', displayName, '{/caption}','https://instance.cloud/#/insights/pinboard/a8fc9478-6872-4cc0-9549-41ae901c0e95?filter="city=', city, '"'
+Here city is the name of the filter that you want to set
+----
+. Add the formula to the table and pin the Answer to the Liveboard.
+. Click a link in the table. The detail Liveboard opens with its Region chip set to the region of that row.
+
+// TODO: verify with engineering — confirm that table cells render a formula result as a clickable link, and how a region value containing &, +, or # behaves in the formula
+
+[#behavior]
+== What happens when someone opens the URL
+
+* The chips show the values from the URL, and the data loads with those values applied.
+* Chips not named in the URL keep their saved values.
+* If a clause can't be applied, it is skipped without a message. This happens when a name is misspelled, a value is in the wrong format, or the Liveboard has no chip for it. The rest of the URL still applies. If a chip doesn't change, check the clause for that chip.
+* Each person sees only the data they're allowed to see. Row-level security still applies, and clauses on data a person can't access are skipped for that person.
+
+[#personalized-views]
+=== Personalized views
+
+* *A URL without a view:* The Liveboard opens with its saved values plus the URL values, even if the person has a default view. The *Save view* option becomes available so they can save the result as a new view.
+* *A URL with a view* (`?view={view-id}&filter=...`): The view opens and the URL values are applied on top of it. The view shows as modified, and the person can update it with the new values.
+
+[#url-values-lifecycle]
+=== When the URL values go away
+
+[width="100%",cols="1,2"]
+[options="header"]
+|===
+|Action |Result
+
+|Reload the page
+|The URL values are applied again. Filter changes made after the page loaded are lost.
+
+|Switch tabs, or open and close Explore
+|The URL values stay.
+
+|Reset filters
+|The URL values are removed, and the chips return to their saved values.
+
+|Edit the Liveboard
+|The URL values are removed, and the Liveboard returns to its saved state. Saving the Liveboard never saves URL values.
+
+|Save or update a view
+|The view stores the values shown, including the URL values.
+|===
+
+[#downloads-schedules]
+=== Downloads and schedules
+
+Downloads from the Liveboard use the values from the URL. Scheduled Liveboard emails and alerts use the saved values, not the URL values.
+
+[#runtime-filters-comparison]
+== How this differs from runtime filters
+
+Runtime filters (`col1`, `op1`, and `val1` in a URL) add a hidden filter on a model column. They don't show in the chips, and they combine with the Liveboard's filters. Runtime parameter overrides hide the parameter chip.
+
+Liveboard filter and parameter overrides set the values in the chips themselves, so the person opening the Liveboard can see which values are applied and change them. They also support rolling dates such as `last 30 days`.
+
+[#limitations]
+== Limitations
+
+// SOURCE: Google Doc Part 1, Limitations section
+// SOURCE: SCAL-335102 (dynamic parameters not supported)
+
+* Applies to Liveboards only. Answers, Search, and Spotter aren't supported.
+* URL values can only set chips that already exist on the Liveboard. They can't add new chips.
+* Parameter chips can't be cleared by a URL, and dynamic date values for parameters aren't supported.
+* Not a security feature. Anyone with the URL can change or remove the values. To restrict data, use row-level security.
+* Scheduled emails and alerts don't use URL values.
+
+== Related information
+
+* xref:liveboard-filters.adoc[Liveboard filters]
+* xref:parameters-use.adoc[Using parameters]
+* xref:personalized-liveboard-views.adoc[Personalized Liveboard views]
+* link:https://developers.thoughtspot.com/docs/liveboard-filter-parameter-overrides[Liveboard filter and parameter overrides] (developer documentation — full syntax reference and embedding)
