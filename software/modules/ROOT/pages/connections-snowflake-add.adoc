@@ -1,10 +1,13 @@
 = Add a {connection} connection
-:last_updated: 10/14/2026
+:page-last_updated: Oct 16, 2026
 :linkattrs:
 :experimental:
 :connection: Snowflake
 :description: Learn how to add a Snowflake connection.
-:jira: SCAL-91104, SCAL-196178, SCAL-136317 (multiple confiurations for snowflake), SCAL-248181, SCAL-247865, SCAL-262244, SCAL-270847
+:jira: SCAL-91104, SCAL-196178, SCAL-136317 (multiple confiurations for snowflake), SCAL-248181, SCAL-247865, SCAL-262244, SCAL-270847, SCAL-263432, SCAL-320916, SCAL-341838
+
+[.lead]
+Learn how to connect ThoughtSpot Cloud directly to a {connection} data source using supported authentication methods.
 
 == Prerequisites
 
@@ -24,6 +27,7 @@ To connect to {connection}:
 ifndef::spotter[]
 . Navigate to *Data workspace* > *Connections*.
 . Click *+ Create connection*, and select the {connection} tile. Then click *Next*.
+
 endif::[]
 ifdef::spotter[]
 . Click the app switcher menu image:spotter-app-switcher.png[Spotter app switcher] and then click *{form-factor}*.
@@ -35,13 +39,14 @@ image::connection-spotter-set-up-new-connection.png[Set up new connection]
 endif::[]
 . Create a name for your connection, a description (optional), and enter the connection details for your {connection} data source. Then click *Next*.
 +
+[.bordered]
 image::embrace-snowflake-connection-type-ts-cloud.png[Add a {connection} connection]
 
-. Enter the connection details for your {connection} data source using either OAuth, OAuth with PKCE, Microsoft Azure AD OAuth, Service Account, or Key Pair authentication:
+. Enter the connection details for your {connection} data source using either OAuth, OAuth with PKCE, Microsoft Azure AD OAuth, Service Account, Personal Access Token, or Key Pair authentication:
 +
 The Use OAuth option uses https://docs.snowflake.com/en/user-guide/oauth-partner.html[{connection} OAuth authentication^].
 +
-Before selecting *Use OAuth* or *OAuth with PKCE* authentication, you must configure OAuth in {connection}.
+Before selecting *Use OAuth*,  *OAuth with PKCE*, or *OAuth Client Credentials* authentication, you must configure OAuth in {connection}.
 For details, see xref:connections-snowflake-oauth.adoc[Configure OAuth for a {connection} connection].
 +
 Before selecting *Use External OAuth* authentication, you must configure either Azure AD or Okta external OAuth.
@@ -54,7 +59,9 @@ For *Key Pair* authentication, do the following:
 . Enter Account name or Snowflake URL, User, Private Key, (optional) Passphrase, Role, Warehouse and (optional) Database.
 image:snowflake-key-pair.png[Enter connection details]
 
-NOTE: Your key must be in *PKCS#8* format.
+NOTE: Your key must be in *PKCS#8* format, and you must create it using the OpenSSL library provided in link:https://docs.snowflake.com/en/user-guide/key-pair-auth[Snowflake documentation^].
+
+For more guidelines on configuring Key Pair authentication, see link:https://docs.snowflake.com/en/user-guide/key-pair-auth[Key-pair authentication and key-pair rotation^].
 
 == OAuth authentication
 For OAuth authentication, do the following:
@@ -70,6 +77,22 @@ If not, select *Continue*.
 +
 Using security passthrough may have implications for your row-level security.
 See xref:security-rls.adoc[About row-level security (RLS)] for more information.
+
+=== OAuth with PKCE
+
+For OAuth with PKCE authentication, do the following:
+
+. Select *OAuth with PKCE*.
+. Enter Account name or your {connection} URL, OAuth Client ID, OAuth Client Secret, Role (optional), and Warehouse (optional).
+
+. If you wish to provide the optional additional key-value pairs for your {connection} connection, complete the procedure in step 5, and then select *Continue*.
+If not, select *Continue*.
+. When the {connection} login screen appears, enter your {connection} User Name and Password and select *Log In*, or use the Single-Sign-On option.
+. In the next {connection} screen, allow ThoughtSpot to access your {connection} account by selecting *Allow*, and then go to step 7 to select tables for your connection.
++
+Using security passthrough may have implications for your row-level security.
+See xref:security-rls.adoc[About row-level security (RLS)] for more information.
+
 
 
 == Microsoft Azure AD or Okta OAuth authentication
@@ -88,16 +111,30 @@ If not, select *Continue*.
 . When the Microsoft sign-in screen appears, sign in to your account using the email and password of your Microsoft account associated with Azure.
 . On the Stay-signed-in screen, select *Yes*.
 
+//=== External OAuth with PKCE
+
+== Microsoft Azure AD or Okta OAuth authentication
+For Microsoft Azure AD or Okta OAuth authentication with PKCE, do the following:
+
+. Select *External OAuth with PKCE*.
+. Enter Account name or {connection} URL, OAuth Client ID, OAuth Client Secret (optional), Scope, Auth URL, Access token URL, Role (optional), and Warehouse (optional).
+
+. If you wish to provide the optional additional key-value pairs for your {connection} connection, complete the procedure in step 5, and then select *Continue*.
+If not, select *Continue*.
+. To enable link:https://docs.snowflake.com/en/user-guide/security-access-control-overview#enforcement-model-with-primary-role-and-secondary-roles[Snowflake secondary roles^], enter the following key-value pair:
+
+.. Key: enableSecondaryRoles
+.. Value: true
+. When the Microsoft sign-in screen appears, sign in to your account using the email and password of your Microsoft account associated with Azure.
+. On the Stay-signed-in screen, select *Yes*.
+
 [#client-credentials]
 == OAuth Client Credentials
 
-
 For OAuth authentication with client credentials, do the following:
-
 
 . Select *OAuth Client Credentials*.
 . Enter Account name or your {connection} URL, OAuth Client ID, OAuth Client Secret, Access Token Url, User, Scope , Role (optional), and Warehouse (optional).
-
 
 . If you wish to provide the optional additional key-value pairs for your {connection} connection, complete the procedure in step 5, and then select *Continue*.
 If not, select *Continue*.
@@ -123,12 +160,9 @@ If not, select *Continue*.
 Using security passthrough may have implications for your row-level security.
 See xref:security-rls.adoc[About row-level security (RLS)] for more information.
 
-
-
 == Service Account authentication
 
-NOTE: Service accounts using Username/Password must be set in Snowflake as a "LEGACY_SERVICE" account, and must be moved over to Key Pair authentication by November 2025, per link:https://www.snowflake.com/en/blog/blocking-single-factor-password-authentification/[Snowflake].
-//For more information on migrating to Key Pair authentication, reference xref:connections-snowflake-migration.adoc[].
+NOTE: Service accounts using Username/Password must be set in Snowflake as a "LEGACY_SERVICE" account, and must be moved over to Key Pair authentication by November 2025, per link:https://www.snowflake.com/en/blog/blocking-single-factor-password-authentification/[Snowflake^]. For more information on migrating to Key Pair authentication, reference xref:connections-snowflake-migration.adoc[].
 
 For *Service Account* authentication, do the following:
 
@@ -141,17 +175,23 @@ image:snowflake-connectiondetails-serv-acct2.png[Enter connection details]
 [#pat]
 == Personal Access Token authentication
 
-To create a Personal Access Token, refer to link:https://docs.snowflake.com/en/user-guide/programmatic-access-tokens#label-pat-generate[Snowflake’s documentation].
+To create a Personal Access Token, refer to link:https://docs.snowflake.com/en/user-guide/programmatic-access-tokens#label-pat-generate[Snowflake's documentation^].
 
-For *Personal Access Token* authentication, do the following:
+For *Personal Access Token authentication, do the following:
 
 . Select *Personal Access Token*.
 
 . Enter Account name, User, Personal Access Token, Role, and Warehouse.
 
-. Refer to the xref:connections-snowflake-reference.adoc[Snowflake connection reference] for more information on each of the specific attributes you must enter for your connection.
+. Refer to the xref:connections-snowflake-reference.adoc[{connection} connection reference] for more information on each of the specific attributes you must enter for your connection.
 
 == All connection types
+
+. (Optional) Configure query-level timeout for your {connection} connection by doing the following:
+.. Select the *Advanced Config* menu to reveal the Key and Value fields.
+.. For Key, enter *queryTimeoutSeconds*, and for Value, enter the desired number of seconds.
++
+We recommend a maximum query timeout setting of *`300`* (5 minutes).
 . (Optional) Configure proxy for your {connection} connection by doing the following:
 .. Select the *Advanced Config* menu to reveal the Key and Value fields.
 .. For Key, enter *useProxy*, and for Value, enter *true*.
@@ -176,7 +216,7 @@ When setting up a proxy with {connection} ensure that:
 .. Enter your key and value information. For example, if you want to access multiple {connection} databases in a single connection, but do not want the connection to access _all_ your Snowflake databases, you can specify that here. For each specific database you would like to access, set `database` as the key, and the database name as the value. Refer to the https://docs.snowflake.com/en/user-guide/jdbc-parameters.html[Snowflake JDBC documentation^].
 .. To add more keys and values, select the plus sign (+), and enter them.
 +
-NOTE: You can now set up query tags on your Snowflake connection to allow you to filter on users, groups, or other ThoughtSpot variables when auditing the Snowflake query logs. To configure query tags, enter the *Key* `query_tag` and either a static *Value* or a variable. For example, you could add a variable *Value* of `ts_username` to allow you to filter on the query tag and see which ThoughtSpot users ran which queries.
+NOTE: You can set up query tags on your Snowflake connection to allow you to filter on users, groups, or other ThoughtSpot variables when auditing the Snowflake query logs. To configure query tags, enter the *Key* `query_tag` and either a static *Value* or a variable. For example, you could add a variable *Value* of `ts_username` to allow you to filter on the query tag and see which ThoughtSpot users ran which queries.
 +
 [NOTE]
 ====
@@ -191,10 +231,9 @@ You can edit the connection later to add tables and columns.
 
 . Select tables and the columns from each table, and then click *Create connection*.
 +
-image::snowflake-selecttables.png[Select tables and columns for your connection]
+image::teradata-selecttables.png[Select tables and columns for your connection]
 +
 A message appears indicating the number of tables and columns that will be added to your connection.
-
 
 
 ifdef::spotter[]
@@ -220,9 +259,9 @@ Your new connection appears on the *Data workspace* > *Connections* page.
 Select the name of your connection to view the tables and columns in your connection.
 
 The connection you just created is a link to the external data source.
-If there are any joins in the selected tables of the external data source, those are imported into ThoughtSpot.
+If there are any joins in the selected tables of the external data source, those are imported into ThoughtSpot. We also import column and table descriptions, if they exist.
 
-You can now perform a live query on the selected tables and columns of your connection.
+You can perform a live query on the selected tables and columns of your connection.
 Because the selected tables and columns in your connection are linked, it may take a while to initially render the search results.
 This is because ThoughtSpot does not cache linked data.
 With linked data, ThoughtSpot queries the external database directly, which is slower than querying data that is stored in ThoughtSpot's database.
@@ -269,17 +308,21 @@ endif::[]
 >
 > * xref:connections-snowflake-edit.adoc[Edit a {connection} connection]
 > * xref:connections-snowflake-remap.adoc[Remap a {connection} connection]
+> * xref:connections-snowflake-csv-upload.adoc[]
+> * xref:connections-snowflake-answer-csv-upload.adoc[]
 > * xref:connections-snowflake-external-tables.adoc[Query external tables from your {connection} connection]
 > * xref:connections-snowflake-delete-table.adoc[Delete a table from a {connection} connection]
 > * xref:connections-snowflake-delete-table-dependencies.adoc[Delete a table with dependent objects]
 > * xref:connections-snowflake-delete.adoc[Delete a {connection} connection]
+> * xref:connections-snowflake-deactivate.adoc[]
 > * xref:connections-snowflake-oauth.adoc[Configure OAuth]
 > * xref:connections-snowflake-azure-ad-oauth.adoc[Configure Azure AD OAuth]
-//> * xref:connections-snowflake-auth0.adoc[Configure Auth0]
-//> * xref:connections-snowflake-migration.adoc[]
+> * xref:connections-snowflake-auth0.adoc[Configure Auth0]
+> * xref:connections-snowflake-csv-upload-config.adoc[]
+> * xref:connections-snowflake-migration.adoc[]
 > * xref:connections-snowflake-best.adoc[Best practices for {connection} connections]
-//> * xref:connections-snowflake-private-link.adoc[]
-//> * xref:connections-snowflake-psc.adoc[]
+> * xref:connections-snowflake-private-link.adoc[]
+> * xref:connections-snowflake-psc.adoc[]
 > * xref:connections-snowflake-reference.adoc[Connection reference for {connection}]
 > * xref:connections-query-tags.adoc#tag-snowflake[ThoughtSpot query tags in Snowflake]
 > * xref:connections-snowflake-passthrough.adoc[]
