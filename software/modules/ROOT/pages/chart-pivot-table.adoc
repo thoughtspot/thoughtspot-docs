@@ -1,5 +1,5 @@
 = Pivot table
-:page-last_updated: 10/28/2025
+:page-last_updated: June 3, 2026
 :linkattrs:
 :experimental:
 :page-aliases: /complex-search/about-pivoting-a-table.adoc
@@ -61,6 +61,42 @@ The New Pivot Table chart experience has the following features:
 ** Zebra mode
 ** Decluttered header space
 
+=== Enhancements to the new pivot tables
+
+// SOURCE: SCAL-317111 Google Docs design spec — Pivot Table Limitations
+
+Pivot tables in ThoughtSpot have two independent limits: one for the amount of data processed, and one for the number of visual units displayed at a time.
+
+NOTE: Contact ThoughtSpot support to enable these settings for the new pivot tables on your ThoughtSpot instance .
+
+==== Data limits
+
+With the recent enhancements to the new pivot tables, the number of rows you can analyze is now much less dependent on the number of measures you use.
+As a result, this limit has improved significantly.
+Previously, pivot tables supported up to 100,000 rows divided by the number of measures displayed (100,000 ÷ n).
+For example, a pivot table with 3 measures could process a maximum of 33,000 rows.
+
+But now this limit increases to up to 100,000 rows per measure.
+A pivot table with 3 measures — Sales, Profit, and Units Sold — broken down by Region and Product Category
+can now process up to 100,000 rows, three times the data it could handle before, with no changes to your analysis. Here is a quick comparison table:
+[cols="1,1,1", options="header"]
+|===
+| Number of measures | Previous maximum rows | Updated maximum rows
+
+| 1 | 100,000 | 100,000
+| 2 | 50,000  | 100,000
+| 3 | 33,000  | 100,000
+| 4 | 25,000  | ~85,000
+| 5 | 20,000  | ~70,000
+| 6 | ~16,000 | ~60,000
+|===
+
+==== Display limits
+
+New pivot tables can render approximately *15,000–20,000 visual units* at one time to maintain browser performance.
+A visual unit represents each unique row-and-column combination, calculated by multiplying the cardinality (number of unique values) across all row and column fields, excluding the innermost field on each axis.
+
+This limit is most likely to affect pivot tables that have multiple high-cardinality fields on both rows and columns simultaneously.
 
 [discrete]
 === New Pivot Table charts limitations
@@ -70,23 +106,24 @@ The following are limitations of the New Pivot Table:
 * Total size limit for a pivot table is 100,000/the number of measures in the pivot table.
 * If the query the pivot table is based on contains the `top` or `bottom` keyword, column and row summaries are not accurate.
 * You cannot add conditional formatting to a pivot table in heatmap mode.
+* In new pivot tables, conditional formatting can only reference columns that are
+actively visualized (present in the Rows, Columns, or Values sections of the pivot).
+Columns moved to the *Not Visualized* section are excluded from the pivot's data model
+instance and therefore cannot be used as conditions.
 * You cannot filter aggregated columns or columns with aggregated formulas.
 * Pivot tables do not support xref:formulas-cumulative.adoc[cumulative functions].
 * Pivot tables do not support xref:formulas-moving.adoc[moving functions].
 * Passthrough functions are not supported.
 * Version control is not supported for Answers which use the new pivot table.
+* New pivot tables do not support compact headers.
 
 [#export-pivot-xlsx]
-.Pivot tables in Liveboard exports and schedules [.badge.badge-early-access]#Early Access#
-****
-You can now export pivot tables in XLSX format. This feature ensures that pivot tables retain their full visual formatting and structural integrity when exported as XLSX files from a Liveboard. Previously, they would be exported as raw data table.
-
-To enable this feature, contact your administrator.
+== Pivot tables in Liveboard exports and schedules
+You can export pivot tables in XLSX format. This feature ensures that pivot tables retain their full visual formatting and structural integrity when exported as XLSX files from a Liveboard. Previously, they would be exported as raw data table.
 
 NOTE: This is only available when the *Enable XLSX & CSV exports in Liveboard Report API* or *XLSX/CSV download of Liveboards Include any visualization in XLSX/CSV schedules* features are enabled.
 
 NOTE: This feature is only supported for new pivot tables and not available for legacy pivot tables.
-****
 
 [#reorder]
 == Reorder your pivot table
@@ -156,8 +193,7 @@ You can now choose whether to display column and row summaries, and where in the
 
 By default, pivot table summaries are calculated as separate SQL queries. The pivot total is the aggregate as defined for the column.  For example, assuming that the formula is `count(customerID)` then the total will be a count. It is not possible to customize the total’s aggregate. In that case, modify the total to be an average where the line calculation is a count.
 
-Note that a legacy instance-level setting does exist where the pivot total is a sum of the row numbers. As this is an instance flag, this will affect the behavior of all pivot tables.
-//For more information, see xref:search-flags.adoc[Query generation and auto complete flags].
+Note that a legacy instance-level setting does exist where the pivot total is a sum of the row numbers. As this is an instance flag, this will affect the behavior of all pivot tables.  For more information, see xref:search-flags.adoc[Query generation and auto complete flags].
 
 To customize pivot summaries, follow these steps:
 
@@ -208,6 +244,26 @@ image::conditional-formating.png[Display menu]
 
 . Select the measure you would like to add number or conditional formatting to.
 . Refer to xref:search-conditional-formatting.adoc#table[Apply conditional formatting] and xref:chart-table.adoc#number-formatting[Number formatting] for more information.
+
+=== Differences between old and new pivot tables
+
+The following table describes the differences in conditional formatting behavior between
+old and new pivot tables:
+
+[cols="1,2,2", options="header"]
+|===
+| Feature
+| Old Pivot Tables
+| New Pivot Tables
+
+| Conditional formatting scope
+| Value-based only: you can only format a column based on its *own* values. For example, highlight cells where `Sales > 10,000`.
+| You can format a column based on *any other visualized column's* values — more flexibility. For example, highlight cells where `Sales this year < Sales last year`.
+
+| Non-visualized columns in conditional formatting
+| Not supported
+| Not supported
+|===
 
 ////
 .Pivot table Enhancements [.badge.badge-beta]#Beta#
