@@ -1,0 +1,139 @@
+= Write good Analyst instructions
+:date-last_updated: 06/09/2026
+:author: Naomi
+:page-layout: default-cloud-beta
+:description: The instructions field tells Spotter how to behave inside this Analyst.
+:linkattrs:
+:experimental:
+:jira: SCAL-293512
+
+
+The instructions field in creating an Analyst tells Spotter how to behave inside this Analyst. It does the most work of any field you specify in creating an Analyst.
+
+Note that the instructions field in an Analyst is for workspace-specific behavior, and overrides the agent-level Spotter instructions set by your Org administrator. For behavior you want to apply at the Org level (for example, “always cite the source Model”), use xref:spotter-instructions.adoc[Spotter instructions].
+
+
+Strong Analyst instructions usually address four things:
+
+. Who the agent is acting for (audience and role).
+. Which definitions apply in this workspace (the canonical sources of truth).
+. What’s excluded (data, accounts, segments to ignore).
+. How to handle ambiguity (when to ask versus when to answer).
+
+.Example - Customer Success Analyst
+[source]
+----
+You are the agent for the Customer Success team. Use the Customer Success
+Health Model as the source of truth for account health.
+
+Definitions:
+- "Account health" means the Health Score column on the certified model
+(range 0–100). Do not infer health from other fields.
+- "At risk" means Health Score < 60 AND last_engagement > 30 days.
+
+Exclusions:
+- Exclude test accounts (account_type = 'internal' or 'sandbox').
+- Exclude accounts in the "Churned" stage unless the user explicitly asks
+about churned accounts.
+
+Handling ambiguity:
+- If the user asks "how is X doing" without naming a dimension, ask whether
+they mean Health Score, support load, or renewal risk before answering.
+- For multi-account questions ("how are my Enterprise accounts doing"),
+ask which segment if not specified.
+
+Tone:
+- Be direct. Cite the source model in every answer. Do not speculate
+about reasons for changes in health score.
+
+----
+
+The above instruction text is about the right length for most Analysts. Shorter often misses the cases that matter; much longer often confuses the model.
+
+== Patterns that work
+
+=== Lead with audience and job
+The first sentence should tell the agent who it's serving and what they do. This anchors every downstream behavior.
+
+.Example
+[source]
+----
+"You are the agent for the Sales Intelligence workspace, used by Account Executives reviewing pipeline and forecast."
+----
+
+=== Define the terms your team disagrees about
+If three people in your team have three different mental models of "Revenue" or "Pipeline" or "Active Customer," the agent will inherit that confusion. Write the definition you want the agent to use.
+
+.Example
+[source]
+----
+"Pipeline means open opportunities in Stage 3 or later, current quarter only, excluding internal accounts. Do not include closed-won or closed-lost in pipeline numbers."
+----
+
+=== Spell out exclusions
+Most analytical mistakes are about what's included that shouldn't be. Make the exclusions explicit.
+
+.Example
+[source]
+----
+"Exclude test accounts (is_test = true). Exclude employee-owned accounts. Exclude any account with created_date in the last 30 days unless the user asks for new accounts specifically."
+----
+
+=== Tell the agent when to ask versus when to answer
+A common failure mode is the agent guessing at an ambiguous question and getting it confidently wrong. Pre-empt this.
+
+.Example
+[source]
+----
+"If the user asks a question that could mean either current-quarter or trailing-twelve-months, ask which they mean before answering."
+----
+
+=== Set the tone explicitly
+If you want short, direct answers, say so. If you want narrative commentary, say so. The default is verbose.
+
+.Example
+[source]
+----
+"Be concise. Lead with the number. One sentence of context, no more."
+----
+
+== Pitfalls to avoid
+
+Don't write instructions that conflict with the data fence:: If the data fence does not include the Finance Model, don't write "Always use the Finance Model for revenue questions." The agent can't honor it. Pick one — either add the model to the fence or drop the instruction.
+
+Don't write instructions that fight Org-level rules:: If your Org admin has set a coaching rule that "Revenue = GAAP ARR," don't override it in an Analyst with "Revenue = Bookings" — the Org-level rule wins, and your instructions create silent conflicts. Coordinate with your admin instead.
+
+Don't write instructions longer than ~400 words:: Past a certain length, the agent stops honoring later instructions consistently. If you have more than ~400 words, you probably have two Analysts disguised as one. Split them.
+
+Don't write instructions in second person to the user:: The Instructions field is talking to the agent, not to the user. Write "When the user asks…" — not "You can ask me about…".
+
+Don't use vague directives::
+[options=”header”]
+|===
+| Vague | Specific
+| "Be helpful" | "Cite the source model in every answer. If you can't answer, say what data would be needed."
+| "Don't hallucinate" | "If the data fence does not contain the requested information, say so explicitly. Do not infer from related fields."
+| "Use the right model" | "Use the Customer Success Health Model for health-related questions. Use Support Tickets for support-volume questions."
+|===
+
+== Iterate your Analyst instructions
+
+Write a first draft based on the four-part structure above.
+Save and chat with the Analyst — ask the questions your consumers will ask.
+Note where the agent goes off-track — wrong model, missing exclusion, guessed at an ambiguous question.
+Update the instructions to address each failure mode by name.
+Re-test.
+
+== Patterns by use case
+
+[options=”header”]
+|===
+| Use case | What the instructions should emphasize
+| Customer Success | Health-score definition, account exclusions, ambiguity-handling for multi-account questions, source citations.
+| Sales / Pipeline | Pipeline definition, stage filters, current-quarter vs. TTM ambiguity, exclusion of test/internal accounts.
+| Executive / read-only | Strict use of certified models, no speculation, explicit source citation, push back on out-of-scope questions ("ask the finance team for that").
+| Marketing performance | Attribution model definition, campaign-window handling, exclusion of test campaigns.
+| Product / launch war room | Time-bounded scope ("during 26.7 launch window only"), cohort definitions, signal-vs-noise rules.
+| Support / ops | Ticket-status definitions, SLA definitions, on-call routing rules.
+
+|===

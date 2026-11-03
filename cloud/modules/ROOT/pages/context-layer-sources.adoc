@@ -1,0 +1,94 @@
+= Context layer sources and learning
+:page-last_updated: Sep 21, 2026
+:linkattrs:
+:experimental:
+:description: Learn about the sources that feed the ThoughtSpot context layer and how the learning system absorbs knowledge from each source.
+:jira: SCAL-337854
+
+[.lead]
+The xref:context-layer.adoc[context layer] learns from four categories of input.
+Each source flows through the same learning pipeline regardless of format or origin.
+
+== Built artifacts
+
+Built artifacts are analytics objects that encode business decisions through their construction.
+
+[width="100%", cols="1,2", options="header"]
+|===
+| Source | Description
+
+| Liveboards
+| Every saved formula and filter encodes a definition that someone stood behind.
+|===
+
+== Interactions
+
+Interactions are traces of how people use data in practice.
+
+[width="100%", cols="1,2", options="header"]
+|===
+| Source | Description
+
+| Conversations
+| What people ask the Spotter agents, how they rephrase questions, and what answers they accept.
+|===
+
+== Learning
+
+The learning system determines how the context layer absorbs knowledge from each source.
+It operates in three modes:
+
+Index::
+The system saves a pointer to the source and fetches the content at answer time. Nothing is copied.
++
+_Example: Point to a returns policy page in Confluence. The page is fetched when a question needs it._
+
+Extract::
+The system lifts definitions that are already explicit in a source.
++
+_Example: Business terms and their meanings, extracted from a glossary document._
+
+Distill::
+The system infers context from how artifacts are built and used.
++
+_Example: A Liveboard's formulas and filters are distilled into metric definitions and default analysis rules._
+
+The effectiveness of the learning system depends on two factors:
+
+* *Coverage*: How much of each source is examined. For a Liveboard, this might include titles, formulas, charts, filters, and drill paths.
+* *Efficiency*: How well patterns are recognized. Forty similar filters can become one organization-wide rule when the pattern is identified.
+
+== Context orchestration
+
+Context orchestration is the process that turns raw learnings into structured, findable context.
+When a new piece of knowledge arrives, the orchestrator makes four decisions:
+
+[cols="1,2,2", options="header"]
+|===
+| Step | Decision | Example
+
+| Allocate
+| Which part of the context layer the knowledge belongs in.
+| A revenue definition is filed as a metric definition.
+
+| Scope
+| The reach of the knowledge: organization, group, data model, or user.
+| The definition applies to the Sales data model.
+
+| Reconcile
+| Whether to create a new entry, merge with an existing one, or flag a conflict.
+| The new ARR definition is merged with the existing one.
+
+| Stamp
+| Attach the source, timestamp, and authority level.
+| Source: Liveboard `54be…8f`, learned on 2026-09-08, authority: medium (rises with usage).
+|===
+
+Structured context is what makes the rest of the system work.
+Typed, scoped, and stamped context entries are what the RAG layer can rank, the lifecycle system can maintain, and the governance system can audit.
+
+== Related resources
+
+* xref:context-layer.adoc[Context layer]
+* xref:context-layer-rag.adoc[Context retrieval and ranking]
+* xref:context-layer-security-governance.adoc[Context layer security and governance]

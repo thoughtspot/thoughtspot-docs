@@ -1,0 +1,60 @@
+= Connect to Looker SQL in Analyst Studio
+:product: Analyst Studio
+:connection: Looker SQL
+:author: Naomi
+:page-last_updated: Sep 21, 2026
+:experimental:
+:linkattrs:
+:description: Connect to Looker SQL to start searching your data in Analyst Studio.
+:jira: SCAL-315450
+
+== Supported JDBC drivers and known issues
+
+|===
+| Driver | Driver Release Date | {product} Removal Date
+
+| (Recommended) Avatica Looker version 1.24.1     | 8/6/2024         |
+| Avatica Looker version 1.23.4     | 9/20/2023              |
+|===
+
+For known limitations, see link:https://cloud.google.com/looker/docs/sql-interface#lookml_limitations[Looker's documentation,window=_blank].
+
+=== Connecting to {product}
+
+You will also need the following to set up the connection in {product}:
+
+* Host: The url of your Looker instance (for example,
+test123.looker.com).
+* Username: The Client ID portion of the link:https://cloud.google.com/looker/docs/admin-panel-users-users#api_keys[Looker API key,window=_blank].
+* Password: The Client Secret portion of the Looker API key.
+
+Start by xref:analyst-studio-connecting-analyst-studio-to-your-database.adoc[connecting a database].
+
+From the dropdown, select *Looker SQL*.
+
+=== Writing Looker SQL queries in {product}
+
+To write a new Looker SQL query, *navigate to the SQL editor* and select your Looker Open SQL connection from the *database dropdown*.
+
+By default, this connection will surface all available schemas (LookML Models) and tables (Explores). *To reference a field within your query, use the following syntax:*
+
+Note to use backticks around schema, table, and column identifiers.
+Wrap any LookML measures in the special function `AGGREGATE()`, whether it is in a `SELECT` clause, a `HAVING` clause, or an `ORDER BY` clause.
+You cannot use LookML measures in a `GROUP BY` clause.
+
+[source]
+----
+SELECT `view.field`
+  FROM `model`.`explore`
+  LIMIT 10;
+----
+
+[source]
+----
+SELECT `customers.state`, `customers.city`,
+  AGGREGATE(`orders.total_amount`)
+FROM `ecommerce`.`orders`
+GROUP BY `customers.state`, `customers.city`
+HAVING AGGREGATE(`orders.count`) > 10
+ORDER BY 3 DESC LIMIT 5;
+----

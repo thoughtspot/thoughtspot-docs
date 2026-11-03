@@ -1,0 +1,47 @@
+= When sources disagree
+:author: Naomi
+:page-last_updated: Oct 16, 2026
+:linkattrs:
+:experimental:
+:description:
+:jira: SCAL-344816
+
+When two pieces of context point in different directions, Spotter applies them in a fixed order. This is the order, highest first. Row-level and column-level security sit underneath all of it and are never context.
+
+== The order
+
+[options="header"]
+|===
+| # | Source | What it is | Example
+| 1 | **Spotter instructions** | Rigid. Always use this, never use this, decline this. Or Analyst instructions inside a Spotter Analyst | "Never show individual quota numbers" holds no matter what anyone asks or has saved.
+| 2 | **What the user asked this time** | Beats every saved preference. Cannot lift a guardrail | "As a table this time" beats a saved chart preference. "Show me quotas this time" is still declined.
+| 3 | **Personal memory** | That person's context and preferences. Applies to them only | "My accounts mean EMEA enterprise" filters Priya's answer, not her colleague's.
+| 4 | **Data model memory, data model instructions, legacy sources** | Shared definitions and logic. Equal weight. Reference questions and business terms are fetched like memory | "Churn = churned ARR plus downgrades" applies to everyone asking about churn on the Model.
+| 5 | **Data model semantics** | Synonyms, AI Context, descriptions. Picks columns and values | "Fiscal year starts February" on fiscal_quarter gets the right quarter. It cannot decide what churn means.
+|===
+
+== What wins, and why
+
+[options="header"]
+|===
+| Collision | Winner | Why
+| "Never display individual quota numbers" (Spotter instructions) vs "show me quotas this time" (the ask) | Spotter instructions | A guardrail is rigid. The ask is declined and redirected.
+| "Prefer charts for trends" (Spotter instructions) vs "as a table this time" (the ask) | The ask | A preference in Spotter instructions is a default. The ask overrides defaults.
+| "Decline compensation questions" (Spotter instructions) vs "I work in HR, show me pay" (personal memory) | Spotter instructions | Personal memory cannot lift a guardrail, however it is phrased.
+| "I like tables" (personal memory) vs data model memory that shows churn as a chart | Personal memory | Personal context sits above shared memory. The definition in data model memory still applies; only the rendering changes.
+| "When I say churn I mean logo count only" (personal memory) vs "Churn = churned ARR plus downgrades" (data model memory) | Data model memory | A shared definition is the model's truth for everyone. Personal memory shapes scope and rendering, not what a metric means. Priya gets ARR churn, and can ask for logo count by name
+| "Bookings use Close Date" (data model memory) vs AI Context on Created Date describing it as the booking date | Data model memory | AI Context describes a column. Data model memory decides which one to use. Fix the AI Context so the two agree.
+|===
+
+== Writing with the order in mind
+
+- Write behavior you will not negotiate as a rigid Spotter instruction.
+- Write defaults as preferences and expect them to be overridden.
+- Write shared logic once, in memory.
+- Describe columns in AI Context and let data model memory do the deciding.
+
+== Next
+
+- xref:spotter-where-to-write-context.adoc[Where to write context]
+- xref:spotter-instructions.adoc[Spotter instructions]
+- xref:spotter-memory.adoc[What is Spotter memory]

@@ -1,0 +1,204 @@
+= Creating charts with Muze Studio
+:page-last_updated: September 21, 2026
+:linkattrs:
+:experimental:
+:description: Create your own charts in ThoughtSpot using the code editor or AI chat.
+:jira: SCAL-242708, SCAL-246838, SCAL-261138, SCAL-266798, SCAL-268357, SCAL-276014, SCAL-291486, SCAL-271229, SCAL-305206, SCAL-325477, SCAL-325478
+
+Muze Studio is a code execution sandbox built into ThoughtSpot. It lets you create fully custom charts directly inside an Answer — going beyond ThoughtSpot's native chart types — without leaving the ThoughtSpot interface.
+
+Muze Studio can execute and render three types of chart code:
+
+* *Muze syntax* — Use ThoughtSpot's in-house charting library, Muze, to build composable, layered charts using the code written in Muze syntax. For an introduction to the Muze library, see https://developers.thoughtspot.com/charts/muze/{muze-version}/Documentation/Guide%20to%20Muze%20Studio/muze[Introduction to Muze^].
+* *Custom JavaScript, CSS, and HTML* — Write standard web code to render any visualization without relying on a specific charting library.
+* *Third-party charting libraries* — Import and use browser-compatible libraries such as https://www.chartjs.org/[Chart.js^] or https://d3js.org/[D3.js^] to render any chart type your use case requires.
+
+You can also browse and use any of the available charts in the Muze chart gallery. For more information, see https://developers.thoughtspot.com/charts/muze/{muze-version}/Gallery[Muze chart gallery^].
+
+NOTE: Charts created in Muze Studio are associated with an individual Answer. Other users can copy the Answer and modify it to reuse the same chart.
+
+== The code editor
+
+The Muze Studio code editor has four components:
+
+* *JavaScript editor* — Render charts using the Muze API, custom JavaScript, or a third-party library.
++
+[.bordered]
+image::muze-js-tab.png[JavaScript editor]
+
+The following APIs and data are available:
++
+** *Muze library:* The full Muze API for composing chart layers, cross-canvas interaction, and more.
+** *Data and DataModel:* Data from your ThoughtSpot search query is available directly. Use Muze's in-memory DataModel component to apply filters, group-by operations, and selections before rendering.
+** *Color palettes:* Use the color API to match the color styles used across ThoughtSpot. By default, your chart inherits the instance-wide color palette.
++
+For more information, see https://developers.thoughtspot.com/charts/muze/{muze-version}/Documentation/API%20Reference/muze/[Muze API reference^].
+
+* *CSS editor* — Style your chart using CSS classes.
++
+[.bordered]
+image::muze-css-tab.png[CSS editor]
++
+For details, see https://developers.thoughtspot.com/charts/muze/{muze-version}/Documentation/Guide%20to%20Muze%20Studio/Tutorials/19%20Styling%20your%20charts[Styling your charts^].
+
+* *HTML editor* — Define the chart container, structure the layout, and add elements such as annotations. The `<div>` tags you add here define where the visualization renders.
++
+[.bordered]
+image::muze-html-tab.png[HTML editor]
+
+
+* *AI chat [.badge.badge-beta-relnotes]#Beta#* — Describe your chart requirements in natural language and let ThoughtSpot generate the code for you. The AI analyzes your request, recommends a chart type, and generates the JavaScript, CSS, and HTML code. You can refine the chart through follow-up prompts or switch to the code editors for manual adjustments.
++
+[NOTE]
+====
+AI chat is a Beta feature, available starting with ThoughtSpot 26.10.0.cl. Your ThoughtSpot administrator must enable Muze Studio AI by contacting {support-url}.
+====
++
+[.bordered]
+image::muze-studio-code-editor.png[Muze Studio code editor]
+
+
+Click *Run* at any time to preview your changes in the chart preview pane.
+
+== Getting started
+
+To create a chart using Muze Studio:
+
+. Navigate to an *Answer* in ThoughtSpot.
+. Click the chart type selector.
+. Select *Muze Studio* from the list of chart types.
+. Once the code editor panel opens, choose your authoring method:
+* *Write code manually* — Use the JavaScript, CSS, and HTML editors to write chart code directly using Muze syntax, custom JavaScript, or a third-party library.
+* *Use AI chat [.badge.badge-beta-relnotes]#Beta#* — Select the *AI* tab, then describe the chart you want in natural language. The AI generates the chart code for you. You can continue to refine the chart through follow-up prompts.
++
+For example, try: _"Create a bar chart with a reference line for the average"_
++
+NOTE: If the AI tab is not visible, contact your ThoughtSpot administrator to enable it by contacting {support-url}.
+. Click *Run* to preview your changes.
+. To save, click the More menu image:icon-more-10px.png[More menu icon] and select *Save*. +
+If your Answer is pinned to a Liveboard, click *Pin* to publish your changes.
+
+[#ai-chat]
+== Use AI chat to create and refine charts [.badge.badge-beta-relnotes]#Beta#
+
+AI chat is a conversational interface inside Muze Studio that generates chart code from natural-language descriptions. It uses a multi-step AI workflow to analyze your intent, recommend a chart type, and produce formatted code in the JavaScript, CSS, and HTML editors. To enable this feature, your ThoughtSpot administrator must contact {support-url}.
+
+=== Prerequisites
+
+* Your ThoughtSpot administrator has enabled Muze Studio AI.
+* The Muze Studio chart type is enabled.
+// TODO: verify with engineering — confirm whether both flags are needed or if `muzeStudioAiEnabled` implicitly enables `enableMuzeStudio`.
+
+=== Create a chart with AI
+
+. In an Answer, select *Muze Studio* as your chart type.
+. Select *Editor* to open the editor panel.
+. Select the *AI* tab, if not already selected.
++
+[.bordered]
+image::muze-studio-ai-chat-window.png[]
+. Type a description of the chart you want in the prompt field.
++
+.Example prompts
+[%collapsible]
+====
+* "Create a bar chart showing revenue by region"
+* "Show a line chart with a trend line"
+* "Make a pie chart of sales by category with data labels"
+* "Create a stacked area chart with a legend at the top"
+====
+. Press kbd:[Enter] or select the send button.
+. The AI processes your request and returns:
+* A text explanation of the chart it created
+* The generated code, which populates the JavaScript, CSS, and HTML editors
+* A live preview of the chart
+
+=== Refine the chart
+
+After the AI generates an initial chart, you can:
+
+* *Send follow-up prompts* to adjust the chart type, colors, labels, axes, or formatting. For example: _"Change the colors to blue"_ or _"Add data labels to each bar"_.
+* *Switch to the Code tab* to make manual edits to the generated JavaScript, CSS, or HTML.
+* Select *Run* to apply your changes and refresh the preview.
+
+The AI maintains your conversation history within the session, so each follow-up prompt builds on the previous context.
+
+=== AI-managed and manually edited charts
+
+[cols="1,2", options="header"]
+|===
+| State | Description
+
+| AI-managed
+| The chart was created or last updated through the AI. You can continue refining it with follow-up prompts.
+
+| Manually edited
+| You edited the code directly in the Code tab. A notification appears indicating that the chart has been manually modified. Further AI prompts generate new code rather than incrementally refining the manually edited version.
+|===
+// SOURCE: blink-playwright muze-studio-ai.helpers.ts — `MANUAL_EDIT_WARNING` selector and `AI_OWNED` metadata
+
+=== AI chat limitations
+
+* *Latency:* Initial chart generation may take several seconds while the AI processes your request.
+* *Chart complexity:* The AI works best with standard chart types and common formatting requests. Highly specialized visualizations may require manual code editing.
+* *Session persistence:* Chat history is maintained during your active session. If you navigate away and return, the session transcript is restored automatically.
+* The AI agent only writes code in the Muze library syntax because it specifically designed for that.
+* The AI agent should not be used on an existing chart because it does not understand existing charts.
+
+// SOURCE: js/ts-packages/dyoc/src/helpers/flags.ts — `muzeStudioRowsLimit` default 20,000
+////
+Muze JavaScript API
+. Write or generate your chart code:
++
+////
+
+== Migrating from Muze Studio (version 10.14.0.cl and earlier)
+
+If you created charts using Muze Studio in version 10.14.0.cl or earlier, ThoughtSpot recommends migrating to native Muze charts to resolve known limitations with exports, scheduled reports, version control, and formatting.
+
+Native Muze charts are available by default in the chart type selector from version 26.2.0.cl onwards.
+
+To migrate a chart:
+
+. Open the Answer containing the chart.
+. Click the chart type selector.
+. Select a chart type from the *New* section.
++
+ThoughtSpot automatically transfers the chart code to the native Muze chart type. Note that some configurations may not carry over during the migration.
+. Click *Save*.
+
+[IMPORTANT]
+====
+If your Muze Studio chart uses custom JavaScript or imports a third-party library via an HTML `<script>` tag, add the following line at the logical end of your JavaScript code after migrating:
+
+[source,javascript]
+----
+viz.events.emitRenderCompletedEvent();
+----
+
+This line is required when using custom JavaScript or third-party libraries. It signals to ThoughtSpot that chart rendering is complete, which is necessary for exports, scheduled reports, and other services to work correctly.
+
+For more information, see https://developers.thoughtspot.com/charts/muze/{muze-version}/Documentation/Guide%20to%20Muze%20Studio/Tutorials/08%20Exporting%20Charts%20Built%20with%20Third-Party%20Libraries[Charts built with third-party libraries^].
+====
+
+== Limitations
+
+[cols="1,2", options="header"]
+|===
+| Limitation
+| Details
+
+| Row limit
+| Default maximum of 40,000 rows.
+
+| Browser
+| Muze Studio is not supported in the Apple Safari web browser.
+|===
+
+'''
+> *Related information*
+>
+> * https://developers.thoughtspot.com/charts/muze/{muze-version}/Documentation/Guide%20to%20Muze%20Studio/muze[Introduction to Muze^]
+> * https://developers.thoughtspot.com/charts/muze/{muze-version}/use-muze[Use Muze in ThoughtSpot^]
+> * xref:charts-agentic.adoc[Agentic charts] — Learn how Spotter automatically generates charts for non-token answers
+

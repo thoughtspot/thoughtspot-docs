@@ -1,0 +1,84 @@
+= Connect to Databricks in Analyst Studio
+:product: Analyst Studio
+:connection: Databricks
+:author: Naomi
+:page-last_updated: Sep 21, 2026
+:experimental:
+:linkattrs:
+:description: Connect to Databricks to start searching your data in Analyst Studio.
+:jira: SCAL-315450
+
+*Additionally supports:* _Spark_
+
+== Supported JDBC drivers and known issues
+
+|===
+| Driver | Driver Release Date | {product} Removal Date
+
+| (Recommended) Simba Spark v 2.6.38.1068| 5/4/2024                |
+| Simba Spark v 2.6.33.1055              | 5/22/2023               |
+| Simba Spark v 2.6.21.1039              | 12/24/2021              |
+| Simba Spark v 2.6.17.1023              | 6/17/2021               |
+|===
+
+_{product} recommends connecting via the Simba Spark driver because it is the official driver endorsed by Databricks._
+
+The following are known issues with the current supported drivers.
+{product} continues to advocate on our customers' behalf for vendors and open-source communities to resolve these issues.
+
+|===
+| Driver | Known Issue | Further Details
+
+| Simba v 2.6.17.1021
+| Does not support Unity Catalog
+| Please use v 2.6.21.1039 or newer to utilize Unity Catalog.
+
+| Simba v 2.6.17.1021
+| Dates return incorrectly prior to 10/15/1582
+a| When using Spark 2.4.4 to Spark 3.0, DATE and TIMESTAMP data before October 15, 1582 may be returned incorrectly if serializing query results using Apache Arrow. +
+As a workaround, add `EnableArrow=0` in your connection URL to disable the Arrow result set serialization feature.
+
+| Simba v 2.6.17.1021
+| Does not support Spark version 2.1
+| The driver no longer supports servers that run Spark version 2.1.
+
+| Simba v 2.6.17.1021
+| Strings in Binary Columns
+a| Queries return binary results (not strings) for binary datatype columns. +
+For example, if I insert "hi" in a binary column, where I previously would see "hi" returned by the driver, I now see "6869".
+
+| Simba v 2.6.17.1021
+| Deprecated Versions
+| Support for Spark 1.6, 2.1, and 2.2 is deprecated, and will be removed in a future release of this driver.
+The driver only supports connections to Spark Thrift Server instances.
+It does not support connections to Shark Server instances.
+|===
+
+[discrete]
+=== Gather JDBC connection parameters
+
+Connecting to Databricks requires a running Spark cluster configured with SSL enabled and using HTTPS as the underlying thrift protocol (this is the default configuration for new clusters).
+
+=== Connecting to {product}
+
+. Follow these steps to xref:analyst-studio-connecting-analyst-studio-to-your-database.adoc[connect a Databricks database].
+Change the display name to something that helps you recognize the database behind the connection.
+. Fill in the `host`, `token`, and `HTTP path` fields with the information you gathered above.
+. Click *Connect* to save the new connection.
+
+=== Supported SQL dialect
+
+{product} supports connecting to Databricks clusters via their embedded Hive server using Hive's open-source JDBC driver.
+This restricts the supported SQL dialect to HiveQL;
+we currently do not support querying in Spark SQL, though we may add support for it at a later date.
+
+=== Automatic cluster termination
+
+Databricks "Standard" Spark clusters are configured by default to automatically terminate after 120 minutes of inactivity.
+The Hive JDBC driver cannot trigger the cluster to automatically restart, so you may want to adjust the timeout or disable automatic termination per Databricks' link:https://docs.databricks.com/user-guide/clusters/terminate.html#configuration[documentation,window=_blank].
+If the driver attempts to connect to the server after it's been shut down, the connection attempt will fail until the cluster is restarted manually.
+
+=== Unity Catalog
+
+{product} has added three level namespace support (catalog.schema.table) for Databricks to support Unity Catalog.
+The catalog and schema are now concatenated at the top level in the Schema Browser.

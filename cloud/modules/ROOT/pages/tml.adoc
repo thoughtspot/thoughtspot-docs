@@ -1,0 +1,467 @@
+= ThoughtSpot Modeling Language
+:page-last_updated: Oct 12, 2026
+:linkattrs:
+:experimental:
+:page-aliases: /admin/ts-cloud/tml.adoc, /admin/ts-cloud/tsl.adoc, /admin/scriptability/tml.adoc
+:description: Use TML to modify a ThoughtSpot object in a flat-file format. Then, migrate the object to a different instance, or restore it to the same instance.
+:jira: SCAL-188027, SCAL-240697, SCAL-265156, SCAL-264258, SCAL-335107
+
+ThoughtSpot Modeling Language (TML) is a markup language that represents ThoughtSpot objects (Models, Answers, Liveboards, tables, etc.) as human-readable text files, enabling version control, bulk editing, and migration of ThoughtSpot content.
+
+TML files use YAML syntax and map one-to-one with ThoughtSpot objects. You can download, edit, and re-upload them to update content, migrate between instances, or manage objects programmatically.
+
+To work with TML files, download a ThoughtSpot object (Model, view, SQL view, table, Answer, Liveboard, or Monitor alert) to a flat file in `.TML` format. Modify the file, and then upload it to the same instance or to a different instance.
+To learn how to export, change, and update Models, views, tables, Answers, and Liveboards, see xref:scriptability.adoc[Import and export TML files]. To learn how to migrate multiple TML files at a time, see xref:tml-import-export-multiple.adoc[].
+
+Each article below describes the TML syntax for a specific object type, including how to add and modify joins for Models, views, SQL views, and tables.
+
+See the following articles for the full syntax of each type of TML file:
+
+* xref:tml-answers.adoc[TML for Answers]
+* xref:tml-collections.adoc[TML for Collections]
+* xref:tml-connections.adoc[TML for Connections]
+* xref:tml-coaching.adoc[TML for Coaching]
+* xref:tml-joins.adoc[TML for joins]
+* xref:tml-liveboards.adoc[TML for Liveboards]
+* xref:tml-models.adoc[TML for Models]
+* xref:tml-alerts.adoc[TML for Monitor alerts]
+* xref:tml-sql-views.adoc[TML for SQL views]
+* xref:tml-tables.adoc[TML for tables]
+* xref:tml-views.adoc[TML for views]
+
+[#object-id]
+== Object ID in TML files
+
+Object ID (`obj_id`) is a user-defined, human-readable identifier that you can assign to supported ThoughtSpot objects, in addition to the system-generated GUID. A GUID is different in every Org and instance, but an `obj_id` stays the same when you rename an object, export and import its TML, or move it between Orgs and instances. This makes `obj_id` the recommended identifier for CI/CD pipelines and multi-Org deployments.
+// SOURCE: SCAL-335107 / Google Doc FAQ §1; Object ID supported object types reference (Oct 2026); dev-docs object-id.adoc
+
+For the REST API endpoints that work with `obj_id`, see link:https://developers.thoughtspot.com/docs/object-id[Object ID (obj_id)^] in the ThoughtSpot developer documentation.
+// TODO: the dev-docs object-id page exists only on the developer-docs objid-full-edit branch and returns 404 on main. Publish this page after that branch merges.
+
+[#obj-id-optional]
+=== Object ID is optional
+
+Object ID is optional. Existing workflows that rely on GUIDs or FQNs continue to work without changes, and an Org can contain a mix of objects with and without an `obj_id`. You can adopt `obj_id` incrementally, starting with only the objects you promote across environments.
+// SOURCE: Google Doc FAQ §3, §11
+
+To disable Object ID, contact {support-url}.
+// SOURCE: Google Doc FAQ §4
+
+// TODO: verify with engineering — the FAQ says Object ID is optional and can be disabled on request, and an open FAQ comment (Akshat Shah) asks whether it is on by default since GA. The supported object types reference and dev-docs object-id.adoc say Object ID must be enabled at the instance (cluster) level before obj_id participates in TML export, import, and search, and that until then objects resolve by GUID and name. Confirm the default state, and whether enablement is per instance or per Org.
+
+
+////
+[#obj-id-availability]
+=== Availability
+
+// TODO: verify with PM — the FAQ (§2) and the 26.3.0.cl release notes give GA as 26.3.0.cl, with expanded REST API v2.0 identifier support in 26.9.0.cl. The supported object types reference (Oct 2026) and dev-docs object-id.adoc say Object ID is GA in 26.9.0.cl. An open FAQ comment suggests removing the release timeline entirely.
+
+[cols="1,1,1", options="header"]
+|===
+| Phase | Version | Notes
+
+| Beta
+| 10.6.0.cl
+| Initial release
+
+| Early Access
+| 10.7.0.cl
+| Expanded access
+
+| General Availability
+| 26.3.0.cl
+| GA release
+|===
+// SOURCE: Google Doc FAQ §2
+////
+
+
+[#obj-id-supported-objects]
+=== Supported object types
+
+The following object types support `obj_id`:
+
+// TODO: verify with engineering — the FAQ (§1) and the 10.12.0.cl and 26.3.0.cl release notes list Views as supported, but Views are not in the supported object types reference or dev-docs object-id.adoc. Confirm whether the `view` TML kind supports obj_id.
+// TODO: verify with engineering — the supported object types reference lists no TML kind for Collections, but Collections have their own TML file (tml-collections.adoc). Confirm that TML import honors obj_id in Collection TML.
+
+[cols="1,2", options="header"]
+|===
+| Object type | In TML
+
+| Liveboard
+| `liveboard`
+
+| Answer
+| `answer`
+
+| Model
+| `model` (includes Worksheets)
+
+| Table
+| `table`
+
+| SQL view
+| `sql_view`
+
+| Column
+| No TML file of its own. Defined inside table and Model TML.
+
+| Connection
+| `connection`
+
+| Collection
+| `collection`. See xref:tml-collections.adoc[TML for Collections].
+
+| Custom action
+| No TML file of its own. Supported for custom actions managed through the API or the server.
+
+| Personalized view
+| No TML file of its own. Defined inside Liveboard TML, where each view carries its own `obj_id`. See <<obj-id-import>>.
+
+| Variable
+| No TML file of its own. Supported from 26.10.0.cl. Template variables can also reference Object IDs from 26.10.0.cl.
+
+| Memory
+| No TML file of its own. Carries the Object ID of the Model it is tagged to.
+
+| Group
+| No TML file of its own.
+
+| Role
+| No TML file of its own.
+|===
+// SOURCE: Object ID supported object types reference (Oct 2026); dev-docs object-id.adoc
+
+[IMPORTANT]
+====
+The `obj_id` field appears in the TML of every object type, but TML import uses it only for the supported object types. The presence of `obj_id` in a TML file does not mean that the object type supports Object ID.
+====
+
+[#obj-id-unsupported-objects]
+==== Objects that do not support Object ID
+
+The following objects do not have an `obj_id`:
+
+[cols="2,5", options="header"]
+|===
+| Object | Behavior
+
+| Visualization on a Liveboard
+| In TML, a visualization is identified only by `viz_guid`. Objects that reference a visualization, such as Monitor alerts, Liveboard schedules, and related links, depend on a GUID that is different in each Org.
+
+| Liveboard tab
+| A tab is identified only by its `id`, which is a GUID.
+
+| Monitor alert
+| The alert has no `obj_id` of its own. Its TML includes `pinboard_obj_id` and `answer_obj_id`, which resolve on import, but the visualization reference is a GUID that must already exist in the target Org.
+
+| Schedule
+| Liveboard schedules reference visualizations through `included_viz_id`, which is a GUID.
+
+| Webhook
+| The `obj_id` field is present in webhook TML but is ignored on import.
+
+| Parameter
+| Parameters have no `obj_id` and do not migrate by name.
+
+| Semantic integration
+| Semantic integrations have no `obj_id` and do not migrate by name.
+
+| User
+| Users are identified by name in TML, so they migrate without an `obj_id`.
+
+| Tag
+| Tags are identified by name in TML, so they migrate without an `obj_id`.
+
+| Org
+| The Org is part of the uniqueness key for an `obj_id`, so Orgs do not have an `obj_id` themselves.
+|===
+// SOURCE: Object ID supported object types reference (Oct 2026)
+
+[#obj-id-ignored-kinds]
+==== TML types that ignore obj_id on import
+
+The `obj_id` field is present in the following TML types, but ThoughtSpot ignores it during import:
+
+* `Join`
+* `user_object`
+* `webhook`
+* `column_security_rules`
+* `nl_instruction`
+* `column_alias`
+* `nls_feedback`
+* `cohort`
+* `monitor_alert`
+// SOURCE: Object ID supported object types reference (Oct 2026)
+
+[#obj-id-resolution]
+=== How object identity resolves
+
+When you import a TML file, ThoughtSpot matches it to an existing object in the target Org in the following order:
+// SOURCE: Google Doc FAQ §6, §7; dev-docs object-id.adoc (TML import)
+// TODO: verify with engineering — dev-docs deploy-with-tml-apis.adoc ("Rules for create vs. update operations") contradicts dev-docs object-id.adoc and the FAQ: it says object names are never used for matching, that an obj_id with no match creates a new object (no GUID fallback or WARNING), and that Table objects match on the database table rather than on obj_id or GUID. Confirm the actual import behavior, then update this section, <<obj-id-import>>, and <<obj-id-cicd>>.
+
+. *Object ID* (`obj_id`)
+. *GUID* (`guid`)
+. *Name / FQN*
+
+If none of these match, ThoughtSpot creates a new object.
+
+When the `obj_id` in the TML matches an object in the target Org, ThoughtSpot updates that object and does not use the `guid` for resolution. Any GUID mapping in your deployment process has no effect on that object.
+
+If the `obj_id` does not match any object in the target Org, ThoughtSpot falls back to the `guid` in the TML and updates the object with that GUID. The import returns a `WARNING` status. It does not fail or create a duplicate object.
+
+[IMPORTANT]
+====
+Avoid TML files where the `obj_id` and the `guid` refer to different objects. If the `obj_id` matches an object, ThoughtSpot updates that object, even if the `guid` belongs to another one.
+====
+// SOURCE: Google Doc FAQ §7, including open comment thread (Abhishek Kumar / Akshat Shah) on GUID mapping
+
+[#obj-id-uniqueness]
+=== Uniqueness and scope
+
+An `obj_id` must be unique per object type within an Org.
+// SOURCE: Google Doc FAQ quick reference
+
+// TODO: verify with engineering — the FAQ quick reference says obj_id is unique per object type, per Org. The FAQ body (§8), the supported object types reference, and dev-docs object-id.adoc say obj_id is unique within an Org (Org ID + obj_id is the uniqueness key), with no per-type scope. If uniqueness is per Org, remove the first two bullets below.
+
+* An Answer and a Liveboard in the same Org *can* share the same `obj_id` value because they are different object types.
+* Two Answers in the same Org *cannot* share the same `obj_id`.
+* The same `obj_id` *can* exist independently in multiple Orgs. This is the key behavior that enables cross-Org migration: you can use `revenue-dashboard` as an `obj_id` in your Dev, Staging, and Production Orgs simultaneously, and each Org maintains its own object with its own GUID.
+// SOURCE: Google Doc FAQ §8
+
+[#obj-id-format]
+=== Naming rules
+
+An `obj_id` value must follow these rules:
+
+* It must be 1 to 64 characters long.
+* It can contain letters (`a-z`, `A-Z`), numbers (`0-9`), hyphens (`-`), underscores (`_`), periods (`.`), and tildes (`~`).
+* It cannot contain spaces or other special characters, such as `/`, `@`, `#`, `$`, `&`, `*`, or `!`.
+// SOURCE: Google Doc FAQ §15; Object ID supported object types reference (Oct 2026); dev-docs object-id.adoc
+
+Do not use a value that has the same format as a GUID. When ThoughtSpot resolves an identifier in a URL, it tries a GUID-shaped value as a GUID first, so a GUID-shaped `obj_id` might not resolve as expected.
+// SOURCE: dev-docs object-id.adoc
+
+*Recommended naming pattern:*
+
+Treat `obj_id` values like URL slugs. Keep them lowercase, concise, and descriptive. For example:
+
+* `revenue-by-region`
+* `prod.sales.model`
+* `quarterly-pipeline-lb`
+
+Using a consistent naming convention across your Orgs makes TML files easier to read and reduces errors during migration.
+// SOURCE: Google Doc FAQ §15
+
+[#obj-id-auto-generation]
+=== Auto-generated values
+
+ThoughtSpot assigns an `obj_id` automatically:
+
+* ThoughtSpot assigns an `obj_id` to each object when it is created.
+* Objects that existed before Object ID was enabled do not receive an `obj_id` retroactively. They receive one the first time they are updated or imported through TML.
+// SOURCE: dev-docs object-id.adoc; Object ID supported object types reference (Oct 2026)
+
+An automatically generated `obj_id` combines the object name with the first segment of the object's GUID. For example, a Liveboard named *Retail Sales RAD - KPIs* might receive the `obj_id` `RetailSalesRAD-KPIs-c1e4043a`.
+// SOURCE: dev-docs object-id.adoc, deploy-with-tml-apis.adoc
+
+Because the generated value includes part of a GUID, copies of the same object in different Orgs receive different generated values. For any object that you deploy across Orgs, replace the generated value with a deliberate identifier and use the same value in every Org. To override the value, use the TML editor or edit the TML file directly.
+// SOURCE: Google Doc FAQ §14
+
+[#obj-id-set]
+=== Setting or changing an object ID
+
+You can set or change an `obj_id` using the TML editor in the ThoughtSpot UI:
+
+. Navigate to the object, click the *More* menu, and scroll to the TML section.
++
+[.bordered]
+image::tml-edit-image.png[A TML section of the More menu, showing the options to Export, Update answer, or Edit. Edit is selected.]
+
+. Select *Edit*.
+
+. When the TML file opens, click *Edit* and select *Change ObjectId*.
++
+[.bordered]
+image::change-objectid.png[TML editor with the Edit menu selected, and a highlighted option "Change ObjectId".]
+
+. In the text box, enter a unique string to identify the object. Click *Change*.
++
+[.bordered]
+image::object-id-textbox.png[A modal named Change Object ID, with a text box for New Object ID.]
+
+The top of the TML file now shows both identifiers:
+
+[subs=+macros]
+....
+guid: <system_generated_guid>
+obj_id: <your_unique_string>
+....
+
+You can also set the `obj_id` by editing it at the top of a TML file and importing the file.
+
+Before you change an existing `obj_id`, export the object's TML as a backup. After the change, the previous value no longer resolves. Update all references: TML files that use the `obj_id`, TML file names in your Git repository, and deployment scripts.
+// SOURCE: dev-docs object-id.adoc (Behavior and limitations), git-provider-integration.adoc
+
+To change the `obj_id` of many objects at once, use the REST API. For more information, see link:https://developers.thoughtspot.com/docs/object-id[Object ID (obj_id)^].
+
+[#obj-id-references]
+=== Object IDs of referenced objects
+
+TML can identify the objects it references by `obj_id` as well. For example, a table's TML can reference its connection by `obj_id`:
+
+[source,yaml]
+----
+obj_id: My_Connection__RETAIL__SALES
+table:
+  name: SALES
+  db: RETAIL
+  schema: PUBLIC
+  connection:
+    name: My Connection
+    obj_id: My_Connection
+----
+// SOURCE: dev-docs deploy-with-tml-apis.adoc
+
+Monitor alert TML references its Liveboard or Answer through `pinboard_obj_id` or `answer_obj_id`. See <<obj-id-unsupported-objects>>.
+
+[#obj-id-export]
+=== Exporting TML with object IDs
+
+When Object ID is enabled, TML that you export from the ThoughtSpot UI includes the `obj_id` automatically.
+
+TML exported through the REST API does not include `obj_id` by default. For the export options that include the `obj_id` of the object and of its referenced objects, see link:https://developers.thoughtspot.com/docs/tml-export[TML export^].
+// SOURCE: Google Doc FAQ §5; dev-docs tml-export.adoc
+
+[#obj-id-import]
+=== Importing TML with object IDs
+
+When you import a TML file that contains an `obj_id`:
+// SOURCE: Google Doc FAQ §6, §9; dev-docs object-id.adoc
+
+* If the `obj_id` matches an existing object in the target Org, ThoughtSpot *updates* that object.
+* If no object matches the `obj_id`, ThoughtSpot falls back to the GUID and then the name, as described in <<obj-id-resolution>>.
+* If nothing matches, ThoughtSpot *creates* a new object and assigns it the `obj_id` from the TML.
+
+Because `obj_id` is consistent across Orgs, you do not need to remap GUIDs when migrating content between environments.
+
+*Personalized views:* Liveboard TML includes an `obj_id` for each personalized view. When you import Liveboard TML through the TML import API, you can opt in to update existing personalized views by `obj_id` instead of overwriting them. Import from the UI uses the original merge behavior. For more information, see link:https://developers.thoughtspot.com/docs/tml-import[TML import^].
+// SOURCE: 26-8-0-cl.adoc; dev-docs tml-import.adoc
+
+[#obj-id-clone]
+=== Clone behavior
+
+When you clone an object that has an `obj_id`, the clone receives a new, distinct `obj_id`. The original object's `obj_id` is not copied to the clone, ensuring uniqueness within the Org.
+// SOURCE: Google Doc FAQ §16
+
+[#obj-id-git]
+=== Git integration
+
+Object ID values are part of the TML content, so they are preserved when you commit TML files to Git and import them again.
+// SOURCE: Google Doc FAQ §13
+
+The Git commit APIs used for xref:git-version-control.adoc[Git version control] do not use `obj_id`. For Object ID-based deployments, import TML files from your repository through TML import. For an example Git workflow that names TML files after their `obj_id`, see link:https://developers.thoughtspot.com/docs/git-provider-integration[Git provider integration^].
+// SOURCE: Google Doc FAQ §13; git-version-control.adoc; dev-docs git-provider-integration.adoc
+
+[#obj-id-cicd]
+=== Moving content between Orgs with object IDs
+
+Without `obj_id`, moving TML between Orgs or instances requires you to track the GUID of each copy of an object, because the same object gets a different system-generated GUID in each Org. With `obj_id`, the same identifier resolves to the correct object in every Org:
+// SOURCE: Google Doc FAQ §10
+
+[cols="1,1,1", options="header"]
+|===
+| Environment | `obj_id` | GUID (system-generated)
+
+| Dev
+| `revenue-dashboard`
+| `aaa-111-...`
+
+| Staging
+| `revenue-dashboard`
+| `bbb-222-...`
+
+| Production
+| `revenue-dashboard`
+| `ccc-333-...`
+|===
+
+When you move content between Orgs using TML, keep the following in mind:
+// SOURCE: Google Doc FAQ §9, §10, §11; dev-docs deploy-with-tml-apis.adoc
+
+* *Use the same `obj_id` for every copy of an object.* Assign the value in each Org where a copy exists, following a consistent <<obj-id-format,naming convention>>. Do not rely on automatically generated values, because they include part of the GUID and differ between Orgs.
+* *The first import creates the object.* If no object in the target Org matches the `obj_id`, GUID, or name in the TML, ThoughtSpot creates the object and assigns it a new GUID in that Org. To make sure ThoughtSpot creates a new object, remove the `guid` from the TML before the first import.
+* *Later imports update the object.* When you import the same TML again, ThoughtSpot finds the existing object by its `obj_id` and updates it.
+* *You can adopt Object ID gradually.* Start with the objects you move most often. GUID-based and FQN-based workflows continue to work for the rest.
+
+NOTE: Visualizations and Liveboard tabs do not have an `obj_id`. Objects that point to a visualization, such as Monitor alerts, Liveboard schedules, and related links, still depend on a GUID that is different in each Org. See <<obj-id-unsupported-objects>>.
+
+To automate these steps in a CI/CD pipeline with the REST API and Git, see link:https://developers.thoughtspot.com/docs/deploy-with-tml-apis#adopting-obj-id-in-deployment-pipeline[Adopting obj_id in a deployment pipeline, window=_blank].
+// TODO: confirm with the SCAL-335107 requester that the step-by-step CI/CD migration walkthrough the ticket asks for can live in the developer documentation instead of this page.
+
+For other ways to move content between Orgs and environments, see:
+
+* xref:publishing.adoc[Publishing objects between Orgs]: Publish objects from the Primary Org to other Orgs without creating a separate copy in each Org.
+* xref:tml-import-export-multiple.adoc[Migrate multiple TML files]: Export and import several objects at once from the ThoughtSpot UI.
+* xref:create-variables.adoc[Create variables]: Use different tables or connection properties in each Org with the same TML.
+
+[#obj-id-quick-reference]
+=== Quick reference
+
+[cols="2,3", options="header"]
+|===
+| Topic | Summary
+
+| *Is it required?*
+| No. Object ID is optional. Existing GUID and FQN workflows are not affected.
+
+| *Supported objects*
+| Liveboards, Answers, Models, tables, SQL views, columns, connections, Collections, custom actions, personalized views, variables, memory, groups, and Roles. Visualizations, Liveboard tabs, Monitor alerts, schedules, webhooks, and parameters do not have an `obj_id`.
+
+| *Resolution order*
+| Object ID → GUID → Name/FQN. The `guid` is used only if the `obj_id` does not match an object.
+
+| *Uniqueness*
+| Unique per object type, per Org. The same `obj_id` can exist in multiple Orgs.
+
+| *Format*
+| 1 to 64 characters: letters, numbers, hyphens, underscores, periods, and tildes. No spaces or other special characters.
+
+| *Auto-generated?*
+| Yes. New objects receive one on creation; existing objects receive one on their first update or TML import. Override it for objects that you move between Orgs.
+
+| *Export (UI)*
+| Included automatically when Object ID is enabled.
+
+| *Import behavior*
+| Matches by `obj_id`, then GUID, then name. Creates a new object if nothing matches.
+
+| *Changing an `obj_id`*
+| The previous value stops resolving. Update all references to it.
+
+| *Clones*
+| Clones receive a new, distinct `obj_id`.
+
+| *Git*
+| `obj_id` values are preserved in TML committed to Git.
+
+| *Disabling*
+| Contact ThoughtSpot Support to disable the feature.
+|===
+
+[#fqn]
+== fqn
+
+The `fqn` parameter refers to the source table's GUID. You can find this string of letters and numbers at the end of the URL for that table or connection.
+
+For example, in `\https://<company>.thoughtspot.com/#/data/tables/34226aaa-4bcf-4d6b-9045-24cb1e9437cb`, the GUID is `34226aaa-4bcf-4d6b-9045-24cb1e9437cb`.
+
+Use this optional parameter to reduce ambiguity and identify a specific table, if you have multiple tables with the same name. When exporting a TML file, select *Export FQNs of referenced objects* to include FQNs for the underlying tables and connections. If you do not add the `fqn` parameter, and the connection or table you reference does not have a unique name, the file import fails.
+
+[#limitations]
+== Limitations of working with TML files
+
+The following limitations apply when you edit a Model, Answer, table, view, Liveboard, or xref:monitor.adoc[Monitor alert] through TML.
+
+include::partial$scriptability-limitations.adoc[]

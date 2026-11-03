@@ -1,0 +1,70 @@
+= Integrate Databricks Metric Views
+:page-last_updated: Sep 14, 2026
+:linkattrs:
+:experimental:
+:page-layout: default-cloud-early-access
+:author: Naomi
+:jira: SCAL-313895
+:description: ThoughtSpot's Databricks Metric Views integration allows you to import your semantic layer into ThoughtSpot Models.
+
+ThoughtSpot integrates with Databricks Metric Views, allowing you to leverage semantic models defined in Databricks in ThoughtSpot. This enables centralized metric and business logic management in Databricks, while providing a seamless analytics experience in ThoughtSpot, by leveraging Databricks’s semantic layer. The integration is designed for flexibility, efficiency, and to improve data governance and discoverability.
+
+
+
+Users with can manage data privileges can manage and resync Metric Views as needed to reflect changes made in Databricks.
+
+NOTE: The Databricks Metric Views is in Early Access. To enable this feature, contact {support-url}.
+
+Features:
+
+* Connect directly to Databricks Metric Views from ThoughtSpot.
+* Import semantic models, including metrics, formulas, and column descriptions, into ThoughtSpot.
+* Use imported semantic views as data models for building dashboards, SpotIQ queries, and analytics.
+* Column-level metadata and documentation from Databricks are automatically pulled into ThoughtSpot.
+
+
+NOTE: This integration is separate from dbt integration; you can choose to use either or both, depending on your data modeling strategy.
+
+
+
+== Prerequisites
+
+Please confirm that the user has access to all underlying tables referenced by the semantic view.
+
+
+== Integrating with Databricks
+. Define Metric Views in Databricks:
+.. Create semantic views in Databricks using their native tools.
+.. Add business logic, metrics, and column descriptions as needed.
+. Connect ThoughtSpot to Databricks:
+.. In ThoughtSpot, navigate to the Data workspace and choose *Semantic integrations*. Click *Add integration*.
++
+[.bordered]
+image::add-integration.png[Click Add integration]
+
+.. Add a name and description and choose the Databricks connection type. Click *Next*
++
+[.bordered]
+image::databricks-metric-view.png[Select Databricks]
+
+.. Select the connection name, catalog, schema, and metric view and click *Add integration*.
++
+[.bordered]
+image::databricks-add-metric-view.png[Add your metric view]
+
+.. ThoughtSpot will import the semantic view, including all defined metrics and metadata. A screen displays all formulas defined in the Metric View. You can choose to review and edit the formulas, which ThoughtSpot redefined from YAML to TML format, or save your semantic view as is.
+. Use in ThoughtSpot
+.. The imported semantic view appears as a data model in ThoughtSpot. If the Metric View in Databricks changes, you can navigate to the data model in ThoughtSpot, click the *More* menu image:icon-more-10px.png[more menu], and select *Import semantic updates* to resync.
+.. Build dashboards, run queries, and use SpotIQ on top of the imported model.
+.. All business logic and metrics defined in Databricks are available for analytics in ThoughtSpot.
+
+When a semantic view is imported, tables are imported into ThoughtSpot using the aliases defined in the semantic view. If a table already exists in the connection with a different name, it is automatically renamed to match the alias during the semantic view import.
+
+== Limitations
+
+If the semantic model has two or more tables, then the tables must have joins defined.
+
+Some Databricks functions may not be supported in ThoughtSpot.
+
+If you do a resync, you will lose your locally-made edits and Databricks will be considered the source of truth.
+

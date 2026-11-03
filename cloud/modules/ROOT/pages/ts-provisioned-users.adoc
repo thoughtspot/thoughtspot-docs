@@ -1,0 +1,113 @@
+= TS: Provisioned Users system Model
+:page-last_updated: October 13, 2026
+:author: Rani
+:linkattrs:
+:experimental:
+:description: Use the TS: Provisioned Users system Model to count the users provisioned on your cluster, in total and per Org.
+:jira: SCAL-342645
+
+The *TS: Provisioned Users* system Model lists every user account known to the cluster together with its current status and Org membership.
+It answers one question accurately: how many users are provisioned right now, and in which Orgs.
+
+Before this Model existed, ThoughtSpot reported lifetime users, including deleted accounts, which overstated license consumption.
+This Model corrects that.
+
+The Model has 6 columns: 1 measure and 5 attributes.
+
+[TIP]
+====
+Use the pre-built *Provisioned Users* measure for license counts, add *Org* to break it down per Org, and switch to a table view.
+Use *User Status* and *Is Active* to separate current, inactive, and deleted accounts.
+====
+
+== Column reference
+
+[options="header",cols="20%,12%,13%,55%"]
+|===
+| Column name | Data type | Category | Description
+
+| Is Active
+| bool / int
+| Attribute
+| `1` (True) when the user is currently present in the cluster; `0` when deleted. This is the flag behind the *Provisioned Users* measure.
+
+| Org
+| varchar
+| Attribute
+| Name of the Org the user belongs to. A user in several Orgs appears once per Org.
+
+| Org ID
+| varchar
+| Attribute
+| Unique ID of the Org.
+
+| Provisioned Users
+| int64
+| Measure
+| Pre-built measure: unique count of *User ID* where *Is Active* = `1`. This is the number that counts against a provisioned-user license.
+
+| User ID
+| varchar
+| Attribute
+| Unique ID (GUID) of the user. The key you reconcile against the REST API `users/search` response.
+
+| User Status
+| varchar
+| Attribute
+| Current state of the user account: _active_, _inactive_, or _deleted_.
+|===
+
+== How the license number is calculated
+
+Provisioned (current) users:: Unique count of *User ID* where *Is Active* = `1`.
+This is what the built-in *Provisioned Users* measure returns.
+Deleted users:: Unique count of *User ID* where *Is Active* = `0`.
+Lifetime users:: Unique count of *User ID* with no *Is Active* filter.
+This is the inflated figure shown on older releases.
+Do not use it for license reconciliation.
+
+== Example searches
+
+[options="header",cols="50%,50%"]
+|===
+| Search | Returns
+
+| `provisioned users`
+| Total current provisioned users across the cluster.
+
+| `provisioned users org`
+| License consumption per Org. Use this before onboarding a new user group.
+
+| `unique count user id org user status`
+| Breakdown of active, inactive, and deleted accounts per Org.
+
+| `user id org is active = 0`
+| Accounts that have been deleted, per Org. Use this to confirm a deprovisioning run took effect.
+|===
+
+== Use cases
+
+License headroom per Org::
+If each of your products or business units is its own Org, search `provisioned users org` before onboarding a new customer group to see current consumption against the quantity in xref:ts-entitlement-tracking.adoc[TS: Entitlement Tracking].
+
+Cross-Org footprint of a user::
+A user licensed for three products appears in three Orgs.
+Group by *User ID* and count Orgs to see how many products each account is provisioned for.
+
+Post-deprovisioning verification::
+After removing users from an Org, the next refresh shows them drop out of that Org's *Provisioned Users* count while remaining in the Orgs they still use.
+
+== Things to be aware of
+
+* This Model refreshes every 2-3 days.
+It will legitimately disagree with the Admin Console for recently added or removed accounts.
+* The *Provisioned Users* KPI on the xref:ai-bi-stats.adoc[AI and BI Stats Liveboard] ignores the Org filter.
+Use this Model directly for Org-level numbers.
+* This Model is intentionally minimal and carries no activity data.
+For "provisioned but never logged in" analysis, pair it with xref:ts-login-activity-tracking.adoc[TS: Login Activity Tracking] by joining on *User ID* and *Org*.
+
+== Related information
+
+* xref:system-model.adoc[]
+* xref:ts-login-activity-tracking.adoc[]
+* xref:ts-entitlement-tracking.adoc[]

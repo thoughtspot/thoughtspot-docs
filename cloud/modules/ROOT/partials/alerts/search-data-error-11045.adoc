@@ -1,0 +1,46 @@
+[#search-data-error-11045]
+
+=== 11045
+
+Description:: As of 10.12.0.cl, it is not possible to use a Set with a formula’s filter condition. The resulting SQL result is invalid. This is an interim error message that will be displayed until this feature is delivered.
+
+Details:: A conditional formula can be written with either of the following syntax examples:
++
+--
+. sum_if(region='west', sales)
+
+. group_aggregate(sum(sales),query_groups(),{region='west'})
+
+. group_aggregate(sum_if(region='west', sales),query_groups(),query_filters())
+
+. if (sum(sales) >0 ) then region else ‘not in region’
+--
++
+If the defined filter is a Set rather than a Model column then the error will be displayed. That is:
++
+--
+. sum_if(regionSet='west', sales)
+
+. group_aggregate(sum(sales),query_groups(),{regionSet='west'})
+
+. group_aggregate(sum_if(regionSet='west', sales),query_groups(),query_filters())
+
+. if (sum(sales) >0 ) then regionSet else ‘not in region’
+--
++
+Note that the vs keyword will generate this error if the Set is used as the comparison column. This is because the VS keyword generates formulas as per the second example above.
++
+That is:
++
+[Sales] ([regionSet='west'] vs [regionSet='east'])will result in system formulas defined as:
++
+--
+* group_aggregate(sum(sales),query_groups(),{regionSet='west'})
+
+* group_aggregate(sum(sales),query_groups(),{regionSet='east'})
+--
+
+Cause:: This is an intentional error as the resulting SQL results are not correct.
+
+
+Resolution:: This feature is a backlog delivery item for the Set’s feature capabilities.

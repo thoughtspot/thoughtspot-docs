@@ -1,0 +1,47 @@
+= Where to write context
+:author: Naomi
+:page-last_updated: Oct 16, 2026
+:linkattrs:
+:experimental:
+:description:
+:jira: SCAL-344816
+
+Six places, one question each. Pick the surface whose question matches what you want Spotter to do.
+
+== The surfaces
+[options="header"]
+|===
+| Surface | Where | Answers the question | Reaches the agent | Example
+
+| **Spotter instructions** | Spotter settings, Org level | How should the agent behave, for everyone? | Always, in the system prompt | "End revenue answers with 'Figures unaudited'."
+| **Analyst instructions** | On a Spotter Analyst | How should this team's analyst behave and what should it focus on? | Always, in place of the Org instructions, for conversations in that Analyst | "You are the EMEA renewals analyst. Lead with churn risk."
+| **Column synonyms** | Model column property | What else do people call this column? | During column matching | region: geo, territory
+| **AI Context** | Spotter optimization tab, 400 characters per column | What is this column and how are its values written? | During column selection; into the prompt only for selected columns | "Fiscal quarter label, e.g. Q2 FY26. Fiscal year starts February."
+| **Data model memory** | Memory sources, from Liveboards and conversations | What business logic applies to this Model, and how are recurring analyses built? | Retrieved by meaning, per question. A learned analysis is applied as-is on an exact match, else as a pattern | "Churn = churned ARR plus downgrades." "Quarterly churn: filter close_date to the quarter, group by month, sum arr_change."
+| **Personal memory** | Said in conversation, no editor | What should Spotter remember about me? | Profile always; preferences by relevance on that Model | "When I say my accounts, I mean EMEA enterprise."
+|===
+
+Data model instructions, reference questions and business terms you wrote earlier stay in place and are fetched like memory. See xref:spotter-legacy-memory.adoc[Legacy memory sources] and xref:data-model-instructions.adoc[Data model instructions].
+
+== Same fact, different homes
+
+What happens to one sentence depending on where it is written. &#9989; marks the home to use.
+
+[options="header"]
+|===
+| Expectation | Data model semantics | Spotter instructions | Memory
+| **Revenue excludes internal test accounts** | On the revenue column. Seen only if revenue is already picked. The filter lives on a different column (account type), so the agent has to connect them itself | A data fact, not behavior. It would apply to every Model in the Org. | &#9989; **Data model memory.** Retrieved whenever revenue is asked about, names both columns, applied as a filter.
+| **Bookings use Close Date, not Created Date** | "Prefer this over Created Date" on Close Date is a preference, not a description. It only helps once Close Date is a candidate | A data fact, not behavior | &#9989; **Data model memory:** "Bookings questions use Close Date." Plus AI Context on each column stating what it is: "Date the deal was signed" vs "Date the record was created."
+| **End every answer with "Figures unaudited"** | Not about a column. No home here | &#9989; **Spotter instructions.** Applied to every answer, never filtered out | Retrieved only when the question happens to match, so it fires sometimes.
+| **Churn equals churned ARR plus downgrades** | Could go on arr_change, but the definition spans change_type too, and it only matters when churn is asked | A definition, not behavior | &#9989; **Data model memory.** Everyone asking about churn on this Model gets the same definition.
+| **Medicine names are stored as short forms, MP means Metoprolol** | &#9989; **AI Context on the medicine column.** This is how the values are written, exactly what column selection needs | Too specific for behavior instructions | Would also work, but the fact is about one column's values, so keep it with the column.
+| **My team says "geo" for region** | &#9989; **Synonym on the region column.** A name-to-column mapping, used directly in matching | Not behavior | Would also work, but a name for one column belongs on the column.
+| **When I say "my accounts", I mean EMEA enterprise** | Not about a column. True for one person only | It would apply to everyone in the Org | &#9989; **Personal memory.** Say it in conversation; it filters your answers and nobody else's.
+|===
+
+== Next
+
+- xref:spotter-make-ai-ready.adoc[Make your data model AI-ready] for synonyms and AI Context
+- xref:spotter-liveboard-learn.adoc[Add memory from Liveboards] and xref:spotter-conversation-learn.adoc[Add memory from conversations] for data model memory
+- xref:spotter-instructions.adoc[Spotter instructions]
+- xref:spotter-personal-memory.adoc[Personal memory]

@@ -1,0 +1,110 @@
+= Diagnose problems with Spotter
+:page-last_updated: Aug 13, 2026
+:author: Naomi
+:linkattrs:
+:experimental:
+:description: Diagnosis is a conversation: ask Spotter where it's confused, fix what it flags, and re-run until the answers come back clean.
+:jira: SCAL-331062
+
+Spotter can tell you what it doesn't understand about your data model — before your users find out. Diagnosis is a conversation: ask Spotter where it's confused, fix what it flags, and re-run until the answers come back clean. Run this after optimizing your data model and generating AI context, and before adding memory or instructions.
+
+++++
+<br>
+<div class="border">
+<script src="https://fast.wistia.com/player.js" async></script><script src="https://fast.wistia.com/embed/vpvqeomjxa.js" async type="module"></script><style>wistia-player[media-id='vpvqeomjxa']:not(:defined) { background: center / contain no-repeat url('https://fast.wistia.com/embed/medias/vpvqeomjxa/swatch'); display: block; filter: blur(5px); padding-top:58.75%; }</style> <wistia-player media-id="vpvqeomjxa" aspect="1.702127659574468"></wistia-player>
+</div>
+++++
+
+== The diagnostic loop
+
+----
+┌──────────────────┐    ┌───────────────────┐    ┌───────────────────┐
+│ Ask a diagnostic │ →  │ Spotter flags     │ →  │ Fix in the Model  │
+│ prompt           │    │ gaps & confusion  │    │ or in memory      │
+└──────────────────┘    └───────────────────┘    └───────────────────┘
+         ↑                                                 │
+         └────────────── re-run until clean ──────────────┘
+----
+
+Fixes land in one of two places.
+
+**Single-column issues** — an unclear meaning, missing values context, a bad name — belong in the data model.
+
+**Cross-column guidance** — which date column to use for an analysis, KPI hierarchy, business definitions — can go straight into memory from the conversation.
+
+== Step 1 — Diagnose the whole Model
+
+Start broad. In a Spotter conversation on your data model, ask:
+
+> *"Show me the data model columns you're confused about and what specifically is causing the confusion."*
+
+Spotter returns ambiguous columns, conflicting signals between columns, and places where context is missing. This is your fix list.
+
+== Step 2 — Narrow the diagnosis
+
+The whole-model prompt finds general gaps. To find the gaps that matter for *your* use cases, narrow the diagnosis to the analyses your users will actually run. Use the questions you collected during xref:spotter-usecase-discovery.adoc[Usecase discovery].
+
+[options="header"]
+|===
+| Diagnostic angle | Ask Spotter | What it surfaces
+| **A specific analysis area** | *"What do you understand about pipeline analysis based on this data model? Which columns would you use, and where are you unsure?"* | Whether Spotter's mental model of a topic matches yours — wrong column choices, missing measures
+| **Confusing columns** | *"Which columns have names or descriptions you could interpret more than one way? List the possible interpretations."* | Ambiguous naming — for example, does `Close Date` mean deal close or fiscal close?
+| **Value overlaps** | *"Which columns contain overlapping or similar values? Where could you pick the wrong column when filtering?"* | The same value living in two columns — for example, "Closed" in both `Stage` and `Status`, region names in both `Territory` and `Sales Region`
+| **Metric definitions** | *"How would you calculate win rate from this Model? What definition are you assuming?"* | Assumed formulas that don't match your business definition — fix rigid formulas in the Model itself
+| **Date ambiguity** | *"If I ask for revenue by month, which date column do you use and why?"* | Multiple date columns competing for the same query
+|===
+
+Run the analysis-area prompt once per use case you identified in discovery — pipeline, forecasting, team performance, whatever your target team asked for.
+
+== Step 3 — Fix what Spotter flags
+
+NOTE: **Spotter can't fix the data model itself.** It diagnoses and drafts suggestions, but Model-level changes — AI context, names, synonyms, formulas — you apply yourself. What Spotter *can* apply directly is memory: correct it in the conversation and ask Spotter to remember.
+
+Route each flag to the right fix:
+
+[options="header"]
+|===
+| What Spotter flags | Fix in | How
+| Ambiguous column name or unclear meaning | **AI context** (Model) | Keep it scoped to that one column: what it represents, the kind of values it holds, when to use it. ~200 characters, written as instructions to the AI
+| Which column to use for an analysis — competing date columns, KPIs, column hierarchy | **Memory** (conversation) | Correct it in the conversation and ask Spotter to remember — for example, tell it which date column wins for revenue queries
+| Value overlap between columns | **AI context + Memory** | Both layers. First, AI context on each column stating clearly what it's used for, so overlapping values don't cause misreads. If column context alone isn't enough, add memory definitions for how to perform each specific analysis — *"For pipeline progression, use `Stage`; for open/closed filtering, use `Status`"*
+| Business definition Spotter gets wrong | **Memory** (conversation) | Give the correct definition in the conversation
+| Term your team uses that the Model doesn't | **Synonym** (Model) | Add it on the column
+| Wrong or assumed formula | **Formula** (Model) | Define it once in the data model
+|===
+
+The dividing line: **AI context is a static description of one column — memory holds the conditions.**
+
+If the fix describes what one column means or how it's modeled — *"`Opportunity Close Date` is the closure date for any deal won or lost"* — it's AI context. (Don't list sample values; Spotter already sees those.)
+
+If it's a business definition, or a rule that depends on conditions and can't be pinned to a single column, write it in memory — *"For open deals, forecast with `Expected Close Date`; once a deal is closed, report on `Actual Close Date`."* A conditional rule like that doesn't fit either column's context without misleading the other analysis.
+
+=== Writing the AI context fixes
+
+We recommend you write AI context yourself, based on what the diagnosis surfaced. You know the business meaning, and the diagnosis tells you exactly what to clarify.
+
+You can also have Spotter draft it for you — but resolve the confusion in the conversation first, then ask for the draft:
+
+> *"The `Opportunity Close Date` is the closure date for any deal won or lost. The `Booked Contract Opp Date` is for opportunities we've booked — the legal date of signing the contract. Draft AI context for both columns."*
+
+Review the draft before saving it to the Model — it's a starting point, not a final answer.
+
+== Step 4 — Re-run until clean
+
+The Model is ready when:
+
+----
+✓ The whole-model prompt returns no significant confusion.
+✓ Analysis-area prompts describe each use case the way your team would.
+✓ Metric prompts return your definitions, not assumptions.
+----
+
+If you're still correcting the same things after two or three passes, the issue is structural — go back to xref:spotter-model.adoc[Optimize your data model] rather than adding more context.
+
+'''
+> **Related information**
+>
+> * xref:spotter-instructions.adoc[Spotter instructions]
+> * xref:spotter-liveboard-learn.adoc[Add memory from Liveboards].
+
+//*For diagnosing issues after Spotter is live — wrong answers, inconsistent results, wrong columns selected — see [Best practices](URL-TBD).*

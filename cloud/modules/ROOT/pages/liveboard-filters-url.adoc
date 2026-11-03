@@ -1,0 +1,182 @@
+= Filtered Liveboard URLs
+:page-last_updated: 10/28/2026
+:linkattrs:
+:experimental:
+:description: Construct a Liveboard URL that opens to a specific pre-filtered state by appending filter and parameter tokens as query parameters.
+:jira: SCAL-280403, SCAL-280404
+
+// SOURCE: SCAL-335102 (EA Admin Portal story — feature name and description field)
+// SOURCE: SCAL-280403 (OTP Review comment, 2026-09-10 — filter/parameter URL token scope and operator information)
+// SOURCE: developer-docs/runtime-filters.adoc (operator table and URL parameter naming convention — col/op/val)
+// SOURCE: developer-docs/runtime-parameters.adoc (parameter URL syntax — param/paramVal naming convention)
+
+With Filtered Liveboard URLs, you can share a Liveboard in a specific pre-filtered state by appending filter and parameter tokens to the Liveboard URL. When a user opens the URL, ThoughtSpot applies the specified filters and parameter overrides before rendering the Liveboard.
+
+This is useful when you want to share a Liveboard that is already scoped to a particular region, time period, or business unit, without requiring the recipient to set filters manually.
+
+NOTE: To use Filtered Liveboard URLs, the feature must be enabled on your ThoughtSpot instance. To enable it, contact your ThoughtSpot Administrator.
+
+[NOTE]
+====
+Dynamic parameters are not supported in this release.
+====
+
+[#url-structure]
+== URL structure
+
+A filtered Liveboard URL follows this pattern:
+
+----
+https://<your-instance>/#/pinboard/<liveboard-id>?<filter-tokens>
+----
+
+// TODO: verify with engineering — confirm whether the URL hash uses #/pinboard/<id> or #/liveboard/<id> in 26.11.0.cl
+
+You append one or more filter tokens or parameter tokens as query string parameters after the Liveboard ID. You can combine filter tokens and parameter tokens in the same URL.
+
+[#filter-tokens]
+== Filter tokens
+
+Each filter token is a set of three query parameters that work together to define one filter condition.
+
+// SOURCE: developer-docs/runtime-filters.adoc (col/op/val URL parameter naming and sequential numbering)
+
+[horizontal]
+`col__N__`:: The name of the column to filter on. Replace `N` with a sequential integer starting from `1` — for example, `col1`, `col2`, `col3`.
+`op__N__`:: The filter operator. See <<operators>>.
+`val__N__`:: The value to filter by. To filter by multiple values, repeat `val__N__` for each value.
+
+For example, to filter a Liveboard to show data only where `Region` equals `West`:
+
+----
+https://<your-instance>/#/pinboard/<liveboard-id>?col1=Region&op1=EQ&val1=West
+----
+
+To apply multiple filters, increment the token number for each filter condition:
+
+----
+https://<your-instance>/#/pinboard/<liveboard-id>?col1=Region&op1=EQ&val1=West&col2=Product&op2=IN&val2=Shirts&val2=Shoes
+----
+
+IMPORTANT: Filter token numbers must be sequential and start from `1`. If a number is skipped, ThoughtSpot stops reading filters at the gap and ignores all subsequent tokens.
+
+[#parameter-tokens]
+== Parameter tokens
+
+You can override Liveboard parameter values in the URL using parameter tokens.
+
+// SOURCE: developer-docs/runtime-parameters.adoc (param/paramVal URL syntax)
+
+[horizontal]
+`param__N__`:: The name of the parameter to override. Replace `N` with a sequential integer starting from `1`.
+`paramVal__N__`:: The value to apply to the parameter.
+
+For example, to set a parameter named `Fiscal Year` to `2025`:
+
+----
+https://<your-instance>/#/pinboard/<liveboard-id>?param1=Fiscal+Year&paramVal1=2025
+----
+
+To override multiple parameters, increment the number for each pair:
+
+----
+https://<your-instance>/#/pinboard/<liveboard-id>?param1=Fiscal+Year&paramVal1=2025&param2=Currency&paramVal2=USD
+----
+
+You can combine filter tokens and parameter tokens in the same URL:
+
+----
+https://<your-instance>/#/pinboard/<liveboard-id>?col1=Region&op1=EQ&val1=West&param1=Fiscal+Year&paramVal1=2025
+----
+
+[#operators]
+== Supported filter operators
+
+Use one of the following values for the `op__N__` parameter.
+
+// SOURCE: developer-docs/runtime-filters.adoc (operator table — confirmed applicable to URL-based filters)
+
+[width="100%",cols="1,2,1"]
+[options="header"]
+|===
+|Operator |Description |Number of values required
+
+|`EQ`
+|Equals
+|1
+
+|`NE`
+|Not equal to
+|1
+
+|`LT`
+|Less than
+|1
+
+|`LE`
+|Less than or equal to
+|1
+
+|`GT`
+|Greater than
+|1
+
+|`GE`
+|Greater than or equal to
+|1
+
+|`CONTAINS`
+|Contains
+|1
+
+|`BEGINS_WITH`
+|Begins with
+|1
+
+|`ENDS_WITH`
+|Ends with
+|1
+
+|`BW_INC_MAX`
+|Between, inclusive of the higher value
+|2
+
+|`BW_INC_MIN`
+|Between, inclusive of the lower value
+|2
+
+|`BW_INC`
+|Between, inclusive of both values
+|2
+
+|`BW`
+|Between, exclusive of both values
+|2
+
+|`IN`
+|Is one of these values
+|Multiple
+
+|`NOT_IN`
+|Is not one of these values
+|Multiple
+|===
+
+[#limitations]
+== Limitations
+
+// SOURCE: SCAL-335102 (Admin Portal story description — "dynamic parameters are not supported yet")
+// SOURCE: developer-docs/runtime-filters.adoc (2000-character URL limit, sequential numbering behavior)
+
+* Dynamic parameters are not supported.
+* The total URL length must not exceed 2000 characters. If the URL is too long, ThoughtSpot returns an error.
+* Filter and parameter token numbers must be sequential starting from `1`. Any tokens after a gap in the sequence are ignored.
+* Filtered Liveboard URLs is not a data security mechanism. To restrict data access by user or group, use Row Level Security. For more information, see xref:security-data-object.adoc[Data security].
+// TODO: verify with engineering — confirm whether there is a maximum number of filter tokens supported (developer-docs states a cap of 50 for URL-based runtime filters; confirm whether the same cap applies here)
+
+== Related information
+
+* xref:liveboard-filters.adoc[Liveboard filters]
+* xref:liveboard-filters-linked.adoc[Linked Liveboard filters]
+* xref:liveboard-filters-selective.adoc[Selective Liveboard filters]
+* xref:parameters-use.adoc[Using Parameters]
