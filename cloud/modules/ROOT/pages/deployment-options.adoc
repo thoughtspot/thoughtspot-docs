@@ -1,5 +1,5 @@
 = ThoughtSpot deployment options
-:page-last_updated: Oct 20, 2026
+:page-last_updated: Nov 5, 2026
 :experimental:
 :linkattrs:
 :jira: SCAL-341503
@@ -181,6 +181,7 @@ NOTE: Customer-hosted ThoughtSpot is currently available on GCP. AWS prerequisit
 * A user who can enable APIs and create service accounts, IAM bindings, VPCs, Cloud DNS zones, KMS keys, Cloud Storage buckets, Cloud Run jobs, and GKE clusters in the project, for the duration of the install. The installer runs as that user's own identity (`gcloud auth application-default login`).
 * Organization policies that allow, in the project: service-account creation, private GKE clusters, Private Service Connect endpoints, VPC peering, and Workload Identity Federation from ThoughtSpot's identity pool.
 * Compute quota in your region for two autoscaling node pools of `e2-standard-8` machines, 1 to 10 nodes each, up to 20 nodes (160 vCPUs) at full scale.
+* Okta as the identity provider.
 
 [#gcp-address-ranges]
 ==== Address ranges
@@ -212,6 +213,7 @@ A cell is a self-contained deployment boundary that houses all the services requ
 
 * A dedicated AWS account for ThoughtSpot. Sharing the account with other workloads is not recommended.
 * A user with administrator access to the account for the duration of the install.
+* Okta as the identity provider.
 * Service control policies (SCPs) that allow the IAM, EKS, RDS, ElastiCache, KMS, Lambda, and VPC actions the installer uses.
 * Thoughtspot setup email containing some infrastructure parameters that will help in connecting to the customer-hosted hub.
 
@@ -351,4 +353,9 @@ Which cloud providers are supported?:: Customer-hosted ThoughtSpot is available 
 Are the Spotter Agents available for a customer-hosted deployment?:: While Spotter 3 and the Spotter Agents (Spotter Viz, SpPotter Model, Spotter Code) are available for customers to use with BYOLLM on GCP, they are not supported on AWS currently.
 
 How do upgrades work?:: ThoughtSpot delivers automated patches and monthly upgrades through the hub connection. Customers will be notified to schedule and apply regular updates within a 30-day window, and critical security patches within 7 days, to maintain service compatibility.
++
+[.bordered]
+image::upgrades.png[]
+
+
 --
