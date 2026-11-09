@@ -7,7 +7,7 @@
 :description: Hide restricted data from typeahead suggestions and knowledge cards.
 :jira: SCAL-264775, SCAL-330658
 
-We have added the *Suggestion settings* column to Models to allow you to control data that shows in typeahead suggestions and column knowledge cards, and data that is used as part of Spotter accuracy. Previously, on Models with underlying tables having row-level security defined, you may see suggested names of data that you could not access in typeahead suggestions or in column knowledge cards. This occurs only when you define the RLS rule on a different table than the one that contains the column you want to restrict.
+We have added the *Suggestion settings* column to Models to allow you to control data that shows in typeahead suggestions and column knowledge cards. Previously, on Models with underlying tables having row-level security defined, you may see suggested names of data that you could not access in typeahead suggestions or in column knowledge cards. This occurs only when you define the RLS rule on a different table than the one that contains the column you want to restrict.
 
 For example, a user with access only to California data could see that Texas data existed in typeahead suggestions, even though they could not query it. Suggestion settings let you restrict suggested values for model columns so that each user sees only the data they are permitted to access.
 
@@ -27,7 +27,7 @@ When a model column is set to *Secure suggestions*, ThoughtSpot cannot pre-index
 
 Instead, ThoughtSpot fetches a small sample of values live from your warehouse (`SELECT ... LIMIT 100`) the first time a user's search needs them, and then caches the result for 24 hours.
 
-These queries are marked with the comments `task: SECURE_SAMPLING` (sample values) and `task: SECURE_MATCH_VALUES` (exact match values used for Spotter suggestion matching). You can identify them in your query history and in query stats files.
+These queries are marked with the comments `task: SECURE_SAMPLING` (sample values) and `task: SECURE_MATCH_VALUES`. You can identify them in your query history and in query stats files.
 //For the full list of query triggers, see xref:query-stats-action-ref.adoc[Query Stats action codes reference].
 
 === Query volume and latency
@@ -58,7 +58,7 @@ A model column's *Suggestion settings* and the index on its underlying table col
 * The *index* on the table column determines which values ThoughtSpot pre-indexes and can offer as suggestions.
 * The *Suggestion settings* on the model column determine whether those values are filtered for each user at query time.
 
-Setting a model column to *Secure suggestions* disables typeahead suggestions in *Search Data*. ThoughtSpot fetches values for Spotter and samples on demand by applying the relevant filters, so values may take a moment to appear on the initial operation.
+Setting a model column to *Secure suggestions* disables typeahead suggestions in *Search Data*. ThoughtSpot fetches values for samples on demand by applying the relevant filters, so values may take a moment to appear on the initial operation.
 
 === Prerequisites
 
@@ -67,9 +67,9 @@ For secure suggestions to work, the following conditions must be met:
 * Row-level security must be applied to the underlying table. Row-level security rules are defined on tables, not on Models.
 * The model column must be set to *Secure suggestions* in the *Suggestion settings* column, rather than *Inherit table settings* or *Don't show suggestions*.
 
-For secure match, which makes Spotter suggestions strict-RLS compliant, the following additional condition applies:
+For secure match, which makes suggestions strict-RLS compliant, the following additional condition applies:
 
-* The underlying table column's index type must be set to *Default*. This applies only to secure match (`SECURE_MATCH_VALUES`). Sample values (`SECURE_SAMPLING`) do not require the underlying table column to be indexed, and continue to flow to Spotter and to column knowledge cards.
+* The underlying table column's index type must be set to *Default*. This applies only to secure match (`SECURE_MATCH_VALUES`). Sample values (`SECURE_SAMPLING`) do not require the underlying table column to be indexed, and continue to flow to column knowledge cards.
 
 === Suggestion settings
 
@@ -91,7 +91,7 @@ Set a model column to *Secure suggestions* when *any* of the following apply:
 
 * Row-level security is applied to some of the underlying tables, and you need value suggestions or sample values to honor strict row-level security.
 * The row-level security rules use constructs that the standard index cannot handle, such as `and`, `ts_var`, or `!=`.
-* Spotter accuracy matters on Models whose underlying tables have row-level security. Secure match makes Spotter suggestions strict-RLS compliant.
+//* Spotter accuracy matters on Models whose underlying tables have row-level security. Secure match makes Spotter suggestions strict-RLS compliant.
 * The underlying table has no index, but you still want secured sample values or suggestions.
 
 .Example: When a JOIN makes Secure suggestions necessary
@@ -105,7 +105,8 @@ Consider a model built from two Snowflake tables:
 The model joins `ORDERS` to `PRODUCTS`.
 
 *Scenario 1: Secure suggestions needed*
-A model column sourcing `PRODUCTS.product_name` is indexed for Spotter suggestions. Even though `PRODUCTS` itself has no RLS rule, the rows visible through the join are already scoped by the `ORDERS` RLS rule. Without *Secure suggestions*, Spotter could surface product names from orders the user cannot see. In this case, enable *Secure suggestions* on this model column.
+A model column sourcing `PRODUCTS.product_name` is indexed for suggestions. Even though `PRODUCTS` itself has no RLS rule, the rows visible through the join are already scoped by the `ORDERS` RLS rule.
+//Without *Secure suggestions*, Spotter could surface product names from orders the user cannot see. In this case, enable *Secure suggestions* on this model column.
 
 *Scenario 2: Secure suggestions not needed*
 A model column sourcing `PRODUCTS.product_category` is a global classification (for example, "Electronics", "Clothing"). Every user sees the same categories regardless of their RLS context. Enabling *Secure suggestions* here generates unnecessary `SECURE_SAMPLING` queries. Set this model column's suggestion type to *Inherit table settings* or *Don't show suggestions* instead.
