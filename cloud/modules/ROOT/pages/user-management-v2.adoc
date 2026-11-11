@@ -1,12 +1,16 @@
 = Create, edit, or delete a user
-:page-last_updated: 12/19/2024
+:page-last_updated: Oct 15, 2026
 :linkattrs:
 :experimental:
 :description: Create, edit, or delete a user in version 2 of the UI.
+:page-aliases: user-management-orgs.adoc
 
 
 You can create users directly in ThoughtSpot, or import users and user groups through SAML or similar protocols.
 
+#For users who have access through SAML, the SAML installation manages all user information.#
+
+#Depending on whether you are a cluster administrator or an Org administrator, you have different levels of administrator access. Cluster administrators can see, create, and manage users in any Org. Org administrators can only see, create, and manage users in the Orgs for which they are administrators.#
 
 //NOTE: These instructions are for the newest version of the UI that is currently in Early Access. To enable this version of the UI contact your administrator.
 
@@ -24,6 +28,19 @@ This article contains instructions for managing users in a single tenant environ
 If your company uses the xref:orgs-overview.adoc[Orgs] feature for multi-tenancy in ThoughtSpot, you can see an Org switcher to the left of the help icon in the top navigation bar. Refer to xref:user-management-orgs.adoc[]. If you are using xref:orgs-overview.adoc[], we do not currently support using IAMv2.
 ////
 
+[#admin-visibility]
+== #What users can see in each Org#
+
+#The users listed in *Admin settings* and in the share dialog depend on the Org you are in:#
+
+* #*All Orgs view (cluster administrators only):* Lists every user on the cluster, including all cluster administrators. A user listed here is not necessarily a member of any particular Org. To confirm whether a user belongs to an Org, switch to that Org and open *Admin settings* > *User management* > *Users*.#
+* #*Primary Org:* Lists all users in the Primary Org, including cluster administrators.#
+* #*Any other Org:* Lists the users in that Org, except cluster administrators. Each user always sees their own account. This applies to all users in the Org, whether or not they are administrators.#
+
+NOTE: #If your cluster uses the xref:admin-portal-2.adoc[enhanced Admin settings portal], the *Users* page in a non-Primary Org also lists cluster administrators. The share dialog continues to hide them.#
+
+#A cluster administrator is a user who gets the xref:groups-privileges.adoc[*Can administer ThoughtSpot*] privilege through a group in the Primary Org, either directly or through a nested group or role. An Org administrator gets this privilege through a group inside the Org itself, such as the Org's administrator group or a custom group created in that Org. Org administrators are not hidden, and they can see each other. For more information, see xref:orgs-overview.adoc#admin-visibility-orgs[Administrator visibility across Orgs].#
+
 [#add-user]
 == Create a user in ThoughtSpot
 
@@ -35,10 +52,17 @@ This procedure demonstrates how to create a user manually.
 Note that all users automatically belong to the group *All*.
 ////
 
-To create a new user and assign that user to groups, follow these steps:
+#A user's groups determine what they can do in ThoughtSpot. Groups define the user's privileges, which are the actions they can perform, and the user's permissions, which are the data they can access.#
+#All users automatically belong to the *All* group. For the privileges and content that the *All* group and other default groups grant, see xref:groups-privileges.adoc#default-groups[Default groups].#
 
+#Administrators can see all data sources, and xref:security-rls.adoc[row-level security] does not apply to them.#
+
+#To create a new user and assign that user to groups or Orgs, follow these steps:#
+
+. #Ensure that you are in the correct Org. If you are a cluster administrator, you can manage all users in all Orgs from the Primary Org. If you are an Org administrator, you must navigate to the specific Org the users you must manage are in. Use the Org switcher to the left of the help menu in the top navigation bar.#
 . Go to the *Admin settings* tab.
-. Under *USER MANAGEMENT* select *Users* from the side navigation bar.
+. #If you are a cluster administrator in the Primary Org, select *All Orgs* at the top of the side navigation bar.#
+. #Select *User management* > *Users* from the side navigation bar.#
 //+
 //image::admin-portal-users.png[Admin Console - Users]
 
@@ -71,7 +95,11 @@ NOTE: During cluster configuration, the administrator specifies the email server
 .. In the *Select Groups* section, *Search* for or select the desired groups from the list of available groups.
 +
 NOTE: The groups displayed are the groups available in the cluster, or the groups available in the specific org that the user is added to if your organization has org enabled.
++
+.. [[select-orgs]]#In the *Select Orgs* section, select the Orgs to add the user to. When you add a user from *All Orgs* in the Primary Org, this section appears instead of *Select Groups*. To assign groups, add or edit the user from within the specific Org.#
 . Click *Add* to create the user.
+
+WARNING: #If you add the user to a group that has the *Can administer ThoughtSpot* privilege, they can see all the data in their Org. If you add the user to a group *in the Primary Org* that has this privilege, they can see all the data in _every_ Org, and they become a cluster administrator. Cluster administrators are hidden from the user list and the share dialog in other Orgs. For more information, see <<admin-visibility,What users can see in each Org>>.#
 
 
 ////
@@ -121,14 +149,26 @@ See xref:onboarding.adoc[Onboarding users].
 [#edit-user]
 == Edit an existing user
 
-As an administrator, you can edit user credentials or modify their group assignments when you edit a user.
+#As an administrator, you can edit user credentials or modify their group or Org assignments when you edit a user.#
 ////
 You can also help users by resetting their password, and evaluating their onboarding experience to ensure they receive the best possible introduction to relevant information in ThoughtSpot.
 ////
+
+[IMPORTANT]
+====
+#If your cluster uses a per-Org identity provider (IdP), ThoughtSpot reconciles a user's Org memberships with the claims from that IdP when the user logs in through it. A manual Org assignment made in *Admin settings* or through the REST API might not persist if the IdP claims do not include that Org. Logging in through a cluster-wide IdP does not change existing Org memberships.#
+
+#If a user's Org assignment changes after they log in through a per-Org IdP, check the IdP claim configuration for that user rather than re-adding them manually in ThoughtSpot. For a durable Org assignment, the Org must be included in the IdP claims. Contact your IdP administrator to update the claims.#
+
+#For more information, see xref:saml-okta.adoc#per-org-saml-isolation[Org isolation for per-org SAML authentication] and xref:oidc-org-scoped-idp.adoc[Org-scoped IdP connections].#
+====
+
 To edit an existing user, follow these steps:
 
+. #Ensure that you are in the correct Org. If you are a cluster administrator, you can manage all users in all Orgs from the Primary Org. If you are an Org administrator, you must navigate to the specific Org the users you must manage are in. Use the Org switcher to the left of the help menu in the top navigation bar.#
 . Go to the *Admin settings* tab.
-. Under *USER MANAGEMENT* select *Users* from the side navigation bar.
+. #If you are a cluster administrator in the Primary Org, select *All Orgs* at the top of the side navigation bar.#
+. #Select *User management* > *Users* from the side navigation bar.#
 //+
 //image::admin-portal-users.png[Admin Console - Users]
 
@@ -162,6 +202,8 @@ NOTE: During cluster configuration, the administrator specifies the email server
 .. In the *Select Groups* section, *Search* for or select or deselect the desired groups from the list of available groups.
 +
 NOTE: The groups displayed are the groups available in the cluster, or the groups available in the specific org that the user is added to if your organization has org enabled.
++
+.. [[edit-user-orgs]]#In the *Select Orgs* section, select the Orgs you want to add the user to, and deselect the Orgs you want to remove the user from. When you edit a user from *All Orgs* in the Primary Org, this section appears instead of *Select Groups*. To change the user's groups, edit the user from within the specific Org.#
 +
 ////
 You can change the _<<username,username>>_, _<<display-name,display name>>_, _<<sharing-visibility,sharing visibility>>_, _<<password,passwords>>_, and _<<email,user's email>>_.
@@ -220,8 +262,10 @@ Follow these steps to configure group-wide emails:
 
 To delete users, follow these steps:
 
+. #Ensure that you are in the correct Org. If you are a cluster administrator, you can manage all users in all Orgs from the Primary Org. If you are an Org administrator, you must navigate to the specific Org the users you must manage are in. Use the Org switcher to the left of the help menu in the top navigation bar.#
 . Go to the *Admin settings* tab.
-. Select *Users* from the side navigation bar that appears.
+. #If you are a cluster administrator in the Primary Org and want to remove users from multiple Orgs at a time, select *All Orgs* at the top of the side navigation bar.#
+. #Select *User management* > *Users* from the side navigation bar.#
 +
 image::admin-portal-users.png[Admin Console - Users]
 
@@ -231,6 +275,68 @@ If you don't immediately see the username you plan to delete, try searching for 
 
 . Select *Delete* in the upper-left corner.
 
+[NOTE]
+====
+#A user may exist in multiple Orgs. You can remove a user from multiple Orgs at a time as the cluster administrator, or remove a user from one specific Org as that Org's administrator.#
+
+#To remove a user from multiple Orgs at a time, the cluster administrator must be in the Primary Org, in *Admin settings* > *All Orgs* > *User management* > *Users*.#
+====
+
+[#add-users-to-orgs]
+== #Add multiple users to an Org#
+
+#To add multiple users to an Org, you must be a cluster administrator in the Primary Org.#
+#Follow these steps:#
+
+. #Ensure that you are in the Primary Org. Use the Org switcher to the left of the help menu in the top navigation bar.#
+. #Go to the *Admin settings* tab.#
+. #Select *All Orgs* at the top of the side navigation bar.#
+. #Select *Org management* from the side navigation bar.#
+. #In the row for the Org, open the *Actions* menu image:icon-more-10px.png[the more options menu icon] and select *Edit*.#
+. #Select *Next* to go to the *Assign users* step.#
+. #Under *Select users*, select the users you want to add to the Org. You can search for users by name, or use *Select all*.#
++
+#To review your selection, turn on *Show selected*.#
+. #Select *Next*.#
+
+[#troubleshoot-user-orgs]
+== #Troubleshoot user visibility in Orgs#
+
+#Use the following guidance if a user appears to be missing from an Org or is unexpectedly visible or hidden.#
+
+#User is not visible in a specific Org's *Users* page#::
+
+#If a user can log in successfully but does not appear in a specific Org's *Admin settings* > *User management* > *Users* page, follow these steps:#
+
+. #*Check the Org context.* Make sure you are viewing the correct Org. Navigate to that Org using the Org switcher, then open *Admin settings* > *User management* > *Users*. The *Admin settings* > *All Orgs* > *User management* > *Users* view shows all users across all Orgs and does not confirm Org membership.#
+. #*Check whether the user is assigned to the Org.* If the user is visible in the *All Orgs* view but not in the specific Org's *Users* page, the user is not a member of that Org. Add the user to the Org using the steps in <<edit-user-orgs,Edit an existing user>> or <<add-users-to-orgs,Add multiple users to an Org>>.#
+. #*Check the per-Org IdP claims.* If the user was previously assigned to the Org but lost the assignment after logging in through a per-Org IdP, the IdP claims might not include that Org. See <<edit-user,Edit an existing user>> for details on how per-Org IdPs affect Org membership.#
+
+#Administrator is not visible in a non-Primary Org's user list or share dialog#::
+
+#This is expected if the administrator is a cluster administrator. In a non-Primary Org, ThoughtSpot hides cluster administrators from all users, except that each user sees their own account.#
+
+#To check and resolve this:#
+
+. #*Check where the administrator gets their privileges.* If the administrator belongs to a group in the Primary Org that has the *Can administer ThoughtSpot* privilege, directly or through a nested group or role, they are a cluster administrator and are hidden in other Orgs. This applies even if they only manage one Org.#
+. #*To share objects with hidden administrators,* create a group inside the Org, add the administrators to it, and share with that group. Groups are not hidden.#
+. #*To make administrators visible in the Org,* add them to the Org's own administrator group, and remove them from the administrator group in the Primary Org. These users then lose cluster-wide administrator privileges.#
+. #*To manage a cluster administrator account,* use *Admin settings* > *All Orgs* > *User management* > *Users* in the Primary Org. This view lists every user on the cluster, including all cluster administrators.#
+
+#For more information, see <<admin-visibility,What users can see in each Org>>.#
+
+#User loses an Org assignment after logging in through a per-Org IdP#::
+
+#When a user logs in through a per-Org IdP, ThoughtSpot reconciles their Org memberships with the claims from that IdP. If an Org assignment is missing from the IdP claims, it might not persist after the login.#
+
+#To resolve this:#
+
+. #Ask your IdP administrator to add the relevant Org to the user's IdP claim.#
+. #Verify the claim is correctly mapped in the ThoughtSpot SAML or OIDC configuration.#
+. #Once the IdP claim is updated, have the user log in again to trigger the sync.#
+
+NOTE: #Re-adding the user manually in ThoughtSpot without fixing the IdP claims might not be a durable fix. The assignment can change again the next time the user logs in through the per-Org IdP.#
+
 '''
 > **Related information**
 >
@@ -239,6 +345,9 @@ If you don't immediately see the username you plan to delete, try searching for 
 > * xref:user-management-okta.adoc[Create, edit, or delete a user using IAMv2]
 > * xref:admin-sign-in.adoc[Manage user logins and sessions]
 > * xref:user-sign-up.adoc[Allow users to sign up]
+> * #xref:orgs-administration-overview.adoc[Orgs administration]#
+> * #xref:group-management-orgs.adoc[]#
+> * #xref:admin-console-orgs.adoc[]#
 
 '''
 > **image:tsu-logo.png[ThoughtSpot Training,role=light-only,width=400]image:tsu-logo-dark.png[ThoughtSpot Training,role=dark-only,width=400]**

@@ -1,8 +1,9 @@
 = Understand groups and privileges
-:page-last_updated: 11/05/2021
+:page-last_updated: 11/11/2026
 :linkattrs:
 :experimental:
 :page-aliases: /admin/users-groups/about-users-groups.adoc
+:jira: SCAL-351078
 :description: Creating groups and assigning users to them makes privilege management easier.
 
 
@@ -28,11 +29,85 @@ Good planning will pay off in ease of administration and a better search experie
 There is a default group called *All*, which includes every user in ThoughtSpot.
 When you create a new user, they will be added to the *All* group automatically.
 You cannot delete the *All* group or remove members from it. Only users with either the *Can administer ThoughtSpot* or *Can share with all users* privilege can share an object with the *All* group.
+#For the privileges that the *All* group and other default groups grant, see <<default-groups,Default groups>>.#
 
 You can also have a hierarchy of groups.
 That is, groups can belong to (that is, be children of) other groups.
 When using group hierarchies, permissions are inherited from the parent group.
 So if you're a member of a sub-group, you would automatically have the privileges of the parent group.
+
+[#default-groups]
+== #Default groups#
+
+#ThoughtSpot adds new users to the following groups by default.#
+#Knowing what each group grants helps you understand what a new user can do before you assign them to any other groups or roles.#
+
+[#all-group]
+=== #All group#
+
+#Membership#::
+#Every user is automatically added to the *All* group. On clusters with Orgs enabled, every user in every Org is a member. You cannot delete the *All* group or remove members from it.#
+
+#Privileges#::
+#The *All* group has only the default authoring privilege, which lets users create and edit their own Answers and Liveboards. It is not an administrator privilege.#
++
+#(SME: The privilege list in the UI has no "Authoring" privilege. How does this privilege appear in the group's *Privileges* tab, if at all? Should the docs name it?)#
+
+#Privileges you can add#::
+#You can add only *Can download data* and *Can upload user data* to the *All* group. ThoughtSpot blocks any other privilege on the *All* group, including administrator privileges.#
++
+#(SME: Where the download privilege is split into *Can download visuals* and *Can download detailed data*, can both be added? Also, partials/privileges.adoc says *Can upload user data* is only available to Free Trial and Team Edition users. Does that still apply here?)#
+
+#With RBAC enabled#::
+#The *All* group is assigned a system *ALL* role that always grants the authoring privilege. This role must remain assigned to the *All* group. For more information about roles, see xref:rbac.adoc[Role-based access control].#
+
+#Content access#::
+#Members can see any object that is shared with the *All* group.#
+
+[#demo-retail-group]
+=== #Demo Data Retail group#
+
+#On clusters with Orgs enabled, ThoughtSpot provides a *Demo Data Retail* group so users can try building Answers and Liveboards with sample data.#
+
+#(SME: Confirm the group name as it appears in the UI. The ticket says "Demo Retail Group", but existing docs say "Demo Data Retail".)#
+
+#Membership#::
+#New users are added to the *Demo Data Retail* group by default. Org administrators can remove users from the group to revoke their access to the sample content.#
++
+#(SME: Is the group created in each Org, or once at the instance level (All Orgs scope)? Swarnima's comment says "created in each Org", but the SRE KB for case 00447080 says it is an instance-level group.)#
+
+#Privileges#::
+#None. The *Demo Data Retail* group has no privileges or roles assigned.#
+
+#Content access#::
+#Members can access the following sample content, which is owned by the system user:#
++
+* #The *(Sample) Retail - Apparel* data model, which is enabled for Spotter#
+* #The *Sample Sales Liveboard*#
++
+#Users might still see the sample content after you remove them from this group if they belong to another system group that also has access to it.#
+
+#Deleting the group#::
+#Only a cluster administrator can delete the *Demo Data Retail* group. In the Primary Org, select *All Orgs* in the Org switcher, go to *Admin settings* > *User management* > *Groups*, and delete the group. Org administrators who try to delete the group see a permissions error.#
+
+#Stopping automatic assignment#::
+#To stop ThoughtSpot from adding new users to the *Demo Data Retail* group by default, contact ThoughtSpot Support. Existing members stay in the group until an Org administrator removes them.#
+
+[#default-access]
+=== #What a new user can do by default#
+
+#A new user without administrator privileges can do the following by default:#
+
+* #Create and edit their own Answers and Liveboards, through the *All* group.#
+* #Access any object shared with the *All* group.#
+* #On clusters with Orgs enabled, access the sample *(Sample) Retail - Apparel* data model and *Sample Sales Liveboard*, through the *Demo Data Retail* group.#
+
+#All other capabilities come from the groups and roles that an administrator assigns.#
+
+[WARNING]
+====
+#Do not add the *All* group or the *Demo Data Retail* group as a child of a group that has privileges. Members of a child group inherit the parent group's privileges, but the child group's *Privileges* tab does not show inherited privileges. For example, if the *Demo Data Retail* group is a child of an administrator group, every user in the *Demo Data Retail* group gets administrator privileges.#
+====
 
 [#list-of-privileges]
 == List of privileges
