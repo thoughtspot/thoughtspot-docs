@@ -1,0 +1,229 @@
+= Set up the Microsoft 365 connector
+:last_updated: Nov 13, 2026
+:linkattrs:
+:experimental:
+:page-aliases:
+:description: Connect Microsoft 365 to AgentSpot so your agents and workflows can use Outlook, Calendar, OneDrive, SharePoint, Excel, and Teams.
+:jira: SCAL-345285
+// TODO: confirm page header attributes (:description:, :page-title:, :last_updated:, nav) against an existing AgentSpot page
+// TODO: confirm file location and nav entry, for example next to "Managing connectors"
+
+
+// SOURCE: SCAL-345285; https://docs.google.com/document/d/1fJME0ouydNGPhpzK4mvb8pHd6Y0zP_vcNxfrjwk40aU
+Connect Microsoft 365 to AgentSpot so your agents and workflows can use Outlook, Calendar, OneDrive, SharePoint, Excel, and Teams.
+
+== Overview
+
+The setup has two parts. A Microsoft administrator approves AgentSpot one time for your whole organization. Then each user connects their own Microsoft work account.
+
+An agent always works with the access of the user who runs it. It cannot get data that the user cannot open.
+
+[options="header", cols="1,3,1"]
+|===
+|Who |What they do |How often
+
+|AgentSpot administrator
+|Starts setup in AgentSpot and enters the tenant ID.
+|One time
+
+|Microsoft administrator
+|Approves AgentSpot for the organization in Microsoft.
+|One time
+
+|Each user
+|Connects their own Microsoft work account.
+|Once per user
+|===
+
+The AgentSpot administrator and the Microsoft administrator can be the same person. If they are different people, complete the admin steps together on one computer.
+
+== Before you begin
+
+You need the following:
+
+// SOURCE: Google Doc "Microsoft 365 in AgentSpot: setup guide for tenant admins", Before you start
+// TODO: verify with engineering (T5): the AgentSpot privilege required to open Admin Settings > Connectors (CAN_MANAGE_AGENTSPOT?)
+* An AgentSpot account with administrator access.
+// TODO: verify with engineering (T1): the exact Microsoft roles that can grant tenant-wide admin consent for these permissions
+* A Microsoft administrator who can grant tenant-wide admin consent, for example a Global Administrator.
+* Your Microsoft tenant ID. In the Microsoft Entra admin center, go to *Overview* and copy the *Tenant ID*.
+// TODO: verify with engineering (T7): Exchange Online mailbox requirement
+* An Exchange Online mailbox for each user of the mail and calendar tools.
+
+NOTE: If you are not a Microsoft administrator, you cannot complete the approval yourself. Ask your Microsoft administrator to join you for the admin steps.
+
+== Approve AgentSpot for your organization
+
+// SOURCE: Google Doc, Admin steps
+Complete these steps one time.
+
+. In AgentSpot, go to *Admin Settings* > *Connectors*.
+. On the *Microsoft 365* row, select *Set up Microsoft 365*.
+. Enter the tenant ID.
+. Select *Approve in Microsoft*. A Microsoft window opens.
+. Sign in as the Microsoft administrator.
+. Read the permissions, and then accept them for the organization.
+// TODO: verify with engineering (T2): whether Microsoft shows a second screen or sign-in step after consent, and what the admin should do
+// TODO: verify with engineering (T3): what the app name and logo on the Microsoft consent screen should look like
+. Make sure that the status in AgentSpot is *Access enabled*.
+
+== Connect your Microsoft account
+
+// SOURCE: Google Doc, User steps
+Each user completes these steps. Users do not need the tenant ID.
+
+. In AgentSpot, go to *Connectors* > *Microsoft 365*.
+. Select *Connect*.
+. Sign in with your Microsoft work account.
+
+To remove your connection, select *Disconnect*.
+
+== Control what agents can do
+
+// SOURCE: Google Doc, Control what agents can do
+// TODO: verify with engineering (T6): write tools do not prompt before each change, including scheduled workflows
+Agents and workflows can use read tools and write tools. Write tools send, change, or delete data.
+
+* Write tools do not ask the user before each change. This includes scheduled workflows.
+* Agents ask the user before they attach or upload files.
+* Apps and agent memory can only read data.
+
+To turn off a tool for all users:
+
+. Go to *Admin Settings* > *Connectors*.
+. On the *Microsoft 365* row, open the actions menu, and then select *Manage tool permissions*.
+. Turn off the tools that you want to block.
+
+TIP: To require users to approve each change, turn off the write tools.
+
+== What AgentSpot can access
+
+// SOURCE: Google Doc, What AgentSpot can access
+AgentSpot uses delegated permissions only, so it acts as the user. It does not use application permissions or directory permissions. For each permission, see xref:#microsoft-permissions[Microsoft permissions].
+
+[options="header", cols="1,2,3"]
+|===
+|Area |Read |Change
+
+|Profile and people
+|Profile and related people
+|Nothing
+
+|Outlook mail
+|Messages, folders, drafts, and attachments
+|Send, reply, forward, move, and delete messages. Create drafts.
+
+|Calendar
+|Calendars, events, and free/busy times
+|Create, change, cancel, and respond to events
+
+|OneDrive and SharePoint
+|Files and document text
+|Upload new files
+
+|Excel
+|Worksheets, tables, and ranges
+|Change ranges. Add rows, worksheets, and tables.
+
+|Teams
+|Teams, channels, chats, and messages
+|Send messages and replies
+|===
+
+== How AgentSpot keeps data safe
+
+// SOURCE: Google Doc, How AgentSpot keeps data safe
+* AgentSpot keeps each user's credential on its backend. The browser and the AI model never get it.
+* AgentSpot gets data only when a tool runs. It does not index mailboxes or files.
+* Logs and audit records do not contain tokens, message text, or file contents.
+* Microsoft 365 returns only data that the user can open.
+
+== Pause or remove access
+
+// SOURCE: Google Doc, Pause or remove access
+Go to *Admin Settings* > *Connectors*, and then select *Manage Microsoft 365*.
+
+[options="header", cols="1,3"]
+|===
+|Action |Result
+
+|Disable access
+|Stops Microsoft 365 for all users and keeps their connections. Select *Enable access* to start again.
+
+|Renew approval
+|The Microsoft administrator approves again. Connections continue to work.
+
+|Update permissions
+|The Microsoft administrator approves the new permissions. Then each user connects again.
+
+|Change tenant or reset
+|Disconnects all users and removes the tenant ID. Type `RESET` to confirm.
+|===
+
+These actions do not delete data in Microsoft 365. To remove the approval in Microsoft, go to *Enterprise applications* in the Microsoft Entra admin center.
+
+=== When a user leaves
+
+AgentSpot does not disconnect users automatically when you remove them. Tell users to select *Disconnect* before you remove them.
+
+== Troubleshooting
+
+// SOURCE: Google Doc, Troubleshooting
+[options="header", cols="1,3"]
+|===
+|Status or message |What to do
+
+|Approval required
+|The Microsoft administrator selects *Approve in Microsoft*.
+
+|Approval pending
+|Select *Continue approval*, and then sign in as the Microsoft administrator.
+
+|Permissions need updating
+|The Microsoft administrator selects *Update permissions*. Then each user connects again.
+
+|Access disabled
+|The AgentSpot administrator selects *Enable access*.
+
+|Reconnect required
+|The user selects *Connect* and signs in again.
+
+|Microsoft 365 is not configured for this environment
+|Contact ThoughtSpot Support.
+
+|Mail or calendar tools do not work
+|Make sure that the user has an Exchange Online mailbox.
+|===
+
+[#microsoft-permissions]
+== Microsoft permissions
+
+// SOURCE: Google Doc, Appendix: Microsoft permissions
+// TODO: verify with engineering (T4): this list matches the current production app registration (source doc dated October 20, 2026)
+All permissions are delegated. "All" in a permission name means all items that the user can open.
+
+[options="header", cols="2,2"]
+|===
+|Permissions |Use
+
+|`User.Read`, `People.Read`
+|Sign in. Read the profile and related people.
+
+|`Mail.Read`, `Mail.ReadWrite`, `Mail.Send`
+|Read, change, and send mail.
+
+|`Calendars.ReadBasic`, `Calendars.Read`, `Calendars.ReadWrite`
+|Read and change calendar events.
+
+|`Files.Read`, `Files.ReadWrite`, `Sites.Read.All`
+|Read files, upload files, and use Excel.
+
+|`Team.ReadBasic.All`, `TeamMember.Read.All`, `Channel.ReadBasic.All`, `ChannelMessage.Read.All`, `ChannelMessage.Send`
+|Read Teams channels and post messages.
+
+|`Chat.Read`, `Chat.ReadBasic`, `ChatMessage.Send`
+|Read chats and send chat messages.
+
+|`openid`, `profile`, `email`, `offline_access`
+|Sign in. Keep the connection active.
+|===
