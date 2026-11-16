@@ -6,20 +6,19 @@
 :experimental:
 :connection: Databricks
 :description: ThoughtSpot supports OAuth with Service Principal for a Databricks connection.
-:jira: SCAL-208829, SCAL-230240, SCAL-270983, SCAL-313615
+:jira: SCAL-208829, SCAL-230240, SCAL-270983, SCAL-313615, SCAL-352584
 
 
 ThoughtSpot supports OAuth with Service Principal for a {connection} connection. This page describes the setup and configuration required.
 
 [NOTE]
 ====
-OAuth requires users to log in and authorize. The frequency of login will depend on the token expiry.
-
-ThoughtSpot supports Authorization Code grant flow in OAuth authentication.
+OAuth with Service Principal uses the OAuth client credentials (machine-to-machine) flow. ThoughtSpot authenticates to Databricks as the service principal using its UUID and OAuth secret. Users don't sign in to Databricks, and all queries run with the service principal's permissions.
 ====
 
 
-ThoughtSpot initiates the authorization request to Databricks for OAuth. Databricks acts as the auth token-issuing authority. The IdP (for example, Okta) is only involved in the authentication between Databricks and the IdP. That is, the IdP is responsible for signing in to Databricks. Once you are logged in to Databricks, ThoughtSpot just needs the Service Principal UUID and Service Principal OAuth Secret that you will generate from your Databricks Dashboard.
+//ThoughtSpot initiates the authorization request to Databricks for OAuth. Databricks acts as the auth token-issuing authority. The IdP (for example, Okta) is only involved in the authentication between Databricks and the IdP. That is, the IdP is responsible for signing in to Databricks.
+Once you are logged in to Databricks, ThoughtSpot just needs the Service Principal UUID and Service Principal OAuth Secret that you will generate from your Databricks Dashboard. The OAuth secret has a maximum lifetime of 730 days. When it expires, generate a new secret in Databricks and update the connection.
 
 
 
