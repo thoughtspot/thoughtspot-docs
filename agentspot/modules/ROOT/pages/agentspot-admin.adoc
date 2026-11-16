@@ -177,6 +177,14 @@ In the *Already Added* list, each connector row shows its availability and lets 
 
 NOTE: Making a connector private removes it from non-admin users' connector lists. Existing agents that depend on it may no longer be able to use it until it is shared again.
 
+// auto-draft PR#2208 — REVIEW
+==== Deleting a connector
+
+Agents, workflows, and Apps keep a reference to the specific connector they were built with. When you delete a connector, every agent, workflow, and App that uses it stops working, and adding the same connector again does not fix them — each one must be reconnected by its owner.
+
+When you delete a connector, the confirmation window tells you how many objects use it, for example: _8 agents, 3 workflows and 1 app use this connector and will stop working._ The window shows counts only, not the names of the objects. If AgentSpot can't count them, the window shows the same warning without numbers, and you can still delete the connector.
+// TODO: verify with engineering — confirm where the delete action sits on the Admin Settings > Connectors page
+
 ==== Managing a connector's tool permissions
 
 Each connector exposes a set of tools that agents can call. As an administrator, you can review and control which of a connector's tools are authorized for use in your organization.
@@ -604,14 +612,24 @@ You can invite teammates to AgentSpot by doing the following:
 
 Pending invitations appear on the _Users_ page, where you can resend an invitation or remove it. Invitees complete the sign-in from the link in their invitation email.
 
+// auto-draft PR#3952 — REVIEW
+If an invitation expires before someone accepts it, you can invite that address again. If some addresses in a batch can't be invited, the rest of the invitations are still sent.
+
+// auto-draft PR#4216 — REVIEW
+NOTE: Your organization can limit who can invite people to AgentSpot, and who can invite new people from the agent, App, and Workflow share dialogs, to users with user-management privileges in ThoughtSpot.
+// TODO: verify with engineering — this gate is off by default; confirm rollout, the exact ThoughtSpot privilege required, and what people without it see before publishing
+
 [#entering-email-addresses]
 .Email field requirements
 ****
 * Separate addresses with commas. Suggestions apply to the name you are typing, and the names before it are kept when you press *Enter*.
-* Type a plain name, such as `maya`, and AgentSpot adds your company's email domain to it. A complete address is used as typed.
+// auto-draft PR#3943 — REVIEW
+* AgentSpot doesn't add your company's email domain to a plain name, such as `maya`, on its own; the entry is marked *Not a valid email address* so you can fix it. To use your company's domain, type `@` after a name, such as `maya@` — the domain is then added to every plain name in the field. Names with dots, such as `maya.patel`, are allowed. A complete address is used as typed.
 * A pasted entry in the form `+Maya Patel <maya@example.com>+` counts as one person.
 * If the same address is entered twice, the extra entry is marked *Listed twice*. The invitation is still sent once.
 * Entries that are not valid addresses are listed with the reason. The dialog shows how many people it is inviting and how many can't be invited.
+// auto-draft PR#3943 — REVIEW
+* If an address can't be invited after you click *Send invite* — for example, because the person is *Already a member* — the reason appears on that person's row and the dialog stays open, so you can fix or remove the entry. People who were invited are removed from the list.
 * Press *Esc* to close the suggestion list without closing the dialog. Press *Backspace* in an empty field to remove the last person you added.
 ****
 
@@ -762,6 +780,17 @@ In addition, as your organization uses AgentSpot, the system can identify recurr
 === Managing agents
 
 As an administrator, you have full visibility over all agents and workflows created within your organization, regardless of who owns them. You can share agents with teams, and if a user leaves the company, you can manage, edit, or reassign their agents and workflows.
+
+// auto-draft PR#4306 — REVIEW
+When tenant admin access is turned on for your organization, you can manage objects that other people own:
+
+* *Agents*: list, view, chat with, edit, share, delete, and copy any agent in your organization. This does not include agents that belong to a workflow, an agent's memory, or sharing other people's chats.
+* *Apps*: list, view, share, delete, and copy any App in your organization. Opening another person's App in the App builder or renaming it stays with the people who can edit it.
+// auto-draft PR#4612 — REVIEW
+* *Workflows*: list every Workflow with its owner, see its run status, cancel a run, turn off its schedule (*Turn off schedule*), delete it, or click *Copy rebuild prompt* to copy a prompt you can paste into a new Workflow of your own. Editing, scheduling, and running a Workflow stay with its owner, and run details and outputs remain private to the owner.
+
+Actions you take on another person's agent, App, or Workflow are recorded in the <<audit-log,audit log>> together with the owner.
+// TODO: verify with engineering — tenant admin access is off by default (TENANT_ADMIN_OBJECT_OVERRIDE_ENABLED) and requires the ThoughtSpot admin check; confirm availability and whether App edits are covered before publishing
 
 === View agents in your organization
 

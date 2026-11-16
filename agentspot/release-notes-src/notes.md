@@ -1,3 +1,297 @@
+## 2026-11-16 — 134b083e3cfa..28ceeff068e7
+
+Range: `134b083e3cfa..28ceeff068e7` · 2026-11-16
+
+Internal, humanized digest for the docs team. Not a published page. Every item from the
+release manifest is recorded here; the docs team decides what warrants a customer-facing page
+or known-issue note. AgentSpot is in Preview, so nothing here is published automatically.
+
+Suggested PR title: `Tenant admin access, edit last message, ask a followup, Copy link`
+
+### Features
+
+- **Tenant admins can manage every agent and app in their tenant** — under the tenant-admin
+  override, a tenant admin can list, view, chat with, edit, share, delete and copy any user-facing
+  agent and any App in the tenant. Opening an App's builder or renaming it stays with people who can
+  edit in place; workflow agents, agent memory and chat sharing are excluded. Admin actions on
+  someone else's object are audited with the owner's id. Behind `TENANT_ADMIN_OBJECT_OVERRIDE_ENABLED`
+  (default **off**) and the tenant's ThoughtSpot admin check. Backend `tenant_admin_override`, agent
+  and dataapp routers/DAOs; frontend `AgentPage`, `DataappViewPage`; Terraform variable.
+  (SCAL-350563, SCAL-350928 · [#4306](https://github.com/thoughtspot/agentspot/pull/4306))
+  _Page edit (auto-draft, REVIEW): agents/Apps/workflows list and audit sentence appended to
+  "Managing agents" on `agentspot-admin.adoc`, with an availability TODO (flag off by default)._
+- **Tenant admins can view, stop, unschedule and delete any workflow** — under the same override,
+  admins see every workflow with its owner and run status, can cancel a run, turn off a schedule
+  (*Turn off schedule*), delete it, and *Copy rebuild prompt* (keeps the owner's step instructions).
+  Editing, scheduling and running stay owner-only; run details and outputs stay private to the owner.
+  Frontend `WorkflowsPage`, `WorkflowDetailsPage`, `WorkflowDetailsRail`; backend workflows router.
+  (SCAL-350926 · [#4612](https://github.com/thoughtspot/agentspot/pull/4612))
+  _Page edit: covered by the same `agentspot-admin.adoc` section._
+- **Edit the last message you sent in a chat** — hover your own last message for an *Edit this
+  message* control beside Copy and Delete. Editing drops that turn and its answer and sends the new
+  wording as a fresh turn (button reads *Update*). Only the last message is editable, and not one with
+  attachments. Frontend `AgentChat`, `turnDelete`, `chatStore`.
+  (SCAL-316865, SCAL-344597 · [#3387](https://github.com/thoughtspot/agentspot/pull/3387))
+  _Page edit: new "Edit your last message" section on `agentspot-use-agent.adoc`._
+- **Ask a followup on selected answer text** — select text in a finished agent answer and an *Ask a
+  followup* popover appears (also a keyboard shortcut; the commit says Ctrl+Q). The selection is
+  attached to the composer as a quote chip and sent ahead of your question; the sent message shows as a
+  *Followup question* card. Frontend `AskFollowupPopover`, `AgentComposer`, `FollowupQuestionCard`,
+  `useHotkey`. (SCAL-348589 · [#3660](https://github.com/thoughtspot/agentspot/pull/3660))
+  _Page edit: new "Ask a followup about part of an answer" section on `agentspot-use-agent.adoc`;
+  Mac shortcut left as a TODO._
+- **Org-shared chats appear in everyone's chat list, and sharing a chat with the org shares the
+  agent** — people in the org now see an agent's org-shared chats in its chat section without opening
+  the link first; turning on the org link for a chat also shares the agent with the org. Backend
+  `conversation_collaboration` DAO/router, migration `20261020_0105` (partial index), `agent_service`;
+  frontend `AgentShareDialog`, `ConversationAddPeopleDialog`.
+  (SCAL-347115, SCAL-344597 · [#3204](https://github.com/thoughtspot/agentspot/pull/3204),
+  SCAL-344597 · [#3187](https://github.com/thoughtspot/agentspot/pull/3187))
+  _Page edit: two bullets added under "Share a chat with teammates" on `agentspot-use-agent.adoc`._
+- **Email notification when someone shares a chat with you** — native multiplayer chat-share email
+  sent through COMS, behind a rollout flag (enabled in dev per the internal list below). Backend
+  `chat_share_email`, `share_notification_service`, `coms_client`; new email images.
+  (SCAL-348172 · [#3535](https://github.com/thoughtspot/agentspot/pull/3535))
+  _Page edit: one hedged sentence under "Share a chat with teammates" on `agentspot-use-agent.adoc`._
+- **Copy link in every share dialog, and shared workflow links that work** — the agent, App and
+  workflow share dialogs now have a *Copy link* control (bottom left of the footer). For workflows it
+  copies the `/workflows/shared/<id>` link the invite email already uses; opening a workflow's own URL
+  as a recipient now redirects to the share you can see, or shows "This workflow isn't available". If
+  the object isn't shared with anyone yet, copying warns that the link won't open for others. Frontend
+  `CopyShareLinkButton`, the three share dialogs; backend `GET /workflows/{id}/visible-share`.
+  (SCAL-347479 · [#3426](https://github.com/thoughtspot/agentspot/pull/3426))
+  _Page edits: a *Copy link* sentence in the share steps on `agentspot-create-agent.adoc`,
+  `agentspot-create-app.adoc` and `agentspot-create-workflow.adoc`._
+- **Workflow run controls: *Cancel run*, and the latest run selected by default** — the Run details
+  panel now shows the run status with a *Cancel run* button while a run is active (replacing the
+  former *Stop* button that swapped in for *Run now*); the confirmation reads "Cancel this workflow
+  run? In-progress work may be interrupted." The Workflow page now opens with the latest run
+  selected. Frontend `WorkflowDetailsPage`, `WorkflowDetailsRail`.
+  (SCAL-348354 · [#3546](https://github.com/thoughtspot/agentspot/pull/3546),
+  SCAL-348173 · [#3519](https://github.com/thoughtspot/agentspot/pull/3519))
+  _Page edit: "Stopping a running Workflow" on `agentspot-create-workflow.adoc` updated; stale-image
+  TODO on `workflow-stop.png`._
+- **"Surprise me!" dice in the App style picker** — a dice button beside the describe-your-own row
+  rolls a themed design direction (from a catalogue of ~280 real-world visual idioms, including
+  regional and holiday looks) into that row, where it stays editable; re-rolls cycle ten options. The
+  builder may also offer at most one idiom pick among its three recommendations when nothing pins the
+  look. Backend `design_directions`, `GET /dataapps/design-directions`, builder prompt; frontend
+  `StylePickerCard`. (SCAL-348927 · [#3940](https://github.com/thoughtspot/agentspot/pull/3940))
+  _Page edit: paragraph added to "Choosing a design style" on `agentspot-create-app.adoc`._
+- **Confirm before a save that removes a lot from an agent** — saving in Agent Studio now stops with a
+  *This save removes a lot* dialog (*Save anyway*) when instructions shrink by more than 25% and at
+  least 200 characters, or any connector, tool, ThoughtSpot model or knowledge file is dropped,
+  naming what would be removed. Frontend `AgentStudioPage`, `destructiveSaveDiff`.
+  (SCAL-337791 · [#2525](https://github.com/thoughtspot/agentspot/pull/2525))
+  _Page edit: paragraph added to "Editing your Agent" on `agentspot-create-agent.adoc`._
+- **Connector deletion warns how many agents, workflows and apps will break** — the admin delete
+  dialog now says, for example, "8 agents, 3 workflows and 1 app use this connector and will stop
+  working. Re-adding the connector will not fix them — each object must be reconnected by its owner."
+  Counts only; if counts can't be fetched the warning appears without numbers and Delete stays
+  enabled. Backend `GET /api/v1/admin/connectors/{id}/usage`, `connector_usage_service`; frontend
+  `AdminConnectorsTab`. (SCAL-331016 · [#2208](https://github.com/thoughtspot/agentspot/pull/2208))
+  _Page edit: new "Deleting a connector" subsection on `agentspot-admin.adoc`._
+- **Invite field: a bare name no longer gets the company domain on its own; refusals land on the
+  row** — typing `@` now supplies the company domain for the whole field ("madhu.ds, json@" becomes
+  two company addresses); "jason" alone is marked "Not a valid email address". Dotted first.last names
+  are allowed. Refusals such as "Already a member" now show on the affected row, the dialog stays open,
+  and toasts are kept for delivery failures. Frontend `InviteRow`, `InviteTeammatesDialog`,
+  `inviteEmails`. (SCAL-348753 · [#3943](https://github.com/thoughtspot/agentspot/pull/3943))
+  _Page edit: "Email field requirements" box on `agentspot-admin.adoc` updated — this reverses the
+  previous release's "plain name gets the domain" text._
+- **A lapsed invitation can be sent again** — an expired workspace invitation no longer blocks
+  re-inviting that address, and one colliding address no longer discards the rest of the batch.
+  Backend `workspace_invite_service`, `tenant_invite_dao`, invites router.
+  (SCAL-349345 · [#3952](https://github.com/thoughtspot/agentspot/pull/3952))
+  _Page edit: one sentence under "Inviting teammates" on `agentspot-admin.adoc`._
+- **Invitations gated by ThoughtSpot user-management privileges** — workspace and resource-share
+  invitations (agents, Apps, workflows) can be restricted to users with ThoughtSpot user-management
+  privileges; the session exposes the effective invite permission and the share dialogs follow it.
+  The final commit keeps the gate **disabled** by default (enabled in `deepak-dev`). Backend
+  `invite_privilege`, `thoughtspot_invite_privilege_service`; frontend `AuthContext`, share dialogs.
+  (SCAL-350208 · [#4216](https://github.com/thoughtspot/agentspot/pull/4216))
+  _Page edit: hedged NOTE under "Inviting teammates" on `agentspot-admin.adoc`; docs team should
+  confirm the required ThoughtSpot privilege name and rollout before publishing._
+- **Agent builder can read connector tool catalogs** — the agent builder can now list connectors and
+  inspect their tools while building, as the App and workflow builders already did. Backend builder
+  prompts, `connector_discovery_service`, `agent_builder_agent_service`.
+  (SCAL-334102 · [#3481](https://github.com/thoughtspot/agentspot/pull/3481))
+  _No page edit — behavior-only; docs team may mention it on `agentspot-create-agent.adoc`._
+
+### Fixes & stability
+
+- **Chief of Staff removed from the persona picker and Discover pills** — no longer offered as a
+  choice; earlier picks still drive recommendations. Frontend `personas`, `userPersonaState`.
+  (SCAL-351690 · [#4707](https://github.com/thoughtspot/agentspot/pull/4707))
+- **App builder session reset now deletes the replaced conversation** — its Vertex session, events
+  and UI artifacts are erased instead of lingering. Backend `conversation_erasure_service`, dataapp
+  draft/catalog services. (SCAL-351466 · [#4621](https://github.com/thoughtspot/agentspot/pull/4621))
+- **Scout follows the tenant's model routing** — Scout now runs on the tenant's execution route
+  (override, then fleet default) like any other agent. Backend `hub_agent_service`,
+  `agent_runtime_snapshot_service`. (SCAL-352400 · [#4716](https://github.com/thoughtspot/agentspot/pull/4716))
+- **Google profile consent and reconnect recovery restored** — fixes Google profile consent in
+  production and the reconnect path for Apps. Backend `google_workspace_service`, dataapp connector
+  fetch/error catalog; frontend `useDataappReconnect`.
+  (SCAL-350054 · [#4161](https://github.com/thoughtspot/agentspot/pull/4161))
+- **Fireworks token usage logged per model call** — observability only.
+  (SCAL-351707 · [#4659](https://github.com/thoughtspot/agentspot/pull/4659))
+- **Builders and workflow steps get only the tools they can use; step guidance cached** — app tools
+  hidden from workflow builders. (SCAL-351708 · [#4660](https://github.com/thoughtspot/agentspot/pull/4660))
+- **Tenant secrets read/written through the secret store behind a flag** — tenant ThoughtSpot,
+  Google and Microsoft 365 secrets via encrypted Firestore with Secret Manager fallback.
+  (SCAL-347414, SCAL-347140, SCAL-346780, SCAL-350740, SCAL-350807, SCAL-350898 · [#3415](https://github.com/thoughtspot/agentspot/pull/3415))
+- **Reusable secret store module** — encrypted Firestore with Secret Manager fallback, bounded
+  timeouts and checksum verification. (SCAL-347140, SCAL-346780 · [#3359](https://github.com/thoughtspot/agentspot/pull/3359))
+- **COMS email credentials rotated just in time** — sends recover with rotated credentials.
+  (SCAL-349900 · [#4093](https://github.com/thoughtspot/agentspot/pull/4093))
+- **SRE portal: texting number pool, verification number and tenant texting channels** — SREs manage
+  Twilio numbers per region. Internal admin portal only.
+  (SCAL-349767 · [#4084](https://github.com/thoughtspot/agentspot/pull/4084))
+- **SRE portal: per-tenant texting flag** — `tenants.texting_enabled`, default off.
+  (SCAL-349767 · [#4072](https://github.com/thoughtspot/agentspot/pull/4072))
+  _Docs-team check: SMS/WhatsApp texting is not documented yet; may become user-visible later._
+- **No more empty agent replies from oversized runtime streams** — session state stripped from
+  streamed partial events that could end the stream early.
+  (SCAL-351272 · [#4532](https://github.com/thoughtspot/agentspot/pull/4532))
+- **MCP tool schemas sent as JSON Schema; workflow steps fail on truncated model output** — fixes
+  Vertex 400s on some connector tools, and a step whose model stopped early now fails instead of
+  passing. (SCAL-350885 · [#4397](https://github.com/thoughtspot/agentspot/pull/4397))
+- **GLM and Kimi tool schemas and Gemini model attribution fixed.**
+  (SCAL-350885 · [#4373](https://github.com/thoughtspot/agentspot/pull/4373))
+- **Admin Google Workspace tool policy enforced in Apps and memory auto-fill** — a tool an admin
+  disabled can no longer be called by App fetch/action steps or memory population.
+  (SCAL-341011 · [#2885](https://github.com/thoughtspot/agentspot/pull/2885))
+  _Docs-team check: may warrant a sentence wherever Google Workspace tool permissions are described._
+- **Learned profile text kept out of the user's own memory entry** — with profile layers on, the
+  profile editor edits only your own entry and shows learned entries read-only with *Remove*.
+  (SCAL-338926 · [#4111](https://github.com/thoughtspot/agentspot/pull/4111))
+  _Docs-team check: "Using Personal memory" on `agentspot-use-agent.adoc` once profile layers ship._
+- **Cluster default org enabled just in time on first visit** — instead of "Tenant not found", a
+  holding page appears while the tenant is created. Flag-gated.
+  (SCAL-343585 · [#2676](https://github.com/thoughtspot/agentspot/pull/2676))
+- **SRE bot conversation cached with a moving breakpoint.** (SCAL-341248 · [#2472](https://github.com/thoughtspot/agentspot/pull/2472))
+- **Gemini 3.8 Flash enabled with SRE model selection.** (SCAL-337646, SCAL-337968, SCAL-341250, SCAL-349322, SCAL-349324, SCAL-349323 · [#2106](https://github.com/thoughtspot/agentspot/pull/2106))
+- **GLM 5.3, Kimi K3 (and DeepSeek V4.1 Flash) Fireworks profiles in SRE routing, dev and staging.**
+  (SCAL-347400, SCAL-341250, SCAL-349325, SCAL-349326 · [#3442](https://github.com/thoughtspot/agentspot/pull/3442))
+- **SRE-managed cell defaults and tenant model overrides** — LLM model selection moves to SRE-editable
+  tables. (SCAL-337968, SCAL-340302, SCAL-349327 · [#2157](https://github.com/thoughtspot/agentspot/pull/2157))
+- **Formatting kept when pasting agent instructions** — headings, nested lists and spacing survive
+  paste. (SCAL-334690 · [#2596](https://github.com/thoughtspot/agentspot/pull/2596))
+- **List pages fade in quickly** — card fade-in capped at 0.6s on Agents, Apps, Skills, Learning
+  Center. (SCAL-347971 · [#3673](https://github.com/thoughtspot/agentspot/pull/3673))
+- **Single workflow step selection stroke, cleared on canvas click.**
+  (SCAL-349457 · [#3970](https://github.com/thoughtspot/agentspot/pull/3970))
+- **Workflow artifact preview limit made opt-in** — complete workflow specs returned by default
+  (`ARTIFACT_PREVIEW_LIMIT_ENABLED=false`). ([#3540](https://github.com/thoughtspot/agentspot/pull/3540))
+- **Continuation stop confirmation timeout raised to 300 seconds.**
+  (SCAL-348933 · [#3797](https://github.com/thoughtspot/agentspot/pull/3797))
+- **Overlapping Vertex turn continuations prevented.** (SCAL-346404 · [#3286](https://github.com/thoughtspot/agentspot/pull/3286))
+- **Published App loads charged once per 4 hours** — default reload window changed from 24 to 4
+  hours to match the pricing doc; conversations keep 24 hours.
+  (SCAL-347352 · [#3530](https://github.com/thoughtspot/agentspot/pull/3530))
+  _Docs-team check: "Billing and credits" on `agentspot-faq.adoc` covers only conversations; consider
+  adding the App-load rule._
+- **Workflow connector logos stay visible.** (SCAL-348274 · [#3533](https://github.com/thoughtspot/agentspot/pull/3533))
+- **App builds must be named; preview retry loop stopped** — unnamed drafts no longer loop on preview
+  errors. (SCAL-346537 · [#3294](https://github.com/thoughtspot/agentspot/pull/3294))
+- **Agent Studio never dead-ends on a stale build conversation** — offers *Start a new conversation*
+  when history fails to load; agents with more than 3 starter prompts load again.
+  (SCAL-340039 · [#3512](https://github.com/thoughtspot/agentspot/pull/3512))
+- **Agent Builder revisions preserved across reloads; draft conflicts recoverable.**
+  (SCAL-346280 · [#3270](https://github.com/thoughtspot/agentspot/pull/3270))
+- **Faster workflow run history** — finished runs no longer re-read from Vertex.
+  (SCAL-346675 · [#3298](https://github.com/thoughtspot/agentspot/pull/3298))
+- **Fewer Arsenal discovery and MCP execution round trips** — shared tool-search cache.
+  (SCAL-345811 · [#3146](https://github.com/thoughtspot/agentspot/pull/3146))
+- **Better default App designs** — revised App builder design prompt and web-safe font palette.
+  (SCAL-333703 · [#2004](https://github.com/thoughtspot/agentspot/pull/2004))
+- **Admin connector search fast at 1,000+ connectors** — grid renders 60 cards at a time with *Show
+  more*. (SCAL-344623 · [#3445](https://github.com/thoughtspot/agentspot/pull/3445))
+  _Docs-team check: "Show more" on the admin Connectors page may be worth a mention._
+- **Slack: stale queued listen messages dropped after 5 minutes.**
+  (SCAL-347473 · [#3420](https://github.com/thoughtspot/agentspot/pull/3420))
+- **Slack: builder and platform agents hidden from the channel agent picker.**
+  (SCAL-347396 · [#3413](https://github.com/thoughtspot/agentspot/pull/3413))
+- **Slack apps disabled and secrets deleted when a tenant is soft deleted.**
+  (SCAL-347544 · [#3428](https://github.com/thoughtspot/agentspot/pull/3428))
+- **Slack: @here/@channel blocked in replies; link previews off on mention replies** — listen mode
+  also ignores messages with broadcast or user-group mentions.
+  (SCAL-347393 · [#3411](https://github.com/thoughtspot/agentspot/pull/3411))
+  _Docs-team check: may warrant a line in the Slack bot section of `agentspot-admin.adoc`._
+- **Slack: late, ended or unauthorized replies refused by the reply and upload tools.**
+  (SCAL-347514, SCAL-347528 · [#3424](https://github.com/thoughtspot/agentspot/pull/3424))
+- **Slack: listen posts and file reads recover from rate limits.**
+  (SCAL-347515 · [#3422](https://github.com/thoughtspot/agentspot/pull/3422))
+- **Slack: listen ignores messages that mention another person anywhere.**
+  (SCAL-347503 · [#3421](https://github.com/thoughtspot/agentspot/pull/3421))
+- **Slack: listen gate judge skipped when a run limit is already full.**
+  (SCAL-347520 · [#3423](https://github.com/thoughtspot/agentspot/pull/3423))
+- **Slack apps turned on per cell with `SLACK_BYO_ENABLED`** — replaces the per-tenant flag (kept but
+  ignored). (SCAL-347391 · [#3409](https://github.com/thoughtspot/agentspot/pull/3409))
+- **Slack worker no longer reclaims a crash-looping event forever.**
+  (SCAL-347394 · [#3412](https://github.com/thoughtspot/agentspot/pull/3412))
+- **Flag-gated scripted mock LLM for runtime tests.** (SCAL-345135 · [#2958](https://github.com/thoughtspot/agentspot/pull/2958))
+- **Spotter, skills and runtime blocking work offloaded from the event loop.**
+  (SCAL-342867 · [#3416](https://github.com/thoughtspot/agentspot/pull/3416))
+- **Share coachmark readable in dark mode** — muted text contrast raised to WCAG AA.
+  (SCAL-347282 · [#3417](https://github.com/thoughtspot/agentspot/pull/3417))
+- **Recovered chat turns no longer repeat the answer's tail after a reconnect.**
+  (SCAL-339634 · [#2800](https://github.com/thoughtspot/agentspot/pull/2800))
+- **App connector lookups done once per load; Arsenal ListTools capped at 60 s.**
+  (SCAL-346862 · [#3354](https://github.com/thoughtspot/agentspot/pull/3354))
+
+### Internal / infra
+
+- Turn on the secret store for tenant, Google and Microsoft 365 secrets in dev and staging. (SCAL-350898, SCAL-346799, SCAL-350740 · [#4377](https://github.com/thoughtspot/agentspot/pull/4377))
+- Add the AgentSpot SOC 2 readiness plan. (SCAL-351982 · [#4687](https://github.com/thoughtspot/agentspot/pull/4687))
+- Publish Snowflake usage analytics once a day instead of every 5 minutes. (SCAL-352127 · [#4699](https://github.com/thoughtspot/agentspot/pull/4699))
+- Run marked backend tests on PostgreSQL with a shared parity fixture. (SCAL-349835, SCAL-352012 · [#4112](https://github.com/thoughtspot/agentspot/pull/4112))
+- Add kshipra-dev personal dev namespace on the shared agentspot DB. (SCAL-349875 · [#4088](https://github.com/thoughtspot/agentspot/pull/4088))
+- Polish workspace invite artwork seams and borders. (SCAL-348162 · [#4089](https://github.com/thoughtspot/agentspot/pull/4089))
+- Switch the secret store's fallback and Secret Manager cleanup per kind. (SCAL-346799, SCAL-350740 · [#3798](https://github.com/thoughtspot/agentspot/pull/3798))
+- Stop Gemini 400s on $ref tool results and empty trailing user turns. (SCAL-351411 · [#4589](https://github.com/thoughtspot/agentspot/pull/4589))
+- Wire the Twilio Verify SID and turn texting on in dev and staging. (SCAL-349870 · [#4466](https://github.com/thoughtspot/agentspot/pull/4466))
+- Run the Apps bundler and load runner in vinayak-dev. (SCAL-350885 · [#4405](https://github.com/thoughtspot/agentspot/pull/4405))
+- Fix Claude tool schemas and align the Claude adapter with the API docs. (SCAL-350885 · [#4380](https://github.com/thoughtspot/agentspot/pull/4380))
+- Enable default-org JIT across AgentSpot environments. (SCAL-350907 · [#4387](https://github.com/thoughtspot/agentspot/pull/4387))
+- Turn on memory profile layers, erasure and trust cutover in dev and staging. (SCAL-344369, SCAL-338926, SCAL-338908 · [#3549](https://github.com/thoughtspot/agentspot/pull/3549))
+- Twilio credentials and texting switch in infra. (SCAL-349870 · [#4085](https://github.com/thoughtspot/agentspot/pull/4085))
+- Turn on the Jev judge route in US preprod and prod. (SCAL-347474 · [#3419](https://github.com/thoughtspot/agentspot/pull/3419))
+- Cache latest user input on the first Claude request. (SCAL-338117 · [#2171](https://github.com/thoughtspot/agentspot/pull/2171))
+- Normalize tool-result serialization to reduce reload cache misses. (SCAL-341247 · [#2470](https://github.com/thoughtspot/agentspot/pull/2470))
+- Keep skill instructions and tools stable across runtime calls. (SCAL-338118 · [#2176](https://github.com/thoughtspot/agentspot/pull/2176))
+- Make MCP schema property summaries deterministic. (SCAL-338121 · [#2172](https://github.com/thoughtspot/agentspot/pull/2172))
+- Split the admin tenant integration test per action and check audit rows properly. (SCAL-346687 · [#3301](https://github.com/thoughtspot/agentspot/pull/3301))
+- Check that route coverage refs point to real integration tests. (SCAL-345997 · [#3274](https://github.com/thoughtspot/agentspot/pull/3274))
+- Route EU cells to regional COMS. (SCAL-349716 · [#4069](https://github.com/thoughtspot/agentspot/pull/4069))
+- Enable native chat share in dev. (SCAL-348172 · [#4058](https://github.com/thoughtspot/agentspot/pull/4058))
+- Save large MCP file contents as plain workspace files. (SCAL-337146 · [#3806](https://github.com/thoughtspot/agentspot/pull/3806))
+- Allow only the CI integration database in runtime integration tests. (SCAL-346447 · [#3289](https://github.com/thoughtspot/agentspot/pull/3289))
+- Remove engineers who have left the team from CODEOWNERS and the deploy allowlists. (SCAL-349270 · [#3947](https://github.com/thoughtspot/agentspot/pull/3947))
+- Make UI changes reviewable without a checkout: require a PM/UX sign-off on UI PRs, and pull the ticket's spec links into the PR body. (SCAL-348226 · [#3652](https://github.com/thoughtspot/agentspot/pull/3652))
+- Keep connector tool schemas and tool outputs within the Vertex session depth limit. (SCAL-346504 · [#3386](https://github.com/thoughtspot/agentspot/pull/3386))
+- Add a deployed check that identity headers are ignored when sessions are enforced. (SCAL-343676 · [#3316](https://github.com/thoughtspot/agentspot/pull/3316))
+- Allow chandan-kumar331 to dispatch the dev deploy workflow. (SCAL-348916 · [#3793](https://github.com/thoughtspot/agentspot/pull/3793))
+- Add a deployed check that a two-turn Claude chat replays its thinking. (SCAL-343676 · [#3324](https://github.com/thoughtspot/agentspot/pull/3324))
+- Stop context clearing from re-writing the prompt cache on long sessions. (SCAL-348640 · [#3663](https://github.com/thoughtspot/agentspot/pull/3663))
+- Provision the secret store in every cell and point the backend at it. (SCAL-346799, SCAL-346780 · [#3314](https://github.com/thoughtspot/agentspot/pull/3314))
+- Stabilize Arsenal tool declarations for SCAL-338119. (SCAL-338119 · [#2173](https://github.com/thoughtspot/agentspot/pull/2173))
+- Remove obsolete volatile system ranges. (SCAL-338123 · [#2175](https://github.com/thoughtspot/agentspot/pull/2175))
+- Require Epic, Story, or Bug issue types for SCAL Jira tickets. (SCAL-347606 · [#3440](https://github.com/thoughtspot/agentspot/pull/3440))
+- Stage context compaction rollout. (SCAL-322612 · [#3542](https://github.com/thoughtspot/agentspot/pull/3542))
+- Add isolated deepak1-dev namespace for parallel testing. (SCAL-348197 · [#3526](https://github.com/thoughtspot/agentspot/pull/3526))
+- Select AgentSpot developer group for Access Approval. (SCAL-339718 · [#3202](https://github.com/thoughtspot/agentspot/pull/3202))
+- Narrow workload storage access and guard default Compute Editor retirement. (SCAL-339718 · [#2631](https://github.com/thoughtspot/agentspot/pull/2631))
+- Raise uv, pip and certifi in the Python image builds. (SCAL-347073, SCAL-347267 · [#3325](https://github.com/thoughtspot/agentspot/pull/3325))
+- Let a personal dev deploy carry the DataApp load-runner. (SCAL-347533 · [#3427](https://github.com/thoughtspot/agentspot/pull/3427))
+- Arm Slack worker alerts in every listen cell. (SCAL-347472 · [#3418](https://github.com/thoughtspot/agentspot/pull/3418))
+- Add the Test Pyramid plan and a generated progress tracker to docs. (SCAL-347134 · [#3332](https://github.com/thoughtspot/agentspot/pull/3332))
+- Let background sub-agents actually reach connectors, and make their failures visible. (SCAL-346767 · [#3334](https://github.com/thoughtspot/agentspot/pull/3334))
+- Generate the connector reference page from Arsenal's catalogue. (SCAL-345908 · [#3300](https://github.com/thoughtspot/agentspot/pull/3300))
+- Enable Apps in the mridul-dev namespace. (SCAL-347136 · [#3335](https://github.com/thoughtspot/agentspot/pull/3335))
+- Enable Apps in the bharat-dev namespace. (SCAL-347124 · [#3326](https://github.com/thoughtspot/agentspot/pull/3326))
+- Scale US prod back down after the SpotLight event. (SCAL-347097, SCAL-346077 · [#3323](https://github.com/thoughtspot/agentspot/pull/3323))
+
 ## 2026-10-20 — bbf0556be626..134b083e3cfa
 
 Range: `bbf0556be626..134b083e3cfa` · 2026-10-20
