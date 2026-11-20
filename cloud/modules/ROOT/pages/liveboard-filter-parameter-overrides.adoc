@@ -1,5 +1,5 @@
 = Liveboard filter and parameter overrides
-:page-last_updated: Nov 19, 2026
+:page-last_updated: Nov 20, 2026
 :linkattrs:
 :page-layout: default-cloud-early-access
 :experimental:
@@ -35,36 +35,41 @@ You don't need to save a personalized view for each combination of values. The v
 == Before you start
 
 * A URL can only change filters and parameters that already appear as chips on the Liveboard. A URL can't add a filter or parameter that doesn't exist on the Liveboard.
-* Use the actual names of the filters/parameters, not the display names. Names are not case-sensitive.
+* For filters, use the column's name in the model, not a custom label on the chip. For parameters, use the parameter's name or the label shown on its chip. Names are not case-sensitive.
 * To set tab-level or group-level filters, contextual filtering must be turned on for the Org. See xref:liveboard-filters.adoc[Liveboard filters].
 
 [#build-the-url]
 == Build the URL
 
 . Open the Liveboard and copy its URL from the browser's address bar, for example `\https://{your-instance}/#/pinboard/{liveboard-id}`.
-. Add `?filter=` followed by one or more filter clauses, separated by semicolons.
-. To set parameters, add `&parameter=` followed by one or more parameter clauses, separated by semicolons. If the URL has no filter, start with `?parameter=`.
+. Add `?filter="..."` with one or more filter clauses inside the quotes, separated by semicolons.
+. To set parameters, add `&parameter="..."` with one or more parameter clauses inside the quotes, separated by semicolons. If the URL has no filter, start with `?parameter="..."`.
 . Open the URL. The chips show the values you set.
 
 Examples:
 [source]
 ----
-https://{your-instance}/#/pinboard/{liveboard-id}?filter=Region=West,East;OrderDate=last30days&parameter=DiscountRate=0.15
+https://{your-instance}/#/pinboard/{liveboard-id}?filter="Region = West, East; Order Date = last 30 days"&parameter="Discount Rate = 0.15"
 ----
 [source]
 ----
-https://{your-instance}/#/insights/pinboard/a8fc9478-6872-4cc0-9549-41ae901c0e95/?view=8bd5e935-67d3-4efb-b8c2-47cc6d15aea3&filter=
+https://{your-instance}/#/insights/pinboard/{liveboard-id}?view={view-id}&filter="Region = West"
 ----
 
 Rules for the URL:
 
 * The keys are `filter` and `parameter`, singular.
+* Use one pair of straight double quotes around the whole value, not around each clause.
 * You can type or paste values as shown. The browser encodes them when it opens the URL. Always encode these characters: & as %26, + as %2B, % as %25, # as %23, and \ as %5C. If you send the URL by email or chat, where spaces can break links, encode each value.
 
 [#filter-syntax]
 == Filter syntax
 
-Each filter clause has the form `{Column name} {operator} {values}`. Separate multiple values with commas. Spaces inside a value are kept.
+Each filter clause has the form `{Column name} {operator} {values}`. Separate multiple values with commas. Spaces around operators (`=`, `!=`, `<`, `<=`, `>`, `>=`), commas, semicolons, and `::` are optional, so `Region=West,East` and `Region = West, East` are the same. Everywhere else, spaces matter:
+
+* Names must match exactly, including spaces: `Order Date`, not `OrderDate`. This applies to column, parameter, model, tab, and group names.
+* Keep the spaces between the words of a value: `between 1000 5000`, `last 30 days`, `january 2026`.
+* Spaces inside a filter value are kept, for example `Store Name = New York`.
 
 [width="100%",cols="1,2,2"]
 [options="header"]
@@ -72,47 +77,47 @@ Each filter clause has the form `{Column name} {operator} {values}`. Separate mu
 |Column type |Example |Meaning
 
 |Attribute
-|`Region=West,East`
+|`Region = West, East`
 |Region is West or East
 
 |Attribute
-|`Region!=South`
+|`Region != South`
 |Region is not South
 
 |Measure
-|`Sales>10000`
+|`Sales > 10000`
 |Greater than 10000. `+>=+`, `<`, and `+<=+` also work.
 
 |Measure
-|`Sales=between10005000`
+|`Sales = between 1000 5000`
 |Between 1000 and 5000, inclusive
 
 |Date, rolling
-|`OrderDate=last30days`
+|`Order Date = last 30 days`
 |The last 30 days. Also `this quarter`, `next 2 weeks`, `today`, `year to date`.
 
 |Date, rolling
-|`OrderDate>last2months`
+|`Order Date > last 2 months`
 |After the last 2 months
 
 |Date, fixed
-|`OrderDate=2026-08-31`
+|`Order Date = 2026-08-31`
 |On that day. Dates must be in `yyyy-MM-dd` format.
 
 |Date, fixed
-|`OrderDate=between2026-01-012026-06-30`
+|`Order Date = between 2026-01-01 2026-06-30`
 |Between the two dates, inclusive
 
 |Date, fixed
-|`OrderDate=january2026`
+|`Order Date = january 2026`
 |The whole month. Also `q1 2026` and `2026`.
 
 |Any
-|`ProductType=`
+|`Product Type =`
 |Clears the chip, so all values are shown
 |===
 
-For every supported operator and date expression, and for how to write commas and other special characters inside a value, see link:https://developers.thoughtspot.com/docs/liveboard-filter-parameter-overrides[Liveboard filter and parameter overrides] in the developer documentation.
+For every supported operator and date expression, and for how to write commas and other special characters inside a value, see link:https://developers.thoughtspot.com/docs/liveboard-filter-and-parameter-overrides[Liveboard filter and parameter overrides] in the developer documentation.
 
 [#parameter-syntax]
 == Parameter syntax
@@ -120,10 +125,10 @@ For every supported operator and date expression, and for how to write commas an
 Each parameter clause has the form `{Parameter name} = {value}`, with exactly one value:
 
 ----
-TopN=10
-DiscountRate=0.15
-TargetRegion=West
-ForecastStart=2026-07-01
+Top N = 10
+Discount Rate = 0.15
+Target Region = West
+Forecast Start = 2026-07-01
 ----
 
 The value must fit the parameter. For a parameter with a list of values, use one of the values in the list. For a parameter with a range, use a value inside the range. Dynamic date values, such as `today`, are not supported.
@@ -138,22 +143,22 @@ A clause without a prefix updates every chip with that name across all models, t
 |===
 |Clause |Chips updated
 
-|`Region=West`
+|`Region = West`
 |Every Region chip
 
-|`RetailSales::Region=West`
+|`Retail Sales::Region = West`
 |Region chips from the Retail Sales model
 
-|`RegionalDetail::ProductType=Shoes`
+|`Regional Detail::Product Type = Shoes`
 |Product Type chips on the Regional Detail tab, including its groups
 
-|`RegionalDetail::TopStores::StoreName=Downtown`
+|`Regional Detail::Top Stores::Store Name = Downtown`
 |The Store Name chip in the Top Stores group on the Regional Detail tab
 |===
 
 You can give up to three names, in the order model, tab, group. Parameters accept the same prefixes.
 
-NOTE: The system takes the first prefix, tries to match it with the names of all the data sources used in the Liveboard. If there is no match, then it tries to match it with the names of all the tabs of the Liveboard, then tries to match it with the names of all the groups in the Liveboard. If there is still no match, then the clause is skipped.
+NOTE: Prefixes always go in the order model, tab, group, and you can leave out any of them. With one prefix, the name is matched against models, then tabs, then groups. With two prefixes, the first is matched against models, then tabs. If the first is a model, the second can be a tab or a group. If the first is a tab, the second must be a group on that tab. If a prefix doesn't match, the clause is skipped.
 
 [#example-link]
 == Example: link from one Liveboard to another
@@ -164,9 +169,9 @@ Suppose you have a Liveboard with a table of regions, and a detail Liveboard wit
 . In the Answer that contains the table, create a formula named `Region details`:
 +
 ----
-concat ('{caption}', displayName, '{/caption}','https://instance.cloud/#/insights/pinboard/a8fc9478-6872-4cc0-9549-41ae901c0e95?filter="city=', city, '"'
+concat ('{caption}', region, '{/caption}','https://{your-instance}/#/insights/pinboard/{detail-liveboard-id}?filter="region=', region, '"')
 ----
-In the above example, city is the name of the filter that you want to set.
+In the above example, region is the name of the filter that you want to set.
 . Add the formula to the table and pin the Answer to the Liveboard.
 . Click a link in the table. The detail Liveboard opens with its Region chip set to the region of that row.
 
@@ -184,7 +189,7 @@ In the above example, city is the name of the filter that you want to set.
 === Personalized views
 
 * *A URL without a view:* The Liveboard opens with its saved values plus the URL values, even if the person has a default view. The *Save view* option becomes available so they can save the result as a new view.
-* *A URL with a view* (`?view={view-id}&filter=...`): The view opens and the URL values are applied on top of it. The view shows as modified, and the person can update it with the new values.
+* *A URL with a view* (`?view={view-id}&filter="..."`): The view opens and the URL values are applied on top of it. The view shows as modified, and the person can update it with the new values.
 
 [#url-values-lifecycle]
 === When the URL values go away
@@ -239,4 +244,4 @@ Liveboard filter and parameter overrides set the values in the chips themselves,
 * xref:liveboard-filters.adoc[Liveboard filters]
 * xref:parameters-use.adoc[Using parameters]
 * xref:personalized-liveboard-views.adoc[Personalized Liveboard views]
-* link:https://developers.thoughtspot.com/docs/liveboard-filter-parameter-overrides[Liveboard filter and parameter overrides] (developer documentation — full syntax reference and embedding)
+* link:https://developers.thoughtspot.com/docs/liveboard-filter-and-parameter-overrides[Liveboard filter and parameter overrides] (developer documentation — full syntax reference and embedding)
