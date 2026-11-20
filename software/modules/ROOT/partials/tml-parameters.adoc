@@ -197,7 +197,7 @@ a| <<parameter_overrides,parameter_overrides>>
 
 [#aggregation]
 aggregation::
-  The default aggregation of the worksheet, view, or table column, or the aggregation of the output for a formula.
+  The default aggregation of the Model, view, or table column, or the aggregation of the output for a formula.
 +
 Aggregation options depend on the data type.
 +
@@ -241,7 +241,7 @@ client_state::
 
 [#column]
 column::
-  The id of the column(s) being filtered on. When a Liveboard contains xref:liveboard-filters-linked.adoc[linked filters], or filters that affect visualizations based on more than one worksheet, the primary filter column appears first in the list of columns in the TML. The linked filter column appears after the primary filter column.
+  The id of the column(s) being filtered on. When a Liveboard contains xref:liveboard-filters-linked.adoc[linked filters], or filters that affect visualizations based on more than one Model, the primary filter column appears first in the list of columns in the TML. The linked filter column appears after the primary filter column.
 
 [#columns]
 columns::
@@ -249,12 +249,12 @@ columns::
 
 [#column_id]
 column_id::
-  The `id` of the worksheet or view column.
+  The `id` of the Model or view column.
 +
 For answers, `column_id` refers to how the column appears in the query.
 For example, if you sorted by `Quarter` in your search, from the `Commit Date` column, the `column_id` of the column is `Quarter(Commit Date)`.
 +
-For worksheets and views, `column_id` is in the following format: `column_id: <id>::<name>`. `id` comes from `Worksheet.table_path`, and `name` comes from `Table.column`. For example: `column_id: Customer_Dimension::Customer_Name`.
+For Models and views, `column_id` is in the following format: `column_id: <id>::<name>`. `id` comes from `Worksheet.table_path`, and `name` comes from `Table.column`. For example: `column_id: Customer_Dimension::Customer_Name`.
 
 [#column_type]
 column_type::
@@ -263,7 +263,7 @@ For a formula, the `column_type` refers to the output of the formula.
 +
 Possible values: `MEASURE` or `ATTRIBUTE`
 +
-For worksheets, the default is: `MEASURE`
+For Models, the default is: `MEASURE`
 +
 For formulas, the default depends on the <<data_type,data_type>>.
 +
@@ -323,7 +323,7 @@ Note that this database is not the same as the data warehouse (Falcon, Amazon Re
 
 [#default_value]
 default_value::
-The default value for a parameter in a Worksheet. Specified when xref:parameters-create.adoc[creating a parameter].
+The default value for a parameter in a Model. Specified when xref:parameters-create.adoc[creating a parameter].
 
 [#description]
 description::
@@ -356,7 +356,7 @@ expr::
 
 [#filters]
 filters::
-  Contains specifications for Liveboard, view, and worksheet filters.
+  Contains specifications for Liveboard, view, and Model filters.
 
 [#format_pattern]
 format_pattern::
@@ -366,7 +366,7 @@ See xref:data-modeling-patterns.adoc[Set number, date, and currency formats].
 
 [#formulas]
 formulas::
-  The list of formulas in the worksheet, view, or answer.
+  The list of formulas in the Model, view, or answer.
 +
 Each formula is identified by `name`, the `expr` (expression), and an optional `id` attribute.
 
@@ -400,11 +400,11 @@ Uses two paired parameters:
 
 [#geometryType]
 geometryType::
-Specifies the geometry type of the *TopoJSON* file. Required for geographical configuration of Worksheet or table columns that use a custom map. Accepts the following values: `POINT`, `LINE_STRING`, `LINEAR_RING`, `POLYGON`, `MULTI_POINT`, `MULTI_LINE_STRING`, `MULTI_POLYGON`, `GEOMETRY_COLLECTION`, `CIRCLE`
+Specifies the geometry type of the *TopoJSON* file. Required for geographical configuration of Model or table columns that use a custom map. Accepts the following values: `POINT`, `LINE_STRING`, `LINEAR_RING`, `POLYGON`, `MULTI_POINT`, `MULTI_LINE_STRING`, `MULTI_POLYGON`, `GEOMETRY_COLLECTION`, `CIRCLE`
 
 [#guid]
 guid::
-  The GUID for the answer, Liveboard, SpotIQ result, table, worksheet, view, or SQL view.
+  The GUID for the answer, Liveboard, SpotIQ result, table, Model, view, or SQL view.
 +
 You can find this string of letters and numbers at the end of the URL for an object.
 
@@ -449,7 +449,7 @@ See xref:data-modeling-index.adoc#column-suggestion-priority[Change a column's s
 
 [#index_type]
 index_type::
-  The indexing option of the worksheet, view, or table column.
+  The indexing option of the Model, view, or table column.
 +
 Possible values: `DONT_INDEX`, `DEFAULT` (see xref:data-modeling-index.adoc#default-indexing[Understand the default indexing behavior]), `PREFIX_ONLY`, `PREFIX_AND_SUBSTRING`, and `PREFIX_AND_WORD_SUBSTRING`
 +
@@ -483,7 +483,7 @@ See xref:data-modeling-attributable-dimension.adoc[Change the attribution dimens
 
 [#is_bypass_rls]
 is_bypass_rls::
-  Specifies if the worksheet supports bypass of Row-level security (RLS)
+  Specifies if the Model supports bypass of Row-level security (RLS)
 +
 Possible values: `true` or `false`
 +
@@ -536,19 +536,19 @@ Default: `{}`
 
 [#join_progressive]
 join_progressive::
-  Specifies when to apply joins on a worksheet
+  Specifies when to apply joins on a Model
 +
 Possible values: `true` when joins are applied only for tables whose columns are included in the search, and `false` for all possible joins
 +
 Default: `true`
 +
-See xref:worksheet-progressive-joins.adoc[How the worksheet join rule works].
+See xref:model-progressive-joins.adoc[How the Model join rule works].
 
 [#joins]
 joins::
   Contains a list of joins between the tables and views.
 +
-If you edit the joins in the worksheet or view TML file, you are only editing the joins for that specific worksheet or view. You are not editing the joins at the table level. To modify table-level joins, you must edit the source table's TML file.
+If you edit the joins in the Model or view TML file, you are only editing the joins for that specific Model or view. You are not editing the joins at the table level. To modify table-level joins, you must edit the source table's TML file.
 +
 Each join is identified by `name`, and the additional attributes of `source`, `destination`, `type`, and `is_one_to_one.`
 
@@ -598,7 +598,7 @@ on::
 
 [#oper]
 oper::
-  The operator of the Liveboard, view or worksheet filter.
+  The operator of the Liveboard, view or Model filter.
 Accepted operators are `"in"`, `"not in"`, `"between"`, `=<`, `!=`, `+<=+`, `>=`, `>`, or `<`.
 
 [#ordered_column_ids]
@@ -620,7 +620,7 @@ Container for the xref:parameters-create.adoc[parameters] in an Answer.
 
 [#parameters]
 parameters::
-Container for the xref:parameters-create.adoc[parameters] in a Worksheet.
+Container for the xref:parameters-create.adoc[parameters] in a Model.
 
 [#phrase]
 phrase::
@@ -632,11 +632,11 @@ pinboard::
 
 [#properties]
 properties::
-  The list of properties of a worksheet, table, view, or SQL view column, a worksheet, view or SQL view itself, or the properties of the output for a formula within an answer, worksheet, view, or SQL view.
+  The list of properties of a Model, table, view, or SQL view column, a Model, view or SQL view itself, or the properties of the output for a formula within an answer, Model, view, or SQL view.
 +
-For worksheets, views, and tables, each column can have the following properties, depending on its definition: `column_type`, `aggregation`, `index_type`, `is_hidden`, `index_priority`, `synonyms`, `is_attribution_dimension`, `is_additive`, `calendar`, `format_pattern`, `currency_type`, `geo_config`, and `spotiq_preference`.
+For Models, views, and tables, each column can have the following properties, depending on its definition: `column_type`, `aggregation`, `index_type`, `is_hidden`, `index_priority`, `synonyms`, `is_attribution_dimension`, `is_additive`, `calendar`, `format_pattern`, `currency_type`, `geo_config`, and `spotiq_preference`.
 +
-Worksheets, views, and SQL views themselves can have the following properties that affect query generation: `is_bypass_rls`, and `join_progressive`.
+Models, views, and SQL views themselves can have the following properties that affect query generation: `is_bypass_rls`, and `join_progressive`.
 +
 For answers, each formula's output can have the following properties, depending on its definition: `column_type` and `aggregation`.
 
@@ -740,13 +740,13 @@ Each table path is identified by the `id`, and additional attributes of `table` 
 
 [#tables]
 tables::
-  List of tables used by the worksheet, answer, or table RLS rule.
+  List of tables used by the Model, answer, or table RLS rule.
 +
 Each table is identified by `name`.
 
 [#type]
 type::
-  For worksheets and views, this is the join type. This is an optional parameter.
+  For Models and views, this is the join type. This is an optional parameter.
 +
 Possible values: `LEFT_OUTER` for left outer join, `RIGHT_OUTER` for right outer join, `INNER` for inner join, `OUTER` for full outer join.
 +
@@ -768,7 +768,7 @@ In an Answer or Liveboard, `value` refers to the configured value of the paramet
 
 [#values]
 values::
-  The values being filtered (excluded or included) in a Liveboard, view, or worksheet.
+  The values being filtered (excluded or included) in a Liveboard, view, or Model.
 
 [#view]
 view::
@@ -798,10 +798,10 @@ You can find this string of letters and numbers at the end of the URL for a Live
 
 [#worksheet]
 worksheet::
-  Top-level container for all object definitions within the worksheet.
+  Top-level container for all object definitions within the Model.
 
 [#worksheet_columns]
 worksheet_columns::
-  The list of columns in the worksheet.
+  The list of columns in the Model.
 +
-Each worksheet is identified by `name`, `description`, `column_id`, and `properties`.
+Each Model is identified by `name`, `description`, `column_id`, and `properties`.

@@ -5,10 +5,11 @@
 :page-aliases: /admin/loading/change-schema.adoc
 :description: After creating the schema and loading data, you may have to change your setup.
 
+NOTE: Worksheets are now referred to as Models.
 
 After creating the schema and loading data, you may have to change your set-up. You can alter the schema by changing the primary key, relationships between tables, and table sharding.
 
-Making changes to a schema after data has been loaded and users have created worksheets or Liveboards on the tables requires care, so that you don't lose the relationship between the objects created in ThoughtSpot and the underlying tables.
+Making changes to a schema after data has been loaded and users have created Models or Liveboards on the tables requires care, so that you don't lose the relationship between the objects created in ThoughtSpot and the underlying tables.
 If you follow the procedures here, your tables will retain their relationships to the objects created on top of them.
 
 TIP: Always take a snapshot of your database before making any schema changes.
@@ -27,7 +28,7 @@ This is very important to understand ahead of time, if you are considering chang
 
 To change the primary key, first remove any existing primary key, and then define the new key.
 If you no longer want the table to have a primary key, just remove the existing key.
-Any dependent objects, like Liveboards or worksheets, remain intact.
+Any dependent objects, like Liveboards or Models, remain intact.
 
 To change the primary key of a table:
 
@@ -41,7 +42,7 @@ To change the primary key of a table:
       DROP CONSTRAINT PRIMARY KEY;
 ----
 +
-Dropping a primary key can impact existing worksheets, answers, and Liveboards.
+Dropping a primary key can impact existing Models, answers, and Liveboards.
 The system warns you if dropping a primary key impacts other objects.
 
 . Add a new primary key, if desired:
@@ -52,7 +53,7 @@ The system warns you if dropping a primary key impacts other objects.
       ADD CONSTRAINT PRIMARY KEY ("owner_id");
 ----
 
-. Test that any dependent objects (Liveboards, worksheets, and so on) are still working correctly.
+. Test that any dependent objects (Liveboards, Models, and so on) are still working correctly.
 . Delete the snapshot you created earlier:
 +
 [source,console]
@@ -68,7 +69,7 @@ This operation works for both kinds of relationships: foreign key or generic rel
 
 To change a relationship between two tables, first remove any existing relationship, and then define the new relationship (if any).
 You don't have to truncate the tables to do this operation.
-Any dependent objects (Liveboards or worksheets) will remain intact.
+Any dependent objects (Liveboards or Models) will remain intact.
 
 To change the relationship between tables:
 
@@ -114,7 +115,7 @@ TQL> ALTER TABLE "wholesale_buys"
 ----
 
 . Define a new relationship, if you want to, using `+ALTER TABLE...ADD CONSTRAINT...+`
-. Test that any dependent objects (Liveboards, worksheets, and so on) perform correctly.
+. Test that any dependent objects (Liveboards, Models, and so on) perform correctly.
 . Delete the snapshot you created earlier using the command:
 +
 [source,console]
@@ -131,7 +132,7 @@ This procedure preserves the data within the table.
 This procedure reshards a table.
 This is also called redistributing or repartitioning.
 You can use this method to reshard a table without losing its data or metadata.
-This means that worksheets and Liveboards built on top of the table will continue to work.
+This means that Models and Liveboards built on top of the table will continue to work.
 
 You can use these steps to do any of these operations:
 
@@ -174,7 +175,7 @@ ALTER TABLE "sales"
 NOTE: When you re-shard the table, the system re-shards all the existing data.
 You don't need to force reload.
 
-. Test that any dependent objects (Liveboards, worksheets, and so on) are still working correctly.
+. Test that any dependent objects (Liveboards, Models, and so on) are still working correctly.
 . Delete the snapshot you created earlier using the command:
 +
 [source,console]
