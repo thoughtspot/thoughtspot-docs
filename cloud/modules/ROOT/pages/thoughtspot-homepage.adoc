@@ -1,10 +1,10 @@
 = Home page and navigation
-:page-last_updated: 27/11/2025
+:page-last_updated: Nov 22, 2026
 :linkattrs:
 :experimental:
 :page-aliases:
 :description: Learn about the redesigned navigation and home page of ThoughtSpot.
-:jira: SCAL-151210, SCAL-175398, SCAL-264258, SCAL-264648, SCAL-266442
+:jira: SCAL-151210, SCAL-175398, SCAL-264258, SCAL-264648, SCAL-266442, SCAL-309500
 
 The home page and navigation of ThoughtSpot Cloud have been entirely redesigned.
 //These features are disabled by default. To enable them, open your user profile, and in the Experience section, set the _Navigation and Homepage_ to *New experience*. If you don't see this option, it means it has been disabled for your cluster.
@@ -15,18 +15,30 @@ The home page and navigation of ThoughtSpot Cloud have been entirely redesigned.
 
 On the new home page, you can explore insights, search and access your library of Answers and Liveboards, and more. You can now choose between focused and modular home page options.
 
-Administrators can manage the home page version for all Orgs. To enable this feature, contact your administrator.
+// SOURCE: SCAL-309500 (QA sign-off comment, 2026-10-08); SRE KT https://thoughtspot.atlassian.net/wiki/spaces/SRE/pages/4805296129
+// TODO: verify with engineering — focused home page is the default for new ThoughtSpot Cloud instances from 26.11.0.cl; existing instances keep their current setting after upgrade.
+New ThoughtSpot Cloud instances use the focused home page by default. Administrators can manage the home page version for all Orgs, or for each Org. To change your home page experience, contact your administrator.
 
 == Enabling the focused or modular home page for administrators
 
+// SOURCE: PRD Focused Homepage V4 (Admin Settings), https://docs.google.com/document/d/1XRwaY2nbZJUrjcMUQyCofkpj_SzEp2BLI0Zg65NHDxk
+The home page experience setting is available at the All Orgs level and at the Org level. An administrator with access to All Orgs must first select *Focused* for all Orgs. After that, Org administrators can switch their Org back to *Modular*.
+
 To enable your desired home page:
 
+// TODO: verify with engineering — menu path. These steps say Customization > App Experience. SCAL-309500 QA comment and SRE KT say "Home Page & App Experience". The Admin settings table on this page lists "Home Page & Discovery".
 . Go to *Admin settings*.
-. Select *All Orgs*.
+. Select *All Orgs*, or select the Org you want to configure.
 . Go to *Customization*.
 . Select *App Experience*.
 . Go to *Homepage experience* and click *Edit*.
 . Select *Focused* or *Modular* and click *Save*.
+
+// SOURCE: dev/scaligent PR #69390 (SCAL-336944), string adminSection.homepageExperience.errorModal.body
+If Spotter is disabled for your instance, you cannot select *Focused*. ThoughtSpot shows the message *Experience cannot be changed to "Focused" because Spotter is disabled in this instance*. To enable Spotter, contact ThoughtSpot Support.
+
+// SOURCE: PRD Focused Homepage V4 (Admin Settings)
+NOTE: While the focused home page is active, the *Customize home page* settings for the modular home page are not available.
 
 //With the new left-hand navigation, you can go directly to your Liveboards, Answers, SpotIQ Analysis, and Monitor Subscriptions. You can also access tutorials, and the ThoughtSpot documentation, and support directly from the home page.
 
@@ -36,6 +48,9 @@ To enable your desired home page:
 == Focused home page
 ThoughtSpot has a new focused home page experience. The focused home page delivers a streamlined, contemporary experience for users that highlights the Spotter experience.
 It includes shortcuts to allow you to do a *Quick search*, *Deep analysis*, or *Know your data*. It also includes a list of *Recents* and your *Watchlist* KPIs.
+
+// SOURCE: SRE KT https://thoughtspot.atlassian.net/wiki/spaces/SRE/pages/4805296129; PRD Focused Homepage V4
+The focused home page requires Spotter. If Spotter is not enabled for your instance, ThoughtSpot shows the modular home page.
 
 [.bordered]
 image::home-page-focussed.png[]
