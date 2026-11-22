@@ -5,7 +5,7 @@
 :page-layout: default-cloud
 :linkattrs:
 :description: Publish objects between Orgs.
-:jira: SCAL-276877, SCAL-276881, SCAL-281408, SCAL-312211
+:jira: SCAL-276877, SCAL-276881, SCAL-281408, SCAL-312211, SCAL-293363
 
 Publishing allows instance administrators to publish any object created in the
 Primary Org — Liveboards, Answers, Models, Tables, and Views — directly to target
@@ -79,9 +79,12 @@ properties for a specific principal object such as a user or user group. This me
 you can set different values for connection properties, such as warehouse, role,
 user, and password, depending on the user or group accessing the connection.
 
+// SOURCE: SCAL-293363 design doc §3.1, §5.3.3 (https://docs.google.com/document/d/1tcF7TAYBDOD2uQC5juu2OppnNC-4suF8bHVOO7A8oro)
 * *Formula variables*: can be used in formulas when implementing Row Level Security
 (RLS) rules. Formula variables enable dynamic, context-aware security and
-personalization in data access.
+personalization in data access. Org administrators can also create and manage formula
+variables in their own Org. For more information, see
+xref:create-variables.adoc#variables-in-an-org[Manage variables in an Org].
 
 === Parameterizing tables and connections
 
@@ -123,6 +126,14 @@ require edit access to the object and the underlying data source in the Primary 
 The visibility of a published object in an Org depends on its sharing settings. Org
 administrators can view the objects published in their Org and grant view access to
 other users in their Org by sharing the object.
+
+// SOURCE: SCAL-293363 design doc §5.3.3, §5.3.5
+// TODO: verify with engineering — that variables used to parameterize published objects are always created from All Orgs, and so are read-only inside an Org
+Org administrators can see the *Variables* page in their Org, but they can edit only formula
+variables that were created in that Org. Variables created from *All Orgs*, including
+table, connection, and formula variables used by published objects, are read-only inside
+an Org. To change the values that a published object uses in an Org, an administrator
+with access to all Orgs must update the variable from *All Orgs*.
 
 NOTE: When an object is published, all underlying dependencies up to the connection
 are published to the target Org. Published connections are not directly accessible in
