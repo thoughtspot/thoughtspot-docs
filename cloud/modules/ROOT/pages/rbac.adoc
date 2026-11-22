@@ -1,9 +1,9 @@
 = Understand RBAC and privileges
-:page-last_updated: Oct 27, 2026
+:page-last_updated: Nov 22, 2026
 :linkattrs:
 :experimental:
 :description: ThoughtSpot has added RBAC support to allow for a more granular distribution of privileges.
-:jira: SCAL-264258, SCAL-347826
+:jira: SCAL-264258, SCAL-347826, SCAL-331949
 
 ThoughtSpot Role-Based Access Control (RBAC) helps an administrator manage roles and privileges that are assigned to users and groups in ThoughtSpot.  A role is a collection of privileges. A privilege allows users to perform certain actions while preventing them from performing other actions. RBAC enhances the granularity of permissions that determine the access and capabilities of users and admins.
 
@@ -174,7 +174,8 @@ a|Allows users to access the following features and workflows:
 
 |Can schedule for others|Allows users to create scheduled Liveboard jobs for other users.
 
-NOTE: If your cluster has RBAC v2 object-control privileges enabled, the *Can administer schedules*
+// SOURCE: SCAL-331949; SRE KT https://thoughtspot.atlassian.net/wiki/spaces/SRE/pages/5059411972
+NOTE: If xref:rbac.adoc#object-control-privileges[object-control privileges] are enabled on your instance, the *Can administer schedules*
 privilege supersedes *Can schedule for others* and grants broader org-wide schedule management.
 
 |Can Manage Sync settings|Allows for set up of secure pipelines to external business apps and syncing of data using ThoughtSpot Sync.|
@@ -187,7 +188,7 @@ Can invoke Custom R Analysis|Allows invoking R scripts to explore search answers
 
 Can verify Liveboard|Allows Liveboard users to verify Liveboard access requests and mark a Liveboard as verified.|
 
-Can create Liveboards [.privilege-badge]#Early Access#
+Can create Liveboards
 |Allows users to create, copy, edit, save, delete, and rename Liveboards;
 pin Answers to Liveboards; rename pinned Answers; request Liveboard verification;
 and export, edit, update, and import Liveboard TML.
@@ -198,7 +199,7 @@ Liveboard edit options in the Liveboard header are hidden.
 This privilege cannot be assigned to a role unless the role also includes
 *Can create Answers*.|
 
-Can create Answers [.privilege-badge]#Early Access#
+Can create Answers
 |Allows users to access Search Data; create, save, copy, and delete Answers;
 create formulas, parameters, query sets, and cohorts; save Answers as Views;
 use custom actions; and export, edit, update, and import Answer TML.
@@ -208,13 +209,13 @@ is disabled, and all Answer creation and editing options are hidden.
 
 The user can still open and edit Spotter-generated Answers to continue the conversation, but they cannot save or pin that Answer.|
 
-Can analyze data [.privilege-badge]#Early Access#
+Can analyze data
 |Allows users to use Explore, Drill Down, AI Highlights, Change Analysis,
 and Show Underlying Data (including editing columns within it).
 
 When this privilege is revoked, all analysis options are hidden from Answers and Liveboards.|
 
-Can administer schedules [.privilege-badge]#Early Access#
+Can administer schedules
 |Grants CRUD access over all schedules in the Org, not just those the user created.
 Users with this privilege can also view all recipients, override download-format
 restrictions within schedule contexts, and supersede the "Can schedule for others" privilege.
@@ -278,12 +279,13 @@ NOTE: If a user without download privileges previously created a schedule, and t
 * Report and schedule public APIs.  For more information, see https://developers.thoughtspot.com/docs/?pageid=whats-new[ThoughtSpot Developer Documentation^].
 
 [#object-control-privileges]
-.RBAC v2 object-control privileges [.badge.badge-early-access]#Early Access#
-****
-RBAC v2 introduces four object-control privileges that give administrators granular control over what users can create and analyze in ThoughtSpot.
-This feature is Early Access. To enable thisn feature, contact {support-url}.
+=== Object-control privileges
 
-NOTE: RBAC v2 object-control privileges are only available on clusters where RBAC is already enabled.
+// SOURCE: SCAL-331949 (GA in 26.12.0.cl); SRE KT https://thoughtspot.atlassian.net/wiki/spaces/SRE/pages/5059411972
+// TODO: verify with engineering — whether object-control privileges still require ThoughtSpot Support to enable at GA (SRE KT: not customer-enableable; SCAL-334199: not auto-enabled with Roles)
+Object-control privileges give administrators granular control over what users can create and analyze in ThoughtSpot. To enable object-control privileges on your instance, contact {support-url}.
+
+NOTE: Object-control privileges are only available on instances where RBAC is already enabled.
 
 .*Privilege types*
 
@@ -327,7 +329,8 @@ The reverse is permitted, a role can include *Can create Answers* without
 
 .*Default object privileges role and BASIC_GROUP*
 
-When RBAC v2 object-control privileges are enabled on a cluster, ThoughtSpot runs a
+// TODO: verify with engineering — that the role and group names shown in the UI are "Default object privileges" and "BASIC_GROUP"
+When object-control privileges are enabled on an instance, ThoughtSpot runs a
 one-time migration that creates two system-managed objects:
 
 *Default object privileges role (R0)*::
@@ -344,7 +347,6 @@ BASIC_GROUP cannot be deleted.
 
 Administrators can revoke R0 from other groups to create viewer-only experiences,
 without affecting BASIC_GROUP.
-****
 
 == Migrating to RBAC
 ThoughtSpot delivers roles corresponding to each privilege previously available as part of the existing groups. Existing groups are retained. When migrating, for each existing group privilege, a new role is created with the corresponding privileges assigned, and the existing groups are mapped to the corresponding new role.
@@ -495,5 +497,3 @@ The *Import Status* page appears with the status of your import.
 > ** Permissions course: Watch the https://training.thoughtspot.com/admin-permissions/2499240[What is RBAC?^] lesson.
 > ** Multi-Tenancy with Orgs course: Watch the https://training.thoughtspot.com/admin-logical-multi-tenancy-with-orgs/2499359[RBAC with Orgs^] lesson.
 > * See other training resources at https://training.thoughtspot.com/[ThoughtSpot University^].
-
-'''

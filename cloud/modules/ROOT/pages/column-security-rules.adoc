@@ -1,12 +1,12 @@
 = Column security rules
-:page-last_updated: Jul 21, 2026
+:page-last_updated: Nov 22, 2026
 :linkattrs:
 :experimental:
 :description: In this article, you learn how column security rules work.
-:jira: SCAL-301699
+:jira: SCAL-301699, SCAL-311897
 
 [.lead]
-Column security rules (CSR) let you protect specific columns in a table and control which groups can access them. Unlike the existing column-level security model, CSR decouples security from sharing — you can share a table broadly while still restricting access to sensitive columns.
+Column security rules (CSR) let you protect specific columns in a table and control who can access them, based on group membership or on user attributes. Unlike the existing column-level security model, CSR decouples security from sharing — you can share a table broadly while still restricting access to sensitive columns.
 
 [NOTE]
 ====
@@ -15,7 +15,7 @@ Column security rules is an opt-in feature. To enable it for your ThoughtSpot in
 
 
 
-When you mark a column as protected, only users who belong to a group that has been explicitly granted access to that column can see it. All other users who have access to the table will see the remaining columns, but not the protected one.
+When you mark a column as protected, only users who are granted access to that column by a rule can see it. All other users who have access to the table will see the remaining columns, but not the protected one.
 
 For example, if a table has three columns — `name`, `department`, and `salary` — and you mark `salary` as protected:
 
@@ -40,7 +40,7 @@ Column security rules take a different approach:
 
 | How it works
 | Mark columns as protected and share other columns explicitly.
-| Mark columns as protected and assign groups to protected columns.
+| Mark columns as protected and assign groups to protected columns, or write a rule based on user attributes.
 
 | Sharing required
 | Table sharing is not required for business users. This is because they will use the Model. Table sharing is only required with COLUMN LEVEL SHARING because of the Strict Object Mode setting. This is not required for CSR. Table sharing is only required for those users that will manage these tables. That is, Data Analysts.
@@ -52,10 +52,58 @@ Column security rules take a different approach:
 
 | Where rules are managed
 | Column sharing panel.
-| Manage access panel on the table.
+| *Column Security* tab on the table.
 |===
 
 CLS and CSR coexist — enabling CSR does not remove or replace your existing CLS configuration.
+
+[#attribute-based-rules]
+== Attribute-based rules
+
+// SOURCE: SCAL-311897 PRD and design doc (CSR ABAC Grammar in Sage; Permission evaluation with CSR ABAC rule)
+In addition to group-based rules, you can protect columns with attribute-based rules. An attribute-based rule is a true or false expression that ThoughtSpot evaluates for each user. If the expression is true for a user, that user can see the protected columns. Because the rule uses attributes that users already have, such as values assigned through xref:create-variables.adoc[formula variables], one rule can replace many groups.
+
+[NOTE]
+====
+Attribute-based rules must be enabled for your instance. To enable this feature, contact {support-url}.
+====
+
+For example:
+
+* `'HR' in ts_var(department)` gives access to users whose `department` variable includes `HR`.
+* `'Finance' in ts_groups` gives access to members of the Finance group.
+* `'HR' in ts_var(department) and 'EMEA' in ts_var(region)` gives access only to users who match both values.
+
+Rules can use the following elements:
+
+* Operators: `in`, `not in`, `and`, `or`, `=`, `!=`, and `not`
+* Functions: `ts_var()` and `isnull()`
+* System variables: `ts_groups` and `ts_username`
+* Constant values, such as `'HR'`
+
+// SOURCE: SCAL-344940
+Put the value before the variable. For example, write `'HR' in ts_var(department)`, not `ts_var(department) in 'HR'`.
+
+If a user has no value for a variable that a rule uses, the rule denies access to that user.
+
+// SOURCE: SCAL-344931 (fixed in 27.1.0.cl, not in 26.12.0.cl)
+// TODO: verify with PM (Sejal) — caution wording; remove after the fix ships
+CAUTION: A rule that uses `not` or `not in` allows access for a user who has no value for the variable. To make sure users without a value are denied, write rules that grant access with `in`, rather than rules that exclude users.
+
+////
+NOTE TO WRITER: SCAL-348309 reports that rules comparing a user or Org name with = or != (for example ts_username = 'alice') always evaluate to false. Examples on this page avoid = and != on purpose. Confirm status with engineering before adding such examples.
+////
+
+[#csr-publishing]
+== Column security rules and publishing
+
+// SOURCE: SCAL-311897 design doc (CSR with publishing); SCAL-344932 (known limitation)
+When you xref:publishing.adoc[publish] a table from the Primary Org, attribute-based rules on the table are enforced in every Org the table is published to. ThoughtSpot evaluates each rule using the attributes of the user in that Org.
+
+Group-based rules are not enforced in the Orgs that a table is published to, because groups belong to a single Org. When you create a group-based rule, the *Column Security* tab shows *Secures columns in current org only*. ThoughtSpot does not show a warning when you publish the table. To protect columns on tables that you publish, use attribute-based rules.
+
+// TODO: verify with engineering — that rules added by an Org administrator in a target Org apply only in that Org and can only further restrict access
+Administrators in an Org that a table is published to can add their own rules. These rules apply only in that Org.
 
 == Column protection in worksheets and models
 
@@ -74,14 +122,27 @@ Only table owners and administrators can create, edit, or delete column security
 
 == Limitations
 
+////
+NOTE TO WRITER: The following content was removed or flagged by the doc assistant.
+Reason: SCAL-311897 adds attribute-based rules, which are not limited to groups and are enforced on published tables. The first and third bullets now apply only to group-based rules.
+Action required: Review before publishing. Restore if still applicable, or delete this block to confirm removal.
+
 * Column security rules apply to groups only — you cannot create a rule for an individual user
-* CSR rules cannot be set directly on worksheet, model, or view columns — only on base table columns
 * CSR does not apply to published objects in non-primary orgs
+////
+
+// SOURCE: SCAL-311897 design doc; SCAL-344932
+* Group-based rules apply to groups only. To control access based on user attributes, use an attribute-based rule.
+* CSR rules cannot be set directly on worksheet, model, or view columns — only on base table columns
+* Group-based rules are not enforced in the Orgs that a table is published to. Attribute-based rules are enforced.
+* Attribute-based rules can use only constant values, variables, `ts_groups`, and `ts_username`. They cannot reference columns in the table, and they do not mask values.
+// TODO: verify with engineering — limit of 100 distinct variables per Org (design doc default)
+* Each Org supports up to 100 distinct variables in attribute-based rules.
+// TODO: verify with engineering — design doc says a variable used in a rule cannot be deleted
+* You cannot delete a formula variable that is used in an attribute-based rule.
 
 '''
 > **image:tsu-logo.png[ThoughtSpot Training,role=light-only,width=400]image:tsu-logo-dark.png[ThoughtSpot Training,role=dark-only,width=400]**
 >
 > * We highly recommend that you register for the free Security course in ThoughtSpot University that covers the information in this article, and watch the https://training.thoughtspot.com/admin-security/2499289[Table & Column Level Security^] lesson.
 > * See other training resources at https://training.thoughtspot.com/[ThoughtSpot University^].
-
-'''

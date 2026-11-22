@@ -1,11 +1,11 @@
 = Set up column security rules
-:page-last_updated: Jul 21, 2026
+:page-last_updated: Nov 22, 2026
 :linkattrs:
 :experimental:
 :description: In this article, you learn how to set up column security rules.
-:jira: SCAL-301699
+:jira: SCAL-301699, SCAL-311897
 
-Use column security rules to protect sensitive columns in a table and control which groups can access them. You must be a table owner or administrator to complete these steps.
+Use column security rules to protect sensitive columns in a table and control who can access them. You must be a table owner or administrator to complete these steps.
 
 [NOTE]
 ====
@@ -14,6 +14,10 @@ Column security rules is an opt-in feature and must be enabled before you can us
 * If you are a ThoughtSpot *administrator*, contact {support-url} to request enablement for your instance.
 * If you are a *business user or analyst* and do not see the *Manage access* option, contact your ThoughtSpot administrator.
 ====
+
+// SOURCE: SCAL-311897 OTP (TC 227845: legacy CSR UI to ABAC UI)
+// TODO: verify with engineering — that the Add columns and Manage access UI is shown only when attribute-based rules are not enabled
+NOTE: The following procedures apply when attribute-based rules are not enabled on your instance. If they are enabled, the *Column Security* tab uses the *Secure column* option. See <<secure-attribute-rule,Secure columns with an attribute-based rule>>.
 
 == Mark a column as protected
 
@@ -79,6 +83,55 @@ The column is no longer protected. All users with table access can now see it, s
 ====
 Removing protection from a column also removes all group assignments for that column. If you re-enable protection later, you will need to reassign groups.
 ====
+
+[#secure-attribute-rule]
+== Secure columns with an attribute-based rule
+
+// SOURCE: SCAL-344932, SCAL-344931 (QA repro steps on 26.12.0.cl)
+// TODO: verify in the UI — step order, and the label of the final button for the Variables path
+Attribute-based rules must be enabled for your instance. To enable this feature, contact {support-url}. For how rules work, see xref:column-security-rules.adoc#attribute-based-rules[Attribute-based rules].
+
+To secure columns with an attribute-based rule:
+
+. Open the table in *Data workspace*.
+. Select the *Column Security* tab.
+. Click *Secure column*.
+. Select the columns that you want to protect.
+. Select *Variables*, and click *Next*.
+. Enter a name for the rule.
+. Enter the rule expression. For example, `'HR' in ts_var(department)`.
++
+As you type, the editor suggests variables and functions.
+. Click *Secure*.
+
+Users for whom the expression is true can now access the protected columns, provided they also have access to the table itself.
+
+== Secure columns with a group-based rule
+
+// SOURCE: SCAL-344932 (QA repro steps on 26.12.0.cl)
+If attribute-based rules are enabled for your instance, follow these steps to secure columns for groups:
+
+. Open the table in *Data workspace*.
+. Select the *Column Security* tab.
+. Click *Secure column*.
+. Select the columns that you want to protect.
+. Select *User groups*, and select the groups that should have access.
+. Click *Secure*.
+
+NOTE: Group-based rules secure columns in the current Org only. They are not enforced in Orgs that the table is published to. To protect columns on a table that you publish, use an attribute-based rule. For more information, see xref:column-security-rules.adoc#csr-publishing[Column security rules and publishing].
+
+== Edit a column security rule
+
+// SOURCE: SCAL-344931 (QA repro steps on 26.12.0.cl)
+. Open the table in *Data workspace*.
+. Select the *Column Security* tab.
+. Find the rule that you want to change, and select *Rule actions* > *Edit*.
+. Change the rule name, the protected columns, or the rule expression.
+. Click *Save changes*.
+
+////
+NOTE TO WRITER: SCAL-344931 notes that after you edit an existing rule, the editor can show a stale "Please enter a complete security rule" message, but Save changes still works. Consider adding a troubleshooting note if this is not fixed in 26.12.0.cl.
+////
 
 == What users see when a column is protected
 
