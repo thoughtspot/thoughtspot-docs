@@ -1,0 +1,130 @@
+= Apps
+:author: Naomi
+:linkattrs:
+:experimental:
+:description: You can now create specialized apps in ThoughtSpot, using our prompt-based interface, combining structured and unstructured data.
+:page-layout: default-cloud
+:page-last_updated: 11/23/26
+:jira: SCAL-341640
+
+You can now create specialized apps in ThoughtSpot, using our prompt-based interface, combining structured and unstructured data. Once the app is created, you can ask questions about the live visualizations in Spotter, just like you would with a Liveboard. Apps update with your data, so your insights are always fresh. Rollout of this feature begins in 26.12.0.cl and will be enabled for all users during a phased GA.
+
+Apps are similar to Liveboards in that they are searchable in the Library, they run off of live data, and they lay out your data as a group of visualizations. However, unlike Liveboards, you edit Apps through conversation, and Spotter handles any change of layout or visualization. The layout is designed entirely by Spotter, and you can write back to your data sources without leaving the App, using Connectors.
+
+== Create an App
+
+To create an App:
+
+. From the ThoughtSpot Home page, select *Apps* under the *Library* section.
++
+[.bordered]
+image::app-home.png[App home page]
+
+
+. Click *Create App*. The chat interface appears.
++
+[.bordered]
+image::app-interface.png[App chat interface with suggested prompts]
+
+
+. Enter your prompt in the box, or select from the suggested prompts below the text box. Suggested prompts appear in the text box, and you can edit them before clicking the Send arrow.
+You can also *Select sources* from the option below the text box, to define the Models and Connectors your App will use.
++
+[.bordered]
+image::app-prompt.png[Enter your prompt]
+
+
+. In your chat, Spotter asks you to confirm the data sources it will use to create the App. Make any desired changes, and click *Confirm*. If you did not specify a visual style in your prompt, Spotter suggests various styles.
++
+[.bordered]
+image::app-confirm-sources.png[Confirm your sources]
+
+
+
+. Spotter lays out its plan for the App. Review the plan, and tell Spotter what to change, or simply say “Build it.” The App loads within your conversation, and you can continue iterating through suggestions until you’re satisfied. Once done, click *Publish changes*.
+
+You can share Apps easily with other users, by clicking the *Share* button.
+
+== Edit an App
+
+To edit an App:
+
+. Navigate to the Home page and click *Apps* under the *Library* section.
+
+. Select the desired App from the list, or search for it by keyword. Once the App loads, click *Edit* in the top right corner.
++
+[.bordered]
+image::app-edit.png[Edit the App]
+
+. The conversation opens in the left side panel. Start suggesting changes to edit the App.
++
+[.bordered]
+image::app-edit-conv.png[Make your changes in conversation]
+
+. Click *Publish changes* when you’re satisfied.
+
+
+== Basics of a good prompt
+
+Good prompts cover four things: intent, scope, sources and a style anchor.
+Name the audience and timeframe: "For sales leadership, this quarter vs last" changes tone, scope and the time filters.
+Pick a visual style: "Spotify Wrapped", "NYT briefing", "Linear roadmap". One reference locks the layout quickly.
+Keep it focused: 3 to 5 sections per App read better than 10.
+Add business context Spotter can't know: Custom fiscal calendars, targets, how you define a metric, entity aliases.
+Iterate in chat: "Make the second section a table", "Why is the ACV tile blank, diagnose and fix it", "Apply a dark theme".
+
+Sample prompt: "Give me a regional performance report from the GTM RevOps model. Show ACV, deal count and win rate by region and segment for this quarter. Make it feel like an Economist data essay, with two colour charts."
+
+== Limitations
+
+You can only edit the App through the chat interface: We do not currently support point and click editing of blocks. Describe the change in the conversation.
+No Answers inside Apps: Existing ThoughtSpot Answers cannot be pinned into an App. The builder writes its own queries on the Models and Connectors.
+SpotterX acts on data, not on the App: In View mode SpotterX answers inline. It will not apply a filter or jump to a section for you yet.
+One shared Draft per App: All editors work on the same Draft. If two conversations edit at the same time you get a warning, and the last write wins.
+Viewers cannot save a copy: Save as copy for viewers is planned for a future release.
+ThoughtSpot Embedded: Embedding Apps in TSE is not available in this release.
+Data governance: We are building lineage so you can see exactly which data was used to make every number in the App. Until then, use Show work in the conversation.
+
+
+== FAQ
+
+How is this different from link:https://docs.thoughtspot.com/agentspot/agentspot-create-app[Apps in AgentSpot?]::
+These Apps have no dependency on AgentSpot. Apps in ThoughtSpot run inside ThoughtSpot with the same builder, and both products coexist.
+
+Who can create Apps?::
+Users with the new Can Create Apps privilege (works alongside the Authoring privilege, same as Can Create Liveboards) and Spotter access.
+
+Who can view Apps?::
+Anyone the App is shared with. Viewing is sharing, exactly like Liveboards. No new privilege.
+
+How does access control work?::
+Every query runs as the viewer. RLS and Model permissions apply. If a viewer lacks access to a Model or Connector in the App, those blocks fail with a message. Two users opening the same App see two correctly scoped versions.
+
+Which data sources can I use?::
+ThoughtSpot Models, Connectors on your cluster (Salesforce, Jira, Drive, Slack and so on), and file uploads (CSV content is baked into the App as static data at creation, no refresh).
+
+Can I build an App from an existing Liveboard?::
+Not directly. Paste the Liveboard's TML into the prompt: it gives the App builder most of the context it needs (Models, queries, layout) and it replicates the Liveboard quickly.
+
+Can I edit an App after it is published?::
+Yes. Click Edit or ask SpotterX. Changes go to a Draft, viewers keep seeing the Published version until you publish again. Restore published version is available if you want to discard the Draft.
+
+What happens to my Draft if I close the tab?::
+Drafts of published Apps are retained and shown on your next edit. A net new App closed without publishing is discarded (you get a warning), but it stays recoverable from the creation conversation.
+
+Can two people edit the same App?::
+Yes, on one shared Draft. You get a warning when another conversation is editing the same App. Co-ordinate before editing the same App at the same time.
+
+Where did my conversation go?::
+Conversation history on an App page shows only that App's conversations. Opening an App always starts a new one. Reopening an old conversation loads the latest state (Published for view conversations, latest Draft for edit conversations) and tells you if the App moved since.
+
+Can I embed an App in my own application?::
+Not yet. TSE support for Apps is planned for a future release.
+
+Can I export, schedule or set alerts on an App?::
+Not yet. These are on the roadmap, nothing in this release.
+
+What if SpotterX is disabled on my Org?::
+Apps become view only. Chat, Edit and Create are hidden.
+
+
