@@ -4,7 +4,7 @@
 :experimental:
 :page-aliases: /admin/manage-jobs/schedule-a-pinboard-job.adoc
 :description: You can schedule or modify a Liveboard job for any Liveboard by using the Add a schedule prompt page.
-:jira: SCAL-241808, SCAL-254997, SCAL-261533, SCAL-270357, SCAL-276907, SCAL-281207, SCAL-348758, SCAL-348758, SCAL-354748
+:jira: SCAL-241808, SCAL-254997, SCAL-261533, SCAL-270357, SCAL-276907, SCAL-281207, SCAL-348758, SCAL-348758, SCAL-354748, SCAL-354750
 
 With scheduled Liveboard email updates, you can analyze your data offline and share Liveboards with your colleagues, including people who may not have a ThoughtSpot account.
 
@@ -102,6 +102,26 @@ Write a statement that returns a single boolean value (`true` or `false`). For e
 +
 At the scheduled time, ThoughtSpot executes the gating condition query. If the condition evaluates to `true`, ThoughtSpot processes the Liveboard.
 +
+[IMPORTANT]
+====
+// SOURCE: SCAL-354750, SCAL-344142
+// TODO: verify with engineering that the gating check runs as the schedule author for all recipient types.
+If a column used in your gating condition is hidden on the Model after you create the schedule, the gating condition runs successfully only if the schedule author has both of the following:
+
+* Edit access to the Model.
+* The *Can manage data* privilege. On clusters that use role-based access control (RBAC), the equivalent privilege is *Can manage data models*.
+// TODO: verify with engineering that "Can manage data models" is the correct RBAC equivalent for this check.
+
+If the schedule author does not have both, every run of the schedule fails at the gating step, and ThoughtSpot does not send any reports.
+// SOURCE: SCAL-344142
+// TODO: verify with engineering that this error text is stable and appropriate for customer-facing docs.
+The failed run reports an error similar to `Could not find the following objects of type LOGICAL_COLUMN`.
+
+To resolve this issue, do one of the following:
+
+* Make the column used in the gating condition visible on the Model again.
+* Give the schedule author edit access to the Model and the *Can manage data* privilege.
+====
 For a list of valid formulas, see xref:formula-reference.adoc[Formula function reference].
 +
 For an in-depth example of a scenario where a gating condition is useful and powerful, refer to xref:liveboard-gating-condition-example.adoc[].
