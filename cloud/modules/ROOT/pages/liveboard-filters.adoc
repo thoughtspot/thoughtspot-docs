@@ -1,10 +1,9 @@
 = Liveboard filters
-:page-last_updated: 8/04/2025
+:page-last_updated: Nov 24, 2026
 :linkattrs:
 :experimental:
-:page-aliases: /complex-search/pinboard-filters.adoc
 :description: You can apply filters to Liveboards as well as tables and charts.
-:jira: SCAL-215772, SCAL-183714, SCAL-261681, SCAL-267012, SCAL-330779
+:jira: SCAL-215772, SCAL-183714, SCAL-261681, SCAL-267012, SCAL-330779, SCAL-354749
 
 Filters, including bulk filters and exclude filters, can be applied to Liveboards just as with tables and charts.
 These kinds of filters apply to an entire Liveboard, making it easy to see only the data that you are interested in across the tables and charts within a Liveboard.
@@ -33,6 +32,10 @@ not in the top-level filter bar.
 +
 NOTE: A filter scoped to a tab or group is not visible in tabs or groups
 where it does not apply.
+
+Because a tab filter is scoped to its tab, selecting a value in it does not narrow the values available in filters on other tabs. This differs from a Liveboard filter that is applied to only one tab by using *Applicable to*, which can still narrow the values of filters on other tabs. Refer to xref:#applicable-to-cascading[Apply filters to specific visualizations or tabs].
+// SOURCE: SCAL-354749, SCAL-342784
+// TODO: verify with engineering
 
 Liveboard creators can:
 
@@ -110,7 +113,7 @@ If a Liveboard also includes tables and charts that were created from underlying
 To create one filter that filters visualizations based on multiple Models, you can link the Model columns, at the Liveboard level.
 Refer to xref:liveboard-filters-linked.adoc[Linked Liveboard filters].
 
-NOTE: Filters automatically apply to all tabs in the Liveboard. To specify certain tabs or visualizations that the filter should apply to, refer to xref:liveboard-filters-selective.adoc[].
+NOTE: Filters automatically apply to all tabs in the Liveboard. To specify certain tabs or visualizations that the filter should apply to, refer to xref:liveboard-filters-selective.adoc[]. Note that limiting where a filter applies does not stop it from narrowing the values of other filters. Refer to xref:#applicable-to-cascading[Apply filters to specific visualizations or tabs].
 
 ThoughtSpot also supports ad-hoc filtering, so you can filter the data on your Liveboard by selecting a data point on any visualization in the Liveboard. These ad-hoc cross filters are not permanent, and do not appear to other users of the Liveboard.
 
@@ -164,6 +167,14 @@ You can also search for a visualization.
 [.bordered]
 image::liveboard-filter-applicable-to-tabs.png[Specify filtered visualizations]
 . Select *Apply*.
+
+[#applicable-to-cascading]
+IMPORTANT: The *Applicable to* setting controls only which visualizations a filter applies to. It does not stop the filter from narrowing the values that other Liveboard filters offer.
+Liveboard filters cascade, which means the values available in a filter are narrowed by the selections in other Liveboard filters that use the same Model.
+For example, if you apply a filter to the visualizations on only one tab, selecting a value in that filter still narrows the values available in filters on other tabs, even though the data on those tabs does not change.
+To limit a filter, and its effect on other filter values, to a single tab, create a tab filter. Refer to xref:liveboard-filters.adoc#contexual-filtering[Liveboard contextual filtering].
+// SOURCE: SCAL-354749, SCAL-342784
+// TODO: verify with engineering that "same Model" is the right scope for cascading. The Jira says "same data source".
 
 [#relevant-filters]
 
