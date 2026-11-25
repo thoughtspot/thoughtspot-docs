@@ -1,3 +1,5 @@
+NOTE: On SQL Server, Synapse, MySQL-family, SingleStore and ClickHouse connections, to_date functions are not currently supported.
+
 [options="header",cols="25%,25%,50%"]
 |===
 | Function
@@ -14,11 +16,23 @@ a|
 a|
 [#to_date]
 `to_date`
-| Accepts a date represented as an integer or text string, and a second string parameter that can include `strptime` date formatting elements. +
-Replaces all the valid strptime date formatting elements with their string counterparts and returns the result. +
-Does not accept epoch formatted dates as input. Does not accept datetime values. Only accepts month, day, and year.
+a| Converts a value to a date.
 
-| `to_date (date_sold, '%Y-%m-%d')`
+value:: the text or integer to convert. Use a column, or a typed value such as '2026-10-29' or 20261029.
+
+dateFormat:: the pattern of the dates in value, written with the codes below in the same order as the parts of value. Separators between the parts, such as a hyphen (-), slash (/), dot (.), comma (,), colon (:), a space or no separator at all, must match value exactly. Include year, month and day; add time codes only if value also has a time.
+
+Epoch values are not supported.
+
+
+
+| `to_date('2026-10-29', '%Y-%m-%d')`
+
+`to_date(20261029, '%Y%m%d')`
+
+`to_date(column_name, '%m/%d/%Y')`, where column_name is a text column with values like 10/29/2026
+
+`to_date('2026-10-29 14:05', '%Y-%m-%d %H:%M')`
 
 a|
 [#to_double]
@@ -42,3 +56,45 @@ a|
 `to_string (revenue - cost)` +
 `to_string (date,'%m/%d/%y')`
 |===
+
+[NOTE]
+====
+For to_date functions, we support the following codes:
+
+[options="header"]
+|===
+| Code | Meaning | Example
+
+| %Y | 4-digit year | 2026
+
+| %y | 2-digit year | 26
+
+| %m | 2-digit month | 05
+
+| %d | 2-digit day | 03
+
+| %b | abbreviated month name | Oct
+
+| %a | abbreviated weekday | Thu
+
+| %H / %I | 2-digit hour, 24-hour / 12-hour | 14 / 02
+
+| %M | 2-digit minute | 05
+
+| %S | 2-digit second | 09
+|===
+
+Other strptime codes (for example %B, %j, %p) are not supported.
+
+Any combination works. The codes can appear in any order, and each separator can differ, as long as the format follows the value. For example, to_date('12-02:2026', '%d-%m:%Y').
+
+Pad numbers to their full width. Use 4-digit years with %Y, and 2-digit years, months, days and time parts. Values with no separators (20261029) require this, and some warehouses (for example, Databricks) reject single-digit parts such as 2026-5-3.
+
+Two-digit years (%y): the warehouse decides the century, and the cutoff differs between warehouses. Prefer %Y.
+
+Letters are not separators. For example, the T in 2026-10-29T14:05 is not supported.
+
+Warehouse-native patterns are not supported. For example 'yyyymmdd' or 'YYYY-MM-DD'. They may appear to work on some connections but return wrong dates or errors on others: on Databricks and Denodo mm means minutes, and BigQuery accepts only % codes.
+
+
+====
