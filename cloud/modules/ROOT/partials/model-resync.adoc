@@ -1,0 +1,27 @@
+1. Column settings
+* Every column property except column type and aggregation, only if the source doesn't set that property itself:
++
+--
+* format pattern, currency
+* geo config (including custom geo file)
+* index type / index priority (not on Snowflake formula columns: always reset to "Don't index")
+* synonyms (only if the source defines no synonyms for that column; no merge, the source list wins)
+* synonym type
+* SpotIQ preference, Search IQ preference
+* calendar, custom sort order, default date bucket, time-bucket restriction
+* additive, attribution dimension, mandatory, mandatory token filter, strict date column
+* value casing, AI context, hierarchical column name, column use cases
+--
+* Description: only if the source has no description for that column.
+* Data panel folder assignment: only if the source sets none.
+
+
+2. Formulas and parameters
+• Formulas you added keep their name, expression, column type, aggregation and column settings.
+• All parameters.
+
+3. Model level
+• Spotter enabled, Search enabled, RLS bypass, progressive joins: always.
+• Model filters: only if every column they reference still exists (others are dropped silently, log only).
+• Custom action associations: always.
+• Join type and cardinality: only for joins the source still defines (same tables and same join condition).
