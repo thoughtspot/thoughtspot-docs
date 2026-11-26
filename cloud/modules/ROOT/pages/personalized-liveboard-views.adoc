@@ -1,13 +1,15 @@
 = Personalized Liveboards
-:page-last_updated: Oct 7, 2026
+:page-last_updated: Nov 26, 2026
 :linkattrs:
 :author: Mark
 :experimental:
 :page-aliases:
-:description: You can personalize Liveboards by applying filters that are persisted.
-:jira: SCAL-201673, SCAL-212615, SCAL-265737, SCAL-266011, SCAL-337718
+:description: You can personalize Liveboards by applying filters that are persisted, and share your personalized views with other users and groups.
+:jira: SCAL-201673, SCAL-212615, SCAL-265737, SCAL-266011, SCAL-337718, SCAL-341943
 
 Liveboards that contain consolidated data for all business users can now be personalized for a specific user or group. You can filter values to display only the information that is relevant to you, and save the personalized Liveboard. The personalized Liveboard retains the filter values, and remains synced with the original Liveboard. It also works for both filters and parameters on the Liveboard. This allows you to bookmark a personalized Liveboard for easy access to the information you need, and eliminates the need to create a personal copy of a Liveboard which can result in copies falling out of sync with the original.
+
+Starting with ThoughtSpot Cloud 27.1.0.cl, you can share a personalized view with specific users and groups, in the same way that you share other objects such as Liveboards and Answers. Before this release, a view could only be private or available to everyone with access to the Liveboard.
 
 Users who don't have access to the underlying data source can view a Liveboard but can't interact with it by applying filters. Only users with access to the underlying data source can create and save personalized Liveboards. New filters can't be added in a personalized Liveboard, they must be added in the original.
 
@@ -27,19 +29,22 @@ image::save-view.png[Save view]
 . Enter a name for your personalized Liveboard view.
 +
 CAUTION: Do not include any sensitive information in the name of your personalized view. See <<persistent-behavior-personalized-liveboard,Persistent behavior of a personalized Liveboard.>>
-. Select *Make view available to all users* if you want the view to others for easy access.
-
-* If you have edit permission for the Liveboard, you can select *Make view available to all users* to share your view. This view will then be available to all the users who have access to this Liveboard.
-* If you have view only permissions for the Liveboard, you will not have the option to make any view public.
-
-NOTE: Where row level security is applied to the data, unauthorized users will see the Liveboard but not the restricted data.
+. Under *Share with*, choose who can use the view:
++
+* *Only you*: the view is private. You can share it later. See <<share-personalized-view,Share a personalized Liveboard view>>.
+* *Everyone with Liveboard access*: the view is available to all users who have access to this Liveboard. This option is available only if you have edit access to the Liveboard. If you have view-only access, the option is disabled.
+* *Specific users or groups*: after you save, ThoughtSpot opens the share dialog so that you can select the users and groups to share the view with. You can choose this option even if you have view-only access to the Liveboard.
++
+NOTE: Where row level security is applied to the data, users you share a view with see the Liveboard but not the restricted data.
 
 [start=5]
-. Click *Save*.
+. Click *Save*. If you chose *Everyone with Liveboard access* or *Specific users or groups*, the button is *Save and share*.
++
+If you chose *Specific users or groups* and then cancel the share dialog, the view is saved as a private view.
 +
 image::personalized-views.png[Save view of filtered Liveboard]
 
-From a personalized Liveboard view, you can create additional views, update a view, manage views, or reset a Liveboard.
+From a personalized Liveboard view, you can create additional views, update a view, share a view, manage views, or reset a Liveboard.
 
 [#persistent-behavior-personalized-liveboard]
 === Persistent behavior of a personalized Liveboard
@@ -51,12 +56,37 @@ For example:
 
 Even if this view is private, the URL can be shared with someone else and they can open the Liveboard with that view. However, when you reset the Liveboard to default, it stops showing that view and reverts to the original view.
 
+If you stop sharing a view with a user, the view no longer appears in that user's list of views, but they can still open it from its URL.
+
+[#share-personalized-view]
+== Share a personalized Liveboard view
+
+You can share a personalized view that you created with specific users and groups. This lets you share a filtered version of a Liveboard with the people who need it, without making the view available to everyone who has access to the Liveboard.
+
+To share a view:
+
+. Open the Liveboard and click on *Select view*.
+. Select *Manage views* from the drop-down menu.
+. On the *Created by you* tab, click *Share* next to the view you want to share.
+. Add the users and groups you want to share the view with. To stop sharing the view with a user or group, remove them from the list.
+. Save your changes.
+
+You can also share a view when you create it, by selecting *Specific users or groups* under *Share with*.
+
+When you share a view, note the following:
+
+* Users you share a view with can view and apply it. They can't rename, update, share, or delete it.
+* You can share a view only with users and groups who have access to the Liveboard. If any of the users or groups you select can't open the Liveboard, ThoughtSpot doesn't share the view with anyone and shows an error that lists them. Sharing a view does not share the Liveboard or its data sources.
+* Only the creator of a view, or an administrator, can share it.
+* If you have view-only access to a Liveboard, you can share your views with specific users and groups, but you can't make them available to everyone with access to the Liveboard.
+* Views that are shared with you appear in your list of views and in the *Shared with you* tab in *Manage views*.
+
 == Update a personalized Liveboard view
 
-You can update a personalized Liveboard view.
+You can update a personalized Liveboard view that you created.
 
 . Open a personalized Liveboard view and apply your desired filters.
-A dot appears next to the view name to indicated that there are unsaved changes.
+A dot appears next to the view name to indicate that there are unsaved changes.
 +
 image::save-view-dot.png[Save view dot appears when changes are made to an existing view]
 [start=2]
@@ -64,11 +94,11 @@ image::save-view-dot.png[Save view dot appears when changes are made to an exist
 +
 image::update-view.png[Update view drop down]
 
-NOTE: You can also create an additional new view by selecting *Save view* from the drop-down menu.
+NOTE: You can also create an additional new view by selecting *Save view* from the drop-down menu. You can't update a view that someone else shared with you, but you can apply it and save your changes as a new view.
 
 == Manage personalized Liveboard views
 
-You can manage your personalized Liveboard views.
+You can manage your personalized Liveboard views, and see the views that other users have shared with you.
 
 . Open a Liveboard and click on *Select view*.
 
@@ -77,11 +107,30 @@ You can manage your personalized Liveboard views.
 image::manage-views.png[Manage views drop-down]
 
 [start=3]
-. Click the checkbox to allow anyone to view the personalized Liveboard view, or *Delete* to remove the view.
+. The *Manage views* dialog has two tabs:
++
+* *Created by you*: the views you created. For each view, you can:
+** Rename the view.
+** Turn on *Share with everyone* to make the view available to everyone with access to the Liveboard. This option requires edit access to the Liveboard.
+** Click *Share* to share the view with specific users and groups.
+** Click *Delete* to remove the view.
+* *Shared with you*: the views that other users have shared with you, and their authors. These views are read-only.
++
+The *Shared with* column shows who can use each view: *Only you*, *Everyone*, or the number of users and groups the view is shared with, for example *1 user, 1 group*.
 
-== Limitation
+[start=4]
+. Click *Save*.
+
+Administrators see a single table of all views on the Liveboard, with an *Author* column, and can share or delete any view.
+
+== Limitations
 
 * Personalized views saved in a Liveboard are not supported in ThoughtSpot Mobile. This means that filters added in personalized views are not used for KPIs and the watchlist. As a result, the numbers that appear in ThoughtSpot Mobile for them are different.
+* Views that ThoughtSpot creates automatically for KPI alerts can't be shared.
+* You can share a view only with users and groups in the same Org.
+* View names don't have to be unique. If two views with the same name are shared with you, you can't tell them apart by name.
+* Sharing a personalized view with specific users and groups is not supported using the REST API.
+* If an administrator has disabled sharing on your instance, the *Specific users or groups* option is not available. Views that were already shared remain available to their recipients.
 
 [#migrate_personalized_views_across_environments]
 == Migrate personalized views across environments
@@ -115,11 +164,15 @@ When exporting a Liveboard TML, each entry in the `views` section includes an `a
 
 Administrators can modify the `author` attributes before importing the TML to a new environment to reassign views to a different user.
 
+=== Sharing and TML
+
+The users and groups that a personalized view is shared with are not included in the Liveboard's TML. When you import with `enable_personalized_view_upsert` set to `true`, existing views on the target Liveboard keep their sharing. Views that are created by the import are not shared with anyone; share them again on the target environment as needed.
+
 === Best practices for migrating personalized views
 
 * Always set `enable_personalized_view_upsert` to `true` in the TML import request when migrating Liveboards with personalized views. Standard TML import without this field may overwrite or remove existing views on the target.
 * Review `author` assignments before importing into production. Modify the `username` and `user_email` values in the TML to reassign views as needed.
-* After migration, verify that personalized views appear correctly for their assigned users on the target environment.
+* After migration, verify that personalized views appear correctly for their assigned users on the target environment, and share any new views with the users and groups that need them.
 * If personalized views are missing after migration, confirm that `enable_personalized_view_upsert` was set to `true` during import, and check the `author` attributes in the TML file.
 
 NOTE: If you encounter issues migrating personalized views, contact ThoughtSpot Support.
@@ -131,3 +184,4 @@ NOTE: If you encounter issues migrating personalized views, contact ThoughtSpot 
 > * See other training resources at https://training.thoughtspot.com/[ThoughtSpot University^].
 
 '''
+
