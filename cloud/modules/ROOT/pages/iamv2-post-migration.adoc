@@ -54,7 +54,9 @@ NOTE: With IAMv2, the SAML response must have an email attribute. Ensure the ema
 . Click *Submit* when the configuration on your IdP is complete.
 +
 This reloads the service. Your configured SAML URLs will now appear on the page.
-. Optionally, you can add a cluster URL in your SAML application as default relay URL.
+. #Set your ThoughtSpot cluster URL, for example `https://<your-cluster>.thoughtspot.cloud`, as the *Default Relay State* (in some IdPs, *Relay State*) in your SAML application. This step is required. If the Relay State is not set, users who authenticate successfully with your IdP are shown an Okta app listing page instead of ThoughtSpot. For details, see xref:saml-okta.adoc#relay-state[Relay State requirement].#
+
+// TODO: SCAL-352701 - Confirm the Relay State value format (bare cluster URL or with /#/login) with Akash Singhal; keep in sync with saml-okta.adoc.
 
 === Validate your SAML account migration
 . Validate that the SAML attributes mapped in ThoughtSpot after migration are identical to pre-migration attributes.
@@ -68,6 +70,7 @@ The users section of the Admin Console now supports account activation monitorin
 
 Local users now create their own password during activation. Administrators do not create the password prior to activation. For more information, see xref:user-account-activation-okta.adoc[Activate your ThoughtSpot account using IAMv2].
 
+// TODO: SCAL-352701 - Confirm this domain. The IAMv2 identity URLs are identity.thoughtspotlogin.cloud and identity-eu.thoughtspotlogin.cloud (see okta-iam.adoc), not identity.thoughtspot.com.
 Note that whenever you navigate to the login page for ThoughtSpot, you will temporarily see the following URL: `identity.thoughtspot.com`. This is an expected part of the IAMv2 login experience.
 
 NOTE: After migrating to IAMv2, usage of space and special characters will not be allowed while creating Orgs. This is to keep Org names DNS compliant. This restriction applies to only new Org names where per Org subdomain is enabled, and does not impact existing Orgs.

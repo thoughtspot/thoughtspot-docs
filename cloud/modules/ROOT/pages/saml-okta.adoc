@@ -144,9 +144,13 @@ for example, username and email address.
 
 You need admin privileges to enable SAML SSO authentication.
 
+// TODO: SCAL-352701 - Confirm with Akash Singhal whether the Relay State value is the bare cluster URL (https://<your-cluster>.thoughtspot.cloud) or includes /#/login (the Benify RCA used benify.thoughtspot.cloud/#/login). saml-entra-id.adoc uses the bare URL.
+// TODO: SCAL-352701 - Confirm Relay State is required for all IdPs on IAMv2, including SP-initiated sign-in from the cluster URL, and not only for Microsoft Entra ID.
+
 . Configure the ThoughtSpot application instance on your IdP server.
 .. For the *Single sign on URL* and the *Audience URI* in your IdP provider, you must enter dummy values. You return to these fields in step 15, after completing SAML configuration in ThoughtSpot.
 .. Make a note of the names you use when you map your IdP's version of the `mail` and `username` attributes. You must use these names to map the email and username attribute in ThoughtSpot later. The `display name` attribute is optional; if you would like to map it as well, make a note of the name you use.
+.. #Set the *Default Relay State* (in some IdPs, *Relay State*) to your ThoughtSpot cluster URL, for example `https://<your-cluster>.thoughtspot.cloud`. If you configure SAML per Org with subdomain login, use the Org URL instead. This setting is required. For details, see <<relay-state>>.#
 . Sign in to your ThoughtSpot application instance and select the primary Org.
 +
 .SAML authentication at the Org level [.badge.badge-beta]#Beta#
@@ -241,6 +245,40 @@ This file contains the public key you need if you want to encrypt your SAML asse
 NOTE: When configuring SAML 2.0, make sure you map the SAML user attributes and subjects to appropriate fields.
 This allows the ThoughtSpot system to automatically pick up certain attributes and subjects, such as a user's email address, display name, and username.
 The username and email attributes are mandatory. If your company cannot meet this requirement, contact {support-url}. You must ensure that the values you use for these attributes are the same in your IdP and in the *SAML attribute* field in the ThoughtSpot SAML configuration flow.
+
+[#relay-state]
+=== #Relay State requirement#
+
+#ThoughtSpot SSO sign-in passes through an Okta identity service. After a user authenticates with your IdP, Okta uses the Relay State to decide where to send the user. You must set the *Default Relay State* (in some IdPs, *Relay State*) in your IdP's ThoughtSpot application to one of the following values:#
+
+* #For a cluster-wide SAML configuration: your ThoughtSpot cluster URL, `https://<your-cluster>.thoughtspot.cloud`.#
+* #For SAML per Org with subdomain login: the Org URL, `https://<org-subdomain>.<your-cluster>.thoughtspot.cloud`. For Org subdomain requirements, see xref:multi-idp-behavior.adoc[].#
+
+#The Relay State is required whether users start sign-in from ThoughtSpot or from the ThoughtSpot tile in your IdP. If it is not set, users who authenticate successfully are shown an Okta app listing page instead of ThoughtSpot. See <<okta-app-page>>.#
+
+[#sign-in-sso]
+== #Sign in with SSO#
+
+#After you enable SAML authentication, users sign in to ThoughtSpot in one of these ways:#
+
+* #From ThoughtSpot: open your ThoughtSpot cluster URL, for example `https://<your-cluster>.thoughtspot.cloud`, or your Org URL, and select *Log in with SSO*.#
+* #From your IdP: select the ThoughtSpot tile in your IdP's app dashboard.#
+
+#During sign-in, the browser briefly passes through ThoughtSpot's identity service, at `identity.thoughtspotlogin.cloud` or `identity-eu.thoughtspotlogin.cloud`. These addresses are part of the sign-in flow, not sign-in URLs. Users should not open, bookmark, or share them to sign in to ThoughtSpot.#
+
+[#okta-app-page]
+=== #Users see an Okta app page after signing in#
+
+#*Symptom*: After authenticating with your IdP, users see an Okta app listing page, at an address such as `https://identity-eu.thoughtspotlogin.cloud/enduser/catalog`, instead of ThoughtSpot.#
+
+#*Cause*: The Default Relay State is not set in your IdP, or users started sign-in from an identity service address instead of the ThoughtSpot cluster URL.#
+
+#*Resolution*:#
+
+. #Set the Default Relay State in your IdP as described in <<relay-state>>.#
+. #Ask users to sign in from your ThoughtSpot cluster URL or from the ThoughtSpot tile in your IdP, and to remove any bookmarks to `identity.thoughtspotlogin.cloud` or `identity-eu.thoughtspotlogin.cloud` addresses.#
+
+#The Okta app page appears only after a user authenticates successfully with your IdP. It is a generic Okta page, not part of ThoughtSpot, and it gives no access to ThoughtSpot or to your data.#
 
 
 == SAML group mapping
